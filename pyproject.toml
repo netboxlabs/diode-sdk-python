@@ -36,6 +36,13 @@ dependencies = [
 dev = ["black", "check-manifest", "ruff"]
 test = ["coverage", "pytest", "pytest-cov"]
 
+[tool.coverage.run]
+omit = [
+    "netboxlabs/diode/sdk/diode/*",
+    "netboxlabs/diode/sdk/validate/*",
+    "tests/*",
+]
+
 [project.urls]  # Optional
 "Homepage" = "https://netboxlabs.com/"
 
