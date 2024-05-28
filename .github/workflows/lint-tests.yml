@@ -40,5 +40,5 @@ jobs:
 
       - name: Lint with Ruff
         run: |
-          ruff --output-format=github netboxlabs/ tests/
+          ruff check --output-format=github netboxlabs/ tests/
         continue-on-error: true
