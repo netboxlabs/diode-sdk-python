@@ -44,7 +44,7 @@ jobs:
               "branches": "release",
               "repositoryUrl": "https://github.com/netboxlabs/diode-sdk-python",
               "debug": "true",
-              "tagFormat": "${{ env.APP_NAME }}/v${version}",
+              "tagFormat": "v${version}",
               "plugins": [
                 ["semantic-release-export-data"],
                 ["@semantic-release/commit-analyzer", {
