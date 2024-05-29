@@ -88,7 +88,7 @@ jobs:
       - name: Set release version
         id: release-version
         run: |
-          echo "::set-output name=release-version::`echo ${{ steps.get-next-version.outputs.new-release-version }} | sed 's/${{ env.APP_NAME }}-v//g'`"
+          echo "::set-output name=release-version::`echo ${{ steps.get-next-version.outputs.new-release-version }} | sed 's/v//g'`"
     outputs:
       new-release-published: ${{ steps.get-next-version.outputs.new-release-published }}
       new-release-version: ${{ steps.release-version.outputs.release-version }}
