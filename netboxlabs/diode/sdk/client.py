@@ -6,7 +6,7 @@ import logging
 import os
 import platform
 import uuid
-from typing import Dict, Iterable, Optional, Union
+from typing import Iterable, Optional, Union
 
 import certifi
 import grpc
@@ -49,7 +49,7 @@ def _tls_verify(tls_verify: Optional[bool]) -> bool:
     return tls_verify
 
 
-def parse_target(target: str) -> Dict[str, str]:
+def parse_target(target: str) -> tuple[str, str]:
     """Parse target."""
     if target.startswith(("http://", "https://")):
         raise ValueError("target should not contain http:// or https://")
@@ -166,7 +166,7 @@ class DiodeClient:
         return self._path
 
     @property
-    def tls_verify(self) -> str:
+    def tls_verify(self) -> bool:
         """Retrieve the tls_verify."""
         return self._tls_verify
 
