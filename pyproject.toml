@@ -38,9 +38,9 @@ test = ["coverage", "pytest", "pytest-cov"]
 
 [tool.coverage.run]
 omit = [
-    "netboxlabs/diode/sdk/diode/*",
-    "netboxlabs/diode/sdk/validate/*",
-    "tests/*",
+    "*/netboxlabs/diode/sdk/diode/*",
+    "*/netboxlabs/diode/sdk/validate/*",
+    "*/tests/*",
 ]
 
 [project.urls]  # Optional
