@@ -3,8 +3,6 @@
 """NetBox Labs, Diode - SDK - ingester protobuf message wrappers."""
 
 from typing import Any
-from typing import Optional as _Optional
-from typing import Union as _Union
 
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 
@@ -55,9 +53,9 @@ class Tag:
 
     def __new__(
         cls,
-        name: _Optional[str] = None,
-        slug: _Optional[str] = None,
-        color: _Optional[str] = None,
+        name: str | None = None,
+        slug: str | None = None,
+        color: str | None = None,
     ) -> TagPb:
         """Create a new Tag protobuf message."""
         return TagPb(name=name, slug=slug, color=color)
@@ -68,10 +66,10 @@ class Manufacturer:
 
     def __new__(
         cls,
-        name: _Optional[str] = None,
-        slug: _Optional[str] = None,
-        description: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        name: str | None = None,
+        slug: str | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> ManufacturerPb:
         """Create a new Manufacturer protobuf message."""
         if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
@@ -90,11 +88,11 @@ class Platform:
 
     def __new__(
         cls,
-        name: _Optional[str] = None,
-        slug: _Optional[str] = None,
-        manufacturer: _Optional[_Union[str, Manufacturer, ManufacturerPb]] = None,
-        description: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        name: str | None = None,
+        slug: str | None = None,
+        manufacturer: str | Manufacturer | ManufacturerPb | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> PlatformPb:
         """Create a new Platform protobuf message."""
         manufacturer = convert_to_protobuf(
@@ -118,11 +116,11 @@ class Role:
 
     def __new__(
         cls,
-        name: _Optional[str] = None,
-        slug: _Optional[str] = None,
-        color: _Optional[str] = None,
-        description: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        name: str | None = None,
+        slug: str | None = None,
+        color: str | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> RolePb:
         """Create a new Role protobuf message."""
         if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
@@ -142,13 +140,13 @@ class DeviceType:
 
     def __new__(
         cls,
-        model: _Optional[str] = None,
-        slug: _Optional[str] = None,
-        manufacturer: _Optional[_Union[str, Manufacturer, ManufacturerPb]] = None,
-        description: _Optional[str] = None,
-        comments: _Optional[str] = None,
-        part_number: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        model: str | None = None,
+        slug: str | None = None,
+        manufacturer: str | Manufacturer | ManufacturerPb | None = None,
+        description: str | None = None,
+        comments: str | None = None,
+        part_number: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> DeviceTypePb:
         """Create a new DeviceType protobuf message."""
         manufacturer = convert_to_protobuf(
@@ -174,21 +172,21 @@ class Device:
 
     def __new__(
         cls,
-        name: _Optional[str] = None,
-        device_type: _Optional[_Union[str, DeviceType, DeviceTypePb]] = None,
-        device_fqdn: _Optional[str] = None,
-        role: _Optional[_Union[str, Role, RolePb]] = None,
-        platform: _Optional[_Union[str, Platform, PlatformPb]] = None,
-        serial: _Optional[str] = None,
-        site: _Optional[_Union[str, SitePb]] = None,
-        asset_tag: _Optional[str] = None,
-        status: _Optional[str] = None,
-        description: _Optional[str] = None,
-        comments: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
-        primary_ip4: _Optional[_Union[str, IPAddressPb]] = None,
-        primary_ip6: _Optional[_Union[str, IPAddressPb]] = None,
-        manufacturer: _Optional[_Union[str, Manufacturer, ManufacturerPb]] = None,
+        name: str | None = None,
+        device_type: str | DeviceType | DeviceTypePb | None = None,
+        device_fqdn: str | None = None,
+        role: str | Role | RolePb | None = None,
+        platform: str | Platform | PlatformPb | None = None,
+        serial: str | None = None,
+        site: str | SitePb | None = None,
+        asset_tag: str | None = None,
+        status: str | None = None,
+        description: str | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
+        primary_ip4: str | IPAddressPb | None = None,
+        primary_ip6: str | IPAddressPb | None = None,
+        manufacturer: str | Manufacturer | ManufacturerPb | None = None,
     ) -> DevicePb:
         """Create a new Device protobuf message."""
         manufacturer = convert_to_protobuf(
@@ -248,24 +246,24 @@ class Interface:
 
     def __new__(
         cls,
-        name: _Optional[str] = None,
-        device: _Optional[_Union[str, Device, DevicePb]] = None,
-        device_type: _Optional[_Union[str, DeviceType, DeviceTypePb]] = None,
-        role: _Optional[_Union[str, Role, RolePb]] = None,
-        platform: _Optional[_Union[str, Platform, PlatformPb]] = None,
-        manufacturer: _Optional[_Union[str, Manufacturer, ManufacturerPb]] = None,
-        site: _Optional[_Union[str, SitePb]] = None,
-        type: _Optional[str] = None,
-        enabled: _Optional[bool] = None,
-        mtu: _Optional[int] = None,
-        mac_address: _Optional[str] = None,
-        speed: _Optional[int] = None,
-        wwn: _Optional[str] = None,
-        mgmt_only: _Optional[bool] = None,
-        description: _Optional[str] = None,
-        mark_connected: _Optional[bool] = None,
-        mode: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        name: str | None = None,
+        device: str | Device | DevicePb | None = None,
+        device_type: str | DeviceType | DeviceTypePb | None = None,
+        role: str | Role | RolePb | None = None,
+        platform: str | Platform | PlatformPb | None = None,
+        manufacturer: str | Manufacturer | ManufacturerPb | None = None,
+        site: str | SitePb | None = None,
+        type: str | None = None,
+        enabled: bool | None = None,
+        mtu: int | None = None,
+        mac_address: str | None = None,
+        speed: int | None = None,
+        wwn: str | None = None,
+        mgmt_only: bool | None = None,
+        description: str | None = None,
+        mark_connected: bool | None = None,
+        mode: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> InterfacePb:
         """Create a new Interface protobuf message."""
         manufacturer = convert_to_protobuf(
@@ -333,20 +331,20 @@ class IPAddress:
 
     def __new__(
         cls,
-        address: _Optional[str] = None,
-        interface: _Optional[_Union[str, Interface, InterfacePb]] = None,
-        device: _Optional[_Union[str, Device, DevicePb]] = None,
-        device_type: _Optional[_Union[str, DeviceType, DeviceTypePb]] = None,
-        device_role: _Optional[_Union[str, Role, RolePb]] = None,
-        platform: _Optional[_Union[str, Platform, PlatformPb]] = None,
-        manufacturer: _Optional[_Union[str, Manufacturer, ManufacturerPb]] = None,
-        site: _Optional[_Union[str, SitePb]] = None,
-        status: _Optional[str] = None,
-        role: _Optional[str] = None,
-        dns_name: _Optional[str] = None,
-        description: _Optional[str] = None,
-        comments: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        address: str | None = None,
+        interface: str | Interface | InterfacePb | None = None,
+        device: str | Device | DevicePb | None = None,
+        device_type: str | DeviceType | DeviceTypePb | None = None,
+        device_role: str | Role | RolePb | None = None,
+        platform: str | Platform | PlatformPb | None = None,
+        manufacturer: str | Manufacturer | ManufacturerPb | None = None,
+        site: str | SitePb | None = None,
+        status: str | None = None,
+        role: str | None = None,
+        dns_name: str | None = None,
+        description: str | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> IPAddressPb:
         """Create a new IPAddress protobuf message."""
         manufacturer = convert_to_protobuf(
@@ -416,14 +414,14 @@ class Prefix:
 
     def __new__(
         cls,
-        prefix: _Optional[str] = None,
-        site: _Optional[_Union[str, SitePb]] = None,
-        status: _Optional[str] = None,
-        is_pool: _Optional[bool] = None,
-        mark_utilized: _Optional[bool] = None,
-        description: _Optional[str] = None,
-        comments: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        prefix: str | None = None,
+        site: str | SitePb | None = None,
+        status: str | None = None,
+        is_pool: bool | None = None,
+        mark_utilized: bool | None = None,
+        description: str | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> PrefixPb:
         """Create a new Prefix protobuf message."""
         site = convert_to_protobuf(site, SitePb, name=site)
@@ -448,14 +446,14 @@ class Site:
 
     def __new__(
         cls,
-        name: _Optional[str] = None,
-        slug: _Optional[str] = None,
-        status: _Optional[str] = None,
-        facility: _Optional[str] = None,
-        time_zone: _Optional[str] = None,
-        description: _Optional[str] = None,
-        comments: _Optional[str] = None,
-        tags: _Optional[list[_Union[str, Tag, TagPb]]] = None,
+        name: str | None = None,
+        slug: str | None = None,
+        status: str | None = None,
+        facility: str | None = None,
+        time_zone: str | None = None,
+        description: str | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
     ) -> SitePb:
         """Create a new Site protobuf message."""
         if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
@@ -478,16 +476,16 @@ class Entity:
 
     def __new__(
         cls,
-        site: _Optional[_Union[str, Site, SitePb]] = None,
-        platform: _Optional[_Union[str, Platform, PlatformPb]] = None,
-        manufacturer: _Optional[_Union[str, Manufacturer, ManufacturerPb]] = None,
-        device: _Optional[_Union[str, Device, DevicePb]] = None,
-        device_role: _Optional[_Union[str, Role, RolePb]] = None,
-        device_type: _Optional[_Union[str, DeviceType, DeviceTypePb]] = None,
-        interface: _Optional[_Union[str, Interface, InterfacePb]] = None,
-        ip_address: _Optional[_Union[str, IPAddress, IPAddressPb]] = None,
-        prefix: _Optional[_Union[str, Prefix, PrefixPb]] = None,
-        timestamp: _Optional[_timestamp_pb2.Timestamp] = None,
+        site: str | Site | SitePb | None = None,
+        platform: str | Platform | PlatformPb | None = None,
+        manufacturer: str | Manufacturer | ManufacturerPb | None = None,
+        device: str | Device | DevicePb | None = None,
+        device_role: str | Role | RolePb | None = None,
+        device_type: str | DeviceType | DeviceTypePb | None = None,
+        interface: str | Interface | InterfacePb | None = None,
+        ip_address: str | IPAddress | IPAddressPb | None = None,
+        prefix: str | Prefix | PrefixPb | None = None,
+        timestamp: _timestamp_pb2.Timestamp | None = None,
     ):
         """Create a new Entity protobuf message."""
         site = convert_to_protobuf(site, SitePb, name=site)
