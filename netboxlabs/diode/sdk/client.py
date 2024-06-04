@@ -5,9 +5,9 @@ import collections
 import logging
 import os
 import platform
-import urllib
 import uuid
 from collections.abc import Iterable
+from urllib.parse import urlparse
 
 import certifi
 import grpc
@@ -43,7 +43,7 @@ def _get_api_key(api_key: str | None = None) -> str:
 
 def parse_target(target: str) -> tuple[str, str, bool]:
     """Parse the target into authority, path and tls_verify."""
-    parsed_target = urllib.parse.urlparse(target)
+    parsed_target = urlparse(target)
 
     if parsed_target.scheme not in ["grpc", "grpcs"]:
         raise ValueError("target should start with grpc:// or grpcs://")

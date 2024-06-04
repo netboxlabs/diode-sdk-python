@@ -132,10 +132,8 @@ from netboxlabs.diode.sdk.ingester import (
     DeviceType,
     Entity,
     Interface,
-    IPAddress,
     Manufacturer,
     Platform,
-    Prefix,
     Role,
     Site,
 )
