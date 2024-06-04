@@ -27,6 +27,8 @@ pip install netboxlabs-diode-sdk
 
 ### Example
 
+* `target` should be the address of the Diode service, e.g. `localhost:8081`, without the scheme.
+
 ```python
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
