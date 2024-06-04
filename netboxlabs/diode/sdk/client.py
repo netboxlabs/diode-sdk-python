@@ -6,7 +6,7 @@ import logging
 import os
 import platform
 import uuid
-from typing import Iterable, Optional, Union
+from collections.abc import Iterable
 
 import certifi
 import grpc
@@ -24,12 +24,14 @@ _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
 
 
-def _certs() -> bytes:
+def _load_certs() -> bytes:
+    """Loads cacert.pem."""
     with open(certifi.where(), "rb") as f:
         return f.read()
 
 
-def _api_key(api_key: Optional[str] = None) -> str:
+def _get_api_key(api_key: str | None = None) -> str:
+    """Get API Key either from provided value or environment variable."""
     if api_key is None:
         api_key = os.getenv(_DIODE_API_KEY_ENVVAR_NAME)
     if api_key is None:
@@ -39,7 +41,8 @@ def _api_key(api_key: Optional[str] = None) -> str:
     return api_key
 
 
-def _tls_verify(tls_verify: Optional[bool]) -> bool:
+def _get_tls_verify(tls_verify: bool | None) -> bool:
+    """Get TLS Verify either from provided value or environment variable."""
     if tls_verify is None:
         tls_verify_env_var = os.getenv(_DIODE_TLS_VERIFY_ENVVAR_NAME, "false")
         return tls_verify_env_var.lower() in ["true", "1", "yes"]
@@ -50,7 +53,7 @@ def _tls_verify(tls_verify: Optional[bool]) -> bool:
 
 
 def parse_target(target: str) -> tuple[str, str]:
-    """Parse target."""
+    """Parse the target into authority and path."""
     if target.startswith(("http://", "https://")):
         raise ValueError("target should not contain http:// or https://")
 
@@ -68,7 +71,8 @@ def parse_target(target: str) -> tuple[str, str]:
     return authority, path
 
 
-def _sentry_dsn(sentry_dsn: Optional[str] = None) -> str:
+def _get_sentry_dsn(sentry_dsn: str | None = None) -> str | None:
+    """Get Sentry DSN either from provided value or environment variable."""
     if sentry_dsn is None:
         sentry_dsn = os.getenv(_DIODE_SENTRY_DSN_ENVVAR_NAME)
     return sentry_dsn
@@ -89,7 +93,7 @@ class DiodeClient:
         target: str,
         app_name: str,
         app_version: str,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         tls_verify: bool = None,
         sentry_dsn: str = None,
         sentry_traces_sample_rate: float = 1.0,
@@ -105,23 +109,25 @@ class DiodeClient:
         self._platform = platform.platform()
         self._python_version = platform.python_version()
 
-        api_key = _api_key(api_key)
+        api_key = _get_api_key(api_key)
         self._metadata = (
             ("diode-api-key", api_key),
             ("platform", self._platform),
             ("python-version", self._python_version),
         )
 
-        self._tls_verify = _tls_verify(tls_verify)
+        self._tls_verify = _get_tls_verify(tls_verify)
 
         if self._tls_verify:
+            _LOGGER.debug("Setting up gRPC secure channel")
             self._channel = grpc.secure_channel(
                 self._target,
                 grpc.ssl_channel_credentials(
-                    root_certificates=_certs(),
+                    root_certificates=_load_certs(),
                 ),
             )
         else:
+            _LOGGER.debug("Setting up gRPC insecure channel")
             self._channel = grpc.insecure_channel(
                 target=self._target,
             )
@@ -129,6 +135,7 @@ class DiodeClient:
         channel = self._channel
 
         if self._path:
+            _LOGGER.debug(f"Setting up gRPC interceptor for path: {self._path}")
             rpc_method_interceptor = DiodeMethodClientInterceptor(subpath=self._path)
 
             intercept_channel = grpc.intercept_channel(
@@ -138,9 +145,10 @@ class DiodeClient:
 
         self._stub = ingester_pb2_grpc.IngesterServiceStub(channel)
 
-        self._sentry_dsn = _sentry_dsn(sentry_dsn)
+        self._sentry_dsn = _get_sentry_dsn(sentry_dsn)
 
         if self._sentry_dsn is not None:
+            _LOGGER.debug("Setting up Sentry")
             self._setup_sentry(
                 self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate
             )
@@ -199,8 +207,8 @@ class DiodeClient:
 
     def ingest(
         self,
-        entities: Iterable[Optional[Union[Entity, ingester_pb2.Entity]]],
-        stream: Optional[str] = _DEFAULT_STREAM,
+        entities: Iterable[Entity | ingester_pb2.Entity | None],
+        stream: str | None = _DEFAULT_STREAM,
     ) -> ingester_pb2.IngestResponse:
         """Ingest entities."""
         try:
@@ -250,7 +258,12 @@ class _ClientCallDetails(
     ),
     grpc.ClientCallDetails,
 ):
-    """Client Call Details."""
+    """
+    _ClientCallDetails class.
+
+    This class describes an RPC to be invoked and is required for custom gRPC interceptors.
+
+    """
 
     pass
 
@@ -258,7 +271,17 @@ class _ClientCallDetails(
 class DiodeMethodClientInterceptor(
     grpc.UnaryUnaryClientInterceptor, grpc.StreamUnaryClientInterceptor
 ):
-    """Diode Method Client Interceptor."""
+    """
+    Diode Method Client Interceptor class.
+
+    This class is used to intercept the client calls and modify the method details. It inherits from
+    grpc.UnaryUnaryClientInterceptor and grpc.StreamUnaryClientInterceptor.
+
+    Diode's default method generated from Protocol Buffers definition is /diode.v1.IngesterService/Ingest and in order
+    to use Diode targets with path (i.e. localhost:8081/this/is/custom/path), this interceptor is used to modify the
+    method details, by prepending the generated method name with the path extracted from initial target.
+
+    """
 
     def __init__(self, subpath):
         """Initiate a new interceptor."""
