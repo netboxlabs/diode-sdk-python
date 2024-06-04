@@ -2,11 +2,13 @@
 
 Diode SDK Python is a Python library for interacting with the Diode ingestion service utilizing gRPC.
 
-Diode is a new [NetBox](https://netboxlabs.com/oss/netbox/) ingestion service that greatly simplifies and enhances the process to add and update network data
+Diode is a new [NetBox](https://netboxlabs.com/oss/netbox/) ingestion service that greatly simplifies and enhances the
+process to add and update network data
 in NetBox, ensuring your network source of truth is always accurate and can be trusted to power your network automation
 pipelines.
 
-More information about Diode can be found at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/](https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/).
+More information about Diode can be found
+at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/](https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/).
 
 ## Installation
 
@@ -35,10 +37,10 @@ from netboxlabs.diode.sdk.ingester import (
 
 def main():
     with DiodeClient(
-        target="localhost:8081",
-        app_name="my-test-app",
-        app_version="0.0.1",
-        tls_verify=False,
+            target="localhost:8081",
+            app_name="my-test-app",
+            app_version="0.0.1",
+            tls_verify=False,
     ) as client:
         entities = []
 
@@ -85,9 +87,20 @@ if __name__ == "__main__":
 
 ## Development notes
 
+Code in `netboxlabs/diode/sdk/diode/*` are generated from Protocol Buffers definitions (will be published and referred
+here soon).
+
+#### Linting
+
 ```shell
 ruff netboxlabs/
 black netboxlabs/
+```
+
+#### Testing
+
+```shell
+pytest tests/
 ```
 
 ## License
