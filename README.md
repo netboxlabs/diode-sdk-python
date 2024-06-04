@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
 ## Development notes
 
-Code in `netboxlabs/diode/sdk/diode/*` are generated from Protocol Buffers definitions (will be published and referred
+Code in `netboxlabs/diode/sdk/diode/*` is generated from Protocol Buffers definitions (will be published and referred
 here soon).
 
 #### Linting
