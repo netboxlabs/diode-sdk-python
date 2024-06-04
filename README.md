@@ -26,7 +26,8 @@ pip install netboxlabs-diode-sdk
 
 ### Example
 
-* `target` should be the address of the Diode service, e.g. `localhost:8081`, without the scheme.
+* `target` should be the address of the Diode service, e.g. `grpc://localhost:8081` for insecure connection
+  or `grpcs://example.com` for secure connection.
 
 ```python
 from netboxlabs.diode.sdk import DiodeClient
