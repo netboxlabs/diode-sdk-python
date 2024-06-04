@@ -39,9 +39,9 @@ from netboxlabs.diode.sdk.ingester import (
 
 def main():
     with DiodeClient(
-            target="grpc://localhost:8081",
-            app_name="my-test-app",
-            app_version="0.0.1",
+        target="grpc://localhost:8081",
+        app_name="my-test-app",
+        app_version="0.0.1",
     ) as client:
         entities = []
 
