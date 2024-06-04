@@ -5,6 +5,7 @@ import collections
 import logging
 import os
 import platform
+import urllib
 import uuid
 from collections.abc import Iterable
 
@@ -17,7 +18,6 @@ from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity
 
 _DIODE_API_KEY_ENVVAR_NAME = "DIODE_API_KEY"
-_DIODE_TLS_VERIFY_ENVVAR_NAME = "DIODE_TLS_VERIFY"
 _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _DEFAULT_STREAM = "latest"
@@ -41,34 +41,21 @@ def _get_api_key(api_key: str | None = None) -> str:
     return api_key
 
 
-def _get_tls_verify(tls_verify: bool | None) -> bool:
-    """Get TLS Verify either from provided value or environment variable."""
-    if tls_verify is None:
-        tls_verify_env_var = os.getenv(_DIODE_TLS_VERIFY_ENVVAR_NAME, "false")
-        return tls_verify_env_var.lower() in ["true", "1", "yes"]
-    if not isinstance(tls_verify, bool):
-        raise DiodeConfigError("tls_verify must be a boolean")
+def parse_target(target: str) -> tuple[str, str, bool]:
+    """Parse the target into authority, path and tls_verify."""
+    parsed_target = urllib.parse.urlparse(target)
 
-    return tls_verify
+    if parsed_target.scheme not in ["grpc", "grpcs"]:
+        raise ValueError("target should start with grpc:// or grpcs://")
 
+    tls_verify = parsed_target.scheme == "grpcs"
 
-def parse_target(target: str) -> tuple[str, str]:
-    """Parse the target into authority and path."""
-    if target.startswith(("http://", "https://")):
-        raise ValueError("target should not contain http:// or https://")
-
-    parts = [str(part) for part in target.split("/") if part != ""]
-
-    authority = ":".join([str(part) for part in parts[0].split(":") if part != ""])
+    authority = parsed_target.netloc
 
     if ":" not in authority:
         authority += ":443"
 
-    path = ""
-    if len(parts) > 1:
-        path = "/" + "/".join(parts[1:])
-
-    return authority, path
+    return authority, parsed_target.path, tls_verify
 
 
 def _get_sentry_dsn(sentry_dsn: str | None = None) -> str | None:
@@ -94,7 +81,6 @@ class DiodeClient:
         app_name: str,
         app_version: str,
         api_key: str | None = None,
-        tls_verify: bool = None,
         sentry_dsn: str = None,
         sentry_traces_sample_rate: float = 1.0,
         sentry_profiles_sample_rate: float = 1.0,
@@ -103,7 +89,7 @@ class DiodeClient:
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
-        self._target, self._path = parse_target(target)
+        self._target, self._path, self._tls_verify = parse_target(target)
         self._app_name = app_name
         self._app_version = app_version
         self._platform = platform.platform()
@@ -115,8 +101,6 @@ class DiodeClient:
             ("platform", self._platform),
             ("python-version", self._python_version),
         )
-
-        self._tls_verify = _get_tls_verify(tls_verify)
 
         if self._tls_verify:
             _LOGGER.debug("Setting up gRPC secure channel")

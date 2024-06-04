@@ -21,7 +21,6 @@ pip install netboxlabs-diode-sdk
 ### Environment variables
 
 * `DIODE_API_KEY` - API key for the Diode service
-* `DIODE_TLS_VERIFY` - Verify TLS certificate
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
 
@@ -39,10 +38,9 @@ from netboxlabs.diode.sdk.ingester import (
 
 def main():
     with DiodeClient(
-            target="localhost:8081",
+            target="grpc://localhost:8081",
             app_name="my-test-app",
             app_version="0.0.1",
-            tls_verify=False,
     ) as client:
         entities = []
 

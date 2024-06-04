@@ -1,42 +1,22 @@
 #!/usr/bin/env python
 # Copyright 2024 NetBox Labs Inc
 """NetBox Labs, Diode - SDK - ingester protobuf message wrappers."""
-
 from typing import Any
 
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 
+# ruff: noqa: I001
 from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Device as DevicePb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     DeviceType as DeviceTypePb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Entity as EntityPb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
-    Interface as InterfacePb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     IPAddress as IPAddressPb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
+    Interface as InterfacePb,
     Manufacturer as ManufacturerPb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Platform as PlatformPb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Prefix as PrefixPb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Role as RolePb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Site as SitePb,
-)
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Tag as TagPb,
 )
 
