@@ -4,6 +4,10 @@ on:
   push:
     branches: [ release ]
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 env:
   GH_TOKEN: ${{ secrets.ORB_CI_GH_TOKEN }}
   SEMANTIC_RELEASE_PACKAGE: ${{ github.repository }}
@@ -15,6 +19,7 @@ jobs:
   get-next-version:
     name: Semantic release get next version
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -97,6 +102,7 @@ jobs:
   confirm-version:
     name: Next version ${{ needs.get-next-version.outputs.new-release-version }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: get-next-version
     if: needs.get-next-version.outputs.new-release-published == 'true'
     steps:
@@ -107,6 +113,7 @@ jobs:
     name: Build
     needs: [ get-next-version ]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       id-token: write
       contents: read
@@ -149,6 +156,7 @@ jobs:
     name: Semantic release
     needs: [ build ]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

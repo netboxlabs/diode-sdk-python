@@ -6,12 +6,17 @@ on:
     branches:
       - "!release"
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       matrix:
-        python: [ "3.11" ]
+        python: [ "3.10", "3.11" ]
     steps:
       - uses: actions/checkout@v4
 
