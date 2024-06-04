@@ -3,7 +3,7 @@ name = "netboxlabs-diode-sdk"
 version = "0.0.1"  # Overwritten during the build process
 description = "NetBox Labs, Diode SDK"
 readme = "README.md" # Optional
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = {file = "LICENSE.txt"}
 authors = [
     {name = "NetBox Labs", email = "support@netboxlabs.com" } # Optional
@@ -13,14 +13,12 @@ maintainers = [
 ]
 
 classifiers = [  # Optional
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
 ]
