@@ -5,7 +5,7 @@ Diode SDK Python is a Python library for interacting with the Diode ingestion se
 Diode is a new [NetBox](https://netboxlabs.com/oss/netbox/) ingestion service that greatly simplifies and enhances the
 process to add and update network data
 in NetBox, ensuring your network source of truth is always accurate and can be trusted to power your network automation
-pipelines.
+pipelines. 
 
 More information about Diode can be found
 at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/](https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/).
