@@ -16,6 +16,18 @@ env:
   PYTHON_PACKAGE_NAME: netboxlabs-diode-sdk
 
 jobs:
+  get-python-package-name:
+    name: Get Python package name
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python package name
+        id: python-package-name
+        run: echo "python-package-name=${{ env.PYTHON_PACKAGE_NAME }}" >> "$GITHUB_OUTPUT"
+    outputs:
+        python-package-name: ${{ steps.python-package-name.outputs.python-package-name }}
+
   get-next-version:
     name: Semantic release get next version
     runs-on: ubuntu-latest
@@ -111,7 +123,7 @@ jobs:
 
   build:
     name: Build
-    needs: [ get-next-version ]
+    needs: [ get-python-package-name, get-next-version ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -121,7 +133,7 @@ jobs:
       BUILD_VERSION: ${{ needs.get-next-version.outputs.new-release-version }}
       BUILD_TRACK: release
       BUILD_COMMIT: ${{ needs.get-next-version.outputs.short-sha }}
-      OUTPUT_FILENAME: ${{ env.PYTHON_PACKAGE_NAME }}-${{ needs.get-next-version.outputs.new-release-version }}.tar.gz
+      OUTPUT_FILENAME: ${{ needs.get-python-package-name.outputs.python-package-name }}-${{ needs.get-next-version.outputs.new-release-version }}.tar.gz
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
