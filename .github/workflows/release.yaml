@@ -144,13 +144,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PYTHON_PACKAGE_NAME }}-${{ env.BUILD_VERSION }}.tar.gz
-          path: ./dist/${{ env.PYTHON_PACKAGE_NAME }}-${{ env.BUILD_VERSION }}.tar.gz
+          path: dist/${{ env.PYTHON_PACKAGE_NAME }}-${{ env.BUILD_VERSION }}.tar.gz
           retention-days: 30
           if-no-files-found: error
       - name: Publish release distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: ./dist
+          packages-dir: dist
 
   semantic-release:
     name: Semantic release
