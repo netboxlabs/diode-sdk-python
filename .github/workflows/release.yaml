@@ -178,7 +178,62 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "21.4.0"
+          node-version: "lts/*"
+      - name: Write package.json
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: ./package.json
+          write-mode: overwrite
+          contents: |
+            {
+              "name": "${{ env.APP_NAME }}",
+              "version": "1.0.0",
+              "devDependencies": {
+                "semantic-release-export-data": "^1.0.1",
+                "@semantic-release/changelog": "^6.0.3"
+              }
+            }
+      - name: Write .releaserc.json
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: ./.releaserc.json
+          write-mode: overwrite
+          contents: |
+            {
+              "branches": "release",
+              "repositoryUrl": "https://github.com/netboxlabs/diode-sdk-python",
+              "debug": "true",
+              "tagFormat": "v${version}",
+              "plugins": [
+                ["semantic-release-export-data"],
+                ["@semantic-release/commit-analyzer", {
+                  "releaseRules": [
+                    { "message": "*", "release": "patch"},
+                    { "message": "fix*", "release": "patch" },
+                    { "message": "feat*", "release": "minor" },
+                    { "message": "perf*",  "release": "major" }
+                  ]
+                }],
+                "@semantic-release/release-notes-generator",
+                [
+                  "@semantic-release/changelog",
+                  {
+                    "changelogFile": "CHANGELOG.md",
+                    "changelogTitle": "# Semantic Versioning Changelog"
+                  }
+                ],
+                [
+                  "@semantic-release/github",
+                  {
+                    "assets": [
+                      {
+                        "path": "release/**"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
       - name: setup semantic-release
         run: npm i
       - name: Release
