@@ -4,6 +4,9 @@
 
 # ruff: noqa: I001
 from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
+    Cluster as ClusterPb,
+    ClusterGroup as ClusterGroupPb,
+    ClusterType as ClusterTypePb,
     Device as DevicePb,
     DeviceType as DeviceTypePb,
     Entity as EntityPb,
@@ -15,8 +18,14 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Role as RolePb,
     Site as SitePb,
     Tag as TagPb,
+    VirtualDisk as VirtualDiskPb,
+    VirtualInterface as VirtualInterfacePb,
+    VirtualMachine as VirtualMachinePb,
 )
 from netboxlabs.diode.sdk.ingester import (
+    Cluster,
+    ClusterGroup,
+    ClusterType,
     Device,
     DeviceType,
     Entity,
@@ -28,6 +37,9 @@ from netboxlabs.diode.sdk.ingester import (
     Role,
     Site,
     Tag,
+    VirtualDisk,
+    VirtualInterface,
+    VirtualMachine,
     convert_to_protobuf,
 )
 
@@ -471,6 +483,61 @@ def test_prefix_instantiation_with_all_fields():
         assert isinstance(tag, TagPb)
 
 
+def test_cluster_group_instantiation_with_all_fields():
+    """Check ClusterGroup instantiation with all fields."""
+    cluster_group = ClusterGroup(
+        name="Group",
+        slug="Group",
+        description="Cluster group",
+        tags=["clusters", "grouping"],
+    )
+    assert isinstance(cluster_group, ClusterGroupPb)
+    assert cluster_group.name == "Group"
+    assert cluster_group.slug == "group"
+    assert cluster_group.description == "Cluster group"
+    assert len(cluster_group.tags) == 2
+    for tag in cluster_group.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_cluster_type_instantiation_with_all_fields():
+    """Check ClusterType instantiation with all fields."""
+    cluster_type = ClusterType(
+        name="VMWare",
+        slug="vmware",
+        description="Cluster type for virtual machine",
+        tags=["clusters", "types"],
+    )
+    assert isinstance(cluster_type, ClusterTypePb)
+    assert cluster_type.name == "VMWare"
+    assert cluster_type.slug == "vmware"
+    assert cluster_type.description == "Cluster type for virtual machine"
+    assert len(cluster_type.tags) == 2
+    for tag in cluster_type.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_cluster_instantiation_with_all_fields():
+    """Check Cluster instantiation with all fields."""
+    cluster = Cluster(
+        name="gc-us-east1",
+        status="active",
+        cluster_group=ClusterGroup(name="North America"),
+        cluster_type="Google Cloud",
+        description="Cluster on gc us east",
+        tags=["us", "gc"],
+    )
+    assert isinstance(cluster, ClusterPb)
+    assert isinstance(cluster.cluster_group, ClusterGroupPb)
+    assert isinstance(cluster.cluster_type, ClusterTypePb)
+    assert cluster.name == "gc-us-east1"
+    assert cluster.status == "active"
+    assert cluster.description == "Cluster on gc us east"
+    assert len(cluster.tags) == 2
+    for tag in cluster.tags:
+        assert isinstance(tag, TagPb)
+
+
 def test_site_instantiation_with_all_fields():
     """Check Site instantiation with all fields."""
     site = Site(
@@ -578,3 +645,63 @@ def test_entity_instantiation_with_prefix():
     assert isinstance(entity, EntityPb)
     assert isinstance(entity.prefix, PrefixPb)
     assert entity.prefix.prefix == "192.168.0.0/24"
+
+
+def test_entity_instantiation_with_cluster_group():
+    """Check Entity instantiation with cluster group."""
+    entity = Entity(
+        cluster_group="ClusterGroup1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.cluster_group, ClusterGroupPb)
+    assert entity.cluster_group.name == "ClusterGroup1"
+
+
+def test_entity_instantiation_with_cluster_type():
+    """Check Entity instantiation with cluster type."""
+    entity = Entity(
+        cluster_type="ClusterType1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.cluster_type, ClusterTypePb)
+    assert entity.cluster_type.name == "ClusterType1"
+
+
+def test_entity_instantiation_with_cluster():
+    """Check Entity instantiation with cluster."""
+    entity = Entity(
+        cluster="Cluster1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.cluster, ClusterPb)
+    assert entity.cluster.name == "Cluster1"
+
+
+def test_entity_instantiation_with_virtual_machine():
+    """Check Entity instantiation with virtual machine."""
+    entity = Entity(
+        virtual_machine="VM1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.virtual_machine, VirtualMachinePb)
+    assert entity.virtual_machine.name == "VM1"
+
+
+def test_entity_instantiation_with_virtual_disk():
+    """Check Entity instantiation with virtual disk."""
+    entity = Entity(
+        virtual_disk="VirtualDisk1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.virtual_disk, VirtualDiskPb)
+    assert entity.virtual_disk.name == "VirtualDisk1"
+
+
+def test_entity_instantiation_with_virtual_interface():
+    """Check Entity instantiation with virtual interface."""
+    entity = Entity(
+        virtual_interface="VirtualInterface1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.virtual_interface, VirtualInterfacePb)
+    assert entity.virtual_interface.name == "VirtualInterface1"
