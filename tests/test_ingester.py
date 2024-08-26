@@ -487,7 +487,7 @@ def test_cluster_group_instantiation_with_all_fields():
     """Check ClusterGroup instantiation with all fields."""
     cluster_group = ClusterGroup(
         name="Group",
-        slug="Group",
+        slug="group",
         description="Cluster group",
         tags=["clusters", "grouping"],
     )
@@ -524,14 +524,17 @@ def test_cluster_instantiation_with_all_fields():
         status="active",
         cluster_group=ClusterGroup(name="North America"),
         cluster_type="Google Cloud",
+        site="Site1",
         description="Cluster on gc us east",
         tags=["us", "gc"],
     )
     assert isinstance(cluster, ClusterPb)
     assert isinstance(cluster.cluster_group, ClusterGroupPb)
     assert isinstance(cluster.cluster_type, ClusterTypePb)
+    assert isinstance(cluster.site, SitePb)
     assert cluster.name == "gc-us-east1"
     assert cluster.status == "active"
+    assert cluster.site.name == "Site1"
     assert cluster.description == "Cluster on gc us east"
     assert len(cluster.tags) == 2
     for tag in cluster.tags:
