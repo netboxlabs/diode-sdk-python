@@ -7,6 +7,9 @@ from google.protobuf import timestamp_pb2 as _timestamp_pb2
 
 # ruff: noqa: I001
 from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
+    Cluster as ClusterPb,
+    ClusterGroup as ClusterGroupPb,
+    ClusterType as ClusterTypePb,
     Device as DevicePb,
     DeviceType as DeviceTypePb,
     Entity as EntityPb,
@@ -18,6 +21,9 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Role as RolePb,
     Site as SitePb,
     Tag as TagPb,
+    VirtualDisk as VirtualDiskPb,
+    VirtualInterface as VirtualInterfacePb,
+    VirtualMachine as VirtualMachinePb,
 )
 
 
@@ -451,6 +457,205 @@ class Site:
         )
 
 
+class ClusterGroup:
+    """ClusterGroup message wrapper."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        slug: str | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
+    ) -> ClusterGroupPb:
+        """Create a new cluster group protobuf message."""
+        if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
+            tags = [TagPb(name=tag) for tag in tags]
+
+        return ClusterGroupPb(
+            name=name,
+            slug=slug,
+            description=description,
+            tags=tags,
+        )
+
+
+class ClusterType:
+    """ClusterType message wrapper."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        slug: str | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
+    ) -> ClusterTypePb:
+        """Create a new cluster type protobuf message."""
+        if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
+            tags = [TagPb(name=tag) for tag in tags]
+
+        return ClusterTypePb(
+            name=name,
+            slug=slug,
+            description=description,
+            tags=tags,
+        )
+
+
+class Cluster:
+    """Cluster message wrapper."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        cluster_group: str | ClusterGroup | ClusterGroupPb | None = None,
+        cluster_type: str | ClusterType | ClusterTypePb | None = None,
+        site: str | SitePb | None = None,
+        status: str | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
+    ) -> ClusterPb:
+        """Create a new cluster protobuf message."""
+        cluster_group = convert_to_protobuf(
+            cluster_group, ClusterGroupPb, name=cluster_group
+        )
+
+        cluster_type = convert_to_protobuf(
+            cluster_type, ClusterTypePb, name=cluster_type
+        )
+
+        site = convert_to_protobuf(site, SitePb, name=site)
+
+        if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
+            tags = [TagPb(name=tag) for tag in tags]
+
+        return ClusterPb(
+            name=name,
+            cluster_group=cluster_group,
+            cluster_type=cluster_type,
+            status=status,
+            description=description,
+            tags=tags,
+        )
+
+
+class VirtualMachine:
+    """VirtualMachine message wrapper."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        status: str | None = None,
+        site: str | Site | SitePb | None = None,
+        cluster: str | Cluster | ClusterPb | None = None,
+        role: str | Role | RolePb | None = None,
+        device: str | Device | DevicePb | None = None,
+        platform: str | Platform | PlatformPb | None = None,
+        primary_ip4: str | IPAddressPb | None = None,
+        primary_ip6: str | IPAddressPb | None = None,
+        vcpus: int | None = None,
+        memory: int | None = None,
+        disk: int | None = None,
+        description: str | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
+    ) -> VirtualMachinePb:
+        """Create a new virtual machine protobuf message."""
+        site = convert_to_protobuf(site, SitePb, name=site)
+
+        cluster = convert_to_protobuf(cluster, ClusterPb, name=cluster)
+
+        role = convert_to_protobuf(role, RolePb, name=role)
+
+        platform = convert_to_protobuf(platform, PlatformPb, name=platform)
+
+        device = convert_to_protobuf(
+            device, DevicePb, name=device, platform=platform, site=site, role=role
+        )
+
+        primary_ip4 = convert_to_protobuf(primary_ip4, IPAddressPb, address=primary_ip4)
+        primary_ip6 = convert_to_protobuf(primary_ip6, IPAddressPb, address=primary_ip6)
+
+        if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
+            tags = [TagPb(name=tag) for tag in tags]
+
+        return VirtualMachinePb(
+            name=name,
+            status=status,
+            site=site,
+            role=role,
+            device=device,
+            platform=platform,
+            primary_ip4=primary_ip4,
+            primary_ip6=primary_ip6,
+            vcpus=vcpus,
+            memory=memory,
+            disk=disk,
+            description=description,
+            comments=comments,
+            tags=tags,
+        )
+
+
+class VirtualDisk:
+    """VirtualDisk message wrapper."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        virtual_machine: str | VirtualMachine | VirtualMachinePb | None = None,
+        size: int | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
+    ) -> VirtualDiskPb:
+        """Create a new virtual disk protobuf message."""
+        virtual_machine = convert_to_protobuf(
+            virtual_machine, VirtualMachinePb, name=virtual_machine
+        )
+
+        if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
+            tags = [TagPb(name=tag) for tag in tags]
+
+        return VirtualDiskPb(
+            name=name,
+            virtual_machine=virtual_machine,
+            size=size,
+            description=description,
+            tags=tags,
+        )
+
+
+class VirtualInterface:
+    """VirtualInterface message wrapper."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        virtual_machine: str | VirtualMachine | VirtualMachinePb | None = None,
+        enabled: bool | None = None,
+        mtu: int | None = None,
+        mac_address: str | None = None,
+        description: str | None = None,
+        tags: list[str | Tag | TagPb] | None = None,
+    ) -> VirtualInterfacePb:
+        """Create a new virtual interface protobuf message."""
+        virtual_machine = convert_to_protobuf(
+            virtual_machine, VirtualMachinePb, name=virtual_machine
+        )
+
+        if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
+            tags = [TagPb(name=tag) for tag in tags]
+
+        return VirtualInterfacePb(
+            name=name,
+            virtual_machine=virtual_machine,
+            enabled=enabled,
+            mtu=mtu,
+            mac_address=mac_address,
+            description=description,
+            tags=tags,
+        )
+
+
 class Entity:
     """Entity message wrapper."""
 
@@ -465,6 +670,12 @@ class Entity:
         interface: str | Interface | InterfacePb | None = None,
         ip_address: str | IPAddress | IPAddressPb | None = None,
         prefix: str | Prefix | PrefixPb | None = None,
+        cluster_group: str | ClusterGroup | ClusterGroupPb | None = None,
+        cluster_type: str | ClusterType | ClusterTypePb | None = None,
+        cluster: str | Cluster | ClusterPb | None = None,
+        virtual_disk: str | VirtualDisk | VirtualDiskPb | None = None,
+        virtual_interface: str | VirtualInterface | VirtualInterfacePb | None = None,
+        virtual_machine: str | VirtualMachine | VirtualMachinePb | None = None,
         timestamp: _timestamp_pb2.Timestamp | None = None,
     ):
         """Create a new Entity protobuf message."""
@@ -479,6 +690,22 @@ class Entity:
         ip_address = convert_to_protobuf(ip_address, IPAddressPb, address=ip_address)
         interface = convert_to_protobuf(interface, InterfacePb, name=interface)
         prefix = convert_to_protobuf(prefix, PrefixPb, prefix=prefix)
+        cluster_group = convert_to_protobuf(
+            cluster_group, ClusterGroupPb, name=cluster_group
+        )
+        cluster_type = convert_to_protobuf(
+            cluster_type, ClusterTypePb, name=cluster_type
+        )
+        cluster = convert_to_protobuf(cluster, ClusterPb, name=cluster)
+        virtual_disk = convert_to_protobuf(
+            virtual_disk, VirtualDiskPb, name=virtual_disk
+        )
+        virtual_interface = convert_to_protobuf(
+            virtual_interface, VirtualInterfacePb, name=virtual_interface
+        )
+        virtual_machine = convert_to_protobuf(
+            virtual_machine, VirtualMachinePb, name=virtual_machine
+        )
 
         return EntityPb(
             site=site,
@@ -490,5 +717,11 @@ class Entity:
             interface=interface,
             ip_address=ip_address,
             prefix=prefix,
+            cluster_group=cluster_group,
+            cluster_type=cluster_type,
+            cluster=cluster,
+            virtual_disk=virtual_disk,
+            virtual_interface=virtual_interface,
+            virtual_machine=virtual_machine,
             timestamp=timestamp,
         )
