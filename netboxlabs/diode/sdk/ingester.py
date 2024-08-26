@@ -507,21 +507,17 @@ class Cluster:
     def __new__(
         cls,
         name: str | None = None,
-        cluster_group: str | ClusterGroup | ClusterGroupPb | None = None,
-        cluster_type: str | ClusterType | ClusterTypePb | None = None,
-        site: str | SitePb | None = None,
+        group: str | ClusterGroup | ClusterGroupPb | None = None,
+        type: str | ClusterType | ClusterTypePb | None = None,
+        site: str | Site | SitePb | None = None,
         status: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | TagPb] | None = None,
     ) -> ClusterPb:
         """Create a new cluster protobuf message."""
-        cluster_group = convert_to_protobuf(
-            cluster_group, ClusterGroupPb, name=cluster_group
-        )
+        group = convert_to_protobuf(group, ClusterGroupPb, name=group)
 
-        cluster_type = convert_to_protobuf(
-            cluster_type, ClusterTypePb, name=cluster_type
-        )
+        type = convert_to_protobuf(type, ClusterTypePb, name=type)
 
         site = convert_to_protobuf(site, SitePb, name=site)
 
@@ -530,8 +526,9 @@ class Cluster:
 
         return ClusterPb(
             name=name,
-            cluster_group=cluster_group,
-            cluster_type=cluster_type,
+            group=group,
+            type=type,
+            site=site,
             status=status,
             description=description,
             tags=tags,
@@ -562,7 +559,7 @@ class VirtualMachine:
         """Create a new virtual machine protobuf message."""
         site = convert_to_protobuf(site, SitePb, name=site)
 
-        cluster = convert_to_protobuf(cluster, ClusterPb, name=cluster)
+        cluster = convert_to_protobuf(cluster, ClusterPb, name=cluster, site=site)
 
         role = convert_to_protobuf(role, RolePb, name=role)
 

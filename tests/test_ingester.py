@@ -522,15 +522,15 @@ def test_cluster_instantiation_with_all_fields():
     cluster = Cluster(
         name="gc-us-east1",
         status="active",
-        cluster_group=ClusterGroup(name="North America"),
-        cluster_type="Google Cloud",
+        group=ClusterGroup(name="North America"),
+        type="Google Cloud",
         site="Site1",
         description="Cluster on gc us east",
         tags=["us", "gc"],
     )
     assert isinstance(cluster, ClusterPb)
-    assert isinstance(cluster.cluster_group, ClusterGroupPb)
-    assert isinstance(cluster.cluster_type, ClusterTypePb)
+    assert isinstance(cluster.group, ClusterGroupPb)
+    assert isinstance(cluster.type, ClusterTypePb)
     assert isinstance(cluster.site, SitePb)
     assert cluster.name == "gc-us-east1"
     assert cluster.status == "active"
@@ -538,6 +538,85 @@ def test_cluster_instantiation_with_all_fields():
     assert cluster.description == "Cluster on gc us east"
     assert len(cluster.tags) == 2
     for tag in cluster.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_virtual_machine_instantiation_with_all_fields():
+    """Check VirtualMachine instantiation with all fields."""
+    virtual_machine = VirtualMachine(
+        name="vm1",
+        status="active",
+        cluster="gc-us-east1",
+        site="Site1",
+        role="admin",
+        device="dev01",
+        platform="Platform1",
+        vcpus=12,
+        memory=16572,
+        disk=1225798,
+        primary_ip4="192.168.0.1",
+        primary_ip6="2001:db8::1",
+        description="VM on google cloud",
+        tags=["vm", "gc"],
+    )
+    assert isinstance(virtual_machine, VirtualMachinePb)
+    assert isinstance(virtual_machine.cluster, ClusterPb)
+    assert isinstance(virtual_machine.site, SitePb)
+    assert isinstance(virtual_machine.role, RolePb)
+    assert isinstance(virtual_machine.device, DevicePb)
+    assert isinstance(virtual_machine.platform, PlatformPb)
+    assert isinstance(virtual_machine.primary_ip4, IPAddressPb)
+    assert isinstance(virtual_machine.primary_ip6, IPAddressPb)
+    assert virtual_machine.name == "vm1"
+    assert virtual_machine.status == "active"
+    assert virtual_machine.site.name == "Site1"
+    assert virtual_machine.device.site.name == "Site1"
+    assert virtual_machine.memory == 16572
+    assert virtual_machine.description == "VM on google cloud"
+    assert len(virtual_machine.tags) == 2
+    for tag in virtual_machine.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_virtual_disk_instantiation_with_all_fields():
+    """Check VirtualDisk instantiation with all fields."""
+    virtual_disk = VirtualDisk(
+        name="Disk",
+        virtual_machine="vm1",
+        size=16512,
+        description="Virtual disk",
+        tags=["vm", "disk"],
+    )
+    assert isinstance(virtual_disk, VirtualDiskPb)
+    assert isinstance(virtual_disk.virtual_machine, VirtualMachinePb)
+    assert virtual_disk.name == "Disk"
+    assert virtual_disk.virtual_machine.name == "vm1"
+    assert virtual_disk.description == "Virtual disk"
+    assert len(virtual_disk.tags) == 2
+    for tag in virtual_disk.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_virtual_interface_instantiation_with_all_fields():
+    """Check VirtualInterface instantiation with all fields."""
+    virtual_interface = VirtualInterface(
+        name="eth01",
+        virtual_machine="vm1",
+        enabled=True,
+        mtu=1500,
+        mac_address="00:00:00:00:00:00",
+        description="Virtual interface",
+        tags=["vm", "ifce"],
+    )
+    assert isinstance(virtual_interface, VirtualInterfacePb)
+    assert isinstance(virtual_interface.virtual_machine, VirtualMachinePb)
+    assert virtual_interface.name == "eth01"
+    assert virtual_interface.virtual_machine.name == "vm1"
+    assert virtual_interface.mtu == 1500
+    assert virtual_interface.mac_address == "00:00:00:00:00:00"
+    assert virtual_interface.description == "Virtual interface"
+    assert len(virtual_interface.tags) == 2
+    for tag in virtual_interface.tags:
         assert isinstance(tag, TagPb)
 
 
