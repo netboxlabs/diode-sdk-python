@@ -147,7 +147,7 @@ class VirtualMachine(_message.Message):
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     def __init__(self, name: _Optional[str] = ..., status: _Optional[str] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., cluster: _Optional[_Union[Cluster, _Mapping]] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., platform: _Optional[_Union[Platform, _Mapping]] = ..., primary_ip4: _Optional[_Union[IPAddress, _Mapping]] = ..., primary_ip6: _Optional[_Union[IPAddress, _Mapping]] = ..., vcpus: _Optional[int] = ..., memory: _Optional[int] = ..., disk: _Optional[int] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ...) -> None: ...
 
-class VirtualInterface(_message.Message):
+class VMInterface(_message.Message):
     __slots__ = ("virtual_machine", "name", "enabled", "mtu", "mac_address", "description", "tags")
     VIRTUAL_MACHINE_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -308,7 +308,7 @@ class Tag(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ...) -> None: ...
 
 class Entity(_message.Message):
-    __slots__ = ("site", "platform", "manufacturer", "device", "device_role", "device_type", "interface", "ip_address", "prefix", "cluster_group", "cluster_type", "cluster", "virtual_machine", "virtual_interface", "virtual_disk", "timestamp")
+    __slots__ = ("site", "platform", "manufacturer", "device", "device_role", "device_type", "interface", "ip_address", "prefix", "cluster_group", "cluster_type", "cluster", "virtual_machine", "vminterface", "virtual_disk", "timestamp")
     SITE_FIELD_NUMBER: _ClassVar[int]
     PLATFORM_FIELD_NUMBER: _ClassVar[int]
     MANUFACTURER_FIELD_NUMBER: _ClassVar[int]
@@ -322,7 +322,7 @@ class Entity(_message.Message):
     CLUSTER_TYPE_FIELD_NUMBER: _ClassVar[int]
     CLUSTER_FIELD_NUMBER: _ClassVar[int]
     VIRTUAL_MACHINE_FIELD_NUMBER: _ClassVar[int]
-    VIRTUAL_INTERFACE_FIELD_NUMBER: _ClassVar[int]
+    VMINTERFACE_FIELD_NUMBER: _ClassVar[int]
     VIRTUAL_DISK_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     site: Site
@@ -338,10 +338,10 @@ class Entity(_message.Message):
     cluster_type: ClusterType
     cluster: Cluster
     virtual_machine: VirtualMachine
-    virtual_interface: VirtualInterface
+    vminterface: VMInterface
     virtual_disk: VirtualDisk
     timestamp: _timestamp_pb2.Timestamp
-    def __init__(self, site: _Optional[_Union[Site, _Mapping]] = ..., platform: _Optional[_Union[Platform, _Mapping]] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., device_role: _Optional[_Union[Role, _Mapping]] = ..., device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., interface: _Optional[_Union[Interface, _Mapping]] = ..., ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., prefix: _Optional[_Union[Prefix, _Mapping]] = ..., cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., cluster: _Optional[_Union[Cluster, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., virtual_interface: _Optional[_Union[VirtualInterface, _Mapping]] = ..., virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., timestamp: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, site: _Optional[_Union[Site, _Mapping]] = ..., platform: _Optional[_Union[Platform, _Mapping]] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., device_role: _Optional[_Union[Role, _Mapping]] = ..., device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., interface: _Optional[_Union[Interface, _Mapping]] = ..., ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., prefix: _Optional[_Union[Prefix, _Mapping]] = ..., cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., cluster: _Optional[_Union[Cluster, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., vminterface: _Optional[_Union[VMInterface, _Mapping]] = ..., virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., timestamp: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class IngestRequest(_message.Message):
     __slots__ = ("stream", "entities", "id", "producer_app_name", "producer_app_version", "sdk_name", "sdk_version")

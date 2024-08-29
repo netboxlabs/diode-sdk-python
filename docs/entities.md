@@ -1255,7 +1255,7 @@ if __name__ == "__main__":
 
 ```
 
-## Virtual Interface
+## VM Interface
 
 Attributes:
 
@@ -1273,7 +1273,7 @@ Attributes:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
-    VirtualInterface,
+    VMInterface,
     VirtualMachine,
     Cluster,
     ClusterGroup,
@@ -1296,20 +1296,20 @@ def main():
         entities = []
 
         """
-        VirtualInterface entity with only a name provided will attempt to create or update a name
+        VMInterface entity with only a name provided will attempt to create or update a name
         with the given name and placeholders (i.e. "undefined") for other nested objects types (e.g.
         VirtualMachine) required by NetBox.
         """
 
-        virtual_interface = VirtualInterface(name="Interface A")
+        vminterface = VMInterface(name="Interface A")
 
-        entities.append(Entity(virtual_interface=virtual_interface))
+        entities.append(Entity(vminterface=vminterface))
 
         """
-        VirtualInterface entity using flat data structure.
+        VMInterface entity using flat data structure.
         """
 
-        virtual_interface_flat = VirtualInterface(
+        vminterface_flat = VMInterface(
             name="Interface A",
             virtual_machine="VM A",
             enabled=True,
@@ -1319,13 +1319,13 @@ def main():
             tags=["tag 1", "tag 2"],
         )
 
-        entities.append(Entity(virtual_interface=virtual_interface_flat))
+        entities.append(Entity(vminterface=vminterface_flat))
 
         """
-        VirtualInterface entity using explicit data structure.
+        VMInterface entity using explicit data structure.
         """
 
-        virtual_interface_explicit = VirtualInterface(
+        vminterface_explicit = VMInterface(
             name="Interface A",
             virtual_machine=VirtualMachine(
                 name="VM A",
@@ -1399,7 +1399,7 @@ def main():
             tags=["tag 1", "tag 2"],
         )
 
-        entities.append(Entity(virtual_interface=virtual_interface_explicit))
+        entities.append(Entity(vminterface=vminterface_explicit))
 
         response = client.ingest(entities=entities)
         if response.errors:

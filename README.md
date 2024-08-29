@@ -90,7 +90,7 @@ if __name__ == "__main__":
 * [Cluster](./docs/entities.md#cluster)
 * [Virtual Machine](./docs/entities.md#virtual-machine)
 * [Virtual Disk](./docs/entities.md#virtual-disk)
-* [Virtual Interface](./docs/entities.md#virtual-interface)
+* [VM Interface](./docs/entities.md#vm-interface)
 
 ## Development notes
 

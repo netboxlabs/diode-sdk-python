@@ -19,7 +19,7 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Site as SitePb,
     Tag as TagPb,
     VirtualDisk as VirtualDiskPb,
-    VirtualInterface as VirtualInterfacePb,
+    VMInterface as VMInterfacePb,
     VirtualMachine as VirtualMachinePb,
 )
 from netboxlabs.diode.sdk.ingester import (
@@ -38,7 +38,7 @@ from netboxlabs.diode.sdk.ingester import (
     Site,
     Tag,
     VirtualDisk,
-    VirtualInterface,
+    VMInterface,
     VirtualMachine,
     convert_to_protobuf,
 )
@@ -597,9 +597,9 @@ def test_virtual_disk_instantiation_with_all_fields():
         assert isinstance(tag, TagPb)
 
 
-def test_virtual_interface_instantiation_with_all_fields():
-    """Check VirtualInterface instantiation with all fields."""
-    virtual_interface = VirtualInterface(
+def test_vminterface_instantiation_with_all_fields():
+    """Check VMInterface instantiation with all fields."""
+    vminterface = VMInterface(
         name="eth01",
         virtual_machine="vm1",
         enabled=True,
@@ -608,15 +608,15 @@ def test_virtual_interface_instantiation_with_all_fields():
         description="Virtual interface",
         tags=["vm", "ifce"],
     )
-    assert isinstance(virtual_interface, VirtualInterfacePb)
-    assert isinstance(virtual_interface.virtual_machine, VirtualMachinePb)
-    assert virtual_interface.name == "eth01"
-    assert virtual_interface.virtual_machine.name == "vm1"
-    assert virtual_interface.mtu == 1500
-    assert virtual_interface.mac_address == "00:00:00:00:00:00"
-    assert virtual_interface.description == "Virtual interface"
-    assert len(virtual_interface.tags) == 2
-    for tag in virtual_interface.tags:
+    assert isinstance(vminterface, VMInterfacePb)
+    assert isinstance(vminterface.virtual_machine, VirtualMachinePb)
+    assert vminterface.name == "eth01"
+    assert vminterface.virtual_machine.name == "vm1"
+    assert vminterface.mtu == 1500
+    assert vminterface.mac_address == "00:00:00:00:00:00"
+    assert vminterface.description == "Virtual interface"
+    assert len(vminterface.tags) == 2
+    for tag in vminterface.tags:
         assert isinstance(tag, TagPb)
 
 
@@ -779,11 +779,11 @@ def test_entity_instantiation_with_virtual_disk():
     assert entity.virtual_disk.name == "VirtualDisk1"
 
 
-def test_entity_instantiation_with_virtual_interface():
+def test_entity_instantiation_with_vminterface():
     """Check Entity instantiation with virtual interface."""
     entity = Entity(
-        virtual_interface="VirtualInterface1",
+        vminterface="VMInterface1",
     )
     assert isinstance(entity, EntityPb)
-    assert isinstance(entity.virtual_interface, VirtualInterfacePb)
-    assert entity.virtual_interface.name == "VirtualInterface1"
+    assert isinstance(entity.vminterface, VMInterfacePb)
+    assert entity.vminterface.name == "VMInterface1"

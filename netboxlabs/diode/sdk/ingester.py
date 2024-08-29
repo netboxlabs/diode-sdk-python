@@ -22,7 +22,7 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Site as SitePb,
     Tag as TagPb,
     VirtualDisk as VirtualDiskPb,
-    VirtualInterface as VirtualInterfacePb,
+    VMInterface as VMInterfacePb,
     VirtualMachine as VirtualMachinePb,
 )
 
@@ -621,8 +621,8 @@ class VirtualDisk:
         )
 
 
-class VirtualInterface:
-    """VirtualInterface message wrapper."""
+class VMInterface:
+    """VMInterface message wrapper."""
 
     def __new__(
         cls,
@@ -633,7 +633,7 @@ class VirtualInterface:
         mac_address: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | TagPb] | None = None,
-    ) -> VirtualInterfacePb:
+    ) -> VMInterfacePb:
         """Create a new virtual interface protobuf message."""
         virtual_machine = convert_to_protobuf(
             virtual_machine, VirtualMachinePb, name=virtual_machine
@@ -642,7 +642,7 @@ class VirtualInterface:
         if isinstance(tags, list) and all(isinstance(t, str) for t in tags):
             tags = [TagPb(name=tag) for tag in tags]
 
-        return VirtualInterfacePb(
+        return VMInterfacePb(
             name=name,
             virtual_machine=virtual_machine,
             enabled=enabled,
@@ -671,7 +671,7 @@ class Entity:
         cluster_type: str | ClusterType | ClusterTypePb | None = None,
         cluster: str | Cluster | ClusterPb | None = None,
         virtual_disk: str | VirtualDisk | VirtualDiskPb | None = None,
-        virtual_interface: str | VirtualInterface | VirtualInterfacePb | None = None,
+        vminterface: str | VMInterface | VMInterfacePb | None = None,
         virtual_machine: str | VirtualMachine | VirtualMachinePb | None = None,
         timestamp: _timestamp_pb2.Timestamp | None = None,
     ):
@@ -697,8 +697,8 @@ class Entity:
         virtual_disk = convert_to_protobuf(
             virtual_disk, VirtualDiskPb, name=virtual_disk
         )
-        virtual_interface = convert_to_protobuf(
-            virtual_interface, VirtualInterfacePb, name=virtual_interface
+        vminterface = convert_to_protobuf(
+            vminterface, VMInterfacePb, name=vminterface
         )
         virtual_machine = convert_to_protobuf(
             virtual_machine, VirtualMachinePb, name=virtual_machine
@@ -718,7 +718,7 @@ class Entity:
             cluster_type=cluster_type,
             cluster=cluster,
             virtual_disk=virtual_disk,
-            virtual_interface=virtual_interface,
+            vminterface=vminterface,
             virtual_machine=virtual_machine,
             timestamp=timestamp,
         )
