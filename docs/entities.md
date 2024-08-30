@@ -1149,7 +1149,7 @@ def main():
         VirtualMachine) required by NetBox.
         """
 
-        virtual_disk = VirtualDisk(name="Disk A")
+        virtual_disk = VirtualDisk(name="Disk A", size=16480)
 
         entities.append(Entity(virtual_disk=virtual_disk))
 
@@ -1233,7 +1233,7 @@ def main():
                 ),
                 vcpus=8,
                 memory=12128,
-                disk=16786,
+                disk=16480,
                 description="Virtual Machine A description",
                 comments="Lorem ipsum dolor sit amet",
                 tags=["tag 1", "tag 2"],
@@ -1387,7 +1387,7 @@ def main():
                 ),
                 vcpus=8,
                 memory=12128,
-                disk=16786,
+                disk=16480,
                 description="Virtual Machine A description",
                 comments="Lorem ipsum dolor sit amet",
                 tags=["tag 1", "tag 2"],
