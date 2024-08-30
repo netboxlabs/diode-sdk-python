@@ -882,7 +882,7 @@ def main():
         entities = []
 
         """
-        Clsuter entity with only a name provided will attempt to create or update a cluster with
+        Cluster entity with only a name provided will attempt to create or update a cluster with
         the given name and placeholders (i.e. "undefined") for other nested objects types
         (e.g. ClusterGroup, ClusterType, Site) required by NetBox.
         """
@@ -919,7 +919,7 @@ def main():
                 tags=["tag 1", "tag 2"],
             ),
             group = ClusterGroup(
-                name="Cluster Group",
+                name="Cluster Group A",
                 description="Cluster Group description",
                 tags=["tag 1", "tag 2"],
             ),
@@ -995,8 +995,8 @@ def main():
 
         """
         VirtualMachine entity with only a name provided will attempt to create or update a name with
-        the given name and placeholders (i.e. "undefined") for other nested objects types (e.g. Site)
-        required by NetBox.
+        the given name and placeholders (i.e. "undefined") for other nested objects types (e.g. Site,
+        Role, Cluster, Platform, Device) required by NetBox.
         """
 
         virtual_machine = VirtualMachine(name="VM A")

@@ -578,6 +578,7 @@ class VirtualMachine:
         return VirtualMachinePb(
             name=name,
             status=status,
+            cluster=cluster,
             site=site,
             role=role,
             device=device,
@@ -697,9 +698,7 @@ class Entity:
         virtual_disk = convert_to_protobuf(
             virtual_disk, VirtualDiskPb, name=virtual_disk
         )
-        vminterface = convert_to_protobuf(
-            vminterface, VMInterfacePb, name=vminterface
-        )
+        vminterface = convert_to_protobuf(vminterface, VMInterfacePb, name=vminterface)
         virtual_machine = convert_to_protobuf(
             virtual_machine, VirtualMachinePb, name=virtual_machine
         )
