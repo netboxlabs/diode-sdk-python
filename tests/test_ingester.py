@@ -578,6 +578,25 @@ def test_virtual_machine_instantiation_with_all_fields():
         assert isinstance(tag, TagPb)
 
 
+def test_virtual_machine_instantiation_with_cluster_without_site():
+    """Check VirtualMachine instantiation with cluster without explicit site."""
+    virtual_machine = VirtualMachine(
+        name="vm1",
+        status="active",
+        cluster=Cluster(name="gc-us-east1"),
+        site=Site(name="Site1"),
+        description="VM on google cloud",
+    )
+    assert isinstance(virtual_machine, VirtualMachinePb)
+    assert isinstance(virtual_machine.cluster, ClusterPb)
+    assert isinstance(virtual_machine.site, SitePb)
+    assert isinstance(virtual_machine.role, RolePb)
+    assert virtual_machine.name == "vm1"
+    assert virtual_machine.status == "active"
+    assert virtual_machine.site.name == "Site1"
+    assert virtual_machine.cluster.site.name == "Site1"
+
+
 def test_virtual_disk_instantiation_with_all_fields():
     """Check VirtualDisk instantiation with all fields."""
     virtual_disk = VirtualDisk(

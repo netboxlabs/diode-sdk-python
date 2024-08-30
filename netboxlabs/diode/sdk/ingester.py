@@ -561,6 +561,13 @@ class VirtualMachine:
 
         cluster = convert_to_protobuf(cluster, ClusterPb, name=cluster, site=site)
 
+        if (
+            isinstance(cluster, ClusterPb)
+            and not cluster.HasField("site")
+            and site is not None
+        ):
+            cluster.site.CopyFrom(site)
+
         role = convert_to_protobuf(role, RolePb, name=role)
 
         platform = convert_to_protobuf(platform, PlatformPb, name=platform)
