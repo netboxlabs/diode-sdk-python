@@ -85,6 +85,12 @@ if __name__ == "__main__":
 * [Role](./docs/entities.md#role)
 * [IP Address](./docs/entities.md#ip-address)
 * [Prefix](./docs/entities.md#prefix)
+* [Cluster Group](./docs/entities.md#cluster-group)
+* [Cluster Type](./docs/entities.md#cluster-type)
+* [Cluster](./docs/entities.md#cluster)
+* [Virtual Machine](./docs/entities.md#virtual-machine)
+* [Virtual Disk](./docs/entities.md#virtual-disk)
+* [VM Interface](./docs/entities.md#vm-interface)
 
 ## Development notes
 
