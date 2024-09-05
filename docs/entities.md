@@ -747,3 +747,666 @@ if __name__ == "__main__":
     main()
 
 ```
+
+## Cluster Type
+
+Attributes:
+
+* `name` (str) - cluster type name
+* `slug` (str) - slug
+* `description` (str) - description
+* `tags` (list) - tags
+
+
+### Example
+
+```python
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    ClusterType,
+)
+
+
+def main():
+    with DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-test-app",
+        app_version="0.0.1",
+    ) as client:
+        entities = []
+
+        """
+        ClusterType entity.
+        """
+
+        cluster_type = ClusterType(
+            name="Cluster Type A",
+            description="Cluster Type A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(cluster_type=cluster_type))
+
+        response = client.ingest(entities=entities)
+        if response.errors:
+            print(f"Errors: {response.errors}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+## Cluster Group
+
+Attributes:
+
+* `name` (str) - cluster group name
+* `slug` (str) - slug
+* `description` (str) - description
+* `tags` (list) - tags
+
+
+### Example
+
+```python
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    ClusterGroup,
+)
+
+
+def main():
+    with DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-test-app",
+        app_version="0.0.1",
+    ) as client:
+        entities = []
+
+        """
+        ClusterGroup entity.
+        """
+
+        cluster_group = ClusterGroup(
+            name="Cluster Group A",
+            description="Cluster Group A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(cluster_group=cluster_group))
+
+        response = client.ingest(entities=entities)
+        if response.errors:
+            print(f"Errors: {response.errors}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+## Cluster
+
+Attributes:
+
+* `name` (str) - cluster name
+* `type` (str, [ClusterType](#cluster-type)) - cluster type name or ClusterType entity
+* `group` (str, [ClusterGroup](#cluster-group)) - cluster group name or ClusterGroup entity
+* `site` (str, [Site](#site)) - site name or Site entity
+* `status` (str) - status (`offline`, `active`, `planned`, `staged`, `failed`, `decommissioning`)
+* `description` (str) - description
+* `tags` (list) - tags
+
+### Example
+
+```python
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    Cluster,
+    ClusterGroup,
+    ClusterType,
+    Site,
+)
+
+
+def main():
+    with DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-test-app",
+        app_version="0.0.1",
+    ) as client:
+        entities = []
+
+        """
+        Cluster entity with only a name provided will attempt to create or update a cluster with
+        the given name and placeholders (i.e. "undefined") for other nested objects types
+        (e.g. ClusterGroup, ClusterType, Site) required by NetBox.
+        """
+
+        cluster = Cluster(name="Cluster A")
+
+        entities.append(Entity(cluster=cluster))
+
+        """
+        Cluster entity using flat data structure.
+        """
+
+        cluster_flat = Cluster(
+            name="Cluster A",
+            type="Cluster Type",
+            group="Cluster Group",
+            site="Site ABC",
+            status="active",
+            description="Cluster A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(cluster=cluster_flat))
+
+        """
+        Cluster entity using explicit data structure.
+        """
+
+        cluster_explicit = Cluster(
+            name="Cluster A",
+            type = ClusterType(
+                name="Cluster Type A",
+                description="Cluster Type description",
+                tags=["tag 1", "tag 2"],
+            ),
+            group = ClusterGroup(
+                name="Cluster Group A",
+                description="Cluster Group description",
+                tags=["tag 1", "tag 2"],
+            ),
+            site=Site(
+                name="Site ABC",
+                status="active",
+                facility="Data Center 1",
+                time_zone="UTC",
+                description="Site A description",
+                comments="Lorem ipsum dolor sit amet",
+                tags=["tag 1", "tag 2"],
+            ),
+            description="Cluster A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(cluster=cluster_explicit))
+
+        response = client.ingest(entities=entities)
+        if response.errors:
+            print(f"Errors: {response.errors}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+## Virtual Machine
+
+Attributes:
+
+* `name` (str) - virtual machine name
+* `status` (str) - status (`offline`, `active`, `planned`, `staged`, `failed`, `decommissioning`)
+* `site` (str, [Site](#site)) - site name or Site entity
+* `cluster` (str, [Cluster](#cluster)) - cluster name or Cluster entity
+* `role` (str, [Role](#role)) - role name or Role entity
+* `device` (str, [Device](#device)) - device name or Device entity
+* `platform` (str, [Platform](#platform)) - platform name or Platform entity
+* `vcpus` (int) - virtual machine CPU number
+* `memory` (int) - virtual machine memory
+* `disk` (int) - virtual machine disk size
+* `description` (str) - description
+* `comments` (str) - comments
+* `tags` (list) - tags
+
+### Example
+
+```python
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    VirtualMachine,
+    Cluster,
+    ClusterGroup,
+    ClusterType,
+    Device,
+    DeviceType,
+    Manufacturer,
+    Platform,
+    Role,
+    Site,
+)
+
+
+def main():
+    with DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-test-app",
+        app_version="0.0.1",
+    ) as client:
+        entities = []
+
+        """
+        VirtualMachine entity with only a name provided will attempt to create or update a name with
+        the given name and placeholders (i.e. "undefined") for other nested objects types (e.g. Site,
+        Role, Cluster, Platform, Device) required by NetBox.
+        """
+
+        virtual_machine = VirtualMachine(name="VM A")
+
+        entities.append(Entity(virtual_machine=virtual_machine))
+
+        """
+        VirtualMachine entity using flat data structure.
+        """
+
+        virtual_machine_flat = VirtualMachine(
+            name="VM A",
+            status="active",
+            cluster="Cluster Type A",
+            site="Site ABC",
+            role="Role ABC",
+            device="Device A",
+            platform="Platform A",
+            vcpus=8,
+            memory=12128,
+            disk=16786,
+            description="Virtual Machine A description",
+            comments="Lorem ipsum dolor sit amet",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(virtual_machine=virtual_machine_flat))
+
+        """
+        VirtualMachine entity using explicit data structure.
+        """
+
+        virtual_machine_explicit = VirtualMachine(
+            name="VM A",
+            status="active",
+            cluster=Cluster(
+                name="Cluster A",
+                type=ClusterType(
+                    name="Cluster Type A",
+                    description="Cluster Type description",
+                    tags=["tag 1", "tag 2"],
+                ),
+                group=ClusterGroup(
+                    name="Cluster Group",
+                    description="Cluster Group description",
+                    tags=["tag 1", "tag 2"],
+                ),
+                site=Site(
+                    name="Site ABC",
+                    status="active",
+                    facility="Data Center 1",
+                    time_zone="UTC",
+                    description="Site A description",
+                    comments="Lorem ipsum dolor sit amet",
+                    tags=["tag 1", "tag 2"],
+                ),
+                description="Cluster A description",
+                tags=["tag 1", "tag 2"],
+            ),
+            site=Site(
+                name="Site ABC",
+                status="active",
+                facility="Data Center 1",
+                time_zone="UTC",
+                description="Site A description",
+                comments="Lorem ipsum dolor sit amet",
+                tags=["tag 1", "tag 2"],
+            ),
+            role=Role(name="Role ABC", tags=["tag 1", "tag 3"]),
+            device=Device(
+                name="Device A",
+                device_type=DeviceType(
+                    model="Device Type A",
+                    manufacturer=Manufacturer(name="Manufacturer A"),
+                ),
+                platform=Platform(
+                    name="Platform A", manufacturer=Manufacturer(name="Manufacturer A")
+                ),
+                site=Site(name="Site ABC"),
+                role=Role(name="Role ABC", tags=["tag 1", "tag 3"]),
+                serial="123456",
+                asset_tag="123456",
+                status="active",
+                comments="Lorem ipsum dolor sit amet",
+                tags=["tag 1", "tag 2"],
+            ),
+            platform=Platform(
+                name="Platform A", manufacturer=Manufacturer(name="Manufacturer A")
+            ),
+            vcpus=8,
+            memory=12128,
+            disk=16786,
+            description="Virtual Machine A description",
+            comments="Lorem ipsum dolor sit amet",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(virtual_machine=virtual_machine_explicit))
+
+        response = client.ingest(entities=entities)
+        if response.errors:
+            print(f"Errors: {response.errors}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+## Virtual Disk
+
+Attributes:
+
+* `name` (str) - virtual disk name
+* `virtual_machine` (str, [VirtualMachine](#virtual-machine)) - virtual machine name or VirtualMachine entity
+* `size` (int) - disk size
+* `description` (str) - description
+* `tags` (list) - tags
+
+### Example
+```python
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    VirtualDisk,
+    VirtualMachine,
+    Cluster,
+    ClusterGroup,
+    ClusterType,
+    Device,
+    DeviceType,
+    Manufacturer,
+    Platform,
+    Role,
+    Site,
+)
+
+
+def main():
+    with DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-test-app",
+        app_version="0.0.1",
+    ) as client:
+        entities = []
+
+        """
+        VirtualDisk entity with only a name provided will attempt to create or update a name
+        with the given name and placeholders (i.e. "undefined") for other nested objects types (e.g.
+        VirtualMachine) required by NetBox.
+        """
+
+        virtual_disk = VirtualDisk(name="Disk A", size=16480)
+
+        entities.append(Entity(virtual_disk=virtual_disk))
+
+        """
+        VirtualDisk entity using flat data structure.
+        """
+
+        virtual_disk_flat = VirtualDisk(
+            name="Disk A",
+            virtual_machine="VM A",
+            size=16480,
+            description="Disk A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(virtual_disk=virtual_disk_flat))
+
+        """
+        VirtualDisk entity using explicit data structure.
+        """
+
+        virtual_disk_explicit = VirtualDisk(
+            name="Disk A",
+            virtual_machine=VirtualMachine(
+                name="VM A",
+                status="active",
+                cluster=Cluster(
+                    name="Cluster A",
+                    type=ClusterType(
+                        name="Cluster Type A",
+                        description="Cluster Type description",
+                        tags=["tag 1", "tag 2"],
+                    ),
+                    group=ClusterGroup(
+                        name="Cluster Group",
+                        description="Cluster Group description",
+                        tags=["tag 1", "tag 2"],
+                    ),
+                    site=Site(
+                        name="Site ABC",
+                        status="active",
+                        facility="Data Center 1",
+                        time_zone="UTC",
+                        description="Site A description",
+                        comments="Lorem ipsum dolor sit amet",
+                        tags=["tag 1", "tag 2"],
+                    ),
+                    description="Cluster A description",
+                    tags=["tag 1", "tag 2"],
+                ),
+                site=Site(
+                    name="Site ABC",
+                    status="active",
+                    facility="Data Center 1",
+                    time_zone="UTC",
+                    description="Site A description",
+                    comments="Lorem ipsum dolor sit amet",
+                    tags=["tag 1", "tag 2"],
+                ),
+                role=Role(name="Role ABC", tags=["tag 1", "tag 3"]),
+                device=Device(
+                    name="Device A",
+                    device_type=DeviceType(
+                        model="Device Type A",
+                        manufacturer=Manufacturer(name="Manufacturer A"),
+                    ),
+                    platform=Platform(
+                        name="Platform A",
+                        manufacturer=Manufacturer(name="Manufacturer A"),
+                    ),
+                    site=Site(name="Site ABC"),
+                    role=Role(name="Role ABC", tags=["tag 1", "tag 3"]),
+                    serial="123456",
+                    asset_tag="123456",
+                    status="active",
+                    comments="Lorem ipsum dolor sit amet",
+                    tags=["tag 1", "tag 2"],
+                ),
+                platform=Platform(
+                    name="Platform A", manufacturer=Manufacturer(name="Manufacturer A")
+                ),
+                vcpus=8,
+                memory=12128,
+                disk=16480,
+                description="Virtual Machine A description",
+                comments="Lorem ipsum dolor sit amet",
+                tags=["tag 1", "tag 2"],
+            ),
+            size=16480,
+            description="Disk A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(virtual_disk=virtual_disk_explicit))
+
+        response = client.ingest(entities=entities)
+        if response.errors:
+            print(f"Errors: {response.errors}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+## VM Interface
+
+Attributes:
+
+* `name` (str) - virtual interface name
+* `virtual_machine` (str, [VirtualMachine](#virtual-machine)) - virtual machine name or VirtualMachine entity
+* `enabled` (bool) - is the interface enabled
+* `mtu` (int) - maximum transmission unit
+* `mac_address` (str) - MAC address
+* `description` (str) - description
+* `tags` (list) - tags
+
+### Example
+
+```python
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    VMInterface,
+    VirtualMachine,
+    Cluster,
+    ClusterGroup,
+    ClusterType,
+    Device,
+    DeviceType,
+    Manufacturer,
+    Platform,
+    Role,
+    Site,
+)
+
+
+def main():
+    with DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-test-app",
+        app_version="0.0.1",
+    ) as client:
+        entities = []
+
+        """
+        VMInterface entity with only a name provided will attempt to create or update a name
+        with the given name and placeholders (i.e. "undefined") for other nested objects types (e.g.
+        VirtualMachine) required by NetBox.
+        """
+
+        vminterface = VMInterface(name="Interface A")
+
+        entities.append(Entity(vminterface=vminterface))
+
+        """
+        VMInterface entity using flat data structure.
+        """
+
+        vminterface_flat = VMInterface(
+            name="Interface A",
+            virtual_machine="VM A",
+            enabled=True,
+            mtu=1500,
+            mac_address="00:00:00:00:00:00",
+            description="Interface A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(vminterface=vminterface_flat))
+
+        """
+        VMInterface entity using explicit data structure.
+        """
+
+        vminterface_explicit = VMInterface(
+            name="Interface A",
+            virtual_machine=VirtualMachine(
+                name="VM A",
+                status="active",
+                cluster=Cluster(
+                    name="Cluster A",
+                    type=ClusterType(
+                        name="Cluster Type A",
+                        description="Cluster Type description",
+                        tags=["tag 1", "tag 2"],
+                    ),
+                    group=ClusterGroup(
+                        name="Cluster Group",
+                        description="Cluster Group description",
+                        tags=["tag 1", "tag 2"],
+                    ),
+                    site=Site(
+                        name="Site ABC",
+                        status="active",
+                        facility="Data Center 1",
+                        time_zone="UTC",
+                        description="Site A description",
+                        comments="Lorem ipsum dolor sit amet",
+                        tags=["tag 1", "tag 2"],
+                    ),
+                    description="Cluster A description",
+                    tags=["tag 1", "tag 2"],
+                ),
+                site=Site(
+                    name="Site ABC",
+                    status="active",
+                    facility="Data Center 1",
+                    time_zone="UTC",
+                    description="Site A description",
+                    comments="Lorem ipsum dolor sit amet",
+                    tags=["tag 1", "tag 2"],
+                ),
+                role=Role(name="Role ABC", tags=["tag 1", "tag 3"]),
+                device=Device(
+                    name="Device A",
+                    device_type=DeviceType(
+                        model="Device Type A",
+                        manufacturer=Manufacturer(name="Manufacturer A"),
+                    ),
+                    platform=Platform(
+                        name="Platform A",
+                        manufacturer=Manufacturer(name="Manufacturer A"),
+                    ),
+                    site=Site(name="Site ABC"),
+                    role=Role(name="Role ABC", tags=["tag 1", "tag 3"]),
+                    serial="123456",
+                    asset_tag="123456",
+                    status="active",
+                    comments="Lorem ipsum dolor sit amet",
+                    tags=["tag 1", "tag 2"],
+                ),
+                platform=Platform(
+                    name="Platform A", manufacturer=Manufacturer(name="Manufacturer A")
+                ),
+                vcpus=8,
+                memory=12128,
+                disk=16480,
+                description="Virtual Machine A description",
+                comments="Lorem ipsum dolor sit amet",
+                tags=["tag 1", "tag 2"],
+            ),
+            enabled=True,
+            mtu=1500,
+            mac_address="00:00:00:00:00:00",
+            description="Interface A description",
+            tags=["tag 1", "tag 2"],
+        )
+
+        entities.append(Entity(vminterface=vminterface_explicit))
+
+        response = client.ingest(entities=entities)
+        if response.errors:
+            print(f"Errors: {response.errors}")
+
+
+if __name__ == "__main__":
+    main()
+
+```

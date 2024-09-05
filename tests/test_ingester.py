@@ -4,6 +4,9 @@
 
 # ruff: noqa: I001
 from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
+    Cluster as ClusterPb,
+    ClusterGroup as ClusterGroupPb,
+    ClusterType as ClusterTypePb,
     Device as DevicePb,
     DeviceType as DeviceTypePb,
     Entity as EntityPb,
@@ -15,8 +18,14 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Role as RolePb,
     Site as SitePb,
     Tag as TagPb,
+    VirtualDisk as VirtualDiskPb,
+    VMInterface as VMInterfacePb,
+    VirtualMachine as VirtualMachinePb,
 )
 from netboxlabs.diode.sdk.ingester import (
+    Cluster,
+    ClusterGroup,
+    ClusterType,
     Device,
     DeviceType,
     Entity,
@@ -28,6 +37,9 @@ from netboxlabs.diode.sdk.ingester import (
     Role,
     Site,
     Tag,
+    VirtualDisk,
+    VMInterface,
+    VirtualMachine,
     convert_to_protobuf,
 )
 
@@ -471,6 +483,162 @@ def test_prefix_instantiation_with_all_fields():
         assert isinstance(tag, TagPb)
 
 
+def test_cluster_group_instantiation_with_all_fields():
+    """Check ClusterGroup instantiation with all fields."""
+    cluster_group = ClusterGroup(
+        name="Group",
+        slug="group",
+        description="Cluster group",
+        tags=["clusters", "grouping"],
+    )
+    assert isinstance(cluster_group, ClusterGroupPb)
+    assert cluster_group.name == "Group"
+    assert cluster_group.slug == "group"
+    assert cluster_group.description == "Cluster group"
+    assert len(cluster_group.tags) == 2
+    for tag in cluster_group.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_cluster_type_instantiation_with_all_fields():
+    """Check ClusterType instantiation with all fields."""
+    cluster_type = ClusterType(
+        name="VMWare",
+        slug="vmware",
+        description="Cluster type for virtual machine",
+        tags=["clusters", "types"],
+    )
+    assert isinstance(cluster_type, ClusterTypePb)
+    assert cluster_type.name == "VMWare"
+    assert cluster_type.slug == "vmware"
+    assert cluster_type.description == "Cluster type for virtual machine"
+    assert len(cluster_type.tags) == 2
+    for tag in cluster_type.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_cluster_instantiation_with_all_fields():
+    """Check Cluster instantiation with all fields."""
+    cluster = Cluster(
+        name="gc-us-east1",
+        status="active",
+        group=ClusterGroup(name="North America"),
+        type="Google Cloud",
+        site="Site1",
+        description="Cluster on gc us east",
+        tags=["us", "gc"],
+    )
+    assert isinstance(cluster, ClusterPb)
+    assert isinstance(cluster.group, ClusterGroupPb)
+    assert isinstance(cluster.type, ClusterTypePb)
+    assert isinstance(cluster.site, SitePb)
+    assert cluster.name == "gc-us-east1"
+    assert cluster.status == "active"
+    assert cluster.site.name == "Site1"
+    assert cluster.description == "Cluster on gc us east"
+    assert len(cluster.tags) == 2
+    for tag in cluster.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_virtual_machine_instantiation_with_all_fields():
+    """Check VirtualMachine instantiation with all fields."""
+    virtual_machine = VirtualMachine(
+        name="vm1",
+        status="active",
+        cluster="gc-us-east1",
+        site="Site1",
+        role="admin",
+        device="dev01",
+        platform="Platform1",
+        vcpus=12,
+        memory=16572,
+        disk=1225798,
+        primary_ip4="192.168.0.1",
+        primary_ip6="2001:db8::1",
+        description="VM on google cloud",
+        tags=["vm", "gc"],
+    )
+    assert isinstance(virtual_machine, VirtualMachinePb)
+    assert isinstance(virtual_machine.cluster, ClusterPb)
+    assert isinstance(virtual_machine.site, SitePb)
+    assert isinstance(virtual_machine.role, RolePb)
+    assert isinstance(virtual_machine.device, DevicePb)
+    assert isinstance(virtual_machine.platform, PlatformPb)
+    assert isinstance(virtual_machine.primary_ip4, IPAddressPb)
+    assert isinstance(virtual_machine.primary_ip6, IPAddressPb)
+    assert virtual_machine.name == "vm1"
+    assert virtual_machine.status == "active"
+    assert virtual_machine.site.name == "Site1"
+    assert virtual_machine.device.site.name == "Site1"
+    assert virtual_machine.memory == 16572
+    assert virtual_machine.description == "VM on google cloud"
+    assert len(virtual_machine.tags) == 2
+    for tag in virtual_machine.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_virtual_machine_instantiation_with_cluster_without_site():
+    """Check VirtualMachine instantiation with cluster without explicit site."""
+    virtual_machine = VirtualMachine(
+        name="vm1",
+        status="active",
+        cluster=Cluster(name="gc-us-east1"),
+        site=Site(name="Site1"),
+        description="VM on google cloud",
+    )
+    assert isinstance(virtual_machine, VirtualMachinePb)
+    assert isinstance(virtual_machine.cluster, ClusterPb)
+    assert isinstance(virtual_machine.site, SitePb)
+    assert isinstance(virtual_machine.role, RolePb)
+    assert virtual_machine.name == "vm1"
+    assert virtual_machine.status == "active"
+    assert virtual_machine.site.name == "Site1"
+    assert virtual_machine.cluster.site.name == "Site1"
+
+
+def test_virtual_disk_instantiation_with_all_fields():
+    """Check VirtualDisk instantiation with all fields."""
+    virtual_disk = VirtualDisk(
+        name="Disk",
+        virtual_machine="vm1",
+        size=16512,
+        description="Virtual disk",
+        tags=["vm", "disk"],
+    )
+    assert isinstance(virtual_disk, VirtualDiskPb)
+    assert isinstance(virtual_disk.virtual_machine, VirtualMachinePb)
+    assert virtual_disk.name == "Disk"
+    assert virtual_disk.virtual_machine.name == "vm1"
+    assert virtual_disk.description == "Virtual disk"
+    assert len(virtual_disk.tags) == 2
+    for tag in virtual_disk.tags:
+        assert isinstance(tag, TagPb)
+
+
+def test_vminterface_instantiation_with_all_fields():
+    """Check VMInterface instantiation with all fields."""
+    vminterface = VMInterface(
+        name="eth01",
+        virtual_machine="vm1",
+        enabled=True,
+        mtu=1500,
+        mac_address="00:00:00:00:00:00",
+        description="Virtual interface",
+        tags=["vm", "ifce"],
+    )
+    assert isinstance(vminterface, VMInterfacePb)
+    assert isinstance(vminterface.virtual_machine, VirtualMachinePb)
+    assert vminterface.name == "eth01"
+    assert vminterface.virtual_machine.name == "vm1"
+    assert vminterface.mtu == 1500
+    assert vminterface.mac_address == "00:00:00:00:00:00"
+    assert vminterface.description == "Virtual interface"
+    assert len(vminterface.tags) == 2
+    for tag in vminterface.tags:
+        assert isinstance(tag, TagPb)
+
+
 def test_site_instantiation_with_all_fields():
     """Check Site instantiation with all fields."""
     site = Site(
@@ -578,3 +746,63 @@ def test_entity_instantiation_with_prefix():
     assert isinstance(entity, EntityPb)
     assert isinstance(entity.prefix, PrefixPb)
     assert entity.prefix.prefix == "192.168.0.0/24"
+
+
+def test_entity_instantiation_with_cluster_group():
+    """Check Entity instantiation with cluster group."""
+    entity = Entity(
+        cluster_group="ClusterGroup1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.cluster_group, ClusterGroupPb)
+    assert entity.cluster_group.name == "ClusterGroup1"
+
+
+def test_entity_instantiation_with_cluster_type():
+    """Check Entity instantiation with cluster type."""
+    entity = Entity(
+        cluster_type="ClusterType1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.cluster_type, ClusterTypePb)
+    assert entity.cluster_type.name == "ClusterType1"
+
+
+def test_entity_instantiation_with_cluster():
+    """Check Entity instantiation with cluster."""
+    entity = Entity(
+        cluster="Cluster1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.cluster, ClusterPb)
+    assert entity.cluster.name == "Cluster1"
+
+
+def test_entity_instantiation_with_virtual_machine():
+    """Check Entity instantiation with virtual machine."""
+    entity = Entity(
+        virtual_machine="VM1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.virtual_machine, VirtualMachinePb)
+    assert entity.virtual_machine.name == "VM1"
+
+
+def test_entity_instantiation_with_virtual_disk():
+    """Check Entity instantiation with virtual disk."""
+    entity = Entity(
+        virtual_disk="VirtualDisk1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.virtual_disk, VirtualDiskPb)
+    assert entity.virtual_disk.name == "VirtualDisk1"
+
+
+def test_entity_instantiation_with_vminterface():
+    """Check Entity instantiation with virtual interface."""
+    entity = Entity(
+        vminterface="VMInterface1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.vminterface, VMInterfacePb)
+    assert entity.vminterface.name == "VMInterface1"
