@@ -231,6 +231,46 @@ def test_client_sets_up_insecure_channel_when_grpc_scheme_is_found_in_target():
         mock_insecure_channel.assert_called_once()
 
 
+def test_insecure_channel_options_with_primary_user_agent():
+    """Check that DiodeClient.__init__() sets the gRPC primary_user_agent option for insecure channel."""
+    with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+        client = DiodeClient(
+            target="grpc://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            api_key="abcde",
+        )
+
+        mock_insecure_channel.assert_called_once()
+        _, kwargs = mock_insecure_channel.call_args
+        assert kwargs["options"] == (
+            (
+                "grpc.primary_user_agent",
+                f"{client.name}/{client.version} {client.app_name}/{client.app_version}",
+            ),
+        )
+
+
+def test_secure_channel_options_with_primary_user_agent():
+    """Check that DiodeClient.__init__() sets the gRPC primary_user_agent option for secure channel."""
+    with mock.patch("grpc.secure_channel") as mock_secure_channel:
+        client = DiodeClient(
+            target="grpcs://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            api_key="abcde",
+        )
+
+        mock_secure_channel.assert_called_once()
+        _, kwargs = mock_secure_channel.call_args
+        assert kwargs["options"] == (
+            (
+                "grpc.primary_user_agent",
+                f"{client.name}/{client.version} {client.app_name}/{client.app_version}",
+            ),
+        )
+
+
 def test_client_interceptor_setup_with_path():
     """Check that DiodeClient.__init__() sets up the gRPC interceptor when a path is provided."""
     client = DiodeClient(
