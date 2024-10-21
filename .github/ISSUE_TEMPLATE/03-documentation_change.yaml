@@ -1,6 +1,6 @@
 ---
 name: 📖 Documentation Change
-description: Suggest an addition or modification to the Diode Python SDK documentation
+description: Suggest an addition or modification to the Diode SDK Python documentation
 labels: ["documentation", "status: needs triage"]
 body:
   - type: dropdown
