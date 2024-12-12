@@ -9,11 +9,17 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  GH_TOKEN: ${{ secrets.ORB_CI_GH_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SEMANTIC_RELEASE_PACKAGE: ${{ github.repository }}
   PYTHON_RUNTIME_VERSION: "3.11"
   APP_NAME: diode-sdk-python
   PYTHON_PACKAGE_NAME: netboxlabs-diode-sdk
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   get-python-package-name:
@@ -126,9 +132,6 @@ jobs:
     needs: [ get-python-package-name, get-next-version ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions:
-      id-token: write
-      contents: read
     env:
       BUILD_VERSION: ${{ needs.get-next-version.outputs.new-release-version }}
       BUILD_TRACK: release
