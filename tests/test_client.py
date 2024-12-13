@@ -19,6 +19,7 @@ from netboxlabs.diode.sdk.client import (
     parse_target,
 )
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
+from netboxlabs.diode.sdk.version import version_semver
 
 
 def test_init():
@@ -31,7 +32,7 @@ def test_init():
     )
     assert config.target == "localhost:8081"
     assert config.name == "diode-sdk-python"
-    assert config.version == "0.0.1"
+    assert config.version == version_semver()
     assert config.app_name == "my-producer"
     assert config.app_version == "0.0.1"
     assert config.tls_verify is False
@@ -370,7 +371,7 @@ def test_client_properties_return_expected_values():
         api_key="abcde",
     )
     assert client.name == "diode-sdk-python"
-    assert client.version == "0.0.1"
+    assert client.version == version_semver()
     assert client.target == "localhost:8081"
     assert client.path == ""
     assert client.tls_verify is False
