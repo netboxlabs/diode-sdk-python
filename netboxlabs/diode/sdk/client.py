@@ -13,10 +13,10 @@ import certifi
 import grpc
 import sentry_sdk
 
-from netboxlabs.diode.sdk.version import version_semver
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity
+from netboxlabs.diode.sdk.version import version_semver
 
 _DIODE_API_KEY_ENVVAR_NAME = "DIODE_API_KEY"
 _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
