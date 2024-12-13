@@ -13,6 +13,7 @@ import certifi
 import grpc
 import sentry_sdk
 
+from netboxlabs.diode.sdk.version import version_semver
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity
@@ -69,7 +70,7 @@ class DiodeClient:
     """Diode Client."""
 
     _name = "diode-sdk-python"
-    _version = "0.0.1"
+    _version = version_semver()
     _app_name = None
     _app_version = None
     _channel = None
