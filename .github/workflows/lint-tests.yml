@@ -43,7 +43,7 @@ jobs:
           pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=netboxlabs.diode.sdk tests/ | tee pytest-coverage.txt
 
       - name: Pytest coverage comment
-        uses: MishaKav/pytest-coverage-comment@main
+        uses: MishaKav/pytest-coverage-comment@81882822c5b22af01f91bd3eacb1cefb6ad73dc2 # v1
         with:
           pytest-coverage-path: ./pytest-coverage.txt
           junitxml-path: ./pytest.xml
