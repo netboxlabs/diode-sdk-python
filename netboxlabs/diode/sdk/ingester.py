@@ -710,6 +710,11 @@ class Entity:
             virtual_machine, VirtualMachinePb, name=virtual_machine
         )
 
+        if timestamp is None:
+            ts = _timestamp_pb2.Timestamp()
+            ts.GetCurrentTime()
+            timestamp = ts
+
         return EntityPb(
             site=site,
             platform=platform,
