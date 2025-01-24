@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Copyright 2024 NetBox Labs Inc
 """NetBox Labs - Tests."""
+from google.protobuf import timestamp_pb2
 
 # ruff: noqa: I001
 from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
@@ -656,6 +657,38 @@ def test_site_instantiation_with_all_fields():
     assert len(site.tags) == 2
     for tag in site.tags:
         assert isinstance(tag, TagPb)
+
+
+def test_entity_instantiation_with_no_timestamp_provided():
+    """Check Entity instantiation with no timestamp provided."""
+    entity = Entity(
+        site="Site1",
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.site, SitePb)
+    assert entity.site.name == "Site1"
+    assert entity.timestamp is not None
+    assert entity.timestamp.seconds > 0
+    assert entity.timestamp.nanos > 0
+
+
+def test_entity_instantiation_with_timestamp_provided():
+    """Check Entity instantiation with timestamp provided."""
+    current_ts = timestamp_pb2.Timestamp()
+    current_ts.GetCurrentTime()
+
+    entity = Entity(
+        site="Site1",
+        timestamp=current_ts,
+    )
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.site, SitePb)
+    assert entity.site.name == "Site1"
+    assert entity.timestamp is not None
+    assert entity.timestamp.seconds > 0
+    assert entity.timestamp.nanos > 0
+    assert entity.timestamp.seconds == current_ts.seconds
+    assert entity.timestamp.nanos == current_ts.nanos
 
 
 def test_entity_instantiation_with_site():
