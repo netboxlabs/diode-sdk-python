@@ -9,6 +9,7 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     ClusterGroup as ClusterGroupPb,
     ClusterType as ClusterTypePb,
     Device as DevicePb,
+    DeviceRole as DeviceRolePb,
     DeviceType as DeviceTypePb,
     Entity as EntityPb,
     IPAddress as IPAddressPb,
@@ -28,6 +29,7 @@ from netboxlabs.diode.sdk.ingester import (
     ClusterGroup,
     ClusterType,
     Device,
+    DeviceRole,
     DeviceType,
     Entity,
     IPAddress,
@@ -47,14 +49,10 @@ from netboxlabs.diode.sdk.ingester import (
 
 def test_convert_to_protobuf_returns_correct_class_when_value_is_string():
     """Check convert_to_protobuf returns correct class when value is string."""
-
-    class MockProtobufClass:
-        def __init__(self, name=None):
-            self.name = name
-
-    result = convert_to_protobuf("test", MockProtobufClass, name="test")
-    assert isinstance(result, MockProtobufClass)
-    assert result.name == "test"
+    result = convert_to_protobuf("Test Site", SitePb)
+    assert isinstance(result, SitePb)
+    assert result.name == "Test Site"
+    assert result.slug == "test-site"
 
 
 def test_convert_to_protobuf_returns_value_when_value_is_not_string():
@@ -174,14 +172,12 @@ def test_role_instantiation_with_all_fields():
     role = Role(
         name="Admin",
         slug="admin",
-        color="blue",
         description="Administrator role",
         tags=["admin", "role"],
     )
     assert isinstance(role, RolePb)
     assert role.name == "Admin"
     assert role.slug == "admin"
-    assert role.color == "blue"
     assert role.description == "Administrator role"
     assert len(role.tags) == 2
     for tag in role.tags:
@@ -217,7 +213,6 @@ def test_device_instantiation_with_all_fields():
     device = Device(
         name="Device1",
         device_type="DeviceType1",
-        device_fqdn="device1.example.com",
         role="Role1",
         platform="Platform1",
         serial="123456",
@@ -234,8 +229,7 @@ def test_device_instantiation_with_all_fields():
     assert isinstance(device, DevicePb)
     assert device.name == "Device1"
     assert isinstance(device.device_type, DeviceTypePb)
-    assert device.device_fqdn == "device1.example.com"
-    assert isinstance(device.role, RolePb)
+    assert isinstance(device.role, DeviceRolePb)
     assert isinstance(device.platform, PlatformPb)
     assert device.serial == "123456"
     assert isinstance(device.site, SitePb)
@@ -255,8 +249,7 @@ def test_device_instantiation_with_explicit_nested_object_types():
     device = Device(
         name="Device1",
         device_type=DeviceType(model="DeviceType1"),
-        device_fqdn="device1.example.com",
-        role=Role(name="Role1"),
+        role=DeviceRole(name="Role1"),
         platform=Platform(name="Platform1"),
         serial="123456",
         site=Site(name="Site1"),
@@ -270,7 +263,7 @@ def test_device_instantiation_with_explicit_nested_object_types():
     )
     assert isinstance(device, DevicePb)
     assert isinstance(device.device_type, DeviceTypePb)
-    assert isinstance(device.role, RolePb)
+    assert isinstance(device.role, DeviceRolePb)
     assert isinstance(device.platform, PlatformPb)
     assert isinstance(device.site, SitePb)
     assert isinstance(device.primary_ip4, IPAddressPb)
@@ -292,7 +285,7 @@ def test_interface_instantiation_with_all_fields():
         type="type1",
         enabled=True,
         mtu=1500,
-        mac_address="00:00:00:00:00:00",
+        primary_mac_address="00:00:00:00:00:00",
         speed=1000,
         wwn="wwn1",
         mgmt_only=True,
@@ -307,7 +300,7 @@ def test_interface_instantiation_with_all_fields():
     assert interface.device.name == "Device1"
     assert isinstance(interface.device.device_type, DeviceTypePb)
     assert interface.device.device_type.model == "DeviceType1"
-    assert isinstance(interface.device.role, RolePb)
+    assert isinstance(interface.device.role, DeviceRolePb)
     assert interface.device.role.name == "Role1"
     assert isinstance(interface.device.platform, PlatformPb)
     assert interface.device.platform.name == "Platform1"
@@ -318,7 +311,7 @@ def test_interface_instantiation_with_all_fields():
     assert interface.type == "type1"
     assert interface.enabled is True
     assert interface.mtu == 1500
-    assert interface.mac_address == "00:00:00:00:00:00"
+    assert interface.primary_mac_address.mac_address == "00:00:00:00:00:00"
     assert interface.speed == 1000
     assert interface.wwn == "wwn1"
     assert interface.mgmt_only is True
@@ -336,14 +329,14 @@ def test_interface_instantiation_with_explicit_nested_object_types():
         name="Interface1",
         device="Device1",
         device_type=DeviceType(model="DeviceType1"),
-        role=Role(name="Role1"),
+        role=DeviceRole(name="Role1"),
         platform=Platform(name="Platform1"),
         site=Site(name="Site1"),
         manufacturer=Manufacturer(name="Manufacturer1"),
     )
     assert isinstance(interface, InterfacePb)
     assert isinstance(interface.device.device_type, DeviceTypePb)
-    assert isinstance(interface.device.role, RolePb)
+    assert isinstance(interface.device.role, DeviceRolePb)
     assert isinstance(interface.device.platform, PlatformPb)
     assert isinstance(interface.device.site, SitePb)
     assert interface.device.platform.manufacturer.name == "Manufacturer1"
@@ -354,7 +347,7 @@ def test_ip_address_instantiation_with_all_fields():
     """Check IPAddress instantiation with all fields."""
     ip_address = IPAddress(
         address="192.168.0.1",
-        interface="Interface1",
+        assigned_object_interface="Interface1",
         device="Device1",
         device_type="DeviceType1",
         device_role="Role1",
@@ -370,20 +363,20 @@ def test_ip_address_instantiation_with_all_fields():
     )
     assert isinstance(ip_address, IPAddressPb)
     assert ip_address.address == "192.168.0.1"
-    assert isinstance(ip_address.interface, InterfacePb)
-    assert ip_address.interface.name == "Interface1"
-    assert isinstance(ip_address.interface.device, DevicePb)
-    assert ip_address.interface.device.name == "Device1"
-    assert isinstance(ip_address.interface.device.device_type, DeviceTypePb)
-    assert ip_address.interface.device.device_type.model == "DeviceType1"
-    assert isinstance(ip_address.interface.device.role, RolePb)
-    assert ip_address.interface.device.role.name == "Role1"
-    assert isinstance(ip_address.interface.device.platform, PlatformPb)
-    assert ip_address.interface.device.platform.name == "Platform1"
-    assert isinstance(ip_address.interface.device.platform.manufacturer, ManufacturerPb)
-    assert ip_address.interface.device.platform.manufacturer.name == "Manufacturer1"
-    assert isinstance(ip_address.interface.device.site, SitePb)
-    assert ip_address.interface.device.site.name == "Site1"
+    assert isinstance(ip_address.assigned_object_interface, InterfacePb)
+    assert ip_address.assigned_object_interface.name == "Interface1"
+    assert isinstance(ip_address.assigned_object_interface.device, DevicePb)
+    assert ip_address.assigned_object_interface.device.name == "Device1"
+    assert isinstance(ip_address.assigned_object_interface.device.device_type, DeviceTypePb)
+    assert ip_address.assigned_object_interface.device.device_type.model == "DeviceType1"
+    assert isinstance(ip_address.assigned_object_interface.device.role, DeviceRolePb)
+    assert ip_address.assigned_object_interface.device.role.name == "Role1"
+    assert isinstance(ip_address.assigned_object_interface.device.platform, PlatformPb)
+    assert ip_address.assigned_object_interface.device.platform.name == "Platform1"
+    assert isinstance(ip_address.assigned_object_interface.device.platform.manufacturer, ManufacturerPb)
+    assert ip_address.assigned_object_interface.device.platform.manufacturer.name == "Manufacturer1"
+    assert isinstance(ip_address.assigned_object_interface.device.site, SitePb)
+    assert ip_address.assigned_object_interface.device.site.name == "Site1"
     assert ip_address.status == "active"
     assert ip_address.role == "admin"
     assert ip_address.dns_name == "dns.example.com"
@@ -398,14 +391,14 @@ def test_ip_address_instantiation_with_explicit_nested_object_types():
     """Check IPAddress instantiation with explicit nested object types."""
     ip_address = IPAddress(
         address="192.168.0.1",
-        interface=Interface(
+        assigned_object_interface=Interface(
             name="Interface1",
             device=Device(
                 name="Device1",
                 device_type=DeviceType(
                     model="DeviceType1", manufacturer="Manufacturer1"
                 ),
-                role=Role(name="Role1"),
+                role=DeviceRole(name="Role1"),
                 platform=Platform(name="Platform1", manufacturer="Manufacturer1"),
                 site=Site(name="Site1"),
             ),
@@ -417,14 +410,14 @@ def test_ip_address_instantiation_with_explicit_nested_object_types():
         tags=["tag1", "tag2"],
     )
     assert isinstance(ip_address, IPAddressPb)
-    assert isinstance(ip_address.interface, InterfacePb)
-    assert isinstance(ip_address.interface.device, DevicePb)
-    assert isinstance(ip_address.interface.device.device_type, DeviceTypePb)
-    assert isinstance(ip_address.interface.device.role, RolePb)
-    assert isinstance(ip_address.interface.device.platform, PlatformPb)
-    assert isinstance(ip_address.interface.device.site, SitePb)
-    assert ip_address.interface.device.platform.manufacturer.name == "Manufacturer1"
-    assert ip_address.interface.device.device_type.manufacturer.name == "Manufacturer1"
+    assert isinstance(ip_address.assigned_object_interface, InterfacePb)
+    assert isinstance(ip_address.assigned_object_interface.device, DevicePb)
+    assert isinstance(ip_address.assigned_object_interface.device.device_type, DeviceTypePb)
+    assert isinstance(ip_address.assigned_object_interface.device.role, DeviceRolePb)
+    assert isinstance(ip_address.assigned_object_interface.device.platform, PlatformPb)
+    assert isinstance(ip_address.assigned_object_interface.device.site, SitePb)
+    assert ip_address.assigned_object_interface.device.platform.manufacturer.name == "Manufacturer1"
+    assert ip_address.assigned_object_interface.device.device_type.manufacturer.name == "Manufacturer1"
     assert ip_address.status == "active"
     assert ip_address.dns_name == "dns.example.com"
     assert ip_address.description == "This is an IP address"
@@ -436,7 +429,7 @@ def test_ip_address_instantiation_with_manufacturer_populated_to_device_type_and
     """Check IPAddress instantiation with manufacturer populated to DeviceType and Platform."""
     ip_address = IPAddress(
         address="192.168.0.1",
-        interface="Interface1",
+        assigned_object_interface="Interface1",
         device="Device1",
         device_type=DeviceType(model="DeviceType1"),
         device_role="Role1",
@@ -448,14 +441,14 @@ def test_ip_address_instantiation_with_manufacturer_populated_to_device_type_and
         dns_name="dns.example.com",
     )
     assert isinstance(ip_address, IPAddressPb)
-    assert isinstance(ip_address.interface, InterfacePb)
-    assert isinstance(ip_address.interface.device, DevicePb)
-    assert isinstance(ip_address.interface.device.device_type, DeviceTypePb)
-    assert isinstance(ip_address.interface.device.role, RolePb)
-    assert isinstance(ip_address.interface.device.platform, PlatformPb)
-    assert isinstance(ip_address.interface.device.site, SitePb)
-    assert ip_address.interface.device.platform.manufacturer.name == "Manufacturer1"
-    assert ip_address.interface.device.device_type.manufacturer.name == "Manufacturer1"
+    assert isinstance(ip_address.assigned_object_interface, InterfacePb)
+    assert isinstance(ip_address.assigned_object_interface.device, DevicePb)
+    assert isinstance(ip_address.assigned_object_interface.device.device_type, DeviceTypePb)
+    assert isinstance(ip_address.assigned_object_interface.device.role, DeviceRolePb)
+    assert isinstance(ip_address.assigned_object_interface.device.platform, PlatformPb)
+    assert isinstance(ip_address.assigned_object_interface.device.site, SitePb)
+    assert ip_address.assigned_object_interface.device.platform.manufacturer.name == "Manufacturer1"
+    assert ip_address.assigned_object_interface.device.device_type.manufacturer.name == "Manufacturer1"
     assert ip_address.status == "active"
     assert ip_address.dns_name == "dns.example.com"
 
@@ -464,7 +457,7 @@ def test_prefix_instantiation_with_all_fields():
     """Check Prefix instantiation with all fields."""
     prefix = Prefix(
         prefix="192.168.0.0/24",
-        site="Site1",
+        scope_site="Site1",
         status="active",
         is_pool=True,
         mark_utilized=False,
@@ -473,8 +466,8 @@ def test_prefix_instantiation_with_all_fields():
     )
     assert isinstance(prefix, PrefixPb)
     assert prefix.prefix == "192.168.0.0/24"
-    assert isinstance(prefix.site, SitePb)
-    assert prefix.site.name == "Site1"
+    assert isinstance(prefix.scope_site, SitePb)
+    assert prefix.scope_site.name == "Site1"
     assert prefix.status == "active"
     assert prefix.is_pool is True
     assert prefix.mark_utilized is False
@@ -525,17 +518,17 @@ def test_cluster_instantiation_with_all_fields():
         status="active",
         group=ClusterGroup(name="North America"),
         type="Google Cloud",
-        site="Site1",
+        scope_site="Site1",
         description="Cluster on gc us east",
         tags=["us", "gc"],
     )
     assert isinstance(cluster, ClusterPb)
     assert isinstance(cluster.group, ClusterGroupPb)
     assert isinstance(cluster.type, ClusterTypePb)
-    assert isinstance(cluster.site, SitePb)
+    assert isinstance(cluster.scope_site, SitePb)
     assert cluster.name == "gc-us-east1"
     assert cluster.status == "active"
-    assert cluster.site.name == "Site1"
+    assert cluster.scope_site.name == "Site1"
     assert cluster.description == "Cluster on gc us east"
     assert len(cluster.tags) == 2
     for tag in cluster.tags:
@@ -563,7 +556,7 @@ def test_virtual_machine_instantiation_with_all_fields():
     assert isinstance(virtual_machine, VirtualMachinePb)
     assert isinstance(virtual_machine.cluster, ClusterPb)
     assert isinstance(virtual_machine.site, SitePb)
-    assert isinstance(virtual_machine.role, RolePb)
+    assert isinstance(virtual_machine.role, DeviceRolePb)
     assert isinstance(virtual_machine.device, DevicePb)
     assert isinstance(virtual_machine.platform, PlatformPb)
     assert isinstance(virtual_machine.primary_ip4, IPAddressPb)
@@ -591,11 +584,11 @@ def test_virtual_machine_instantiation_with_cluster_without_site():
     assert isinstance(virtual_machine, VirtualMachinePb)
     assert isinstance(virtual_machine.cluster, ClusterPb)
     assert isinstance(virtual_machine.site, SitePb)
-    assert isinstance(virtual_machine.role, RolePb)
+    assert isinstance(virtual_machine.role, DeviceRolePb)
     assert virtual_machine.name == "vm1"
     assert virtual_machine.status == "active"
     assert virtual_machine.site.name == "Site1"
-    assert virtual_machine.cluster.site.name == "Site1"
+    assert virtual_machine.cluster.scope_site.name == "Site1"
 
 
 def test_virtual_disk_instantiation_with_all_fields():
@@ -617,26 +610,26 @@ def test_virtual_disk_instantiation_with_all_fields():
         assert isinstance(tag, TagPb)
 
 
-def test_vminterface_instantiation_with_all_fields():
+def test_vm_interface_instantiation_with_all_fields():
     """Check VMInterface instantiation with all fields."""
-    vminterface = VMInterface(
+    vm_interface = VMInterface(
         name="eth01",
         virtual_machine="vm1",
         enabled=True,
         mtu=1500,
-        mac_address="00:00:00:00:00:00",
+        primary_mac_address="00:00:00:01:02:03",
         description="Virtual interface",
-        tags=["vm", "ifce"],
+        tags=["vm", "interface"],
     )
-    assert isinstance(vminterface, VMInterfacePb)
-    assert isinstance(vminterface.virtual_machine, VirtualMachinePb)
-    assert vminterface.name == "eth01"
-    assert vminterface.virtual_machine.name == "vm1"
-    assert vminterface.mtu == 1500
-    assert vminterface.mac_address == "00:00:00:00:00:00"
-    assert vminterface.description == "Virtual interface"
-    assert len(vminterface.tags) == 2
-    for tag in vminterface.tags:
+    assert isinstance(vm_interface, VMInterfacePb)
+    assert isinstance(vm_interface.virtual_machine, VirtualMachinePb)
+    assert vm_interface.name == "eth01"
+    assert vm_interface.virtual_machine.name == "vm1"
+    assert vm_interface.mtu == 1500
+    assert vm_interface.primary_mac_address.mac_address == "00:00:00:01:02:03"
+    assert vm_interface.description == "Virtual interface"
+    assert len(vm_interface.tags) == 2
+    for tag in vm_interface.tags:
         assert isinstance(tag, TagPb)
 
 
@@ -747,7 +740,7 @@ def test_entity_instantiation_with_role():
         device_role="Role1",
     )
     assert isinstance(entity, EntityPb)
-    assert isinstance(entity.device_role, RolePb)
+    assert isinstance(entity.device_role, DeviceRolePb)
     assert entity.device_role.name == "Role1"
 
 
@@ -831,11 +824,11 @@ def test_entity_instantiation_with_virtual_disk():
     assert entity.virtual_disk.name == "VirtualDisk1"
 
 
-def test_entity_instantiation_with_vminterface():
+def test_entity_instantiation_with_vm_interface():
     """Check Entity instantiation with virtual interface."""
     entity = Entity(
-        vminterface="VMInterface1",
+        vm_interface="VMInterface1",
     )
     assert isinstance(entity, EntityPb)
-    assert isinstance(entity.vminterface, VMInterfacePb)
-    assert entity.vminterface.name == "VMInterface1"
+    assert isinstance(entity.vm_interface, VMInterfacePb)
+    assert entity.vm_interface.name == "VMInterface1"
