@@ -1717,7 +1717,7 @@ class GenericObject(_message.Message):
     def __init__(self, object_asn: _Optional[_Union[ASN, _Mapping]] = ..., object_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., object_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., object_cable: _Optional[_Union[Cable, _Mapping]] = ..., object_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., object_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., object_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., object_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., object_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., object_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., object_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., object_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., object_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., object_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., object_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., object_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., object_contact: _Optional[_Union[Contact, _Mapping]] = ..., object_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., object_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., object_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., object_device: _Optional[_Union[Device, _Mapping]] = ..., object_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., object_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., object_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., object_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., object_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., object_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., object_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., object_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., object_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., object_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., object_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., object_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., object_interface: _Optional[_Union[Interface, _Mapping]] = ..., object_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., object_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., object_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., object_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., object_location: _Optional[_Union[Location, _Mapping]] = ..., object_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., object_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., object_module: _Optional[_Union[Module, _Mapping]] = ..., object_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., object_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., object_platform: _Optional[_Union[Platform, _Mapping]] = ..., object_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., object_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., object_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., object_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., object_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., object_provider: _Optional[_Union[Provider, _Mapping]] = ..., object_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., object_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., object_rir: _Optional[_Union[RIR, _Mapping]] = ..., object_rack: _Optional[_Union[Rack, _Mapping]] = ..., object_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., object_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., object_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., object_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., object_region: _Optional[_Union[Region, _Mapping]] = ..., object_role: _Optional[_Union[Role, _Mapping]] = ..., object_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., object_service: _Optional[_Union[Service, _Mapping]] = ..., object_site: _Optional[_Union[Site, _Mapping]] = ..., object_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., object_tag: _Optional[_Union[Tag, _Mapping]] = ..., object_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., object_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., object_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., object_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., object_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., object_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., object_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., object_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., object_vrf: _Optional[_Union[VRF, _Mapping]] = ..., object_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., object_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., object_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., object_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., object_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., object_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., object_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., object_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., object_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ...) -> None: ...
 
 class IKEPolicy(_message.Message):
-    __slots__ = ("name", "description", "version", "mode", "preshared_key", "comments", "tags", "custom_fields")
+    __slots__ = ("name", "description", "version", "mode", "preshared_key", "comments", "tags", "custom_fields", "proposals")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -1733,6 +1733,7 @@ class IKEPolicy(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    PROPOSALS_FIELD_NUMBER: _ClassVar[int]
     name: str
     description: str
     version: int
@@ -1741,7 +1742,8 @@ class IKEPolicy(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., version: _Optional[int] = ..., mode: _Optional[str] = ..., preshared_key: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    proposals: _containers.RepeatedCompositeFieldContainer[IKEProposal]
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., version: _Optional[int] = ..., mode: _Optional[str] = ..., preshared_key: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., proposals: _Optional[_Iterable[_Union[IKEProposal, _Mapping]]] = ...) -> None: ...
 
 class IKEProposal(_message.Message):
     __slots__ = ("name", "description", "authentication_method", "encryption_algorithm", "authentication_algorithm", "group", "sa_lifetime", "comments", "tags", "custom_fields")
@@ -1847,7 +1849,7 @@ class IPRange(_message.Message):
     def __init__(self, start_address: _Optional[str] = ..., end_address: _Optional[str] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., mark_utilized: bool = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class IPSecPolicy(_message.Message):
-    __slots__ = ("name", "description", "pfs_group", "comments", "tags", "custom_fields")
+    __slots__ = ("name", "description", "pfs_group", "comments", "tags", "custom_fields", "proposals")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -1861,13 +1863,15 @@ class IPSecPolicy(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    PROPOSALS_FIELD_NUMBER: _ClassVar[int]
     name: str
     description: str
     pfs_group: int
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., pfs_group: _Optional[int] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    proposals: _containers.RepeatedCompositeFieldContainer[IPSecProposal]
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., pfs_group: _Optional[int] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., proposals: _Optional[_Iterable[_Union[IPSecProposal, _Mapping]]] = ...) -> None: ...
 
 class IPSecProfile(_message.Message):
     __slots__ = ("name", "description", "mode", "ike_policy", "ipsec_policy", "comments", "tags", "custom_fields")
@@ -1926,7 +1930,7 @@ class IPSecProposal(_message.Message):
     def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., encryption_algorithm: _Optional[str] = ..., authentication_algorithm: _Optional[str] = ..., sa_lifetime_seconds: _Optional[int] = ..., sa_lifetime_data: _Optional[int] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Interface(_message.Message):
-    __slots__ = ("device", "module", "name", "label", "type", "enabled", "parent", "bridge", "lag", "mtu", "primary_mac_address", "speed", "duplex", "wwn", "mgmt_only", "description", "mode", "rf_role", "rf_channel", "poe_mode", "poe_type", "rf_channel_frequency", "rf_channel_width", "tx_power", "untagged_vlan", "qinq_svlan", "vlan_translation_policy", "mark_connected", "vrf", "tags", "custom_fields")
+    __slots__ = ("device", "module", "name", "label", "type", "enabled", "parent", "bridge", "lag", "mtu", "primary_mac_address", "speed", "duplex", "wwn", "mgmt_only", "description", "mode", "rf_role", "rf_channel", "poe_mode", "poe_type", "rf_channel_frequency", "rf_channel_width", "tx_power", "untagged_vlan", "qinq_svlan", "vlan_translation_policy", "mark_connected", "vrf", "tags", "custom_fields", "vdcs", "tagged_vlans", "wireless_lans")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -1965,6 +1969,9 @@ class Interface(_message.Message):
     VRF_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    VDCS_FIELD_NUMBER: _ClassVar[int]
+    TAGGED_VLANS_FIELD_NUMBER: _ClassVar[int]
+    WIRELESS_LANS_FIELD_NUMBER: _ClassVar[int]
     device: Device
     module: Module
     name: str
@@ -1996,7 +2003,10 @@ class Interface(_message.Message):
     vrf: VRF
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., type: _Optional[str] = ..., enabled: bool = ..., parent: _Optional[_Union[Interface, _Mapping]] = ..., bridge: _Optional[_Union[Interface, _Mapping]] = ..., lag: _Optional[_Union[Interface, _Mapping]] = ..., mtu: _Optional[int] = ..., primary_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., speed: _Optional[int] = ..., duplex: _Optional[str] = ..., wwn: _Optional[str] = ..., mgmt_only: bool = ..., description: _Optional[str] = ..., mode: _Optional[str] = ..., rf_role: _Optional[str] = ..., rf_channel: _Optional[str] = ..., poe_mode: _Optional[str] = ..., poe_type: _Optional[str] = ..., rf_channel_frequency: _Optional[float] = ..., rf_channel_width: _Optional[float] = ..., tx_power: _Optional[int] = ..., untagged_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., qinq_svlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., mark_connected: bool = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    vdcs: _containers.RepeatedCompositeFieldContainer[VirtualDeviceContext]
+    tagged_vlans: _containers.RepeatedCompositeFieldContainer[VLAN]
+    wireless_lans: _containers.RepeatedCompositeFieldContainer[WirelessLAN]
+    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., type: _Optional[str] = ..., enabled: bool = ..., parent: _Optional[_Union[Interface, _Mapping]] = ..., bridge: _Optional[_Union[Interface, _Mapping]] = ..., lag: _Optional[_Union[Interface, _Mapping]] = ..., mtu: _Optional[int] = ..., primary_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., speed: _Optional[int] = ..., duplex: _Optional[str] = ..., wwn: _Optional[str] = ..., mgmt_only: bool = ..., description: _Optional[str] = ..., mode: _Optional[str] = ..., rf_role: _Optional[str] = ..., rf_channel: _Optional[str] = ..., poe_mode: _Optional[str] = ..., poe_type: _Optional[str] = ..., rf_channel_frequency: _Optional[float] = ..., rf_channel_width: _Optional[float] = ..., tx_power: _Optional[int] = ..., untagged_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., qinq_svlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., mark_connected: bool = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., vdcs: _Optional[_Iterable[_Union[VirtualDeviceContext, _Mapping]]] = ..., tagged_vlans: _Optional[_Iterable[_Union[VLAN, _Mapping]]] = ..., wireless_lans: _Optional[_Iterable[_Union[WirelessLAN, _Mapping]]] = ...) -> None: ...
 
 class InventoryItem(_message.Message):
     __slots__ = ("device", "parent", "name", "label", "status", "role", "manufacturer", "part_id", "serial", "asset_tag", "discovered", "description", "component_console_port", "component_console_server_port", "component_front_port", "component_interface", "component_power_outlet", "component_power_port", "component_rear_port", "tags", "custom_fields")
@@ -2075,7 +2085,7 @@ class InventoryItemRole(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class L2VPN(_message.Message):
-    __slots__ = ("identifier", "name", "slug", "type", "description", "comments", "tenant", "tags", "custom_fields")
+    __slots__ = ("identifier", "name", "slug", "type", "description", "comments", "tenant", "tags", "custom_fields", "import_targets", "export_targets")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2092,6 +2102,8 @@ class L2VPN(_message.Message):
     TENANT_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    IMPORT_TARGETS_FIELD_NUMBER: _ClassVar[int]
+    EXPORT_TARGETS_FIELD_NUMBER: _ClassVar[int]
     identifier: int
     name: str
     slug: str
@@ -2101,7 +2113,9 @@ class L2VPN(_message.Message):
     tenant: Tenant
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, identifier: _Optional[int] = ..., name: _Optional[str] = ..., slug: _Optional[str] = ..., type: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    import_targets: _containers.RepeatedCompositeFieldContainer[RouteTarget]
+    export_targets: _containers.RepeatedCompositeFieldContainer[RouteTarget]
+    def __init__(self, identifier: _Optional[int] = ..., name: _Optional[str] = ..., slug: _Optional[str] = ..., type: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., import_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ..., export_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ...) -> None: ...
 
 class L2VPNTermination(_message.Message):
     __slots__ = ("l2vpn", "assigned_object_interface", "assigned_object_vlan", "assigned_object_vm_interface", "tags", "custom_fields")
@@ -2497,7 +2511,7 @@ class Prefix(_message.Message):
     def __init__(self, prefix: _Optional[str] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., scope_location: _Optional[_Union[Location, _Mapping]] = ..., scope_region: _Optional[_Union[Region, _Mapping]] = ..., scope_site: _Optional[_Union[Site, _Mapping]] = ..., scope_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., vlan: _Optional[_Union[VLAN, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., is_pool: bool = ..., mark_utilized: bool = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Provider(_message.Message):
-    __slots__ = ("name", "slug", "description", "comments", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "description", "comments", "tags", "custom_fields", "accounts", "asns")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2511,13 +2525,17 @@ class Provider(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    ACCOUNTS_FIELD_NUMBER: _ClassVar[int]
+    ASNS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     description: str
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    accounts: _containers.RepeatedCompositeFieldContainer[ProviderAccount]
+    asns: _containers.RepeatedCompositeFieldContainer[ASN]
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., accounts: _Optional[_Iterable[_Union[ProviderAccount, _Mapping]]] = ..., asns: _Optional[_Iterable[_Union[ASN, _Mapping]]] = ...) -> None: ...
 
 class ProviderAccount(_message.Message):
     __slots__ = ("provider", "name", "account", "description", "comments", "tags", "custom_fields")
@@ -2857,7 +2875,7 @@ class RouteTarget(_message.Message):
     def __init__(self, name: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Service(_message.Message):
-    __slots__ = ("device", "virtual_machine", "name", "protocol", "ports", "description", "comments", "tags", "custom_fields")
+    __slots__ = ("device", "virtual_machine", "name", "protocol", "ports", "description", "comments", "tags", "custom_fields", "ipaddresses")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2874,6 +2892,7 @@ class Service(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    IPADDRESSES_FIELD_NUMBER: _ClassVar[int]
     device: Device
     virtual_machine: VirtualMachine
     name: str
@@ -2883,10 +2902,11 @@ class Service(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., name: _Optional[str] = ..., protocol: _Optional[str] = ..., ports: _Optional[_Iterable[int]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    ipaddresses: _containers.RepeatedCompositeFieldContainer[IPAddress]
+    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., name: _Optional[str] = ..., protocol: _Optional[str] = ..., ports: _Optional[_Iterable[int]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., ipaddresses: _Optional[_Iterable[_Union[IPAddress, _Mapping]]] = ...) -> None: ...
 
 class Site(_message.Message):
-    __slots__ = ("name", "slug", "status", "region", "group", "tenant", "facility", "time_zone", "description", "physical_address", "shipping_address", "latitude", "longitude", "comments", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "status", "region", "group", "tenant", "facility", "time_zone", "description", "physical_address", "shipping_address", "latitude", "longitude", "comments", "tags", "custom_fields", "asns")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2910,6 +2930,7 @@ class Site(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    ASNS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     status: str
@@ -2926,7 +2947,8 @@ class Site(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., status: _Optional[str] = ..., region: _Optional[_Union[Region, _Mapping]] = ..., group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., facility: _Optional[str] = ..., time_zone: _Optional[str] = ..., description: _Optional[str] = ..., physical_address: _Optional[str] = ..., shipping_address: _Optional[str] = ..., latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    asns: _containers.RepeatedCompositeFieldContainer[ASN]
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., status: _Optional[str] = ..., region: _Optional[_Union[Region, _Mapping]] = ..., group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., facility: _Optional[str] = ..., time_zone: _Optional[str] = ..., description: _Optional[str] = ..., physical_address: _Optional[str] = ..., shipping_address: _Optional[str] = ..., latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., asns: _Optional[_Iterable[_Union[ASN, _Mapping]]] = ...) -> None: ...
 
 class SiteGroup(_message.Message):
     __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields")
@@ -3355,7 +3377,7 @@ class VLANTranslationRule(_message.Message):
     def __init__(self, policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., local_vid: _Optional[int] = ..., remote_vid: _Optional[int] = ..., description: _Optional[str] = ...) -> None: ...
 
 class VMInterface(_message.Message):
-    __slots__ = ("virtual_machine", "name", "enabled", "parent", "bridge", "mtu", "primary_mac_address", "description", "mode", "untagged_vlan", "qinq_svlan", "vlan_translation_policy", "vrf", "tags", "custom_fields")
+    __slots__ = ("virtual_machine", "name", "enabled", "parent", "bridge", "mtu", "primary_mac_address", "description", "mode", "untagged_vlan", "qinq_svlan", "vlan_translation_policy", "vrf", "tags", "custom_fields", "tagged_vlans")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -3378,6 +3400,7 @@ class VMInterface(_message.Message):
     VRF_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    TAGGED_VLANS_FIELD_NUMBER: _ClassVar[int]
     virtual_machine: VirtualMachine
     name: str
     enabled: bool
@@ -3393,10 +3416,11 @@ class VMInterface(_message.Message):
     vrf: VRF
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., name: _Optional[str] = ..., enabled: bool = ..., parent: _Optional[_Union[VMInterface, _Mapping]] = ..., bridge: _Optional[_Union[VMInterface, _Mapping]] = ..., mtu: _Optional[int] = ..., primary_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., description: _Optional[str] = ..., mode: _Optional[str] = ..., untagged_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., qinq_svlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    tagged_vlans: _containers.RepeatedCompositeFieldContainer[VLAN]
+    def __init__(self, virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., name: _Optional[str] = ..., enabled: bool = ..., parent: _Optional[_Union[VMInterface, _Mapping]] = ..., bridge: _Optional[_Union[VMInterface, _Mapping]] = ..., mtu: _Optional[int] = ..., primary_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., description: _Optional[str] = ..., mode: _Optional[str] = ..., untagged_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., qinq_svlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., tagged_vlans: _Optional[_Iterable[_Union[VLAN, _Mapping]]] = ...) -> None: ...
 
 class VRF(_message.Message):
-    __slots__ = ("name", "rd", "tenant", "enforce_unique", "description", "comments", "tags", "custom_fields")
+    __slots__ = ("name", "rd", "tenant", "enforce_unique", "description", "comments", "tags", "custom_fields", "import_targets", "export_targets")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -3412,6 +3436,8 @@ class VRF(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    IMPORT_TARGETS_FIELD_NUMBER: _ClassVar[int]
+    EXPORT_TARGETS_FIELD_NUMBER: _ClassVar[int]
     name: str
     rd: str
     tenant: Tenant
@@ -3420,7 +3446,9 @@ class VRF(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., rd: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., enforce_unique: bool = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    import_targets: _containers.RepeatedCompositeFieldContainer[RouteTarget]
+    export_targets: _containers.RepeatedCompositeFieldContainer[RouteTarget]
+    def __init__(self, name: _Optional[str] = ..., rd: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., enforce_unique: bool = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., import_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ..., export_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ...) -> None: ...
 
 class VirtualChassis(_message.Message):
     __slots__ = ("name", "domain", "master", "description", "comments", "tags", "custom_fields")

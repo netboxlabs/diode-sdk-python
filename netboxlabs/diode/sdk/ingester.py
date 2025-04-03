@@ -2,7 +2,7 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Timestamp: 2025-03-19 19:34:03Z
+# Timestamp: 2025-04-01 21:05:15Z
 #
 # ruff: noqa: C901
 
@@ -2501,10 +2501,12 @@ class IKEPolicy:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        proposals: list[str | IKEProposal | pb.IKEProposal] | None = None,
     ) -> pb.IKEPolicy:
         """Create a new IKEPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        proposals = convert_to_protobuf_list(proposals, pb.IKEProposal)
         return pb.IKEPolicy(
             name=name,
             description=description,
@@ -2514,6 +2516,7 @@ class IKEPolicy:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            proposals=proposals,
         )
 
 
@@ -2685,10 +2688,12 @@ class IPSecPolicy:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        proposals: list[str | IPSecProposal | pb.IPSecProposal] | None = None,
     ) -> pb.IPSecPolicy:
         """Create a new IPSecPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        proposals = convert_to_protobuf_list(proposals, pb.IPSecProposal)
         return pb.IPSecPolicy(
             name=name,
             description=description,
@@ -2696,6 +2701,7 @@ class IPSecPolicy:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            proposals=proposals,
         )
 
 
@@ -2797,6 +2803,9 @@ class Interface:
         vrf: str | VRF | pb.VRF | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        vdcs: list[str | VirtualDeviceContext | pb.VirtualDeviceContext] | None = None,
+        tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
+        wireless_lans: list[str | WirelessLAN | pb.WirelessLAN] | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
         device_type: str | DeviceType | pb.DeviceType = None,
@@ -2817,6 +2826,9 @@ class Interface:
         vrf = convert_to_protobuf(vrf, pb.VRF)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        vdcs = convert_to_protobuf_list(vdcs, pb.VirtualDeviceContext)
+        tagged_vlans = convert_to_protobuf_list(tagged_vlans, pb.VLAN)
+        wireless_lans = convert_to_protobuf_list(wireless_lans, pb.WirelessLAN)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -2875,6 +2887,9 @@ class Interface:
             vrf=vrf,
             tags=tags,
             custom_fields=custom_fields,
+            vdcs=vdcs,
+            tagged_vlans=tagged_vlans,
+            wireless_lans=wireless_lans,
         )
 
 
@@ -2983,11 +2998,15 @@ class L2VPN:
         tenant: str | Tenant | pb.Tenant | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
+        export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
     ) -> pb.L2VPN:
         """Create a new L2VPN."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
+        export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
         return pb.L2VPN(
             identifier=identifier,
             name=name,
@@ -2998,6 +3017,8 @@ class L2VPN:
             tenant=tenant,
             tags=tags,
             custom_fields=custom_fields,
+            import_targets=import_targets,
+            export_targets=export_targets,
         )
 
 
@@ -3466,10 +3487,14 @@ class Provider:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        accounts: list[str | ProviderAccount | pb.ProviderAccount] | None = None,
+        asns: list[str | ASN | pb.ASN] | None = None,
     ) -> pb.Provider:
         """Create a new Provider."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        accounts = convert_to_protobuf_list(accounts, pb.ProviderAccount)
+        asns = convert_to_protobuf_list(asns, pb.ASN)
         return pb.Provider(
             name=name,
             slug=slug,
@@ -3477,6 +3502,8 @@ class Provider:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            accounts=accounts,
+            asns=asns,
         )
 
 
@@ -3867,12 +3894,14 @@ class Service:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        ipaddresses: list[str | IPAddress | pb.IPAddress] | None = None,
     ) -> pb.Service:
         """Create a new Service."""
         device = convert_to_protobuf(device, pb.Device)
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        ipaddresses = convert_to_protobuf_list(ipaddresses, pb.IPAddress)
         return pb.Service(
             device=device,
             virtual_machine=virtual_machine,
@@ -3883,6 +3912,7 @@ class Service:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            ipaddresses=ipaddresses,
         )
 
 
@@ -3907,6 +3937,7 @@ class Site:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        asns: list[str | ASN | pb.ASN] | None = None,
     ) -> pb.Site:
         """Create a new Site."""
         region = convert_to_protobuf(region, pb.Region)
@@ -3914,6 +3945,7 @@ class Site:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        asns = convert_to_protobuf_list(asns, pb.ASN)
         return pb.Site(
             name=name,
             slug=slug,
@@ -3931,6 +3963,7 @@ class Site:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            asns=asns,
         )
 
 
@@ -4526,6 +4559,7 @@ class VMInterface:
         vrf: str | VRF | pb.VRF | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
     ) -> pb.VMInterface:
         """Create a new VMInterface."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
@@ -4538,6 +4572,7 @@ class VMInterface:
         vrf = convert_to_protobuf(vrf, pb.VRF)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        tagged_vlans = convert_to_protobuf_list(tagged_vlans, pb.VLAN)
         return pb.VMInterface(
             virtual_machine=virtual_machine,
             name=name,
@@ -4554,6 +4589,7 @@ class VMInterface:
             vrf=vrf,
             tags=tags,
             custom_fields=custom_fields,
+            tagged_vlans=tagged_vlans,
         )
 
 
@@ -4570,11 +4606,15 @@ class VRF:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
+        export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
     ) -> pb.VRF:
         """Create a new VRF."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
+        export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
         return pb.VRF(
             name=name,
             rd=rd,
@@ -4584,6 +4624,8 @@ class VRF:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            import_targets=import_targets,
+            export_targets=export_targets,
         )
 
 
