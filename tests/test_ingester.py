@@ -52,7 +52,6 @@ def test_convert_to_protobuf_returns_correct_class_when_value_is_string():
     result = convert_to_protobuf("Test Site", SitePb)
     assert isinstance(result, SitePb)
     assert result.name == "Test Site"
-    assert result.slug == "test-site"
 
 
 def test_convert_to_protobuf_returns_value_when_value_is_not_string():

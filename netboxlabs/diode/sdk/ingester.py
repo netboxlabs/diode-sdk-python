@@ -2,7 +2,7 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Timestamp: 2025-04-01 21:05:15Z
+# Timestamp: 2025-04-10 14:44:19Z
 #
 # ruff: noqa: C901
 
@@ -89,41 +89,9 @@ PRIMARY_VALUE_MAP = {
     'WirelessLANGroup': 'name',
 }
 
-AUTO_SLUGIFY = frozenset([
-    'ASNRange',
-    'CircuitGroup',
-    'CircuitType',
-    'ClusterGroup',
-    'ClusterType',
-    'ContactGroup',
-    'ContactRole',
-    'DeviceRole',
-    'DeviceType',
-    'InventoryItemRole',
-    'L2VPN',
-    'Location',
-    'Manufacturer',
-    'Platform',
-    'Provider',
-    'RIR',
-    'RackRole',
-    'RackType',
-    'Region',
-    'Role',
-    'Site',
-    'SiteGroup',
-    'Tag',
-    'Tenant',
-    'TenantGroup',
-    'TunnelGroup',
-    'VLANGroup',
-    'VirtualCircuitType',
-    'WirelessLANGroup',
-])
-
 
 def slugify(value: Any) -> str:
-    """Convert a value to a slug."""
+    """Utility to convert a value to a slug."""
     value = str(value).strip().strip('_').lower()
     value = re.sub(r'[^\w\s-]', '', value)
     return re.sub(r'[-\s]+', '-', value)
@@ -149,11 +117,6 @@ def convert_to_protobuf(value: Any, protobuf_class):
             raise ValueError(f'{protobuf_class.__name__} cannot be initialized with {type(value)}')
         kwargs = {pvk: value}
         value = protobuf_class(**kwargs)
-
-    if protobuf_class.__name__ in AUTO_SLUGIFY and value.slug == '':
-        pvk = PRIMARY_VALUE_MAP.get(protobuf_class.__name__)
-        value.slug = slugify(getattr(value, pvk))
-
     return value
 
 
@@ -177,36 +140,33 @@ class Entity:
     def __new__(
         cls,
         timestamp: datetime.datetime | None = None,
-        asn_range: str | ASNRange | pb.ASNRange | None = None,
         asn: str | ASN | pb.ASN | None = None,
+        asn_range: str | ASNRange | pb.ASNRange | None = None,
         aggregate: str | Aggregate | pb.Aggregate | None = None,
-        cable_path: str | CablePath | pb.CablePath | None = None,
         cable: str | Cable | pb.Cable | None = None,
+        cable_path: str | CablePath | pb.CablePath | None = None,
         cable_termination: str | CableTermination | pb.CableTermination | None = None,
-        circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
-        circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         circuit: str | Circuit | pb.Circuit | None = None,
+        circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
+        circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
+        circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
         circuit_type: str | CircuitType | pb.CircuitType | None = None,
-        cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         cluster: str | Cluster | pb.Cluster | None = None,
+        cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         cluster_type: str | ClusterType | pb.ClusterType | None = None,
         console_port: str | ConsolePort | pb.ConsolePort | None = None,
         console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        contact: str | Contact | pb.Contact | None = None,
         contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
         contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         contact_role: str | ContactRole | pb.ContactRole | None = None,
-        contact: str | Contact | pb.Contact | None = None,
-        vlan: str | VLAN | pb.VLAN | None = None,
+        device: str | Device | pb.Device | None = None,
         device_bay: str | DeviceBay | pb.DeviceBay | None = None,
         device_role: str | DeviceRole | pb.DeviceRole | None = None,
-        device: str | Device | pb.Device | None = None,
         device_type: str | DeviceType | pb.DeviceType | None = None,
-        fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
         fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        rear_port: str | RearPort | pb.RearPort | None = None,
+        fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
         front_port: str | FrontPort | pb.FrontPort | None = None,
-        generic_object: str | GenericObject | pb.GenericObject | None = None,
         ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         ip_address: str | IPAddress | pb.IPAddress | None = None,
@@ -215,49 +175,48 @@ class Entity:
         ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
         interface: str | Interface | pb.Interface | None = None,
-        inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
         inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
+        inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
         l2vpn: str | L2VPN | pb.L2VPN | None = None,
         l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
         location: str | Location | pb.Location | None = None,
         mac_address: str | MACAddress | pb.MACAddress | None = None,
         manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         module: str | Module | pb.Module | None = None,
+        module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         module_type: str | ModuleType | pb.ModuleType | None = None,
-        region: str | Region | pb.Region | None = None,
-        site_group: str | SiteGroup | pb.SiteGroup | None = None,
-        tag: str | Tag | pb.Tag | None = None,
-        tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
-        vm_interface: str | VMInterface | pb.VMInterface | None = None,
-        virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
-        wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
-        wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         platform: str | Platform | pb.Platform | None = None,
         power_feed: str | PowerFeed | pb.PowerFeed | None = None,
         power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
         power_panel: str | PowerPanel | pb.PowerPanel | None = None,
         power_port: str | PowerPort | pb.PowerPort | None = None,
         prefix: str | Prefix | pb.Prefix | None = None,
+        provider: str | Provider | pb.Provider | None = None,
         provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
         provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
-        provider: str | Provider | pb.Provider | None = None,
         rir: str | RIR | pb.RIR | None = None,
+        rack: str | Rack | pb.Rack | None = None,
         rack_reservation: str | RackReservation | pb.RackReservation | None = None,
         rack_role: str | RackRole | pb.RackRole | None = None,
-        rack: str | Rack | pb.Rack | None = None,
         rack_type: str | RackType | pb.RackType | None = None,
+        rear_port: str | RearPort | pb.RearPort | None = None,
+        region: str | Region | pb.Region | None = None,
         role: str | Role | pb.Role | None = None,
         route_target: str | RouteTarget | pb.RouteTarget | None = None,
         service: str | Service | pb.Service | None = None,
         site: str | Site | pb.Site | None = None,
+        site_group: str | SiteGroup | pb.SiteGroup | None = None,
+        tag: str | Tag | pb.Tag | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
-        tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
+        tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         tunnel: str | Tunnel | pb.Tunnel | None = None,
+        tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        vlan: str | VLAN | pb.VLAN | None = None,
         vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
         vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
         vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        vm_interface: str | VMInterface | pb.VMInterface | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
@@ -265,39 +224,39 @@ class Entity:
         virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
         virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
         virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
+        virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
+        wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
+        wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
-        asn_range = convert_to_protobuf(asn_range, pb.ASNRange)
         asn = convert_to_protobuf(asn, pb.ASN)
+        asn_range = convert_to_protobuf(asn_range, pb.ASNRange)
         aggregate = convert_to_protobuf(aggregate, pb.Aggregate)
-        cable_path = convert_to_protobuf(cable_path, pb.CablePath)
         cable = convert_to_protobuf(cable, pb.Cable)
+        cable_path = convert_to_protobuf(cable_path, pb.CablePath)
         cable_termination = convert_to_protobuf(cable_termination, pb.CableTermination)
-        circuit_termination = convert_to_protobuf(circuit_termination, pb.CircuitTermination)
-        circuit_group_assignment = convert_to_protobuf(circuit_group_assignment, pb.CircuitGroupAssignment)
-        circuit_group = convert_to_protobuf(circuit_group, pb.CircuitGroup)
         circuit = convert_to_protobuf(circuit, pb.Circuit)
+        circuit_group = convert_to_protobuf(circuit_group, pb.CircuitGroup)
+        circuit_group_assignment = convert_to_protobuf(circuit_group_assignment, pb.CircuitGroupAssignment)
+        circuit_termination = convert_to_protobuf(circuit_termination, pb.CircuitTermination)
         circuit_type = convert_to_protobuf(circuit_type, pb.CircuitType)
-        cluster_group = convert_to_protobuf(cluster_group, pb.ClusterGroup)
         cluster = convert_to_protobuf(cluster, pb.Cluster)
+        cluster_group = convert_to_protobuf(cluster_group, pb.ClusterGroup)
         cluster_type = convert_to_protobuf(cluster_type, pb.ClusterType)
         console_port = convert_to_protobuf(console_port, pb.ConsolePort)
         console_server_port = convert_to_protobuf(console_server_port, pb.ConsoleServerPort)
+        contact = convert_to_protobuf(contact, pb.Contact)
         contact_assignment = convert_to_protobuf(contact_assignment, pb.ContactAssignment)
         contact_group = convert_to_protobuf(contact_group, pb.ContactGroup)
         contact_role = convert_to_protobuf(contact_role, pb.ContactRole)
-        contact = convert_to_protobuf(contact, pb.Contact)
-        vlan = convert_to_protobuf(vlan, pb.VLAN)
+        device = convert_to_protobuf(device, pb.Device)
         device_bay = convert_to_protobuf(device_bay, pb.DeviceBay)
         device_role = convert_to_protobuf(device_role, pb.DeviceRole)
-        device = convert_to_protobuf(device, pb.Device)
         device_type = convert_to_protobuf(device_type, pb.DeviceType)
-        fhrp_group_assignment = convert_to_protobuf(fhrp_group_assignment, pb.FHRPGroupAssignment)
         fhrp_group = convert_to_protobuf(fhrp_group, pb.FHRPGroup)
-        rear_port = convert_to_protobuf(rear_port, pb.RearPort)
+        fhrp_group_assignment = convert_to_protobuf(fhrp_group_assignment, pb.FHRPGroupAssignment)
         front_port = convert_to_protobuf(front_port, pb.FrontPort)
-        generic_object = convert_to_protobuf(generic_object, pb.GenericObject)
         ike_policy = convert_to_protobuf(ike_policy, pb.IKEPolicy)
         ike_proposal = convert_to_protobuf(ike_proposal, pb.IKEProposal)
         ip_address = convert_to_protobuf(ip_address, pb.IPAddress)
@@ -306,49 +265,48 @@ class Entity:
         ip_sec_profile = convert_to_protobuf(ip_sec_profile, pb.IPSecProfile)
         ip_sec_proposal = convert_to_protobuf(ip_sec_proposal, pb.IPSecProposal)
         interface = convert_to_protobuf(interface, pb.Interface)
-        inventory_item_role = convert_to_protobuf(inventory_item_role, pb.InventoryItemRole)
         inventory_item = convert_to_protobuf(inventory_item, pb.InventoryItem)
+        inventory_item_role = convert_to_protobuf(inventory_item_role, pb.InventoryItemRole)
         l2vpn = convert_to_protobuf(l2vpn, pb.L2VPN)
         l2vpn_termination = convert_to_protobuf(l2vpn_termination, pb.L2VPNTermination)
         location = convert_to_protobuf(location, pb.Location)
         mac_address = convert_to_protobuf(mac_address, pb.MACAddress)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
-        module_bay = convert_to_protobuf(module_bay, pb.ModuleBay)
         module = convert_to_protobuf(module, pb.Module)
+        module_bay = convert_to_protobuf(module_bay, pb.ModuleBay)
         module_type = convert_to_protobuf(module_type, pb.ModuleType)
-        region = convert_to_protobuf(region, pb.Region)
-        site_group = convert_to_protobuf(site_group, pb.SiteGroup)
-        tag = convert_to_protobuf(tag, pb.Tag)
-        tenant_group = convert_to_protobuf(tenant_group, pb.TenantGroup)
-        vm_interface = convert_to_protobuf(vm_interface, pb.VMInterface)
-        virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
-        wireless_lan_group = convert_to_protobuf(wireless_lan_group, pb.WirelessLANGroup)
-        wireless_link = convert_to_protobuf(wireless_link, pb.WirelessLink)
         platform = convert_to_protobuf(platform, pb.Platform)
         power_feed = convert_to_protobuf(power_feed, pb.PowerFeed)
         power_outlet = convert_to_protobuf(power_outlet, pb.PowerOutlet)
         power_panel = convert_to_protobuf(power_panel, pb.PowerPanel)
         power_port = convert_to_protobuf(power_port, pb.PowerPort)
         prefix = convert_to_protobuf(prefix, pb.Prefix)
+        provider = convert_to_protobuf(provider, pb.Provider)
         provider_account = convert_to_protobuf(provider_account, pb.ProviderAccount)
         provider_network = convert_to_protobuf(provider_network, pb.ProviderNetwork)
-        provider = convert_to_protobuf(provider, pb.Provider)
         rir = convert_to_protobuf(rir, pb.RIR)
+        rack = convert_to_protobuf(rack, pb.Rack)
         rack_reservation = convert_to_protobuf(rack_reservation, pb.RackReservation)
         rack_role = convert_to_protobuf(rack_role, pb.RackRole)
-        rack = convert_to_protobuf(rack, pb.Rack)
         rack_type = convert_to_protobuf(rack_type, pb.RackType)
+        rear_port = convert_to_protobuf(rear_port, pb.RearPort)
+        region = convert_to_protobuf(region, pb.Region)
         role = convert_to_protobuf(role, pb.Role)
         route_target = convert_to_protobuf(route_target, pb.RouteTarget)
         service = convert_to_protobuf(service, pb.Service)
         site = convert_to_protobuf(site, pb.Site)
+        site_group = convert_to_protobuf(site_group, pb.SiteGroup)
+        tag = convert_to_protobuf(tag, pb.Tag)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
-        tunnel_group = convert_to_protobuf(tunnel_group, pb.TunnelGroup)
+        tenant_group = convert_to_protobuf(tenant_group, pb.TenantGroup)
         tunnel = convert_to_protobuf(tunnel, pb.Tunnel)
+        tunnel_group = convert_to_protobuf(tunnel_group, pb.TunnelGroup)
         tunnel_termination = convert_to_protobuf(tunnel_termination, pb.TunnelTermination)
+        vlan = convert_to_protobuf(vlan, pb.VLAN)
         vlan_group = convert_to_protobuf(vlan_group, pb.VLANGroup)
         vlan_translation_policy = convert_to_protobuf(vlan_translation_policy, pb.VLANTranslationPolicy)
         vlan_translation_rule = convert_to_protobuf(vlan_translation_rule, pb.VLANTranslationRule)
+        vm_interface = convert_to_protobuf(vm_interface, pb.VMInterface)
         vrf = convert_to_protobuf(vrf, pb.VRF)
         virtual_chassis = convert_to_protobuf(virtual_chassis, pb.VirtualChassis)
         virtual_circuit = convert_to_protobuf(virtual_circuit, pb.VirtualCircuit)
@@ -356,43 +314,43 @@ class Entity:
         virtual_circuit_type = convert_to_protobuf(virtual_circuit_type, pb.VirtualCircuitType)
         virtual_device_context = convert_to_protobuf(virtual_device_context, pb.VirtualDeviceContext)
         virtual_disk = convert_to_protobuf(virtual_disk, pb.VirtualDisk)
+        virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         wireless_lan = convert_to_protobuf(wireless_lan, pb.WirelessLAN)
+        wireless_lan_group = convert_to_protobuf(wireless_lan_group, pb.WirelessLANGroup)
+        wireless_link = convert_to_protobuf(wireless_link, pb.WirelessLink)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
             timestamp = ts
         return pb.Entity(
             timestamp=timestamp,
-            asn_range=asn_range,
             asn=asn,
+            asn_range=asn_range,
             aggregate=aggregate,
-            cable_path=cable_path,
             cable=cable,
+            cable_path=cable_path,
             cable_termination=cable_termination,
-            circuit_termination=circuit_termination,
-            circuit_group_assignment=circuit_group_assignment,
-            circuit_group=circuit_group,
             circuit=circuit,
+            circuit_group=circuit_group,
+            circuit_group_assignment=circuit_group_assignment,
+            circuit_termination=circuit_termination,
             circuit_type=circuit_type,
-            cluster_group=cluster_group,
             cluster=cluster,
+            cluster_group=cluster_group,
             cluster_type=cluster_type,
             console_port=console_port,
             console_server_port=console_server_port,
+            contact=contact,
             contact_assignment=contact_assignment,
             contact_group=contact_group,
             contact_role=contact_role,
-            contact=contact,
-            vlan=vlan,
+            device=device,
             device_bay=device_bay,
             device_role=device_role,
-            device=device,
             device_type=device_type,
-            fhrp_group_assignment=fhrp_group_assignment,
             fhrp_group=fhrp_group,
-            rear_port=rear_port,
+            fhrp_group_assignment=fhrp_group_assignment,
             front_port=front_port,
-            generic_object=generic_object,
             ike_policy=ike_policy,
             ike_proposal=ike_proposal,
             ip_address=ip_address,
@@ -401,49 +359,48 @@ class Entity:
             ip_sec_profile=ip_sec_profile,
             ip_sec_proposal=ip_sec_proposal,
             interface=interface,
-            inventory_item_role=inventory_item_role,
             inventory_item=inventory_item,
+            inventory_item_role=inventory_item_role,
             l2vpn=l2vpn,
             l2vpn_termination=l2vpn_termination,
             location=location,
             mac_address=mac_address,
             manufacturer=manufacturer,
-            module_bay=module_bay,
             module=module,
+            module_bay=module_bay,
             module_type=module_type,
-            region=region,
-            site_group=site_group,
-            tag=tag,
-            tenant_group=tenant_group,
-            vm_interface=vm_interface,
-            virtual_machine=virtual_machine,
-            wireless_lan_group=wireless_lan_group,
-            wireless_link=wireless_link,
             platform=platform,
             power_feed=power_feed,
             power_outlet=power_outlet,
             power_panel=power_panel,
             power_port=power_port,
             prefix=prefix,
+            provider=provider,
             provider_account=provider_account,
             provider_network=provider_network,
-            provider=provider,
             rir=rir,
+            rack=rack,
             rack_reservation=rack_reservation,
             rack_role=rack_role,
-            rack=rack,
             rack_type=rack_type,
+            rear_port=rear_port,
+            region=region,
             role=role,
             route_target=route_target,
             service=service,
             site=site,
+            site_group=site_group,
+            tag=tag,
             tenant=tenant,
-            tunnel_group=tunnel_group,
+            tenant_group=tenant_group,
             tunnel=tunnel,
+            tunnel_group=tunnel_group,
             tunnel_termination=tunnel_termination,
+            vlan=vlan,
             vlan_group=vlan_group,
             vlan_translation_policy=vlan_translation_policy,
             vlan_translation_rule=vlan_translation_rule,
+            vm_interface=vm_interface,
             vrf=vrf,
             virtual_chassis=virtual_chassis,
             virtual_circuit=virtual_circuit,
@@ -451,7 +408,10 @@ class Entity:
             virtual_circuit_type=virtual_circuit_type,
             virtual_device_context=virtual_device_context,
             virtual_disk=virtual_disk,
+            virtual_machine=virtual_machine,
             wireless_lan=wireless_lan,
+            wireless_lan_group=wireless_lan_group,
+            wireless_link=wireless_link,
         )
 
 
@@ -1366,36 +1326,33 @@ class CustomFieldObjectReference:
 
     def __new__(
         cls,
-        asn_range: str | ASNRange | pb.ASNRange | None = None,
         asn: str | ASN | pb.ASN | None = None,
+        asn_range: str | ASNRange | pb.ASNRange | None = None,
         aggregate: str | Aggregate | pb.Aggregate | None = None,
-        cable_path: str | CablePath | pb.CablePath | None = None,
         cable: str | Cable | pb.Cable | None = None,
+        cable_path: str | CablePath | pb.CablePath | None = None,
         cable_termination: str | CableTermination | pb.CableTermination | None = None,
-        circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
-        circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         circuit: str | Circuit | pb.Circuit | None = None,
+        circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
+        circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
+        circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
         circuit_type: str | CircuitType | pb.CircuitType | None = None,
-        cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         cluster: str | Cluster | pb.Cluster | None = None,
+        cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         cluster_type: str | ClusterType | pb.ClusterType | None = None,
         console_port: str | ConsolePort | pb.ConsolePort | None = None,
         console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        contact: str | Contact | pb.Contact | None = None,
         contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
         contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         contact_role: str | ContactRole | pb.ContactRole | None = None,
-        contact: str | Contact | pb.Contact | None = None,
-        vlan: str | VLAN | pb.VLAN | None = None,
+        device: str | Device | pb.Device | None = None,
         device_bay: str | DeviceBay | pb.DeviceBay | None = None,
         device_role: str | DeviceRole | pb.DeviceRole | None = None,
-        device: str | Device | pb.Device | None = None,
         device_type: str | DeviceType | pb.DeviceType | None = None,
-        fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
         fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        rear_port: str | RearPort | pb.RearPort | None = None,
+        fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
         front_port: str | FrontPort | pb.FrontPort | None = None,
-        generic_object: str | GenericObject | pb.GenericObject | None = None,
         ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         ip_address: str | IPAddress | pb.IPAddress | None = None,
@@ -1404,49 +1361,48 @@ class CustomFieldObjectReference:
         ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
         interface: str | Interface | pb.Interface | None = None,
-        inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
         inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
+        inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
         l2vpn: str | L2VPN | pb.L2VPN | None = None,
         l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
         location: str | Location | pb.Location | None = None,
         mac_address: str | MACAddress | pb.MACAddress | None = None,
         manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         module: str | Module | pb.Module | None = None,
+        module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         module_type: str | ModuleType | pb.ModuleType | None = None,
-        region: str | Region | pb.Region | None = None,
-        site_group: str | SiteGroup | pb.SiteGroup | None = None,
-        tag: str | Tag | pb.Tag | None = None,
-        tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
-        vm_interface: str | VMInterface | pb.VMInterface | None = None,
-        virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
-        wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
-        wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         platform: str | Platform | pb.Platform | None = None,
         power_feed: str | PowerFeed | pb.PowerFeed | None = None,
         power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
         power_panel: str | PowerPanel | pb.PowerPanel | None = None,
         power_port: str | PowerPort | pb.PowerPort | None = None,
         prefix: str | Prefix | pb.Prefix | None = None,
+        provider: str | Provider | pb.Provider | None = None,
         provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
         provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
-        provider: str | Provider | pb.Provider | None = None,
         rir: str | RIR | pb.RIR | None = None,
+        rack: str | Rack | pb.Rack | None = None,
         rack_reservation: str | RackReservation | pb.RackReservation | None = None,
         rack_role: str | RackRole | pb.RackRole | None = None,
-        rack: str | Rack | pb.Rack | None = None,
         rack_type: str | RackType | pb.RackType | None = None,
+        rear_port: str | RearPort | pb.RearPort | None = None,
+        region: str | Region | pb.Region | None = None,
         role: str | Role | pb.Role | None = None,
         route_target: str | RouteTarget | pb.RouteTarget | None = None,
         service: str | Service | pb.Service | None = None,
         site: str | Site | pb.Site | None = None,
+        site_group: str | SiteGroup | pb.SiteGroup | None = None,
+        tag: str | Tag | pb.Tag | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
-        tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
+        tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         tunnel: str | Tunnel | pb.Tunnel | None = None,
+        tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        vlan: str | VLAN | pb.VLAN | None = None,
         vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
         vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
         vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        vm_interface: str | VMInterface | pb.VMInterface | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
@@ -1454,39 +1410,39 @@ class CustomFieldObjectReference:
         virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
         virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
         virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
+        virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
+        wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
+        wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
-        asn_range = convert_to_protobuf(asn_range, pb.ASNRange)
         asn = convert_to_protobuf(asn, pb.ASN)
+        asn_range = convert_to_protobuf(asn_range, pb.ASNRange)
         aggregate = convert_to_protobuf(aggregate, pb.Aggregate)
-        cable_path = convert_to_protobuf(cable_path, pb.CablePath)
         cable = convert_to_protobuf(cable, pb.Cable)
+        cable_path = convert_to_protobuf(cable_path, pb.CablePath)
         cable_termination = convert_to_protobuf(cable_termination, pb.CableTermination)
-        circuit_termination = convert_to_protobuf(circuit_termination, pb.CircuitTermination)
-        circuit_group_assignment = convert_to_protobuf(circuit_group_assignment, pb.CircuitGroupAssignment)
-        circuit_group = convert_to_protobuf(circuit_group, pb.CircuitGroup)
         circuit = convert_to_protobuf(circuit, pb.Circuit)
+        circuit_group = convert_to_protobuf(circuit_group, pb.CircuitGroup)
+        circuit_group_assignment = convert_to_protobuf(circuit_group_assignment, pb.CircuitGroupAssignment)
+        circuit_termination = convert_to_protobuf(circuit_termination, pb.CircuitTermination)
         circuit_type = convert_to_protobuf(circuit_type, pb.CircuitType)
-        cluster_group = convert_to_protobuf(cluster_group, pb.ClusterGroup)
         cluster = convert_to_protobuf(cluster, pb.Cluster)
+        cluster_group = convert_to_protobuf(cluster_group, pb.ClusterGroup)
         cluster_type = convert_to_protobuf(cluster_type, pb.ClusterType)
         console_port = convert_to_protobuf(console_port, pb.ConsolePort)
         console_server_port = convert_to_protobuf(console_server_port, pb.ConsoleServerPort)
+        contact = convert_to_protobuf(contact, pb.Contact)
         contact_assignment = convert_to_protobuf(contact_assignment, pb.ContactAssignment)
         contact_group = convert_to_protobuf(contact_group, pb.ContactGroup)
         contact_role = convert_to_protobuf(contact_role, pb.ContactRole)
-        contact = convert_to_protobuf(contact, pb.Contact)
-        vlan = convert_to_protobuf(vlan, pb.VLAN)
+        device = convert_to_protobuf(device, pb.Device)
         device_bay = convert_to_protobuf(device_bay, pb.DeviceBay)
         device_role = convert_to_protobuf(device_role, pb.DeviceRole)
-        device = convert_to_protobuf(device, pb.Device)
         device_type = convert_to_protobuf(device_type, pb.DeviceType)
-        fhrp_group_assignment = convert_to_protobuf(fhrp_group_assignment, pb.FHRPGroupAssignment)
         fhrp_group = convert_to_protobuf(fhrp_group, pb.FHRPGroup)
-        rear_port = convert_to_protobuf(rear_port, pb.RearPort)
+        fhrp_group_assignment = convert_to_protobuf(fhrp_group_assignment, pb.FHRPGroupAssignment)
         front_port = convert_to_protobuf(front_port, pb.FrontPort)
-        generic_object = convert_to_protobuf(generic_object, pb.GenericObject)
         ike_policy = convert_to_protobuf(ike_policy, pb.IKEPolicy)
         ike_proposal = convert_to_protobuf(ike_proposal, pb.IKEProposal)
         ip_address = convert_to_protobuf(ip_address, pb.IPAddress)
@@ -1495,49 +1451,48 @@ class CustomFieldObjectReference:
         ip_sec_profile = convert_to_protobuf(ip_sec_profile, pb.IPSecProfile)
         ip_sec_proposal = convert_to_protobuf(ip_sec_proposal, pb.IPSecProposal)
         interface = convert_to_protobuf(interface, pb.Interface)
-        inventory_item_role = convert_to_protobuf(inventory_item_role, pb.InventoryItemRole)
         inventory_item = convert_to_protobuf(inventory_item, pb.InventoryItem)
+        inventory_item_role = convert_to_protobuf(inventory_item_role, pb.InventoryItemRole)
         l2vpn = convert_to_protobuf(l2vpn, pb.L2VPN)
         l2vpn_termination = convert_to_protobuf(l2vpn_termination, pb.L2VPNTermination)
         location = convert_to_protobuf(location, pb.Location)
         mac_address = convert_to_protobuf(mac_address, pb.MACAddress)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
-        module_bay = convert_to_protobuf(module_bay, pb.ModuleBay)
         module = convert_to_protobuf(module, pb.Module)
+        module_bay = convert_to_protobuf(module_bay, pb.ModuleBay)
         module_type = convert_to_protobuf(module_type, pb.ModuleType)
-        region = convert_to_protobuf(region, pb.Region)
-        site_group = convert_to_protobuf(site_group, pb.SiteGroup)
-        tag = convert_to_protobuf(tag, pb.Tag)
-        tenant_group = convert_to_protobuf(tenant_group, pb.TenantGroup)
-        vm_interface = convert_to_protobuf(vm_interface, pb.VMInterface)
-        virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
-        wireless_lan_group = convert_to_protobuf(wireless_lan_group, pb.WirelessLANGroup)
-        wireless_link = convert_to_protobuf(wireless_link, pb.WirelessLink)
         platform = convert_to_protobuf(platform, pb.Platform)
         power_feed = convert_to_protobuf(power_feed, pb.PowerFeed)
         power_outlet = convert_to_protobuf(power_outlet, pb.PowerOutlet)
         power_panel = convert_to_protobuf(power_panel, pb.PowerPanel)
         power_port = convert_to_protobuf(power_port, pb.PowerPort)
         prefix = convert_to_protobuf(prefix, pb.Prefix)
+        provider = convert_to_protobuf(provider, pb.Provider)
         provider_account = convert_to_protobuf(provider_account, pb.ProviderAccount)
         provider_network = convert_to_protobuf(provider_network, pb.ProviderNetwork)
-        provider = convert_to_protobuf(provider, pb.Provider)
         rir = convert_to_protobuf(rir, pb.RIR)
+        rack = convert_to_protobuf(rack, pb.Rack)
         rack_reservation = convert_to_protobuf(rack_reservation, pb.RackReservation)
         rack_role = convert_to_protobuf(rack_role, pb.RackRole)
-        rack = convert_to_protobuf(rack, pb.Rack)
         rack_type = convert_to_protobuf(rack_type, pb.RackType)
+        rear_port = convert_to_protobuf(rear_port, pb.RearPort)
+        region = convert_to_protobuf(region, pb.Region)
         role = convert_to_protobuf(role, pb.Role)
         route_target = convert_to_protobuf(route_target, pb.RouteTarget)
         service = convert_to_protobuf(service, pb.Service)
         site = convert_to_protobuf(site, pb.Site)
+        site_group = convert_to_protobuf(site_group, pb.SiteGroup)
+        tag = convert_to_protobuf(tag, pb.Tag)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
-        tunnel_group = convert_to_protobuf(tunnel_group, pb.TunnelGroup)
+        tenant_group = convert_to_protobuf(tenant_group, pb.TenantGroup)
         tunnel = convert_to_protobuf(tunnel, pb.Tunnel)
+        tunnel_group = convert_to_protobuf(tunnel_group, pb.TunnelGroup)
         tunnel_termination = convert_to_protobuf(tunnel_termination, pb.TunnelTermination)
+        vlan = convert_to_protobuf(vlan, pb.VLAN)
         vlan_group = convert_to_protobuf(vlan_group, pb.VLANGroup)
         vlan_translation_policy = convert_to_protobuf(vlan_translation_policy, pb.VLANTranslationPolicy)
         vlan_translation_rule = convert_to_protobuf(vlan_translation_rule, pb.VLANTranslationRule)
+        vm_interface = convert_to_protobuf(vm_interface, pb.VMInterface)
         vrf = convert_to_protobuf(vrf, pb.VRF)
         virtual_chassis = convert_to_protobuf(virtual_chassis, pb.VirtualChassis)
         virtual_circuit = convert_to_protobuf(virtual_circuit, pb.VirtualCircuit)
@@ -1545,38 +1500,38 @@ class CustomFieldObjectReference:
         virtual_circuit_type = convert_to_protobuf(virtual_circuit_type, pb.VirtualCircuitType)
         virtual_device_context = convert_to_protobuf(virtual_device_context, pb.VirtualDeviceContext)
         virtual_disk = convert_to_protobuf(virtual_disk, pb.VirtualDisk)
+        virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         wireless_lan = convert_to_protobuf(wireless_lan, pb.WirelessLAN)
+        wireless_lan_group = convert_to_protobuf(wireless_lan_group, pb.WirelessLANGroup)
+        wireless_link = convert_to_protobuf(wireless_link, pb.WirelessLink)
         return pb.CustomFieldObjectReference(
-            asn_range=asn_range,
             asn=asn,
+            asn_range=asn_range,
             aggregate=aggregate,
-            cable_path=cable_path,
             cable=cable,
+            cable_path=cable_path,
             cable_termination=cable_termination,
-            circuit_termination=circuit_termination,
-            circuit_group_assignment=circuit_group_assignment,
-            circuit_group=circuit_group,
             circuit=circuit,
+            circuit_group=circuit_group,
+            circuit_group_assignment=circuit_group_assignment,
+            circuit_termination=circuit_termination,
             circuit_type=circuit_type,
-            cluster_group=cluster_group,
             cluster=cluster,
+            cluster_group=cluster_group,
             cluster_type=cluster_type,
             console_port=console_port,
             console_server_port=console_server_port,
+            contact=contact,
             contact_assignment=contact_assignment,
             contact_group=contact_group,
             contact_role=contact_role,
-            contact=contact,
-            vlan=vlan,
+            device=device,
             device_bay=device_bay,
             device_role=device_role,
-            device=device,
             device_type=device_type,
-            fhrp_group_assignment=fhrp_group_assignment,
             fhrp_group=fhrp_group,
-            rear_port=rear_port,
+            fhrp_group_assignment=fhrp_group_assignment,
             front_port=front_port,
-            generic_object=generic_object,
             ike_policy=ike_policy,
             ike_proposal=ike_proposal,
             ip_address=ip_address,
@@ -1585,49 +1540,48 @@ class CustomFieldObjectReference:
             ip_sec_profile=ip_sec_profile,
             ip_sec_proposal=ip_sec_proposal,
             interface=interface,
-            inventory_item_role=inventory_item_role,
             inventory_item=inventory_item,
+            inventory_item_role=inventory_item_role,
             l2vpn=l2vpn,
             l2vpn_termination=l2vpn_termination,
             location=location,
             mac_address=mac_address,
             manufacturer=manufacturer,
-            module_bay=module_bay,
             module=module,
+            module_bay=module_bay,
             module_type=module_type,
-            region=region,
-            site_group=site_group,
-            tag=tag,
-            tenant_group=tenant_group,
-            vm_interface=vm_interface,
-            virtual_machine=virtual_machine,
-            wireless_lan_group=wireless_lan_group,
-            wireless_link=wireless_link,
             platform=platform,
             power_feed=power_feed,
             power_outlet=power_outlet,
             power_panel=power_panel,
             power_port=power_port,
             prefix=prefix,
+            provider=provider,
             provider_account=provider_account,
             provider_network=provider_network,
-            provider=provider,
             rir=rir,
+            rack=rack,
             rack_reservation=rack_reservation,
             rack_role=rack_role,
-            rack=rack,
             rack_type=rack_type,
+            rear_port=rear_port,
+            region=region,
             role=role,
             route_target=route_target,
             service=service,
             site=site,
+            site_group=site_group,
+            tag=tag,
             tenant=tenant,
-            tunnel_group=tunnel_group,
+            tenant_group=tenant_group,
             tunnel=tunnel,
+            tunnel_group=tunnel_group,
             tunnel_termination=tunnel_termination,
+            vlan=vlan,
             vlan_group=vlan_group,
             vlan_translation_policy=vlan_translation_policy,
             vlan_translation_rule=vlan_translation_rule,
+            vm_interface=vm_interface,
             vrf=vrf,
             virtual_chassis=virtual_chassis,
             virtual_circuit=virtual_circuit,
@@ -1635,7 +1589,10 @@ class CustomFieldObjectReference:
             virtual_circuit_type=virtual_circuit_type,
             virtual_device_context=virtual_device_context,
             virtual_disk=virtual_disk,
+            virtual_machine=virtual_machine,
             wireless_lan=wireless_lan,
+            wireless_lan_group=wireless_lan_group,
+            wireless_link=wireless_link,
         )
 
 
@@ -1644,27 +1601,37 @@ class CustomFieldValue:
 
     def __new__(
         cls,
+        multiple_selection: list[str] | None = None,
+        multiple_objects: list[str | CustomFieldObjectReference | pb.CustomFieldObjectReference] | None = None,
         text: str | None = None,
+        long_text: str | None = None,
         integer: int | None = None,
         decimal: float | None = None,
         boolean: bool | None = None,
-        timestamp: datetime.datetime | None = None,
+        date: datetime.datetime | None = None,
+        datetime: datetime.datetime | None = None,
+        url: str | None = None,
+        json: str | None = None,
+        selection: str | None = None,
         object: str | CustomFieldObjectReference | pb.CustomFieldObjectReference | None = None,
-        string_array: list[str] | None = None,
-        object_array: list[str | CustomFieldObjectReference | pb.CustomFieldObjectReference] | None = None,
     ) -> pb.CustomFieldValue:
         """Create a new CustomFieldValue."""
+        multiple_objects = convert_to_protobuf_list(multiple_objects, pb.CustomFieldObjectReference)
         object = convert_to_protobuf(object, pb.CustomFieldObjectReference)
-        object_array = convert_to_protobuf_list(object_array, pb.CustomFieldObjectReference)
         return pb.CustomFieldValue(
+            multiple_selection=multiple_selection,
+            multiple_objects=multiple_objects,
             text=text,
+            long_text=long_text,
             integer=integer,
             decimal=decimal,
             boolean=boolean,
-            timestamp=timestamp,
+            date=date,
+            datetime=datetime,
+            url=url,
+            json=json,
+            selection=selection,
             object=object,
-            string_array=string_array,
-            object_array=object_array,
         )
 
 
