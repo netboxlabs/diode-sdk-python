@@ -22,6 +22,7 @@ from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
 
+_MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
 _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
@@ -94,6 +95,7 @@ class DiodeClient:
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
+        self._max_auth_retries = os.getenv(_MAX_RETRIES_ENVVAR_NAME, 3)
         self._target, self._path, self._tls_verify = parse_target(target)
         self._app_name = app_name
         self._app_version = app_version
@@ -210,8 +212,7 @@ class DiodeClient:
         stream: str | None = _DEFAULT_STREAM,
     ) -> ingester_pb2.IngestResponse:
         """Ingest entities."""
-        max_retries = 3
-        for attempt in range(max_retries):
+        for attempt in range(self._max_auth_retries):
             try:
                 request = ingester_pb2.IngestRequest(
                     stream=stream,
@@ -226,7 +227,7 @@ class DiodeClient:
             except grpc.RpcError as err:
                 if err.code() == grpc.StatusCode.UNAUTHENTICATED:
                     self._authenticate()
-                    if attempt < max_retries - 1:
+                    if attempt < self._max_auth_retries - 1:
                         _LOGGER.info(f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}")
                         continue
                 raise DiodeClientError(err) from err
