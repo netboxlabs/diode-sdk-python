@@ -3,15 +3,15 @@
 """NetBox Labs, Diode - SDK - Client."""
 
 import collections
-from collections.abc import Iterable
 import http.client
 import json
 import logging
 import os
 import platform
 import ssl
-from urllib.parse import urlparse, urlencode
 import uuid
+from collections.abc import Iterable
+from urllib.parse import urlencode, urlparse
 
 import certifi
 import grpc

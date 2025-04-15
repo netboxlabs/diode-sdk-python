@@ -4,7 +4,7 @@
 
 import os
 from unittest import mock
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import grpc
 import pytest
