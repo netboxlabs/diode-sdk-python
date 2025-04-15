@@ -101,16 +101,16 @@ class DiodeClient:
         self._python_version = platform.python_version()
 
         # Read client credentials from environment variables
-        client_id = _get_required_config_value(_CLIENT_ID_ENVVAR_NAME, client_id)
-        client_secret = _get_required_config_value(_CLIENT_SECRET_ENVVAR_NAME, client_secret)
+        self._client_id = _get_required_config_value(_CLIENT_ID_ENVVAR_NAME, client_id)
+        self._client_secret = _get_required_config_value(_CLIENT_SECRET_ENVVAR_NAME, client_secret)
 
-        authentication_client = _DiodeAuthentication(self._target, self._tls_verify, client_id, client_secret)
-        access_token = authentication_client.authenticate()
+
         self._metadata = (
             ("platform", self._platform),
             ("python-version", self._python_version),
-            ("authorization", f"Bearer {access_token}"),
         )
+
+        self._authenticate()
 
         channel_opts = (
             (
@@ -210,19 +210,27 @@ class DiodeClient:
         stream: str | None = _DEFAULT_STREAM,
     ) -> ingester_pb2.IngestResponse:
         """Ingest entities."""
-        try:
-            request = ingester_pb2.IngestRequest(
-                stream=stream,
-                id=str(uuid.uuid4()),
-                entities=entities,
-                sdk_name=self.name,
-                sdk_version=self.version,
-                producer_app_name=self.app_name,
-                producer_app_version=self.app_version,
-            )
-            return self._stub.Ingest(request, metadata=self._metadata)
-        except grpc.RpcError as err:
-            raise DiodeClientError(err) from err
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                request = ingester_pb2.IngestRequest(
+                    stream=stream,
+                    id=str(uuid.uuid4()),
+                    entities=entities,
+                    sdk_name=self.name,
+                    sdk_version=self.version,
+                    producer_app_name=self.app_name,
+                    producer_app_version=self.app_version,
+                )
+                return self._stub.Ingest(request, metadata=self._metadata)
+            except grpc.RpcError as err:
+                if err.code() == grpc.StatusCode.UNAUTHENTICATED:
+                    self._authenticate()
+                    if attempt < max_retries - 1:
+                        _LOGGER.info(f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}")
+                        continue
+                raise DiodeClientError(err) from err
+        return None # should never hit this but it makes the linter happy
 
     def _setup_sentry(self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float):
         sentry_sdk.init(
@@ -239,6 +247,12 @@ class DiodeClient:
         sentry_sdk.set_tag("platform", self._platform)
         sentry_sdk.set_tag("python_version", self._python_version)
 
+    def _authenticate(self):
+        authentication_client = _DiodeAuthentication(self._target, self._tls_verify, self._client_id, self._client_secret)
+        access_token = authentication_client.authenticate()
+        self._metadata = list(filter(lambda x: x[0] != "authorization", self._metadata)) + \
+            [("authorization", f"Bearer {access_token}")]
+
 
 class _DiodeAuthentication:
     def __init__(self, target: str, tls_verify: bool, client_id: str, client_secret: str):
@@ -249,10 +263,15 @@ class _DiodeAuthentication:
 
     def authenticate(self) -> str:
         """Request an OAuth2 token using client credentials and return it."""
-        conn = http.client.HTTPSConnection(
-            self._target,
-            context=None if self._tls_verify else ssl._create_unverified_context(),
-        )
+        if self._tls_verify:
+            conn = http.client.HTTPSConnection(
+                self._target,
+                context=None if self._tls_verify else ssl._create_unverified_context(),
+            )
+        else:
+            conn = http.client.HTTPConnection(
+                self._target,
+            )
         headers = {"Content-type": "application/x-www-form-urlencoded"}
         data = urlencode(
             {
@@ -261,7 +280,7 @@ class _DiodeAuthentication:
                 "client_secret": self._client_secret,
             }
         )
-        conn.request("POST", "/token", data, headers)
+        conn.request("POST", "/diode/auth/token", data, headers)
         response = conn.getresponse()
         if response.status != 200:
             raise DiodeConfigError(f"Failed to obtain access token: {response.reason}")
