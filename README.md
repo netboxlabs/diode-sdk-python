@@ -20,9 +20,10 @@ pip install netboxlabs-diode-sdk
 
 ### Environment variables
 
-* `DIODE_API_KEY` - API key for the Diode service
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
+* `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
+* `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
 
 ### Example
 
@@ -94,8 +95,7 @@ if __name__ == "__main__":
 
 ## Development notes
 
-Code in `netboxlabs/diode/sdk/diode/*` is generated from Protocol Buffers definitions (will be published and referred
-here soon).
+Code in `netboxlabs/diode/sdk/diode/*` is generated from Protocol Buffers definitions (will be published and referenced here soon).
 
 #### Linting
 
@@ -107,7 +107,7 @@ black netboxlabs/
 #### Testing
 
 ```shell
-pytest tests/
+PYTHONPATH=$(pwd) pytest
 ```
 
 ## License
