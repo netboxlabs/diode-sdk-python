@@ -9,9 +9,8 @@ concurrency:
 jobs:
   triage:
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
-      issues: write
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
