@@ -238,6 +238,7 @@ class DiodeClient:
                         self._authenticate()
                         continue
                 raise DiodeClientError(err) from err
+        return RuntimeError("Max retries exceeded")
 
     def _setup_sentry(self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float):
         sentry_sdk.init(
