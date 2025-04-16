@@ -226,12 +226,11 @@ class DiodeClient:
                 return self._stub.Ingest(request, metadata=self._metadata)
             except grpc.RpcError as err:
                 if err.code() == grpc.StatusCode.UNAUTHENTICATED:
-                    self._authenticate()
                     if attempt < self._max_auth_retries - 1:
                         _LOGGER.info(f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}")
+                        self._authenticate()
                         continue
                 raise DiodeClientError(err) from err
-        return None # should never hit this but it makes the linter happy
 
     def _setup_sentry(self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float):
         sentry_sdk.init(
@@ -249,18 +248,19 @@ class DiodeClient:
         sentry_sdk.set_tag("python_version", self._python_version)
 
     def _authenticate(self):
-        authentication_client = _DiodeAuthentication(self._target, self._tls_verify, self._client_id, self._client_secret)
+        authentication_client = _DiodeAuthentication(self._target, self._tls_verify, self._client_id, self._client_secret, self._path)
         access_token = authentication_client.authenticate()
         self._metadata = list(filter(lambda x: x[0] != "authorization", self._metadata)) + \
             [("authorization", f"Bearer {access_token}")]
 
 
 class _DiodeAuthentication:
-    def __init__(self, target: str, tls_verify: bool, client_id: str, client_secret: str):
+    def __init__(self, target: str, path: str, tls_verify: bool, client_id: str, client_secret: str):
         self._target = target
         self._tls_verify = tls_verify
         self._client_id = client_id
         self._client_secret = client_secret
+        self._path = path
 
     def authenticate(self) -> str:
         """Request an OAuth2 token using client credentials and return it."""
@@ -281,7 +281,7 @@ class _DiodeAuthentication:
                 "client_secret": self._client_secret,
             }
         )
-        conn.request("POST", "/diode/auth/token", data, headers)
+        conn.request("POST", f"{self._path}/auth/token", data, headers)
         response = conn.getresponse()
         if response.status != 200:
             raise DiodeConfigError(f"Failed to obtain access token: {response.reason}")

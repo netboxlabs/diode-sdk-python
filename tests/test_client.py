@@ -4,7 +4,7 @@
 
 import os
 from unittest import mock
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch, MagicMock
 
 import grpc
 import pytest
@@ -521,3 +521,29 @@ def test_diode_client_with_mocked_authentication(mock_diode_authentication):
     )
     assert client._metadata[0] == ("platform", client._platform)
     assert client._metadata[-1] == ("authorization", "Bearer mocked_token")
+
+def test_ingest_retries_on_unauthenticated_error(mock_diode_authentication):
+    """Test that the ingest method retries on UNAUTHENTICATED error."""
+    # Create a mock stub that raises UNAUTHENTICATED error
+    mock_stub = MagicMock()
+    mock_stub.Ingest.side_effect = grpc.RpcError()
+    mock_stub.Ingest.side_effect.code = lambda: grpc.StatusCode.UNAUTHENTICATED
+    mock_stub.Ingest.side_effect.details = lambda: "Something went wrong"
+
+    client = DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-producer",
+        app_version="0.0.1",
+        client_id="abcde",
+        client_secret="123456",
+    )
+
+    # Patch the DiodeClient to use the mock stub
+    client._stub = mock_stub
+
+    # Attempt to ingest entities and expect a DiodeClientError after retries
+    with pytest.raises(DiodeClientError):
+        client.ingest(entities=[])
+
+    # Verify that the Ingest method was called the expected number of times
+    assert mock_stub.Ingest.call_count == client._max_auth_retries
