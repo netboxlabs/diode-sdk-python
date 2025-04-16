@@ -69,6 +69,12 @@ def _get_required_config_value(env_var_name: str, value: str | None = None) -> s
         raise DiodeConfigError(f"parameter or {env_var_name} environment variable required")
     return value
 
+def _get_optional_config_value(env_var_name: str, value: str | None = None) -> str | None:
+    """Get optional config value either from provided value or environment variable."""
+    if value is None:
+        value = os.getenv(env_var_name)
+    return value
+
 
 class DiodeClient:
     """Diode Client."""
@@ -90,12 +96,13 @@ class DiodeClient:
         sentry_dsn: str = None,
         sentry_traces_sample_rate: float = 1.0,
         sentry_profiles_sample_rate: float = 1.0,
+        max_auth_retries: int = 3,
     ):
         """Initiate a new client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
-        self._max_auth_retries = os.getenv(_MAX_RETRIES_ENVVAR_NAME, 3)
+        self._max_auth_retries = _get_optional_config_value(_MAX_RETRIES_ENVVAR_NAME, max_auth_retries)
         self._target, self._path, self._tls_verify = parse_target(target)
         self._app_name = app_name
         self._app_version = app_version
