@@ -256,7 +256,7 @@ class DiodeClient:
         sentry_sdk.set_tag("python_version", self._python_version)
 
     def _authenticate(self):
-        authentication_client = _DiodeAuthentication(self._target, self._tls_verify, self._client_id, self._client_secret, self._path)
+        authentication_client = _DiodeAuthentication(self._target, self._path, self._tls_verify, self._client_id, self._client_secret)
         access_token = authentication_client.authenticate()
         self._metadata = list(filter(lambda x: x[0] != "authorization", self._metadata)) + \
             [("authorization", f"Bearer {access_token}")]
@@ -289,7 +289,8 @@ class _DiodeAuthentication:
                 "client_secret": self._client_secret,
             }
         )
-        conn.request("POST", f"{self._path}/auth/token", data, headers)
+        url = f"{self._path}/auth/token" if self._path and self._path != "/" else "/auth/token"
+        conn.request("POST", url, data, headers)
         response = conn.getresponse()
         if response.status != 200:
             raise DiodeConfigError(f"Failed to obtain access token: {response.reason}")

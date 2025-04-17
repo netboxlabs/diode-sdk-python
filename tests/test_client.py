@@ -5,6 +5,7 @@
 import os
 from unittest import mock
 from unittest.mock import MagicMock, patch
+import json
 
 import grpc
 import pytest
@@ -17,6 +18,7 @@ from netboxlabs.diode.sdk.client import (
     _get_sentry_dsn,
     _load_certs,
     parse_target,
+    _DiodeAuthentication,
 )
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.version import version_semver
@@ -522,6 +524,7 @@ def test_diode_client_with_mocked_authentication(mock_diode_authentication):
     assert client._metadata[0] == ("platform", client._platform)
     assert client._metadata[-1] == ("authorization", "Bearer mocked_token")
 
+
 def test_ingest_retries_on_unauthenticated_error(mock_diode_authentication):
     """Test that the ingest method retries on UNAUTHENTICATED error."""
     # Create a mock stub that raises UNAUTHENTICATED error
@@ -547,3 +550,58 @@ def test_ingest_retries_on_unauthenticated_error(mock_diode_authentication):
 
     # Verify that the Ingest method was called the expected number of times
     assert mock_stub.Ingest.call_count == client._max_auth_retries
+
+
+def test_diode_authentication_success(mock_diode_authentication):
+    """Test successful authentication in _DiodeAuthentication."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_conn_instance.getresponse.return_value.status = 200
+        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps({"access_token": "mocked_token"}).encode()
+
+        token = auth.authenticate()
+        assert token == "mocked_token"
+
+
+def test_diode_authentication_failure(mock_diode_authentication):
+    """Test authentication failure in _DiodeAuthentication."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_conn_instance.getresponse.return_value.status = 401
+        mock_conn_instance.getresponse.return_value.reason = "Unauthorized"
+
+        with pytest.raises(DiodeConfigError) as excinfo:
+            auth.authenticate()
+        assert "Failed to obtain access token" in str(excinfo.value)
+
+@pytest.mark.parametrize("path", ["/diode", "", None])
+def test_diode_authentication_url_with_path(mock_diode_authentication, path):
+    """Test that the authentication URL is correctly formatted with a path."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path=path,
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_conn_instance.getresponse.return_value.status = 200
+        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps({"access_token": "mocked_token"}).encode()
+        auth.authenticate()
+        mock_conn_instance.request.assert_called_once_with("POST", f"{path or ''}/auth/token", mock.ANY, mock.ANY)
+
