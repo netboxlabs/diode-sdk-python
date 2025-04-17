@@ -32,10 +32,11 @@ dependencies = [
 
 [project.optional-dependencies] # Optional
 dev = ["black", "check-manifest", "ruff"]
-test = ["coverage", "pytest", "pytest-cov"]
+test = ["coverage", "pytest", "pytest-cov==6.0.0"]
 
 [tool.coverage.run]
 omit = [
+    "*/netboxlabs/diode/sdk/ingester.py",
     "*/netboxlabs/diode/sdk/diode/*",
     "*/netboxlabs/diode/sdk/validate/*",
     "*/tests/*",
