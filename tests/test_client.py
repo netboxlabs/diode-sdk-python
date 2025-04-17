@@ -2,10 +2,10 @@
 # Copyright 2024 NetBox Labs Inc
 """NetBox Labs - Tests."""
 
+import json
 import os
 from unittest import mock
 from unittest.mock import MagicMock, patch
-import json
 
 import grpc
 import pytest
@@ -15,10 +15,10 @@ from netboxlabs.diode.sdk.client import (
     DiodeClient,
     DiodeMethodClientInterceptor,
     _ClientCallDetails,
+    _DiodeAuthentication,
     _get_sentry_dsn,
     _load_certs,
     parse_target,
-    _DiodeAuthentication,
 )
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.version import version_semver
