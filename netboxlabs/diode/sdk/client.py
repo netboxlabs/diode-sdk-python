@@ -113,7 +113,6 @@ class DiodeClient:
         self._client_id = _get_required_config_value(_CLIENT_ID_ENVVAR_NAME, client_id)
         self._client_secret = _get_required_config_value(_CLIENT_SECRET_ENVVAR_NAME, client_secret)
 
-
         self._metadata = (
             ("platform", self._platform),
             ("python-version", self._python_version),
@@ -289,7 +288,7 @@ class _DiodeAuthentication:
                 "client_secret": self._client_secret,
             }
         )
-        url = f"{self._path}/auth/token" if self._path and self._path != "/" else "/auth/token"
+        url = self._get_auth_url()
         conn.request("POST", url, data, headers)
         response = conn.getresponse()
         if response.status != 200:
@@ -301,6 +300,12 @@ class _DiodeAuthentication:
 
         _LOGGER.debug(f"Access token obtained for client {self._client_id}")
         return access_token
+
+    def _get_auth_url(self) -> str:
+        """Construct the authentication URL, handling trailing slashes in the path."""
+        # Ensure the path does not have trailing slashes
+        path = self._path.rstrip('/') if self._path else ''
+        return f"{path}/auth/token"
 
 
 class _ClientCallDetails(

@@ -588,7 +588,14 @@ def test_diode_authentication_failure(mock_diode_authentication):
             auth.authenticate()
         assert "Failed to obtain access token" in str(excinfo.value)
 
-@pytest.mark.parametrize("path", ["/diode", "", None])
+@pytest.mark.parametrize("path", [
+    "/diode",
+    "",
+    None,
+    "/diode/",
+    "diode",
+    "diode/",
+    ])
 def test_diode_authentication_url_with_path(mock_diode_authentication, path):
     """Test that the authentication URL is correctly formatted with a path."""
     auth = _DiodeAuthentication(
@@ -603,5 +610,5 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         mock_conn_instance.getresponse.return_value.status = 200
         mock_conn_instance.getresponse.return_value.read.return_value = json.dumps({"access_token": "mocked_token"}).encode()
         auth.authenticate()
-        mock_conn_instance.request.assert_called_once_with("POST", f"{path or ''}/auth/token", mock.ANY, mock.ANY)
+        mock_conn_instance.request.assert_called_once_with("POST", f"{(path or '').rstrip('/')}/auth/token", mock.ANY, mock.ANY)
 
