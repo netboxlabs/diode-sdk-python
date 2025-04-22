@@ -119,7 +119,7 @@ class DiodeClient:
             ("python-version", self._python_version),
         )
 
-        self._authenticate()
+        self._authenticate(_OAUTH2_INGEST_SCOPE)
 
         channel_opts = (
             (
