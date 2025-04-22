@@ -237,7 +237,7 @@ class DiodeClient:
                         self._authenticate()
                         continue
                 raise DiodeClientError(err) from err
-        return RuntimeError("Max retries exceeded")
+        raise RuntimeError("Max retries exceeded")
 
     def _setup_sentry(self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float):
         sentry_sdk.init(
@@ -289,8 +289,11 @@ class _DiodeAuthentication:
             }
         )
         url = self._get_auth_url()
-        conn.request("POST", url, data, headers)
-        response = conn.getresponse()
+        try:
+            conn.request("POST", url, data, headers)
+            response = conn.getresponse()
+        except Exception as e:
+            raise DiodeConfigError(f"Failed to obtain access token: {e}")
         if response.status != 200:
             raise DiodeConfigError(f"Failed to obtain access token: {response.reason}")
         token_info = json.loads(response.read().decode())
