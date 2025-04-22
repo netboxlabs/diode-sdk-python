@@ -27,6 +27,7 @@ _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
+_OAUTH2_INGEST_SCOPE = "diode:ingest"
 _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
 
@@ -234,7 +235,7 @@ class DiodeClient:
                 if err.code() == grpc.StatusCode.UNAUTHENTICATED:
                     if attempt < self._max_auth_retries - 1:
                         _LOGGER.info(f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}")
-                        self._authenticate()
+                        self._authenticate(_OAUTH2_INGEST_SCOPE)
                         continue
                 raise DiodeClientError(err) from err
         raise RuntimeError("Max retries exceeded")
@@ -254,20 +255,21 @@ class DiodeClient:
         sentry_sdk.set_tag("platform", self._platform)
         sentry_sdk.set_tag("python_version", self._python_version)
 
-    def _authenticate(self):
-        authentication_client = _DiodeAuthentication(self._target, self._path, self._tls_verify, self._client_id, self._client_secret)
+    def _authenticate(self, scope: str):
+        authentication_client = _DiodeAuthentication(self._target, self._path, self._tls_verify, self._client_id, self._client_secret, scope)
         access_token = authentication_client.authenticate()
         self._metadata = list(filter(lambda x: x[0] != "authorization", self._metadata)) + \
             [("authorization", f"Bearer {access_token}")]
 
 
 class _DiodeAuthentication:
-    def __init__(self, target: str, path: str, tls_verify: bool, client_id: str, client_secret: str):
+    def __init__(self, target: str, path: str, tls_verify: bool, client_id: str, client_secret: str, scope: str):
         self._target = target
         self._tls_verify = tls_verify
         self._client_id = client_id
         self._client_secret = client_secret
         self._path = path
+        self._scope = scope
 
     def authenticate(self) -> str:
         """Request an OAuth2 token using client credentials and return it."""
@@ -286,6 +288,7 @@ class _DiodeAuthentication:
                 "grant_type": "client_credentials",
                 "client_id": self._client_id,
                 "client_secret": self._client_secret,
+                "scope": self._scope,
             }
         )
         url = self._get_auth_url()
