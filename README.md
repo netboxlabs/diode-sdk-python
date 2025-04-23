@@ -130,6 +130,7 @@ if __name__ == "__main__":
 * Provider Network
 * RIR
 * Rack
+* Rack Role
 * Rack Type
 * Rear Port
 * Region
