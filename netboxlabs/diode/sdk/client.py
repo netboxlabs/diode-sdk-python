@@ -27,7 +27,7 @@ _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
-_OAUTH2_INGEST_SCOPE = "diode:ingest"
+_INGEST_SCOPE = "diode:ingest"
 _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ class DiodeClient:
             ("python-version", self._python_version),
         )
 
-        self._authenticate(_OAUTH2_INGEST_SCOPE)
+        self._authenticate(_INGEST_SCOPE)
 
         channel_opts = (
             (
@@ -250,7 +250,7 @@ class DiodeClient:
                         _LOGGER.info(
                             f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}"
                         )
-                        self._authenticate(_OAUTH2_INGEST_SCOPE)
+                        self._authenticate(_INGEST_SCOPE)
                         continue
                 raise DiodeClientError(err) from err
         raise RuntimeError("Max retries exceeded")
