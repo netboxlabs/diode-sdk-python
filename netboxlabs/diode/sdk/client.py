@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # Copyright 2024 NetBox Labs Inc
 """NetBox Labs, Diode - SDK - Client."""
+
 import collections
+import http.client
+import json
 import logging
 import os
 import platform
+import ssl
 import uuid
 from collections.abc import Iterable
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 import certifi
 import grpc
@@ -18,9 +22,12 @@ from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
 
-_DIODE_API_KEY_ENVVAR_NAME = "DIODE_API_KEY"
+_MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
 _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
+_CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
+_CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
+_INGEST_SCOPE = "diode:ingest"
 _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,17 +36,6 @@ def _load_certs() -> bytes:
     """Loads cacert.pem."""
     with open(certifi.where(), "rb") as f:
         return f.read()
-
-
-def _get_api_key(api_key: str | None = None) -> str:
-    """Get API Key either from provided value or environment variable."""
-    if api_key is None:
-        api_key = os.getenv(_DIODE_API_KEY_ENVVAR_NAME)
-    if api_key is None:
-        raise DiodeConfigError(
-            f"api_key param or {_DIODE_API_KEY_ENVVAR_NAME} environment variable required"
-        )
-    return api_key
 
 
 def parse_target(target: str) -> tuple[str, str, bool]:
@@ -66,6 +62,26 @@ def _get_sentry_dsn(sentry_dsn: str | None = None) -> str | None:
     return sentry_dsn
 
 
+def _get_required_config_value(env_var_name: str, value: str | None = None) -> str:
+    """Get required config value either from provided value or environment variable."""
+    if value is None:
+        value = os.getenv(env_var_name)
+    if value is None:
+        raise DiodeConfigError(
+            f"parameter or {env_var_name} environment variable required"
+        )
+    return value
+
+
+def _get_optional_config_value(
+    env_var_name: str, value: str | None = None
+) -> str | None:
+    """Get optional config value either from provided value or environment variable."""
+    if value is None:
+        value = os.getenv(env_var_name)
+    return value
+
+
 class DiodeClient:
     """Diode Client."""
 
@@ -81,30 +97,44 @@ class DiodeClient:
         target: str,
         app_name: str,
         app_version: str,
-        api_key: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
         sentry_dsn: str = None,
         sentry_traces_sample_rate: float = 1.0,
         sentry_profiles_sample_rate: float = 1.0,
+        max_auth_retries: int = 3,
     ):
         """Initiate a new client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
+        self._max_auth_retries = _get_optional_config_value(
+            _MAX_RETRIES_ENVVAR_NAME, max_auth_retries
+        )
         self._target, self._path, self._tls_verify = parse_target(target)
         self._app_name = app_name
         self._app_version = app_version
         self._platform = platform.platform()
         self._python_version = platform.python_version()
 
-        api_key = _get_api_key(api_key)
+        # Read client credentials from environment variables
+        self._client_id = _get_required_config_value(_CLIENT_ID_ENVVAR_NAME, client_id)
+        self._client_secret = _get_required_config_value(
+            _CLIENT_SECRET_ENVVAR_NAME, client_secret
+        )
+
         self._metadata = (
-            ("diode-api-key", api_key),
             ("platform", self._platform),
             ("python-version", self._python_version),
         )
 
+        self._authenticate(_INGEST_SCOPE)
+
         channel_opts = (
-            ("grpc.primary_user_agent", f"{self._name}/{self._version} {self._app_name}/{self._app_version}"),
+            (
+                "grpc.primary_user_agent",
+                f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
+            ),
         )
 
         if self._tls_verify:
@@ -202,20 +232,28 @@ class DiodeClient:
         stream: str | None = _DEFAULT_STREAM,
     ) -> ingester_pb2.IngestResponse:
         """Ingest entities."""
-        try:
-            request = ingester_pb2.IngestRequest(
-                stream=stream,
-                id=str(uuid.uuid4()),
-                entities=entities,
-                sdk_name=self.name,
-                sdk_version=self.version,
-                producer_app_name=self.app_name,
-                producer_app_version=self.app_version,
-            )
-
-            return self._stub.Ingest(request, metadata=self._metadata)
-        except grpc.RpcError as err:
-            raise DiodeClientError(err) from err
+        for attempt in range(self._max_auth_retries):
+            try:
+                request = ingester_pb2.IngestRequest(
+                    stream=stream,
+                    id=str(uuid.uuid4()),
+                    entities=entities,
+                    sdk_name=self.name,
+                    sdk_version=self.version,
+                    producer_app_name=self.app_name,
+                    producer_app_version=self.app_version,
+                )
+                return self._stub.Ingest(request, metadata=self._metadata)
+            except grpc.RpcError as err:
+                if err.code() == grpc.StatusCode.UNAUTHENTICATED:
+                    if attempt < self._max_auth_retries - 1:
+                        _LOGGER.info(
+                            f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}"
+                        )
+                        self._authenticate(_INGEST_SCOPE)
+                        continue
+                raise DiodeClientError(err) from err
+        raise RuntimeError("Max retries exceeded")
 
     def _setup_sentry(
         self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float
@@ -233,6 +271,82 @@ class DiodeClient:
         sentry_sdk.set_tag("sdk_version", self.version)
         sentry_sdk.set_tag("platform", self._platform)
         sentry_sdk.set_tag("python_version", self._python_version)
+
+    def _authenticate(self, scope: str):
+        authentication_client = _DiodeAuthentication(
+            self._target,
+            self._path,
+            self._tls_verify,
+            self._client_id,
+            self._client_secret,
+            scope,
+        )
+        access_token = authentication_client.authenticate()
+        self._metadata = list(
+            filter(lambda x: x[0] != "authorization", self._metadata)
+        ) + [("authorization", f"Bearer {access_token}")]
+
+
+class _DiodeAuthentication:
+    def __init__(
+        self,
+        target: str,
+        path: str,
+        tls_verify: bool,
+        client_id: str,
+        client_secret: str,
+        scope: str,
+    ):
+        self._target = target
+        self._tls_verify = tls_verify
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._path = path
+        self._scope = scope
+
+    def authenticate(self) -> str:
+        """Request an OAuth2 token using client credentials and return it."""
+        if self._tls_verify:
+            conn = http.client.HTTPSConnection(
+                self._target,
+                context=None if self._tls_verify else ssl._create_unverified_context(),
+            )
+        else:
+            conn = http.client.HTTPConnection(
+                self._target,
+            )
+        headers = {"Content-type": "application/x-www-form-urlencoded"}
+        data = urlencode(
+            {
+                "grant_type": "client_credentials",
+                "client_id": self._client_id,
+                "client_secret": self._client_secret,
+                "scope": self._scope,
+            }
+        )
+        url = self._get_auth_url()
+        try:
+            conn.request("POST", url, data, headers)
+            response = conn.getresponse()
+        except Exception as e:
+            raise DiodeConfigError(f"Failed to obtain access token: {e}")
+        if response.status != 200:
+            raise DiodeConfigError(f"Failed to obtain access token: {response.reason}")
+        token_info = json.loads(response.read().decode())
+        access_token = token_info.get("access_token")
+        if not access_token:
+            raise DiodeConfigError(
+                f"Failed to obtain access token for client {self._client_id}"
+            )
+
+        _LOGGER.debug(f"Access token obtained for client {self._client_id}")
+        return access_token
+
+    def _get_auth_url(self) -> str:
+        """Construct the authentication URL, handling trailing slashes in the path."""
+        # Ensure the path does not have trailing slashes
+        path = self._path.rstrip("/") if self._path else ""
+        return f"{path}/auth/token"
 
 
 class _ClientCallDetails(
@@ -255,8 +369,6 @@ class _ClientCallDetails(
     This class describes an RPC to be invoked and is required for custom gRPC interceptors.
 
     """
-
-    pass
 
 
 class DiodeMethodClientInterceptor(
