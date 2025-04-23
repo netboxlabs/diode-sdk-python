@@ -560,6 +560,7 @@ def test_diode_authentication_success(mock_diode_authentication):
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
+        scope="diode:ingest",
     )
     with mock.patch("http.client.HTTPConnection") as mock_http_conn:
         mock_conn_instance = mock_http_conn.return_value
@@ -578,6 +579,7 @@ def test_diode_authentication_failure(mock_diode_authentication):
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
+        scope="diode:ingest",
     )
     with mock.patch("http.client.HTTPConnection") as mock_http_conn:
         mock_conn_instance = mock_http_conn.return_value
@@ -605,6 +607,7 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
+        scope="diode:ingest",
     )
     with mock.patch("http.client.HTTPConnection") as mock_http_conn:
         mock_conn_instance = mock_http_conn.return_value
@@ -622,6 +625,7 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
+        scope="diode:ingest",
     )
     with mock.patch("http.client.HTTPConnection") as mock_http_conn:
         mock_conn_instance = mock_http_conn.return_value
