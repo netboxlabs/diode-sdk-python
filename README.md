@@ -77,21 +77,90 @@ if __name__ == "__main__":
 
 ## Supported entities (object types)
 
-* [Device](./docs/entities.md#device)
-* [Interface](./docs/entities.md#interface)
-* [Device Type](./docs/entities.md#device-type)
-* [Platform](./docs/entities.md#platform)
-* [Manufacturer](./docs/entities.md#manufacturer)
-* [Site](./docs/entities.md#site)
-* [Role](./docs/entities.md#role)
-* [IP Address](./docs/entities.md#ip-address)
-* [Prefix](./docs/entities.md#prefix)
-* [Cluster Group](./docs/entities.md#cluster-group)
-* [Cluster Type](./docs/entities.md#cluster-type)
-* [Cluster](./docs/entities.md#cluster)
-* [Virtual Machine](./docs/entities.md#virtual-machine)
-* [Virtual Disk](./docs/entities.md#virtual-disk)
-* [VM Interface](./docs/entities.md#vm-interface)
+* ASN
+* ASN Range
+* Aggregate
+* Circuit
+* Circuit Group
+* Circuit Group Assignment
+* Circuit Termination
+* Circuit Type
+* Cluster
+* Cluster Group
+* Cluster Type
+* Console Port
+* Console Server Port
+* Contact
+* Contact Assignment
+* Contact Group
+* Contact Role
+* Device
+* Device Bay
+* Device Role
+* Device Type
+* FHRP Group
+* FHRP Group Assignment
+* Front Port
+* IKE Policy
+* IKE Proposal
+* IP Address
+* IP Range
+* IP Sec Policy
+* IP Sec Profile
+* IP Sec Proposal
+* Interface
+* Inventory Item
+* Inventory Item Role
+* L2VPN
+* L2VPN Termination
+* Location
+* MAC Address
+* Manufacturer
+* Module
+* Module Bay
+* Module Type
+* Platform
+* Power Feed
+* Power Outlet
+* Power Panel
+* Power Port
+* Prefix
+* Provider
+* Provider Account
+* Provider Network
+* RIR
+* Rack
+* Rack Role
+* Rack Type
+* Rear Port
+* Region
+* Role
+* Route Target
+* Service
+* Site
+* Site Group
+* Tag
+* Tenant
+* Tenant Group
+* Tunnel
+* Tunnel Group
+* Tunnel Termination
+* VLAN
+* VLAN Group
+* VLAN Translation Policy
+* VLAN Translation Rule
+* VM Interface
+* VRF
+* Virtual Chassis
+* Virtual Circuit
+* Virtual Circuit Termination
+* Virtual Circuit Type
+* Virtual Device Context
+* Virtual Disk
+* Virtual Machine
+* Wireless Lan
+* Wireless Lan Group
+* Wireless Link
 
 ## Development notes
 
