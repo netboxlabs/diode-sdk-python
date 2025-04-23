@@ -7,6 +7,7 @@ from netboxlabs.diode.sdk.diode.v1 import ingester_pb2 as diode_dot_v1_dot_inges
 
 class IngesterServiceStub(object):
     """Ingestion API
+
     """
 
     def __init__(self, channel):
@@ -24,6 +25,7 @@ class IngesterServiceStub(object):
 
 class IngesterServiceServicer(object):
     """Ingestion API
+
     """
 
     def Ingest(self, request, context):
@@ -50,6 +52,7 @@ def add_IngesterServiceServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class IngesterService(object):
     """Ingestion API
+
     """
 
     @staticmethod

@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # Copyright 2024 NetBox Labs Inc
 """NetBox Labs - Tests."""
+
+import json
 import os
 from unittest import mock
+from unittest.mock import MagicMock, patch
 
 import grpc
 import pytest
 
 from netboxlabs.diode.sdk.client import (
-    _DIODE_API_KEY_ENVVAR_NAME,
     _DIODE_SENTRY_DSN_ENVVAR_NAME,
     DiodeClient,
     DiodeMethodClientInterceptor,
     _ClientCallDetails,
-    _get_api_key,
+    _DiodeAuthentication,
     _get_sentry_dsn,
     _load_certs,
     parse_target,
@@ -22,13 +24,14 @@ from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.version import version_semver
 
 
-def test_init():
+def test_init(mock_diode_authentication):
     """Check we can initiate a client configuration."""
     config = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     assert config.target == "localhost:8081"
     assert config.name == "diode-sdk-python"
@@ -39,25 +42,36 @@ def test_init():
     assert config.path == ""
 
 
-def test_config_error():
+@pytest.mark.parametrize(
+    "client_id,client_secret,env_var_name",
+    [
+        (None, "123", "DIODE_CLIENT_ID"),
+        ("123", None, "DIODE_CLIENT_SECRET"),
+        (None, None, "DIODE_CLIENT_ID"),
+    ],
+)
+def test_config_errors(client_id, client_secret, env_var_name):
     """Check we can raise a config error."""
     with pytest.raises(DiodeConfigError) as err:
         DiodeClient(
-            target="grpc://localhost:8081", app_name="my-producer", app_version="0.0.1"
+            target="grpc://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id=client_id,
+            client_secret=client_secret,
         )
-    assert (
-        str(err.value) == "api_key param or DIODE_API_KEY environment variable required"
-    )
+    assert str(err.value) == f"parameter or {env_var_name} environment variable required"
 
 
-def test_client_error():
+def test_client_error(mock_diode_authentication):
     """Check we can raise a client error."""
     with pytest.raises(DiodeClientError) as err:
         client = DiodeClient(
             target="grpc://invalid:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
         client.ingest(entities=[])
     assert err.value.status_code == grpc.StatusCode.UNAVAILABLE
@@ -72,35 +86,12 @@ def test_diode_client_error_repr_returns_correct_string():
     error = DiodeClientError(grpc_error)
     error._status_code = grpc.StatusCode.UNAVAILABLE
     error._details = "Some details about the error"
-    assert (
-        repr(error)
-        == "<DiodeClientError status code: StatusCode.UNAVAILABLE, details: Some details about the error>"
-    )
+    assert repr(error) == "<DiodeClientError status code: StatusCode.UNAVAILABLE, details: Some details about the error>"
 
 
 def test_load_certs_returns_bytes():
     """Check that _load_certs returns bytes."""
     assert isinstance(_load_certs(), bytes)
-
-
-def test_get_api_key_returns_env_var_when_no_input():
-    """Check that _get_api_key returns the env var when no input is provided."""
-    os.environ[_DIODE_API_KEY_ENVVAR_NAME] = "env_var_key"
-    assert _get_api_key() == "env_var_key"
-
-
-def test_get_api_key_returns_input_when_provided():
-    """Check that _get_api_key returns the input when provided."""
-    os.environ[_DIODE_API_KEY_ENVVAR_NAME] = "env_var_key"
-    assert _get_api_key("input_key") == "input_key"
-
-
-def test_get_api_key_raises_error_when_no_input_or_env_var():
-    """Check that _get_api_key raises an error when no input or env var is provided."""
-    if _DIODE_API_KEY_ENVVAR_NAME in os.environ:
-        del os.environ[_DIODE_API_KEY_ENVVAR_NAME]
-    with pytest.raises(DiodeConfigError):
-        _get_api_key()
 
 
 def test_parse_target_handles_http_prefix():
@@ -166,13 +157,14 @@ def test_get_sentry_dsn_returns_none_when_no_input_or_env_var():
     assert _get_sentry_dsn() is None
 
 
-def test_setup_sentry_initializes_with_correct_parameters():
+def test_setup_sentry_initializes_with_correct_parameters(mock_diode_authentication):
     """Check that DiodeClient._setup_sentry() initializes with the correct parameters."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with mock.patch("sentry_sdk.init") as mock_init:
         client._setup_sentry("https://user@password.mock.dsn/123456", 0.5, 0.5)
@@ -184,13 +176,14 @@ def test_setup_sentry_initializes_with_correct_parameters():
         )
 
 
-def test_client_sets_up_secure_channel_when_grpcs_scheme_is_found_in_target():
+def test_client_sets_up_secure_channel_when_grpcs_scheme_is_found_in_target(mock_diode_authentication):
     """Check that DiodeClient.__init__() sets up the gRPC secure channel when grpcs:// scheme is found in the target."""
     client = DiodeClient(
         target="grpcs://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with (
         mock.patch("grpc.secure_channel") as mock_secure_channel,
@@ -200,20 +193,22 @@ def test_client_sets_up_secure_channel_when_grpcs_scheme_is_found_in_target():
             target="grpcs://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
 
         mock_debug.assert_called_once_with("Setting up gRPC secure channel")
         mock_secure_channel.assert_called_once()
 
 
-def test_client_sets_up_insecure_channel_when_grpc_scheme_is_found_in_target():
+def test_client_sets_up_insecure_channel_when_grpc_scheme_is_found_in_target(mock_diode_authentication):
     """Check that DiodeClient.__init__() sets up the gRPC insecure channel when grpc:// scheme is found in the target."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with (
         mock.patch("grpc.insecure_channel") as mock_insecure_channel,
@@ -223,7 +218,8 @@ def test_client_sets_up_insecure_channel_when_grpc_scheme_is_found_in_target():
             target="grpc://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
 
         mock_debug.assert_called_with(
@@ -232,14 +228,15 @@ def test_client_sets_up_insecure_channel_when_grpc_scheme_is_found_in_target():
         mock_insecure_channel.assert_called_once()
 
 
-def test_insecure_channel_options_with_primary_user_agent():
+def test_insecure_channel_options_with_primary_user_agent(mock_diode_authentication):
     """Check that DiodeClient.__init__() sets the gRPC primary_user_agent option for insecure channel."""
     with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
         client = DiodeClient(
             target="grpc://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
 
         mock_insecure_channel.assert_called_once()
@@ -252,14 +249,15 @@ def test_insecure_channel_options_with_primary_user_agent():
         )
 
 
-def test_secure_channel_options_with_primary_user_agent():
+def test_secure_channel_options_with_primary_user_agent(mock_diode_authentication):
     """Check that DiodeClient.__init__() sets the gRPC primary_user_agent option for secure channel."""
     with mock.patch("grpc.secure_channel") as mock_secure_channel:
         client = DiodeClient(
             target="grpcs://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
 
         mock_secure_channel.assert_called_once()
@@ -272,13 +270,14 @@ def test_secure_channel_options_with_primary_user_agent():
         )
 
 
-def test_client_interceptor_setup_with_path():
+def test_client_interceptor_setup_with_path(mock_diode_authentication):
     """Check that DiodeClient.__init__() sets up the gRPC interceptor when a path is provided."""
     client = DiodeClient(
         target="grpc://localhost:8081/my-path",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with (
         mock.patch("grpc.intercept_channel") as mock_intercept_channel,
@@ -288,7 +287,8 @@ def test_client_interceptor_setup_with_path():
             target="grpc://localhost:8081/my-path",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
 
         mock_debug.assert_called_with(
@@ -297,13 +297,14 @@ def test_client_interceptor_setup_with_path():
         mock_intercept_channel.assert_called_once()
 
 
-def test_client_interceptor_not_setup_without_path():
+def test_client_interceptor_not_setup_without_path(mock_diode_authentication):
     """Check that DiodeClient.__init__() does not set up the gRPC interceptor when no path is provided."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with (
         mock.patch("grpc.intercept_channel") as mock_intercept_channel,
@@ -313,7 +314,8 @@ def test_client_interceptor_not_setup_without_path():
             target="grpc://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
 
         mock_debug.assert_called_with(
@@ -322,13 +324,14 @@ def test_client_interceptor_not_setup_without_path():
         mock_intercept_channel.assert_not_called()
 
 
-def test_client_setup_sentry_called_when_sentry_dsn_exists():
+def test_client_setup_sentry_called_when_sentry_dsn_exists(mock_diode_authentication):
     """Check that DiodeClient._setup_sentry() is called when sentry_dsn exists."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
         sentry_dsn="https://user@password.mock.dsn/123456",
     )
     with mock.patch.object(client, "_setup_sentry") as mock_setup_sentry:
@@ -336,39 +339,41 @@ def test_client_setup_sentry_called_when_sentry_dsn_exists():
             target="grpc://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
             sentry_dsn="https://user@password.mock.dsn/123456",
         )
-        mock_setup_sentry.assert_called_once_with(
-            "https://user@password.mock.dsn/123456", 1.0, 1.0
-        )
+        mock_setup_sentry.assert_called_once_with("https://user@password.mock.dsn/123456", 1.0, 1.0)
 
 
-def test_client_setup_sentry_not_called_when_sentry_dsn_not_exists():
+def test_client_setup_sentry_not_called_when_sentry_dsn_not_exists(mock_diode_authentication):
     """Check that DiodeClient._setup_sentry() is not called when sentry_dsn does not exist."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with mock.patch.object(client, "_setup_sentry") as mock_setup_sentry:
         client.__init__(
             target="grpc://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
-            api_key="abcde",
+            client_id="abcde",
+            client_secret="123456",
         )
         mock_setup_sentry.assert_not_called()
 
 
-def test_client_properties_return_expected_values():
+def test_client_properties_return_expected_values(mock_diode_authentication):
     """Check that DiodeClient properties return the expected values."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     assert client.name == "diode-sdk-python"
     assert client.version == version_semver()
@@ -380,50 +385,54 @@ def test_client_properties_return_expected_values():
     assert isinstance(client.channel, grpc.Channel)
 
 
-def test_client_enter_returns_self():
+def test_client_enter_returns_self(mock_diode_authentication):
     """Check that DiodeClient.__enter__() returns self."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     assert client.__enter__() is client
 
 
-def test_client_exit_closes_channel():
+def test_client_exit_closes_channel(mock_diode_authentication):
     """Check that DiodeClient.__exit__() closes the channel."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with mock.patch.object(client._channel, "close") as mock_close:
         client.__exit__(None, None, None)
         mock_close.assert_called_once()
 
 
-def test_client_close_closes_channel():
+def test_client_close_closes_channel(mock_diode_authentication):
     """Check that DiodeClient.close() closes the channel."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with mock.patch.object(client._channel, "close") as mock_close:
         client.close()
         mock_close.assert_called_once()
 
 
-def test_setup_sentry_sets_correct_tags():
+def test_setup_sentry_sets_correct_tags(mock_diode_authentication):
     """Check that DiodeClient._setup_sentry() sets the correct tags."""
     client = DiodeClient(
         target="grpc://localhost:8081",
         app_name="my-producer",
         app_version="0.0.1",
-        api_key="abcde",
+        client_id="abcde",
+        client_secret="123456",
     )
     with mock.patch("sentry_sdk.set_tag") as mock_set_tag:
         client._setup_sentry("https://user@password.mock.dsn/123456", 0.5, 0.5)
@@ -458,10 +467,7 @@ def test_interceptor_intercepts_unary_unary_calls():
         None,
     )
     request = None
-    assert (
-        interceptor.intercept_unary_unary(continuation, client_call_details, request)
-        == "/my/path/diode.v1.IngesterService/Ingest"
-    )
+    assert interceptor.intercept_unary_unary(continuation, client_call_details, request) == "/my/path/diode.v1.IngesterService/Ingest"
 
 
 def test_interceptor_intercepts_stream_unary_calls():
@@ -481,8 +487,151 @@ def test_interceptor_intercepts_stream_unary_calls():
     )
     request_iterator = None
     assert (
-        interceptor.intercept_stream_unary(
-            continuation, client_call_details, request_iterator
-        )
+        interceptor.intercept_stream_unary(continuation, client_call_details, request_iterator)
         == "/my/path/diode.v1.IngesterService/Ingest"
     )
+
+
+@pytest.fixture
+def mock_diode_authentication():
+    """
+    Fixture to mock the Diode authentication process.
+
+    This mock replaces the _DiodeAuthentication class with a mock object
+    that returns a mocked token for authentication.
+    """
+    with patch("netboxlabs.diode.sdk.client._DiodeAuthentication") as MockAuth:
+        mock_instance = MockAuth.return_value
+        mock_instance.authenticate.return_value = "mocked_token"
+        yield MockAuth
+
+
+def test_diode_client_with_mocked_authentication(mock_diode_authentication):
+    """
+    Test the DiodeClient initialization with mocked authentication.
+
+    This test verifies that the client is initialized correctly with the mocked
+    authentication token and that the metadata includes the expected platform
+    and authorization headers.
+    """
+    client = DiodeClient(
+        target="grpc://localhost:8080/diode",
+        app_name="my-test-app",
+        app_version="0.0.1",
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
+    assert client._metadata[0] == ("platform", client._platform)
+    assert client._metadata[-1] == ("authorization", "Bearer mocked_token")
+
+
+def test_ingest_retries_on_unauthenticated_error(mock_diode_authentication):
+    """Test that the ingest method retries on UNAUTHENTICATED error."""
+    # Create a mock stub that raises UNAUTHENTICATED error
+    mock_stub = MagicMock()
+    mock_stub.Ingest.side_effect = grpc.RpcError()
+    mock_stub.Ingest.side_effect.code = lambda: grpc.StatusCode.UNAUTHENTICATED
+    mock_stub.Ingest.side_effect.details = lambda: "Something went wrong"
+
+    client = DiodeClient(
+        target="grpc://localhost:8081",
+        app_name="my-producer",
+        app_version="0.0.1",
+        client_id="abcde",
+        client_secret="123456",
+    )
+
+    # Patch the DiodeClient to use the mock stub
+    client._stub = mock_stub
+
+    # Attempt to ingest entities and expect a DiodeClientError after retries
+    with pytest.raises(DiodeClientError):
+        client.ingest(entities=[])
+
+    # Verify that the Ingest method was called the expected number of times
+    assert mock_stub.Ingest.call_count == client._max_auth_retries
+
+
+def test_diode_authentication_success(mock_diode_authentication):
+    """Test successful authentication in _DiodeAuthentication."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+    )
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_conn_instance.getresponse.return_value.status = 200
+        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps({"access_token": "mocked_token"}).encode()
+
+        token = auth.authenticate()
+        assert token == "mocked_token"
+
+
+def test_diode_authentication_failure(mock_diode_authentication):
+    """Test authentication failure in _DiodeAuthentication."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+    )
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_conn_instance.getresponse.return_value.status = 401
+        mock_conn_instance.getresponse.return_value.reason = "Unauthorized"
+
+        with pytest.raises(DiodeConfigError) as excinfo:
+            auth.authenticate()
+        assert "Failed to obtain access token" in str(excinfo.value)
+
+
+@pytest.mark.parametrize("path", [
+    "/diode",
+    "",
+    None,
+    "/diode/",
+    "diode",
+    "diode/",
+    ])
+def test_diode_authentication_url_with_path(mock_diode_authentication, path):
+    """Test that the authentication URL is correctly formatted with a path."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path=path,
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+    )
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_conn_instance.getresponse.return_value.status = 200
+        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps({"access_token": "mocked_token"}).encode()
+        auth.authenticate()
+        mock_conn_instance.request.assert_called_once_with("POST", f"{(path or '').rstrip('/')}/auth/token", mock.ANY, mock.ANY)
+
+
+def test_diode_authentication_request_exception(mock_diode_authentication):
+    """Test that an exception during the request raises a DiodeConfigError."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+    )
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_conn_instance.request.side_effect = Exception("Connection error")
+
+        with pytest.raises(DiodeConfigError) as excinfo:
+            auth.authenticate()
+        assert "Failed to obtain access token: Connection error" in str(excinfo.value)
+
