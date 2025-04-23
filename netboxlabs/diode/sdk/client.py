@@ -67,10 +67,15 @@ def _get_required_config_value(env_var_name: str, value: str | None = None) -> s
     if value is None:
         value = os.getenv(env_var_name)
     if value is None:
-        raise DiodeConfigError(f"parameter or {env_var_name} environment variable required")
+        raise DiodeConfigError(
+            f"parameter or {env_var_name} environment variable required"
+        )
     return value
 
-def _get_optional_config_value(env_var_name: str, value: str | None = None) -> str | None:
+
+def _get_optional_config_value(
+    env_var_name: str, value: str | None = None
+) -> str | None:
     """Get optional config value either from provided value or environment variable."""
     if value is None:
         value = os.getenv(env_var_name)
@@ -103,7 +108,9 @@ class DiodeClient:
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
-        self._max_auth_retries = _get_optional_config_value(_MAX_RETRIES_ENVVAR_NAME, max_auth_retries)
+        self._max_auth_retries = _get_optional_config_value(
+            _MAX_RETRIES_ENVVAR_NAME, max_auth_retries
+        )
         self._target, self._path, self._tls_verify = parse_target(target)
         self._app_name = app_name
         self._app_version = app_version
@@ -112,7 +119,9 @@ class DiodeClient:
 
         # Read client credentials from environment variables
         self._client_id = _get_required_config_value(_CLIENT_ID_ENVVAR_NAME, client_id)
-        self._client_secret = _get_required_config_value(_CLIENT_SECRET_ENVVAR_NAME, client_secret)
+        self._client_secret = _get_required_config_value(
+            _CLIENT_SECRET_ENVVAR_NAME, client_secret
+        )
 
         self._metadata = (
             ("platform", self._platform),
@@ -150,7 +159,9 @@ class DiodeClient:
             _LOGGER.debug(f"Setting up gRPC interceptor for path: {self._path}")
             rpc_method_interceptor = DiodeMethodClientInterceptor(subpath=self._path)
 
-            intercept_channel = grpc.intercept_channel(self._channel, rpc_method_interceptor)
+            intercept_channel = grpc.intercept_channel(
+                self._channel, rpc_method_interceptor
+            )
             channel = intercept_channel
 
         self._stub = ingester_pb2_grpc.IngesterServiceStub(channel)
@@ -159,7 +170,9 @@ class DiodeClient:
 
         if self._sentry_dsn is not None:
             _LOGGER.debug("Setting up Sentry")
-            self._setup_sentry(self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate)
+            self._setup_sentry(
+                self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate
+            )
 
     @property
     def name(self) -> str:
@@ -234,13 +247,17 @@ class DiodeClient:
             except grpc.RpcError as err:
                 if err.code() == grpc.StatusCode.UNAUTHENTICATED:
                     if attempt < self._max_auth_retries - 1:
-                        _LOGGER.info(f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}")
+                        _LOGGER.info(
+                            f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}"
+                        )
                         self._authenticate(_OAUTH2_INGEST_SCOPE)
                         continue
                 raise DiodeClientError(err) from err
         raise RuntimeError("Max retries exceeded")
 
-    def _setup_sentry(self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float):
+    def _setup_sentry(
+        self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float
+    ):
         sentry_sdk.init(
             dsn=dsn,
             release=self.version,
@@ -256,14 +273,30 @@ class DiodeClient:
         sentry_sdk.set_tag("python_version", self._python_version)
 
     def _authenticate(self, scope: str):
-        authentication_client = _DiodeAuthentication(self._target, self._path, self._tls_verify, self._client_id, self._client_secret, scope)
+        authentication_client = _DiodeAuthentication(
+            self._target,
+            self._path,
+            self._tls_verify,
+            self._client_id,
+            self._client_secret,
+            scope,
+        )
         access_token = authentication_client.authenticate()
-        self._metadata = list(filter(lambda x: x[0] != "authorization", self._metadata)) + \
-            [("authorization", f"Bearer {access_token}")]
+        self._metadata = list(
+            filter(lambda x: x[0] != "authorization", self._metadata)
+        ) + [("authorization", f"Bearer {access_token}")]
 
 
 class _DiodeAuthentication:
-    def __init__(self, target: str, path: str, tls_verify: bool, client_id: str, client_secret: str, scope: str):
+    def __init__(
+        self,
+        target: str,
+        path: str,
+        tls_verify: bool,
+        client_id: str,
+        client_secret: str,
+        scope: str,
+    ):
         self._target = target
         self._tls_verify = tls_verify
         self._client_id = client_id
@@ -302,7 +335,9 @@ class _DiodeAuthentication:
         token_info = json.loads(response.read().decode())
         access_token = token_info.get("access_token")
         if not access_token:
-            raise DiodeConfigError(f"Failed to obtain access token for client {self._client_id}")
+            raise DiodeConfigError(
+                f"Failed to obtain access token for client {self._client_id}"
+            )
 
         _LOGGER.debug(f"Access token obtained for client {self._client_id}")
         return access_token
@@ -310,7 +345,7 @@ class _DiodeAuthentication:
     def _get_auth_url(self) -> str:
         """Construct the authentication URL, handling trailing slashes in the path."""
         # Ensure the path does not have trailing slashes
-        path = self._path.rstrip('/') if self._path else ''
+        path = self._path.rstrip("/") if self._path else ""
         return f"{path}/auth/token"
 
 
@@ -335,10 +370,10 @@ class _ClientCallDetails(
 
     """
 
-    pass
 
-
-class DiodeMethodClientInterceptor(grpc.UnaryUnaryClientInterceptor, grpc.StreamUnaryClientInterceptor):
+class DiodeMethodClientInterceptor(
+    grpc.UnaryUnaryClientInterceptor, grpc.StreamUnaryClientInterceptor
+):
     """
     Diode Method Client Interceptor class.
 
@@ -377,6 +412,8 @@ class DiodeMethodClientInterceptor(grpc.UnaryUnaryClientInterceptor, grpc.Stream
         """Intercept unary unary."""
         return self._intercept_call(continuation, client_call_details, request)
 
-    def intercept_stream_unary(self, continuation, client_call_details, request_iterator):
+    def intercept_stream_unary(
+        self, continuation, client_call_details, request_iterator
+    ):
         """Intercept stream unary."""
         return self._intercept_call(continuation, client_call_details, request_iterator)
