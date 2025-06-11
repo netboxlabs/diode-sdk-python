@@ -24,6 +24,7 @@ pip install netboxlabs-diode-sdk
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_DRY_RUN_OUTPUT_FILE` - Path to store JSON Lines output when using `DiodeDryRunClient`
 
 ### Example
 
@@ -73,6 +74,35 @@ def main():
 if __name__ == "__main__":
     main()
 
+```
+
+### Dry run mode
+
+`DiodeDryRunClient` allows generating ingestion requests without contacting a
+Diode server. Each request is printed to stdout or written to a JSON Lines file
+when `dry_run_output_file` (or `DIODE_DRY_RUN_OUTPUT_FILE`) is set.
+
+```python
+from netboxlabs.diode.sdk import DiodeDryRunClient
+
+with DiodeDryRunClient(dry_run_output_file="dryrun.jsonl") as client:
+    client.ingest([
+        Entity(device="Device A"),
+    ])
+```
+
+The produced file can later be ingested by a real Diode instance using
+`load_dryrun_entities` with a standard `DiodeClient`:
+
+```python
+from netboxlabs.diode.sdk import DiodeClient, load_dryrun_entities
+
+with DiodeClient(
+    target="grpc://localhost:8080/diode",
+    app_name="my-test-app",
+    app_version="0.0.1",
+) as client:
+    client.ingest(entities=load_dryrun_entities("dryrun.jsonl"))
 ```
 
 ## Supported entities (object types)
