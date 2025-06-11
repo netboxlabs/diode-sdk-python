@@ -638,10 +638,7 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
 
 def test_ingest_dry_run_stdout(capsys):
     """Verify ingest prints JSON when dry run is enabled."""
-    client = DiodeDryRunClient(
-        app_name="my-producer",
-        app_version="0.0.1",
-    )
+    client = DiodeDryRunClient()
 
     client._stub = MagicMock()
     client.ingest(entities=[])
@@ -655,8 +652,6 @@ def test_ingest_dry_run_file(tmp_path):
     """Verify ingest writes JSON to file when dry run output file is set."""
     output_file = tmp_path / "out.json"
     client = DiodeDryRunClient(
-        app_name="my-producer",
-        app_version="0.0.1",
         dry_run_output_file=str(output_file),
     )
 

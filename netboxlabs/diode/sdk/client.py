@@ -41,8 +41,8 @@ class DiodeClientInterface(Protocol):
     """Interface implemented by diode clients."""
 
     @property
-    def app_name(self) -> str:
-        """Name of the producer application."""
+    def name(self) -> str:
+        """Name of the SDK."""
 
     @property
     def version(self) -> str:
@@ -326,11 +326,9 @@ class DiodeDryRunClient(DiodeClientInterface):
     _app_version = None
 
     def __init__(
-        self, app_name: str, app_version: str, dry_run_output_file: str | None = None
+        self, dry_run_output_file: str | None = None
     ):
         """Initiate a new dry run client."""
-        self._app_name = app_name
-        self._app_version = app_version
         self._dry_run_output_file = os.getenv(
             _DRY_RUN_OUTPUT_ENVVAR_NAME, dry_run_output_file
         )
@@ -344,16 +342,6 @@ class DiodeDryRunClient(DiodeClientInterface):
     def version(self) -> str:
         """Retrieve the version."""
         return self._version
-
-    @property
-    def app_name(self) -> str:
-        """Retrieve the app name."""
-        return self._app_name
-
-    @property
-    def app_version(self) -> str:
-        """Retrieve the app version."""
-        return self._app_version
 
     @property
     def dry_run_output_file(self) -> str | None:
@@ -376,8 +364,6 @@ class DiodeDryRunClient(DiodeClientInterface):
             entities=entities,
             sdk_name=self.name,
             sdk_version=self.version,
-            producer_app_name=self.app_name,
-            producer_app_version=self.app_version,
         )
 
         output = json.dumps(MessageToDict(request))
