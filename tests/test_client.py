@@ -13,6 +13,7 @@ import pytest
 from netboxlabs.diode.sdk.client import (
     _DIODE_SENTRY_DSN_ENVVAR_NAME,
     DiodeClient,
+    DiodeDryRunClient,
     DiodeMethodClientInterceptor,
     _ClientCallDetails,
     _DiodeAuthentication,
@@ -635,3 +636,32 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
             auth.authenticate()
         assert "Failed to obtain access token: Connection error" in str(excinfo.value)
 
+def test_ingest_dry_run_stdout(capsys):
+    """Verify ingest prints JSON when dry run is enabled."""
+    client = DiodeDryRunClient(
+        app_name="my-producer",
+        app_version="0.0.1",
+    )
+
+    client._stub = MagicMock()
+    client.ingest(entities=[])
+
+    captured = capsys.readouterr()
+    assert client._stub.Ingest.call_count == 0
+    assert captured.out.startswith("{")
+
+
+def test_ingest_dry_run_file(tmp_path):
+    """Verify ingest writes JSON to file when dry run output file is set."""
+    output_file = tmp_path / "out.json"
+    client = DiodeDryRunClient(
+        app_name="my-producer",
+        app_version="0.0.1",
+        dry_run_output_file=str(output_file),
+    )
+
+    client._stub = MagicMock()
+    client.ingest(entities=[])
+
+    assert client._stub.Ingest.call_count == 0
+    assert output_file.read_text().startswith("{")
