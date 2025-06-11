@@ -20,8 +20,11 @@ from netboxlabs.diode.sdk.client import (
     _get_sentry_dsn,
     _load_certs,
     parse_target,
+    load_dryrun_entities,
 )
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
+from netboxlabs.diode.sdk.ingester import Entity
+from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import Entity as EntityPb
 from netboxlabs.diode.sdk.version import version_semver
 
 
@@ -660,3 +663,18 @@ def test_ingest_dry_run_file(tmp_path):
 
     assert client._stub.Ingest.call_count == 0
     assert output_file.read_text().startswith("{")
+
+def test_load_dryrun_entities(tmp_path):
+    """Verify ``load_dryrun_entities`` yields protobuf entities."""
+    output_file = tmp_path / "dryrun.jsonl"
+    client = DiodeDryRunClient(dry_run_output_file=str(output_file))
+
+    client.ingest(entities=[Entity(site="Site1"), Entity(device="Device1")])
+
+    entities = list(load_dryrun_entities(output_file))
+
+    assert len(entities) == 2
+    assert isinstance(entities[0], EntityPb)
+    assert entities[0].site.name == "Site1"
+    assert isinstance(entities[1], EntityPb)
+    assert entities[1].device.name == "Device1"
