@@ -2,8 +2,12 @@
 # Copyright 2024 NetBox Labs Inc
 """NetBox Labs, Diode - SDK."""
 
-from netboxlabs.diode.sdk.client import DiodeClient, DiodeClientInterface, DiodeDryRunClient
+from netboxlabs.diode.sdk.client import (
+    DiodeClient,
+    DiodeDryRunClient,
+    load_dryrun_entities,
+)
 
-assert DiodeClientInterface
 assert DiodeClient
 assert DiodeDryRunClient
+assert load_dryrun_entities

@@ -12,12 +12,13 @@ import ssl
 import sys
 import uuid
 from collections.abc import Iterable
+from pathlib import Path
 from urllib.parse import urlencode, urlparse
 
 import certifi
 import grpc
 import sentry_sdk
-from google.protobuf.json_format import MessageToDict
+from google.protobuf.json_format import MessageToDict, ParseDict
 
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
@@ -33,6 +34,17 @@ _DRY_RUN_OUTPUT_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_FILE"
 _INGEST_SCOPE = "diode:ingest"
 _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
+
+
+def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
+    """Yield entities stored in a JSON Lines file produced by ``DiodeDryRunClient``."""
+    with open(file_path) as fh:
+        for line in fh:
+            data = json.loads(line)
+            for entity_dict in data.get("entities", []):
+                pb_entity = Entity()
+                ParseDict(entity_dict, pb_entity)
+                yield pb_entity
 
 
 class DiodeClientInterface:
@@ -304,9 +316,7 @@ class DiodeDryRunClient(DiodeClientInterface):
     _app_name = None
     _app_version = None
 
-    def __init__(
-        self, dry_run_output_file: str | None = None
-    ):
+    def __init__(self, dry_run_output_file: str | None = None):
         """Initiate a new dry run client."""
         self._dry_run_output_file = os.getenv(
             _DRY_RUN_OUTPUT_ENVVAR_NAME, dry_run_output_file
@@ -330,6 +340,9 @@ class DiodeDryRunClient(DiodeClientInterface):
     def __enter__(self):
         """Enters the runtime context related to the channel object."""
         return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        """Exits the runtime context related to the channel object."""
 
     def ingest(
         self,
