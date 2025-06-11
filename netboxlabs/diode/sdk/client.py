@@ -12,7 +12,6 @@ import ssl
 import sys
 import uuid
 from collections.abc import Iterable
-from typing import Protocol, runtime_checkable
 from urllib.parse import urlencode, urlparse
 
 import certifi
@@ -36,30 +35,10 @@ _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
 
 
-@runtime_checkable
-class DiodeClientInterface(Protocol):
-    """Interface implemented by diode clients."""
+class DiodeClientInterface:
+    """Runtime placeholder for the Diode client interface."""
 
-    @property
-    def name(self) -> str:
-        """Name of the SDK."""
-
-    @property
-    def version(self) -> str:
-        """Version of the SDK."""
-
-    def ingest(
-        self,
-        entities: Iterable[Entity | ingester_pb2.Entity | None],
-        stream: str | None = _DEFAULT_STREAM,
-    ) -> ingester_pb2.IngestResponse:
-        """Ingest entities."""
-
-    def __enter__(self):
-        """Enters the runtime context related to the channel object."""
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        """Exits the runtime context related to the channel object."""
+    pass
 
 
 def _load_certs() -> bytes:
