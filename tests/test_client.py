@@ -19,12 +19,12 @@ from netboxlabs.diode.sdk.client import (
     _DiodeAuthentication,
     _get_sentry_dsn,
     _load_certs,
-    parse_target,
     load_dryrun_entities,
+    parse_target,
 )
+from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import Entity as EntityPb
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity
-from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import Entity as EntityPb
 from netboxlabs.diode.sdk.version import version_semver
 
 
