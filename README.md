@@ -85,6 +85,36 @@ when `dry_run_output_file` (or `DIODE_DRY_RUN_OUTPUT_FILE`) is set.
 ```python
 from netboxlabs.diode.sdk import DiodeDryRunClient
 
+with DiodeDryRunClient(dry_run_output_file="dryrun.json") as client:
+    client.ingest([
+        Entity(device="Device A"),
+    ])
+```
+
+The produced file can later be ingested by a real Diode instance using
+`load_dryrun_entities` with a standard `DiodeClient`:
+
+```python
+from netboxlabs.diode.sdk import DiodeClient, load_dryrun_entities
+
+with DiodeClient(
+    target="grpc://localhost:8080/diode",
+    app_name="my-test-app",
+    app_version="0.0.1",
+) as client:
+    entities = list(load_dryrun_entities("dryrun.json"))
+    client.ingest(entities=entities)
+```
+
+### Dry run mode
+
+`DiodeDryRunClient` allows generating ingestion requests without contacting a
+Diode server. Each request is printed to stdout or written to a JSON Lines file
+when `dry_run_output_file` (or `DIODE_DRY_RUN_OUTPUT_FILE`) is set.
+
+```python
+from netboxlabs.diode.sdk import DiodeDryRunClient
+
 with DiodeDryRunClient(dry_run_output_file="dryrun.jsonl") as client:
     client.ingest([
         Entity(device="Device A"),

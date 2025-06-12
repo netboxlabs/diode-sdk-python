@@ -18,7 +18,7 @@ from urllib.parse import urlencode, urlparse
 import certifi
 import grpc
 import sentry_sdk
-from google.protobuf.json_format import MessageToDict, ParseDict
+from google.protobuf.json_format import MessageToJson, ParseDict
 
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
@@ -37,14 +37,25 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
-    """Yield entities stored in a JSON Lines file produced by ``DiodeDryRunClient``."""
-    with open(file_path) as fh:
-        for line in fh:
-            data = json.loads(line)
-            for entity_dict in data.get("entities", []):
-                pb_entity = Entity()
-                ParseDict(entity_dict, pb_entity)
-                yield pb_entity
+    """Yield entities from a file with concatenated JSON messages."""
+    file_path = Path(file_path)
+    with file_path.open("r") as fh:
+        buffer = fh.read()
+    decoder = json.JSONDecoder()
+    idx = 0
+    buffer = buffer.lstrip()  # Remove leading whitespace
+    while idx < len(buffer):
+        try:
+            obj, offset = decoder.raw_decode(buffer[idx:])
+            idx += offset
+            while idx < len(buffer) and buffer[idx].isspace():
+                idx += 1  # skip whitespace between JSON objects
+            for entity_dict in obj.get("entities", []):
+                entity_pb = ingester_pb2.Entity()
+                ParseDict(entity_dict, entity_pb)
+                yield entity_pb
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"Failed to decode JSON object at pos {idx}: {e}")
 
 
 class DiodeClientInterface:
@@ -358,7 +369,7 @@ class DiodeDryRunClient(DiodeClientInterface):
             sdk_version=self.version,
         )
 
-        output = json.dumps(MessageToDict(request))
+        output = MessageToJson(request, preserving_proto_field_name=True)
         if self._dry_run_output_file:
             with open(self._dry_run_output_file, "a") as fh:
                 fh.write(output + "\n")
