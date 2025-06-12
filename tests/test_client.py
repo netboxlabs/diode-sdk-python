@@ -690,7 +690,7 @@ def test_ingest_dry_run_file(tmp_path):
     client.ingest(entities=[])
 
     assert client._stub.Ingest.call_count == 0
-    assert output_file.read_text().startswith("{")
+    assert output_file.read_text().startswith("[")
 
 
 def test_load_dryrun_entities(tmp_path):

@@ -38,25 +38,13 @@ _LOGGER = logging.getLogger(__name__)
 
 def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
     """Yield entities from a file with concatenated JSON messages."""
-    file_path = Path(file_path)
-    with file_path.open("r") as fh:
-        buffer = fh.read()
-    decoder = json.JSONDecoder()
-    idx = 0
-    buffer = buffer.lstrip()  # Remove leading whitespace
-    while idx < len(buffer):
-        try:
-            obj, offset = decoder.raw_decode(buffer[idx:])
-            idx += offset
-            while idx < len(buffer) and buffer[idx].isspace():
-                idx += 1  # skip whitespace between JSON objects
-            for entity_dict in obj.get("entities", []):
-                entity_pb = ingester_pb2.Entity()
-                ParseDict(entity_dict, entity_pb)
-                yield entity_pb
-        except json.JSONDecodeError as e:
-            raise RuntimeError(f"Failed to decode JSON object at pos {idx}: {e}")
-
+    path = Path(file_path)
+    with path.open("r") as fh:
+        requests = json.load(fh)
+        for req_dict in requests:
+            req_pb = ingester_pb2.IngestRequest()
+            ParseDict(req_dict, req_pb)
+            yield from req_pb.entities
 
 class DiodeClientInterface:
     """Runtime placeholder for the Diode client interface."""
@@ -371,8 +359,22 @@ class DiodeDryRunClient(DiodeClientInterface):
 
         output = MessageToJson(request, preserving_proto_field_name=True)
         if self._dry_run_output_file:
-            with open(self._dry_run_output_file, "a") as fh:
-                fh.write(output + "\n")
+            path = Path(self._dry_run_output_file)
+            if not path.exists():
+                with path.open("w") as fh:
+                    fh.write("[\n")
+                    fh.write(output)
+                    fh.write("\n]")
+                return ingester_pb2.IngestResponse()
+            with path.open("rb+") as fh:
+                fh.seek(-2, os.SEEK_END)
+                trailer = fh.read(2)
+                if trailer != b"\n]":
+                    return ingester_pb2.IngestResponse(
+                        errors=["Invalid JSON trailer in dry run output file"]
+                    )
+                fh.seek(-2, os.SEEK_END)
+                fh.write(f",\n{output}\n]".encode())
         else:
             print(output, file=sys.stdout)
         return ingester_pb2.IngestResponse()
