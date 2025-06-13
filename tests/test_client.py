@@ -4,6 +4,7 @@
 
 import json
 import os
+from pathlib import Path
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
@@ -515,6 +516,12 @@ def test_interceptor_intercepts_stream_unary_calls():
 
 
 @pytest.fixture
+def messages_path() -> Path:
+    """Path to the bundled dry-run messages."""
+    return Path(__file__).resolve().parent / "fixtures" / "messages.json"
+
+
+@pytest.fixture
 def mock_diode_authentication():
     """
     Fixture to mock the Diode authentication process.
@@ -707,3 +714,38 @@ def test_load_dryrun_entities(tmp_path):
     assert entities[0].site.name == "Site1"
     assert isinstance(entities[1], ingester_pb2.Entity)
     assert entities[1].device.name == "Device1"
+
+
+def test_load_dryrun_entities_from_fixture(messages_path, tmp_path):
+    """Ensure entities load correctly from the bundled fixture."""
+    entities = list(load_dryrun_entities(messages_path))
+
+    assert len(entities) == 94
+    assert isinstance(entities[0], ingester_pb2.Entity)
+    assert entities[0].asn.asn == 555
+    assert entities[33].ip_address.address == "192.168.100.1/24"
+    assert (
+        entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
+    )
+    assert entities[-1].wireless_link.ssid == "P2P-Link-1"
+
+    output_file = tmp_path / "out.json"
+    client = DiodeDryRunClient(
+        dry_run_output_file=str(output_file),
+    )
+
+    client._stub = MagicMock()
+    client.ingest(entities=entities)
+    assert client._stub.Ingest.call_count == 0
+    assert output_file.read_text().startswith("[")
+
+    entities = list(load_dryrun_entities(output_file))
+
+    assert len(entities) == 94
+    assert isinstance(entities[0], ingester_pb2.Entity)
+    assert entities[0].asn.asn == 555
+    assert entities[33].ip_address.address == "192.168.100.1/24"
+    assert (
+        entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
+    )
+    assert entities[-1].wireless_link.ssid == "P2P-Link-1"
