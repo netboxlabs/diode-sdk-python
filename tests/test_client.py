@@ -694,7 +694,8 @@ def test_ingest_dry_run_file(tmp_path):
     )
 
     client._stub = MagicMock()
-    client.ingest(entities=[])
+    client.ingest(entities=[Entity(site="Site1"), Entity(device="Device1")])
+    client.ingest(entities=[Entity(site="Site2"), Entity(device="Device2")])
 
     assert client._stub.Ingest.call_count == 0
     assert output_file.read_text().startswith("[")
