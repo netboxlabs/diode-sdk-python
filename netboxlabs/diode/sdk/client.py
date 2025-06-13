@@ -375,6 +375,7 @@ class DiodeDryRunClient(DiodeClientInterface):
                     )
                 fh.seek(-2, os.SEEK_END)
                 fh.write(f",\n{output}\n]".encode())
+                fh.flush()
         else:
             print(output, file=sys.stdout)
         return ingester_pb2.IngestResponse()
