@@ -516,9 +516,9 @@ def test_interceptor_intercepts_stream_unary_calls():
 
 
 @pytest.fixture
-def messages_path() -> Path:
-    """Path to the bundled dry-run messages."""
-    return Path(__file__).resolve().parent / "fixtures" / "messages.json"
+def message_path() -> Path:
+    """Path to the bundled dry-run message."""
+    return Path(__file__).resolve().parent / "fixtures" / "message.json"
 
 
 @pytest.fixture
@@ -688,27 +688,31 @@ def test_ingest_dry_run_stdout(capsys):
 
 def test_ingest_dry_run_file(tmp_path):
     """Verify ingest writes JSON to file when dry run output file is set."""
-    output_file = tmp_path / "out.json"
     client = DiodeDryRunClient(
-        dry_run_output_file=str(output_file),
+        app_name="agent/my-producer",
+        output_dir=str(tmp_path),
     )
 
     client._stub = MagicMock()
     client.ingest(entities=[Entity(site="Site1"), Entity(device="Device1")])
     client.ingest(entities=[Entity(site="Site2"), Entity(device="Device2")])
 
+    files = list(tmp_path.glob("agent_my-producer*.json"))
+    assert len(files) == 2
     assert client._stub.Ingest.call_count == 0
-    assert output_file.read_text().startswith("[")
+    for f in files:
+        assert f.read_text().startswith("{")
 
 
 def test_load_dryrun_entities(tmp_path):
     """Verify ``load_dryrun_entities`` yields protobuf entities."""
-    output_file = tmp_path / "dryrun.jsonl"
-    client = DiodeDryRunClient(dry_run_output_file=str(output_file))
+    client = DiodeDryRunClient(output_dir=str(tmp_path))
 
     client.ingest(entities=[Entity(site="Site1"), Entity(device="Device1")])
 
-    entities = list(load_dryrun_entities(output_file))
+    files = list(tmp_path.glob("dryrun*.json"))
+    assert len(files) == 1
+    entities = list(load_dryrun_entities(files[0]))
 
     assert len(entities) == 2
     assert isinstance(entities[0], ingester_pb2.Entity)
@@ -717,9 +721,9 @@ def test_load_dryrun_entities(tmp_path):
     assert entities[1].device.name == "Device1"
 
 
-def test_load_dryrun_entities_from_fixture(messages_path, tmp_path):
+def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
     """Ensure entities load correctly from the bundled fixture."""
-    entities = list(load_dryrun_entities(messages_path))
+    entities = list(load_dryrun_entities(message_path))
 
     assert len(entities) == 94
     assert isinstance(entities[0], ingester_pb2.Entity)
@@ -730,17 +734,18 @@ def test_load_dryrun_entities_from_fixture(messages_path, tmp_path):
     )
     assert entities[-1].wireless_link.ssid == "P2P-Link-1"
 
-    output_file = tmp_path / "out.json"
-    client = DiodeDryRunClient(
-        dry_run_output_file=str(output_file),
-    )
+    client = DiodeDryRunClient(output_dir=str(tmp_path))
 
     client._stub = MagicMock()
     client.ingest(entities=entities)
-    assert client._stub.Ingest.call_count == 0
-    assert output_file.read_text().startswith("[")
 
-    entities = list(load_dryrun_entities(output_file))
+    assert client._stub.Ingest.call_count == 0
+    files = list(tmp_path.glob("dryrun*.json"))
+    assert len(files) == 1
+    entities = list(load_dryrun_entities(files[0]))
+    assert files[0].read_text().startswith("{")
+
+    entities = list(load_dryrun_entities(files[0]))
 
     assert len(entities) == 94
     assert isinstance(entities[0], ingester_pb2.Entity)

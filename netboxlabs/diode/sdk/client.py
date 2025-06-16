@@ -10,6 +10,7 @@ import os
 import platform
 import ssl
 import sys
+import time
 import uuid
 from collections.abc import Iterable
 from pathlib import Path
@@ -30,7 +31,7 @@ _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
-_DRY_RUN_OUTPUT_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_FILE"
+_DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
 _INGEST_SCOPE = "diode:ingest"
 _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
@@ -40,11 +41,11 @@ def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
     """Yield entities from a file with concatenated JSON messages."""
     path = Path(file_path)
     with path.open("r") as fh:
-        requests = json.load(fh)
-        for req_dict in requests:
-            req_pb = ingester_pb2.IngestRequest()
-            ParseDict(req_dict, req_pb)
-            yield from req_pb.entities
+        request = json.load(fh)
+        req_pb = ingester_pb2.IngestRequest()
+        ParseDict(request, req_pb)
+        yield from req_pb.entities
+
 
 class DiodeClientInterface:
     """Runtime placeholder for the Diode client interface."""
@@ -315,11 +316,10 @@ class DiodeDryRunClient(DiodeClientInterface):
     _app_name = None
     _app_version = None
 
-    def __init__(self, dry_run_output_file: str | None = None):
+    def __init__(self, app_name: str = "dryrun", output_dir: str | None = None):
         """Initiate a new dry run client."""
-        self._dry_run_output_file = os.getenv(
-            _DRY_RUN_OUTPUT_ENVVAR_NAME, dry_run_output_file
-        )
+        self._output_dir = os.getenv(_DRY_RUN_OUTPUT_DIR_ENVVAR_NAME, output_dir)
+        self._app_name = app_name
 
     @property
     def name(self) -> str:
@@ -332,9 +332,14 @@ class DiodeDryRunClient(DiodeClientInterface):
         return self._version
 
     @property
-    def dry_run_output_file(self) -> str | None:
-        """Retrieve the dry run output file."""
-        return self._dry_run_output_file
+    def app_name(self) -> str:
+        """Retrieve the app name."""
+        return self._app_name
+
+    @property
+    def output_dir(self) -> str | None:
+        """Retrieve the dry run output dir."""
+        return self._output_dir
 
     def __enter__(self):
         """Enters the runtime context related to the channel object."""
@@ -352,30 +357,23 @@ class DiodeDryRunClient(DiodeClientInterface):
         request = ingester_pb2.IngestRequest(
             stream=stream,
             id=str(uuid.uuid4()),
+            producer_app_name=self._app_name,
             entities=entities,
             sdk_name=self.name,
             sdk_version=self.version,
         )
 
         output = MessageToJson(request, preserving_proto_field_name=True)
-        if self._dry_run_output_file:
-            path = Path(self._dry_run_output_file)
-            if not path.exists():
-                with path.open("w") as fh:
-                    fh.write("[\n")
-                    fh.write(output)
-                    fh.write("\n]")
-                return ingester_pb2.IngestResponse()
-            with path.open("rb+") as fh:
-                fh.seek(-2, os.SEEK_END)
-                trailer = fh.read(2)
-                if trailer != b"\n]":
-                    return ingester_pb2.IngestResponse(
-                        errors=["Invalid JSON trailer in dry run output file"]
-                    )
-                fh.seek(-2, os.SEEK_END)
-                fh.write(f",\n{output}\n]".encode())
-                fh.flush()
+        if self._output_dir:
+            timestamp = time.perf_counter_ns()
+            path = Path(self._output_dir)
+            path.mkdir(parents=True, exist_ok=True)
+            filename = "".join(
+                c if c.isalnum() or c in ("_", "-") else "_" for c in self._app_name
+            )
+            file_path = path / f"{filename}_{timestamp}.json"
+            with file_path.open("w") as fh:
+                fh.write(output)
         else:
             print(output, file=sys.stdout)
         return ingester_pb2.IngestResponse()
