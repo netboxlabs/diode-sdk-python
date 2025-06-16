@@ -78,9 +78,7 @@ if __name__ == "__main__":
 
 ### Dry run mode
 
-`DiodeDryRunClient` allows generating ingestion requests without contacting a
-Diode server. Each request is printed to stdout or written to a JSON Lines file
-when `output_dir` (or `DIODE_DRY_RUN_OUTPUT_FILE`) is set.
+`DiodeDryRunClient` generates ingestion requests without contacting a Diode server. Requests are printed to stdout by default, or written to JSON files when `output_dir` (or the `DIODE_DRY_RUN_OUTPUT_DIR` environment variable) is specified. The `app_name` parameter serves as the filename prefix; if not provided, `dryrun` is used as the default prefix.
 
 ```python
 from netboxlabs.diode.sdk import DiodeDryRunClient
