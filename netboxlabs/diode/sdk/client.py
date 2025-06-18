@@ -9,13 +9,17 @@ import logging
 import os
 import platform
 import ssl
+import sys
+import time
 import uuid
 from collections.abc import Iterable
+from pathlib import Path
 from urllib.parse import urlencode, urlparse
 
 import certifi
 import grpc
 import sentry_sdk
+from google.protobuf.json_format import MessageToJson, ParseDict
 
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
@@ -27,9 +31,26 @@ _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
+_DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
 _INGEST_SCOPE = "diode:ingest"
 _DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
+
+
+def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
+    """Yield entities from a file with concatenated JSON messages."""
+    path = Path(file_path)
+    with path.open("r") as fh:
+        request = json.load(fh)
+        req_pb = ingester_pb2.IngestRequest()
+        ParseDict(request, req_pb)
+        yield from req_pb.entities
+
+
+class DiodeClientInterface:
+    """Runtime placeholder for the Diode client interface."""
+
+    pass
 
 
 def _load_certs() -> bytes:
@@ -82,7 +103,7 @@ def _get_optional_config_value(
     return value
 
 
-class DiodeClient:
+class DiodeClient(DiodeClientInterface):
     """Diode Client."""
 
     _name = "diode-sdk-python"
@@ -285,6 +306,77 @@ class DiodeClient:
         self._metadata = list(
             filter(lambda x: x[0] != "authorization", self._metadata)
         ) + [("authorization", f"Bearer {access_token}")]
+
+
+class DiodeDryRunClient(DiodeClientInterface):
+    """Client that outputs ingestion requests instead of sending them."""
+
+    _name = "diode-sdk-python-dry-run"
+    _version = version_semver()
+    _app_name = None
+    _app_version = None
+
+    def __init__(self, app_name: str = "dryrun", output_dir: str | None = None):
+        """Initiate a new dry run client."""
+        self._output_dir = os.getenv(_DRY_RUN_OUTPUT_DIR_ENVVAR_NAME, output_dir)
+        self._app_name = app_name
+
+    @property
+    def name(self) -> str:
+        """Retrieve the name."""
+        return self._name
+
+    @property
+    def version(self) -> str:
+        """Retrieve the version."""
+        return self._version
+
+    @property
+    def app_name(self) -> str:
+        """Retrieve the app name."""
+        return self._app_name
+
+    @property
+    def output_dir(self) -> str | None:
+        """Retrieve the dry run output dir."""
+        return self._output_dir
+
+    def __enter__(self):
+        """Enters the runtime context related to the channel object."""
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        """Exits the runtime context related to the channel object."""
+
+    def ingest(
+        self,
+        entities: Iterable[Entity | ingester_pb2.Entity | None],
+        stream: str | None = _DEFAULT_STREAM,
+    ) -> ingester_pb2.IngestResponse:
+        """Ingest entities in dry run mode."""
+        request = ingester_pb2.IngestRequest(
+            stream=stream,
+            id=str(uuid.uuid4()),
+            producer_app_name=self._app_name,
+            entities=entities,
+            sdk_name=self.name,
+            sdk_version=self.version,
+        )
+
+        output = MessageToJson(request, preserving_proto_field_name=True)
+        if self._output_dir:
+            timestamp = time.perf_counter_ns()
+            path = Path(self._output_dir)
+            path.mkdir(parents=True, exist_ok=True)
+            filename = "".join(
+                c if c.isalnum() or c in ("_", "-") else "_" for c in self._app_name
+            )
+            file_path = path / f"{filename}_{timestamp}.json"
+            with file_path.open("w") as fh:
+                fh.write(output)
+        else:
+            print(output, file=sys.stdout)
+        return ingester_pb2.IngestResponse()
 
 
 class _DiodeAuthentication:
