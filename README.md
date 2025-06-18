@@ -24,6 +24,7 @@ pip install netboxlabs-diode-sdk
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_DRY_RUN_OUTPUT_DIR` - Directory where `DiodeDryRunClient` will write JSON files
 
 ### Example
 
@@ -73,6 +74,34 @@ def main():
 if __name__ == "__main__":
     main()
 
+```
+
+### Dry run mode
+
+`DiodeDryRunClient` generates ingestion requests without contacting a Diode server. Requests are printed to stdout by default, or written to JSON files when `output_dir` (or the `DIODE_DRY_RUN_OUTPUT_DIR` environment variable) is specified. The `app_name` parameter serves as the filename prefix; if not provided, `dryrun` is used as the default prefix. The file name is suffixed with a nanosecond-precision timestamp, resulting in the format `<app_name>_<timestamp_ns>.json`.
+
+```python
+from netboxlabs.diode.sdk import DiodeDryRunClient
+
+with DiodeDryRunClient(app_name="my_app", output_dir="/tmp") as client:
+    client.ingest([
+        Entity(device="Device A"),
+    ])
+```
+
+The produced file can later be ingested by a real Diode instance using
+`load_dryrun_entities` with a standard `DiodeClient`:
+
+```python
+from netboxlabs.diode.sdk import DiodeClient, load_dryrun_entities
+
+with DiodeClient(
+    target="grpc://localhost:8080/diode",
+    app_name="my-test-app",
+    app_version="0.0.1",
+) as client:
+    entities = list(load_dryrun_entities("my_app_92722156890707.json"))
+    client.ingest(entities=entities)
 ```
 
 ## Supported entities (object types)

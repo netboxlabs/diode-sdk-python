@@ -4,6 +4,7 @@
 
 import json
 import os
+from pathlib import Path
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
@@ -13,14 +14,18 @@ import pytest
 from netboxlabs.diode.sdk.client import (
     _DIODE_SENTRY_DSN_ENVVAR_NAME,
     DiodeClient,
+    DiodeDryRunClient,
     DiodeMethodClientInterceptor,
     _ClientCallDetails,
     _DiodeAuthentication,
     _get_sentry_dsn,
     _load_certs,
+    load_dryrun_entities,
     parse_target,
 )
+from netboxlabs.diode.sdk.diode.v1 import ingester_pb2
 from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
+from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
 
 
@@ -60,7 +65,9 @@ def test_config_errors(client_id, client_secret, env_var_name):
             client_id=client_id,
             client_secret=client_secret,
         )
-    assert str(err.value) == f"parameter or {env_var_name} environment variable required"
+    assert (
+        str(err.value) == f"parameter or {env_var_name} environment variable required"
+    )
 
 
 def test_client_error(mock_diode_authentication):
@@ -86,7 +93,10 @@ def test_diode_client_error_repr_returns_correct_string():
     error = DiodeClientError(grpc_error)
     error._status_code = grpc.StatusCode.UNAVAILABLE
     error._details = "Some details about the error"
-    assert repr(error) == "<DiodeClientError status code: StatusCode.UNAVAILABLE, details: Some details about the error>"
+    assert (
+        repr(error)
+        == "<DiodeClientError status code: StatusCode.UNAVAILABLE, details: Some details about the error>"
+    )
 
 
 def test_load_certs_returns_bytes():
@@ -176,7 +186,9 @@ def test_setup_sentry_initializes_with_correct_parameters(mock_diode_authenticat
         )
 
 
-def test_client_sets_up_secure_channel_when_grpcs_scheme_is_found_in_target(mock_diode_authentication):
+def test_client_sets_up_secure_channel_when_grpcs_scheme_is_found_in_target(
+    mock_diode_authentication,
+):
     """Check that DiodeClient.__init__() sets up the gRPC secure channel when grpcs:// scheme is found in the target."""
     client = DiodeClient(
         target="grpcs://localhost:8081",
@@ -201,7 +213,9 @@ def test_client_sets_up_secure_channel_when_grpcs_scheme_is_found_in_target(mock
         mock_secure_channel.assert_called_once()
 
 
-def test_client_sets_up_insecure_channel_when_grpc_scheme_is_found_in_target(mock_diode_authentication):
+def test_client_sets_up_insecure_channel_when_grpc_scheme_is_found_in_target(
+    mock_diode_authentication,
+):
     """Check that DiodeClient.__init__() sets up the gRPC insecure channel when grpc:// scheme is found in the target."""
     client = DiodeClient(
         target="grpc://localhost:8081",
@@ -343,10 +357,14 @@ def test_client_setup_sentry_called_when_sentry_dsn_exists(mock_diode_authentica
             client_secret="123456",
             sentry_dsn="https://user@password.mock.dsn/123456",
         )
-        mock_setup_sentry.assert_called_once_with("https://user@password.mock.dsn/123456", 1.0, 1.0)
+        mock_setup_sentry.assert_called_once_with(
+            "https://user@password.mock.dsn/123456", 1.0, 1.0
+        )
 
 
-def test_client_setup_sentry_not_called_when_sentry_dsn_not_exists(mock_diode_authentication):
+def test_client_setup_sentry_not_called_when_sentry_dsn_not_exists(
+    mock_diode_authentication,
+):
     """Check that DiodeClient._setup_sentry() is not called when sentry_dsn does not exist."""
     client = DiodeClient(
         target="grpc://localhost:8081",
@@ -467,7 +485,10 @@ def test_interceptor_intercepts_unary_unary_calls():
         None,
     )
     request = None
-    assert interceptor.intercept_unary_unary(continuation, client_call_details, request) == "/my/path/diode.v1.IngesterService/Ingest"
+    assert (
+        interceptor.intercept_unary_unary(continuation, client_call_details, request)
+        == "/my/path/diode.v1.IngesterService/Ingest"
+    )
 
 
 def test_interceptor_intercepts_stream_unary_calls():
@@ -487,9 +508,17 @@ def test_interceptor_intercepts_stream_unary_calls():
     )
     request_iterator = None
     assert (
-        interceptor.intercept_stream_unary(continuation, client_call_details, request_iterator)
+        interceptor.intercept_stream_unary(
+            continuation, client_call_details, request_iterator
+        )
         == "/my/path/diode.v1.IngesterService/Ingest"
     )
+
+
+@pytest.fixture
+def message_path() -> Path:
+    """Path to the bundled dry-run message."""
+    return Path(__file__).resolve().parent / "fixtures" / "message.json"
 
 
 @pytest.fixture
@@ -565,7 +594,9 @@ def test_diode_authentication_success(mock_diode_authentication):
     with mock.patch("http.client.HTTPConnection") as mock_http_conn:
         mock_conn_instance = mock_http_conn.return_value
         mock_conn_instance.getresponse.return_value.status = 200
-        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps({"access_token": "mocked_token"}).encode()
+        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps(
+            {"access_token": "mocked_token"}
+        ).encode()
 
         token = auth.authenticate()
         assert token == "mocked_token"
@@ -591,14 +622,17 @@ def test_diode_authentication_failure(mock_diode_authentication):
         assert "Failed to obtain access token" in str(excinfo.value)
 
 
-@pytest.mark.parametrize("path", [
-    "/diode",
-    "",
-    None,
-    "/diode/",
-    "diode",
-    "diode/",
-    ])
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/diode",
+        "",
+        None,
+        "/diode/",
+        "diode",
+        "diode/",
+    ],
+)
 def test_diode_authentication_url_with_path(mock_diode_authentication, path):
     """Test that the authentication URL is correctly formatted with a path."""
     auth = _DiodeAuthentication(
@@ -612,9 +646,13 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
     with mock.patch("http.client.HTTPConnection") as mock_http_conn:
         mock_conn_instance = mock_http_conn.return_value
         mock_conn_instance.getresponse.return_value.status = 200
-        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps({"access_token": "mocked_token"}).encode()
+        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps(
+            {"access_token": "mocked_token"}
+        ).encode()
         auth.authenticate()
-        mock_conn_instance.request.assert_called_once_with("POST", f"{(path or '').rstrip('/')}/auth/token", mock.ANY, mock.ANY)
+        mock_conn_instance.request.assert_called_once_with(
+            "POST", f"{(path or '').rstrip('/')}/auth/token", mock.ANY, mock.ANY
+        )
 
 
 def test_diode_authentication_request_exception(mock_diode_authentication):
@@ -635,3 +673,85 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
             auth.authenticate()
         assert "Failed to obtain access token: Connection error" in str(excinfo.value)
 
+
+def test_ingest_dry_run_stdout(capsys):
+    """Verify ingest prints JSON when dry run is enabled."""
+    client = DiodeDryRunClient()
+
+    client._stub = MagicMock()
+    client.ingest(entities=[])
+
+    captured = capsys.readouterr()
+    assert client._stub.Ingest.call_count == 0
+    assert captured.out.startswith("{")
+
+
+def test_ingest_dry_run_file(tmp_path):
+    """Verify ingest writes JSON to file when dry run output file is set."""
+    client = DiodeDryRunClient(
+        app_name="agent/my-producer",
+        output_dir=str(tmp_path),
+    )
+
+    client._stub = MagicMock()
+    client.ingest(entities=[Entity(site="Site1"), Entity(device="Device1")])
+    client.ingest(entities=[Entity(site="Site2"), Entity(device="Device2")])
+
+    files = list(tmp_path.glob("agent_my-producer*.json"))
+    assert len(files) == 2
+    assert client._stub.Ingest.call_count == 0
+    for f in files:
+        assert f.read_text().startswith("{")
+
+
+def test_load_dryrun_entities(tmp_path):
+    """Verify ``load_dryrun_entities`` yields protobuf entities."""
+    client = DiodeDryRunClient(output_dir=str(tmp_path))
+
+    client.ingest(entities=[Entity(site="Site1"), Entity(device="Device1")])
+
+    files = list(tmp_path.glob("dryrun*.json"))
+    assert len(files) == 1
+    entities = list(load_dryrun_entities(files[0]))
+
+    assert len(entities) == 2
+    assert isinstance(entities[0], ingester_pb2.Entity)
+    assert entities[0].site.name == "Site1"
+    assert isinstance(entities[1], ingester_pb2.Entity)
+    assert entities[1].device.name == "Device1"
+
+
+def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
+    """Ensure entities load correctly from the bundled fixture."""
+    entities = list(load_dryrun_entities(message_path))
+
+    assert len(entities) == 94
+    assert isinstance(entities[0], ingester_pb2.Entity)
+    assert entities[0].asn.asn == 555
+    assert entities[33].ip_address.address == "192.168.100.1/24"
+    assert (
+        entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
+    )
+    assert entities[-1].wireless_link.ssid == "P2P-Link-1"
+
+    client = DiodeDryRunClient(output_dir=str(tmp_path))
+
+    client._stub = MagicMock()
+    client.ingest(entities=entities)
+
+    assert client._stub.Ingest.call_count == 0
+    files = list(tmp_path.glob("dryrun*.json"))
+    assert len(files) == 1
+    entities = list(load_dryrun_entities(files[0]))
+    assert files[0].read_text().startswith("{")
+
+    entities = list(load_dryrun_entities(files[0]))
+
+    assert len(entities) == 94
+    assert isinstance(entities[0], ingester_pb2.Entity)
+    assert entities[0].asn.asn == 555
+    assert entities[33].ip_address.address == "192.168.100.1/24"
+    assert (
+        entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
+    )
+    assert entities[-1].wireless_link.ssid == "P2P-Link-1"
