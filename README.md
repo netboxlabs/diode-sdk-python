@@ -91,7 +91,7 @@ with DiodeDryRunClient(app_name="my_app", output_dir="/tmp") as client:
 
 The produced file can later be ingested by a real Diode instance using
 `load_dryrun_entities` with a standard `DiodeClient` or via the bundled
-`diode-load-dryrun` helper:
+`diode-replay-dryrun` helper:
 
 ```python
 from netboxlabs.diode.sdk import DiodeClient, load_dryrun_entities
@@ -105,11 +105,11 @@ with DiodeClient(
     client.ingest(entities=entities)
 ```
 
-Alternatively, the same file can be ingested using the `diode-load-dryrun`
+Alternatively, the same file can be ingested using the `diode-replay-dryrun`
 command shipped with the SDK:
 
 ```bash
-diode-load-dryrun \
+diode-replay-dryrun \
   --target grpc://localhost:8080/diode \
   --app-name my-test-app \
   --app-version 0.0.1 \

@@ -46,7 +46,7 @@ omit = [
 "Homepage" = "https://netboxlabs.com/"
 
 [project.scripts]
-diode-load-dryrun = "netboxlabs.diode.sdk.dryrun_ingest:main"
+diode-replay-dryrun = "netboxlabs.diode.sdk.dryrun_replay:main"
 
 [tool.setuptools]
 packages = [
