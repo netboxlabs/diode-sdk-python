@@ -54,14 +54,18 @@ def main() -> None:
         client_id=args.client_id,
         client_secret=args.client_secret,
     ) as client:
+        has_errors = False
         for file_path in args.files:
             entities = list(load_dryrun_entities(file_path))
             if entities:
                 response = client.ingest(entities=entities)
                 if response.errors:
                     print(f"Errors while ingesting {file_path}: {response.errors}")
+                    has_errors = True
                 else:
                     print(f"Ingested {len(entities)} entities from {file_path}")
+        if has_errors:
+            sys.exit(1)
 
 
 if __name__ == "__main__":  # pragma: no cover - entry point
