@@ -1,6 +1,7 @@
 """CLI helper to ingest dry-run JSON messages into Diode."""
 
 import argparse
+import sys
 
 from netboxlabs.diode.sdk import DiodeClient, load_dryrun_entities
 
