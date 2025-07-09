@@ -63,7 +63,7 @@ def main() -> None:
             if entities:
                 response = client.ingest(entities=entities)
                 if response.errors:
-                    print(f"Errors while ingesting {file_path}: {response.errors}")
+                    print(f"Errors while ingesting {file_path}: {response.errors}", file=sys.stderr)
                     has_errors = True
                 else:
                     print(f"Ingested {len(entities)} entities from {file_path}")
