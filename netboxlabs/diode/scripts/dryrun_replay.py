@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# Copyright 2025 NetBox Labs Inc
 """CLI helper to ingest dry-run JSON messages into Diode."""
 
 import argparse
@@ -21,13 +23,13 @@ def main() -> None:
         "-a",
         "--app-name",
         required=True,
-        help="Application name used when producing the dry-run messages",
+        help="Application name used when ingesting the dry-run messages",
     )
     parser.add_argument(
         "-v",
         "--app-version",
         required=True,
-        help="Application version used when producing the dry-run messages",
+        help="Application version used when ingesting the dry-run messages",
     )
     parser.add_argument(
         "-c",
@@ -69,5 +71,5 @@ def main() -> None:
             sys.exit(1)
 
 
-if __name__ == "__main__":  # pragma: no cover - entry point
+if __name__ == "__main__":
     main()
