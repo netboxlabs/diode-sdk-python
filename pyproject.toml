@@ -36,6 +36,7 @@ test = ["coverage", "pytest", "pytest-cov==6.0.0"]
 
 [tool.coverage.run]
 omit = [
+    "*/netboxlabs/diode/scripts/*",
     "*/netboxlabs/diode/sdk/ingester.py",
     "*/netboxlabs/diode/sdk/diode/*",
     "*/netboxlabs/diode/sdk/validate/*",
@@ -45,10 +46,12 @@ omit = [
 [project.urls]  # Optional
 "Homepage" = "https://netboxlabs.com/"
 
-[project.scripts]  # Optional
+[project.scripts]
+diode-replay-dryrun = "netboxlabs.diode.scripts.dryrun_replay:main"
 
 [tool.setuptools]
 packages = [
+    "netboxlabs.diode.scripts",
     "netboxlabs.diode.sdk",
     "netboxlabs.diode.sdk.diode",
     "netboxlabs.diode.sdk.diode.v1",
