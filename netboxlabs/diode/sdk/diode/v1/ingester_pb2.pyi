@@ -8,7 +8,7 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class Entity(_message.Message):
-    __slots__ = ("timestamp", "asn", "asn_range", "aggregate", "cable", "cable_path", "cable_termination", "circuit", "circuit_group", "circuit_group_assignment", "circuit_termination", "circuit_type", "cluster", "cluster_group", "cluster_type", "console_port", "console_server_port", "contact", "contact_assignment", "contact_group", "contact_role", "device", "device_bay", "device_role", "device_type", "fhrp_group", "fhrp_group_assignment", "front_port", "ike_policy", "ike_proposal", "ip_address", "ip_range", "ip_sec_policy", "ip_sec_profile", "ip_sec_proposal", "interface", "inventory_item", "inventory_item_role", "l2vpn", "l2vpn_termination", "location", "mac_address", "manufacturer", "module", "module_bay", "module_type", "platform", "power_feed", "power_outlet", "power_panel", "power_port", "prefix", "provider", "provider_account", "provider_network", "rir", "rack", "rack_reservation", "rack_role", "rack_type", "rear_port", "region", "role", "route_target", "service", "site", "site_group", "tag", "tenant", "tenant_group", "tunnel", "tunnel_group", "tunnel_termination", "vlan", "vlan_group", "vlan_translation_policy", "vlan_translation_rule", "vm_interface", "vrf", "virtual_chassis", "virtual_circuit", "virtual_circuit_termination", "virtual_circuit_type", "virtual_device_context", "virtual_disk", "virtual_machine", "wireless_lan", "wireless_lan_group", "wireless_link")
+    __slots__ = ("timestamp", "asn", "asn_range", "aggregate", "cable", "cable_path", "cable_termination", "circuit", "circuit_group", "circuit_group_assignment", "circuit_termination", "circuit_type", "cluster", "cluster_group", "cluster_type", "console_port", "console_server_port", "contact", "contact_assignment", "contact_group", "contact_role", "device", "device_bay", "device_role", "device_type", "fhrp_group", "fhrp_group_assignment", "front_port", "ike_policy", "ike_proposal", "ip_address", "ip_range", "ip_sec_policy", "ip_sec_profile", "ip_sec_proposal", "interface", "inventory_item", "inventory_item_role", "l2vpn", "l2vpn_termination", "location", "mac_address", "manufacturer", "module", "module_bay", "module_type", "platform", "power_feed", "power_outlet", "power_panel", "power_port", "prefix", "provider", "provider_account", "provider_network", "rir", "rack", "rack_reservation", "rack_role", "rack_type", "rear_port", "region", "role", "route_target", "service", "site", "site_group", "tag", "tenant", "tenant_group", "tunnel", "tunnel_group", "tunnel_termination", "vlan", "vlan_group", "vlan_translation_policy", "vlan_translation_rule", "vm_interface", "vrf", "virtual_chassis", "virtual_circuit", "virtual_circuit_termination", "virtual_circuit_type", "virtual_device_context", "virtual_disk", "virtual_machine", "wireless_lan", "wireless_lan_group", "wireless_link", "custom_field", "custom_field_choice_set", "journal_entry", "module_type_profile", "custom_link")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     ASN_FIELD_NUMBER: _ClassVar[int]
     ASN_RANGE_FIELD_NUMBER: _ClassVar[int]
@@ -98,6 +98,11 @@ class Entity(_message.Message):
     WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
     WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
     WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
     timestamp: _timestamp_pb2.Timestamp
     asn: ASN
     asn_range: ASNRange
@@ -187,7 +192,12 @@ class Entity(_message.Message):
     wireless_lan: WirelessLAN
     wireless_lan_group: WirelessLANGroup
     wireless_link: WirelessLink
-    def __init__(self, timestamp: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., asn: _Optional[_Union[ASN, _Mapping]] = ..., asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., cable: _Optional[_Union[Cable, _Mapping]] = ..., cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., circuit: _Optional[_Union[Circuit, _Mapping]] = ..., circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., cluster: _Optional[_Union[Cluster, _Mapping]] = ..., cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., contact: _Optional[_Union[Contact, _Mapping]] = ..., contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., interface: _Optional[_Union[Interface, _Mapping]] = ..., inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., location: _Optional[_Union[Location, _Mapping]] = ..., mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., platform: _Optional[_Union[Platform, _Mapping]] = ..., power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., prefix: _Optional[_Union[Prefix, _Mapping]] = ..., provider: _Optional[_Union[Provider, _Mapping]] = ..., provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., rir: _Optional[_Union[RIR, _Mapping]] = ..., rack: _Optional[_Union[Rack, _Mapping]] = ..., rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., rack_type: _Optional[_Union[RackType, _Mapping]] = ..., rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., region: _Optional[_Union[Region, _Mapping]] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., service: _Optional[_Union[Service, _Mapping]] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tag: _Optional[_Union[Tag, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., vlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ...) -> None: ...
+    custom_field: CustomField
+    custom_field_choice_set: CustomFieldChoiceSet
+    journal_entry: JournalEntry
+    module_type_profile: ModuleTypeProfile
+    custom_link: CustomLink
+    def __init__(self, timestamp: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., asn: _Optional[_Union[ASN, _Mapping]] = ..., asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., cable: _Optional[_Union[Cable, _Mapping]] = ..., cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., circuit: _Optional[_Union[Circuit, _Mapping]] = ..., circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., cluster: _Optional[_Union[Cluster, _Mapping]] = ..., cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., contact: _Optional[_Union[Contact, _Mapping]] = ..., contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., interface: _Optional[_Union[Interface, _Mapping]] = ..., inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., location: _Optional[_Union[Location, _Mapping]] = ..., mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., platform: _Optional[_Union[Platform, _Mapping]] = ..., power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., prefix: _Optional[_Union[Prefix, _Mapping]] = ..., provider: _Optional[_Union[Provider, _Mapping]] = ..., provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., rir: _Optional[_Union[RIR, _Mapping]] = ..., rack: _Optional[_Union[Rack, _Mapping]] = ..., rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., rack_type: _Optional[_Union[RackType, _Mapping]] = ..., rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., region: _Optional[_Union[Region, _Mapping]] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., service: _Optional[_Union[Service, _Mapping]] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tag: _Optional[_Union[Tag, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., vlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., custom_link: _Optional[_Union[CustomLink, _Mapping]] = ...) -> None: ...
 
 class IngestRequest(_message.Message):
     __slots__ = ("stream", "entities", "id", "producer_app_name", "producer_app_version", "sdk_name", "sdk_version")
@@ -653,7 +663,7 @@ class ConsoleServerPort(_message.Message):
     def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., type: _Optional[str] = ..., speed: _Optional[int] = ..., description: _Optional[str] = ..., mark_connected: bool = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Contact(_message.Message):
-    __slots__ = ("group", "name", "title", "phone", "email", "address", "link", "description", "comments", "tags", "custom_fields")
+    __slots__ = ("group", "name", "title", "phone", "email", "address", "link", "description", "comments", "tags", "custom_fields", "groups")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -672,6 +682,7 @@ class Contact(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    GROUPS_FIELD_NUMBER: _ClassVar[int]
     group: ContactGroup
     name: str
     title: str
@@ -683,10 +694,11 @@ class Contact(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, group: _Optional[_Union[ContactGroup, _Mapping]] = ..., name: _Optional[str] = ..., title: _Optional[str] = ..., phone: _Optional[str] = ..., email: _Optional[str] = ..., address: _Optional[str] = ..., link: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    groups: _containers.RepeatedCompositeFieldContainer[ContactGroup]
+    def __init__(self, group: _Optional[_Union[ContactGroup, _Mapping]] = ..., name: _Optional[str] = ..., title: _Optional[str] = ..., phone: _Optional[str] = ..., email: _Optional[str] = ..., address: _Optional[str] = ..., link: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., groups: _Optional[_Iterable[_Union[ContactGroup, _Mapping]]] = ...) -> None: ...
 
 class ContactAssignment(_message.Message):
-    __slots__ = ("object_asn", "object_asn_range", "object_aggregate", "object_cable", "object_cable_path", "object_cable_termination", "object_circuit", "object_circuit_group", "object_circuit_group_assignment", "object_circuit_termination", "object_circuit_type", "object_cluster", "object_cluster_group", "object_cluster_type", "object_console_port", "object_console_server_port", "object_contact", "object_contact_assignment", "object_contact_group", "object_contact_role", "object_device", "object_device_bay", "object_device_role", "object_device_type", "object_fhrp_group", "object_fhrp_group_assignment", "object_front_port", "object_ike_policy", "object_ike_proposal", "object_ip_address", "object_ip_range", "object_ip_sec_policy", "object_ip_sec_profile", "object_ip_sec_proposal", "object_interface", "object_inventory_item", "object_inventory_item_role", "object_l2vpn", "object_l2vpn_termination", "object_location", "object_mac_address", "object_manufacturer", "object_module", "object_module_bay", "object_module_type", "object_platform", "object_power_feed", "object_power_outlet", "object_power_panel", "object_power_port", "object_prefix", "object_provider", "object_provider_account", "object_provider_network", "object_rir", "object_rack", "object_rack_reservation", "object_rack_role", "object_rack_type", "object_rear_port", "object_region", "object_role", "object_route_target", "object_service", "object_site", "object_site_group", "object_tag", "object_tenant", "object_tenant_group", "object_tunnel", "object_tunnel_group", "object_tunnel_termination", "object_vlan", "object_vlan_group", "object_vlan_translation_policy", "object_vlan_translation_rule", "object_vm_interface", "object_vrf", "object_virtual_chassis", "object_virtual_circuit", "object_virtual_circuit_termination", "object_virtual_circuit_type", "object_virtual_device_context", "object_virtual_disk", "object_virtual_machine", "object_wireless_lan", "object_wireless_lan_group", "object_wireless_link", "contact", "role", "priority", "tags", "custom_fields")
+    __slots__ = ("object_asn", "object_asn_range", "object_aggregate", "object_cable", "object_cable_path", "object_cable_termination", "object_circuit", "object_circuit_group", "object_circuit_group_assignment", "object_circuit_termination", "object_circuit_type", "object_cluster", "object_cluster_group", "object_cluster_type", "object_console_port", "object_console_server_port", "object_contact", "object_contact_assignment", "object_contact_group", "object_contact_role", "object_device", "object_device_bay", "object_device_role", "object_device_type", "object_fhrp_group", "object_fhrp_group_assignment", "object_front_port", "object_ike_policy", "object_ike_proposal", "object_ip_address", "object_ip_range", "object_ip_sec_policy", "object_ip_sec_profile", "object_ip_sec_proposal", "object_interface", "object_inventory_item", "object_inventory_item_role", "object_l2vpn", "object_l2vpn_termination", "object_location", "object_mac_address", "object_manufacturer", "object_module", "object_module_bay", "object_module_type", "object_platform", "object_power_feed", "object_power_outlet", "object_power_panel", "object_power_port", "object_prefix", "object_provider", "object_provider_account", "object_provider_network", "object_rir", "object_rack", "object_rack_reservation", "object_rack_role", "object_rack_type", "object_rear_port", "object_region", "object_role", "object_route_target", "object_service", "object_site", "object_site_group", "object_tag", "object_tenant", "object_tenant_group", "object_tunnel", "object_tunnel_group", "object_tunnel_termination", "object_vlan", "object_vlan_group", "object_vlan_translation_policy", "object_vlan_translation_rule", "object_vm_interface", "object_vrf", "object_virtual_chassis", "object_virtual_circuit", "object_virtual_circuit_termination", "object_virtual_circuit_type", "object_virtual_device_context", "object_virtual_disk", "object_virtual_machine", "object_wireless_lan", "object_wireless_lan_group", "object_wireless_link", "object_custom_field", "object_custom_field_choice_set", "object_journal_entry", "object_module_type_profile", "object_custom_link", "contact", "role", "priority", "tags", "custom_fields")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -782,6 +794,11 @@ class ContactAssignment(_message.Message):
     OBJECT_WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
     OBJECT_WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
     OBJECT_WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
     CONTACT_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
     PRIORITY_FIELD_NUMBER: _ClassVar[int]
@@ -875,15 +892,20 @@ class ContactAssignment(_message.Message):
     object_wireless_lan: WirelessLAN
     object_wireless_lan_group: WirelessLANGroup
     object_wireless_link: WirelessLink
+    object_custom_field: CustomField
+    object_custom_field_choice_set: CustomFieldChoiceSet
+    object_journal_entry: JournalEntry
+    object_module_type_profile: ModuleTypeProfile
+    object_custom_link: CustomLink
     contact: Contact
     role: ContactRole
     priority: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, object_asn: _Optional[_Union[ASN, _Mapping]] = ..., object_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., object_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., object_cable: _Optional[_Union[Cable, _Mapping]] = ..., object_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., object_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., object_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., object_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., object_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., object_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., object_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., object_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., object_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., object_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., object_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., object_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., object_contact: _Optional[_Union[Contact, _Mapping]] = ..., object_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., object_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., object_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., object_device: _Optional[_Union[Device, _Mapping]] = ..., object_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., object_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., object_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., object_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., object_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., object_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., object_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., object_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., object_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., object_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., object_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., object_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., object_interface: _Optional[_Union[Interface, _Mapping]] = ..., object_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., object_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., object_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., object_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., object_location: _Optional[_Union[Location, _Mapping]] = ..., object_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., object_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., object_module: _Optional[_Union[Module, _Mapping]] = ..., object_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., object_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., object_platform: _Optional[_Union[Platform, _Mapping]] = ..., object_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., object_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., object_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., object_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., object_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., object_provider: _Optional[_Union[Provider, _Mapping]] = ..., object_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., object_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., object_rir: _Optional[_Union[RIR, _Mapping]] = ..., object_rack: _Optional[_Union[Rack, _Mapping]] = ..., object_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., object_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., object_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., object_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., object_region: _Optional[_Union[Region, _Mapping]] = ..., object_role: _Optional[_Union[Role, _Mapping]] = ..., object_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., object_service: _Optional[_Union[Service, _Mapping]] = ..., object_site: _Optional[_Union[Site, _Mapping]] = ..., object_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., object_tag: _Optional[_Union[Tag, _Mapping]] = ..., object_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., object_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., object_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., object_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., object_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., object_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., object_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., object_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., object_vrf: _Optional[_Union[VRF, _Mapping]] = ..., object_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., object_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., object_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., object_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., object_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., object_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., object_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., object_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., object_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., contact: _Optional[_Union[Contact, _Mapping]] = ..., role: _Optional[_Union[ContactRole, _Mapping]] = ..., priority: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    def __init__(self, object_asn: _Optional[_Union[ASN, _Mapping]] = ..., object_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., object_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., object_cable: _Optional[_Union[Cable, _Mapping]] = ..., object_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., object_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., object_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., object_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., object_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., object_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., object_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., object_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., object_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., object_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., object_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., object_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., object_contact: _Optional[_Union[Contact, _Mapping]] = ..., object_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., object_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., object_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., object_device: _Optional[_Union[Device, _Mapping]] = ..., object_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., object_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., object_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., object_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., object_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., object_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., object_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., object_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., object_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., object_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., object_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., object_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., object_interface: _Optional[_Union[Interface, _Mapping]] = ..., object_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., object_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., object_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., object_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., object_location: _Optional[_Union[Location, _Mapping]] = ..., object_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., object_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., object_module: _Optional[_Union[Module, _Mapping]] = ..., object_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., object_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., object_platform: _Optional[_Union[Platform, _Mapping]] = ..., object_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., object_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., object_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., object_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., object_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., object_provider: _Optional[_Union[Provider, _Mapping]] = ..., object_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., object_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., object_rir: _Optional[_Union[RIR, _Mapping]] = ..., object_rack: _Optional[_Union[Rack, _Mapping]] = ..., object_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., object_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., object_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., object_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., object_region: _Optional[_Union[Region, _Mapping]] = ..., object_role: _Optional[_Union[Role, _Mapping]] = ..., object_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., object_service: _Optional[_Union[Service, _Mapping]] = ..., object_site: _Optional[_Union[Site, _Mapping]] = ..., object_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., object_tag: _Optional[_Union[Tag, _Mapping]] = ..., object_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., object_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., object_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., object_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., object_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., object_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., object_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., object_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., object_vrf: _Optional[_Union[VRF, _Mapping]] = ..., object_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., object_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., object_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., object_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., object_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., object_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., object_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., object_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., object_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., object_custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., object_custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., object_journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., object_module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., object_custom_link: _Optional[_Union[CustomLink, _Mapping]] = ..., contact: _Optional[_Union[Contact, _Mapping]] = ..., role: _Optional[_Union[ContactRole, _Mapping]] = ..., priority: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class ContactGroup(_message.Message):
-    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -897,13 +919,15 @@ class ContactGroup(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     parent: ContactGroup
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[ContactGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[ContactGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class ContactRole(_message.Message):
     __slots__ = ("name", "slug", "description", "tags", "custom_fields")
@@ -927,7 +951,7 @@ class ContactRole(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class CustomFieldObjectReference(_message.Message):
-    __slots__ = ("asn", "asn_range", "aggregate", "cable", "cable_path", "cable_termination", "circuit", "circuit_group", "circuit_group_assignment", "circuit_termination", "circuit_type", "cluster", "cluster_group", "cluster_type", "console_port", "console_server_port", "contact", "contact_assignment", "contact_group", "contact_role", "device", "device_bay", "device_role", "device_type", "fhrp_group", "fhrp_group_assignment", "front_port", "ike_policy", "ike_proposal", "ip_address", "ip_range", "ip_sec_policy", "ip_sec_profile", "ip_sec_proposal", "interface", "inventory_item", "inventory_item_role", "l2vpn", "l2vpn_termination", "location", "mac_address", "manufacturer", "module", "module_bay", "module_type", "platform", "power_feed", "power_outlet", "power_panel", "power_port", "prefix", "provider", "provider_account", "provider_network", "rir", "rack", "rack_reservation", "rack_role", "rack_type", "rear_port", "region", "role", "route_target", "service", "site", "site_group", "tag", "tenant", "tenant_group", "tunnel", "tunnel_group", "tunnel_termination", "vlan", "vlan_group", "vlan_translation_policy", "vlan_translation_rule", "vm_interface", "vrf", "virtual_chassis", "virtual_circuit", "virtual_circuit_termination", "virtual_circuit_type", "virtual_device_context", "virtual_disk", "virtual_machine", "wireless_lan", "wireless_lan_group", "wireless_link")
+    __slots__ = ("asn", "asn_range", "aggregate", "cable", "cable_path", "cable_termination", "circuit", "circuit_group", "circuit_group_assignment", "circuit_termination", "circuit_type", "cluster", "cluster_group", "cluster_type", "console_port", "console_server_port", "contact", "contact_assignment", "contact_group", "contact_role", "device", "device_bay", "device_role", "device_type", "fhrp_group", "fhrp_group_assignment", "front_port", "ike_policy", "ike_proposal", "ip_address", "ip_range", "ip_sec_policy", "ip_sec_profile", "ip_sec_proposal", "interface", "inventory_item", "inventory_item_role", "l2vpn", "l2vpn_termination", "location", "mac_address", "manufacturer", "module", "module_bay", "module_type", "platform", "power_feed", "power_outlet", "power_panel", "power_port", "prefix", "provider", "provider_account", "provider_network", "rir", "rack", "rack_reservation", "rack_role", "rack_type", "rear_port", "region", "role", "route_target", "service", "site", "site_group", "tag", "tenant", "tenant_group", "tunnel", "tunnel_group", "tunnel_termination", "vlan", "vlan_group", "vlan_translation_policy", "vlan_translation_rule", "vm_interface", "vrf", "virtual_chassis", "virtual_circuit", "virtual_circuit_termination", "virtual_circuit_type", "virtual_device_context", "virtual_disk", "virtual_machine", "wireless_lan", "wireless_lan_group", "wireless_link", "custom_field", "custom_field_choice_set", "journal_entry", "module_type_profile", "custom_link")
     ASN_FIELD_NUMBER: _ClassVar[int]
     ASN_RANGE_FIELD_NUMBER: _ClassVar[int]
     AGGREGATE_FIELD_NUMBER: _ClassVar[int]
@@ -1016,6 +1040,11 @@ class CustomFieldObjectReference(_message.Message):
     WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
     WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
     WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
     asn: ASN
     asn_range: ASNRange
     aggregate: Aggregate
@@ -1104,7 +1133,12 @@ class CustomFieldObjectReference(_message.Message):
     wireless_lan: WirelessLAN
     wireless_lan_group: WirelessLANGroup
     wireless_link: WirelessLink
-    def __init__(self, asn: _Optional[_Union[ASN, _Mapping]] = ..., asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., cable: _Optional[_Union[Cable, _Mapping]] = ..., cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., circuit: _Optional[_Union[Circuit, _Mapping]] = ..., circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., cluster: _Optional[_Union[Cluster, _Mapping]] = ..., cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., contact: _Optional[_Union[Contact, _Mapping]] = ..., contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., interface: _Optional[_Union[Interface, _Mapping]] = ..., inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., location: _Optional[_Union[Location, _Mapping]] = ..., mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., platform: _Optional[_Union[Platform, _Mapping]] = ..., power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., prefix: _Optional[_Union[Prefix, _Mapping]] = ..., provider: _Optional[_Union[Provider, _Mapping]] = ..., provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., rir: _Optional[_Union[RIR, _Mapping]] = ..., rack: _Optional[_Union[Rack, _Mapping]] = ..., rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., rack_type: _Optional[_Union[RackType, _Mapping]] = ..., rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., region: _Optional[_Union[Region, _Mapping]] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., service: _Optional[_Union[Service, _Mapping]] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tag: _Optional[_Union[Tag, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., vlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ...) -> None: ...
+    custom_field: CustomField
+    custom_field_choice_set: CustomFieldChoiceSet
+    journal_entry: JournalEntry
+    module_type_profile: ModuleTypeProfile
+    custom_link: CustomLink
+    def __init__(self, asn: _Optional[_Union[ASN, _Mapping]] = ..., asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., cable: _Optional[_Union[Cable, _Mapping]] = ..., cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., circuit: _Optional[_Union[Circuit, _Mapping]] = ..., circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., cluster: _Optional[_Union[Cluster, _Mapping]] = ..., cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., contact: _Optional[_Union[Contact, _Mapping]] = ..., contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., interface: _Optional[_Union[Interface, _Mapping]] = ..., inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., location: _Optional[_Union[Location, _Mapping]] = ..., mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., platform: _Optional[_Union[Platform, _Mapping]] = ..., power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., prefix: _Optional[_Union[Prefix, _Mapping]] = ..., provider: _Optional[_Union[Provider, _Mapping]] = ..., provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., rir: _Optional[_Union[RIR, _Mapping]] = ..., rack: _Optional[_Union[Rack, _Mapping]] = ..., rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., rack_type: _Optional[_Union[RackType, _Mapping]] = ..., rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., region: _Optional[_Union[Region, _Mapping]] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., service: _Optional[_Union[Service, _Mapping]] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tag: _Optional[_Union[Tag, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., vlan: _Optional[_Union[VLAN, _Mapping]] = ..., vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., custom_link: _Optional[_Union[CustomLink, _Mapping]] = ...) -> None: ...
 
 class CustomFieldValue(_message.Message):
     __slots__ = ("multiple_selection", "multiple_objects", "text", "long_text", "integer", "decimal", "boolean", "date", "datetime", "url", "json", "selection", "object")
@@ -1227,7 +1261,7 @@ class DeviceBay(_message.Message):
     def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., description: _Optional[str] = ..., installed_device: _Optional[_Union[Device, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class DeviceRole(_message.Message):
-    __slots__ = ("name", "slug", "color", "vm_role", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "color", "vm_role", "description", "tags", "custom_fields", "parent", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -1242,6 +1276,8 @@ class DeviceRole(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    PARENT_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     color: str
@@ -1249,7 +1285,9 @@ class DeviceRole(_message.Message):
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ..., vm_role: bool = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    parent: DeviceRole
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ..., vm_role: bool = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., parent: _Optional[_Union[DeviceRole, _Mapping]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class DeviceType(_message.Message):
     __slots__ = ("manufacturer", "default_platform", "model", "slug", "part_number", "u_height", "exclude_from_utilization", "is_full_depth", "subdevice_role", "airflow", "weight", "weight_unit", "description", "comments", "tags", "custom_fields")
@@ -1324,7 +1362,7 @@ class FHRPGroup(_message.Message):
     def __init__(self, name: _Optional[str] = ..., protocol: _Optional[str] = ..., group_id: _Optional[int] = ..., auth_type: _Optional[str] = ..., auth_key: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class FHRPGroupAssignment(_message.Message):
-    __slots__ = ("group", "interface_asn", "interface_asn_range", "interface_aggregate", "interface_cable", "interface_cable_path", "interface_cable_termination", "interface_circuit", "interface_circuit_group", "interface_circuit_group_assignment", "interface_circuit_termination", "interface_circuit_type", "interface_cluster", "interface_cluster_group", "interface_cluster_type", "interface_console_port", "interface_console_server_port", "interface_contact", "interface_contact_assignment", "interface_contact_group", "interface_contact_role", "interface_device", "interface_device_bay", "interface_device_role", "interface_device_type", "interface_fhrp_group", "interface_fhrp_group_assignment", "interface_front_port", "interface_ike_policy", "interface_ike_proposal", "interface_ip_address", "interface_ip_range", "interface_ip_sec_policy", "interface_ip_sec_profile", "interface_ip_sec_proposal", "interface_interface", "interface_inventory_item", "interface_inventory_item_role", "interface_l2vpn", "interface_l2vpn_termination", "interface_location", "interface_mac_address", "interface_manufacturer", "interface_module", "interface_module_bay", "interface_module_type", "interface_platform", "interface_power_feed", "interface_power_outlet", "interface_power_panel", "interface_power_port", "interface_prefix", "interface_provider", "interface_provider_account", "interface_provider_network", "interface_rir", "interface_rack", "interface_rack_reservation", "interface_rack_role", "interface_rack_type", "interface_rear_port", "interface_region", "interface_role", "interface_route_target", "interface_service", "interface_site", "interface_site_group", "interface_tag", "interface_tenant", "interface_tenant_group", "interface_tunnel", "interface_tunnel_group", "interface_tunnel_termination", "interface_vlan", "interface_vlan_group", "interface_vlan_translation_policy", "interface_vlan_translation_rule", "interface_vm_interface", "interface_vrf", "interface_virtual_chassis", "interface_virtual_circuit", "interface_virtual_circuit_termination", "interface_virtual_circuit_type", "interface_virtual_device_context", "interface_virtual_disk", "interface_virtual_machine", "interface_wireless_lan", "interface_wireless_lan_group", "interface_wireless_link", "priority")
+    __slots__ = ("group", "interface_asn", "interface_asn_range", "interface_aggregate", "interface_cable", "interface_cable_path", "interface_cable_termination", "interface_circuit", "interface_circuit_group", "interface_circuit_group_assignment", "interface_circuit_termination", "interface_circuit_type", "interface_cluster", "interface_cluster_group", "interface_cluster_type", "interface_console_port", "interface_console_server_port", "interface_contact", "interface_contact_assignment", "interface_contact_group", "interface_contact_role", "interface_device", "interface_device_bay", "interface_device_role", "interface_device_type", "interface_fhrp_group", "interface_fhrp_group_assignment", "interface_front_port", "interface_ike_policy", "interface_ike_proposal", "interface_ip_address", "interface_ip_range", "interface_ip_sec_policy", "interface_ip_sec_profile", "interface_ip_sec_proposal", "interface_interface", "interface_inventory_item", "interface_inventory_item_role", "interface_l2vpn", "interface_l2vpn_termination", "interface_location", "interface_mac_address", "interface_manufacturer", "interface_module", "interface_module_bay", "interface_module_type", "interface_platform", "interface_power_feed", "interface_power_outlet", "interface_power_panel", "interface_power_port", "interface_prefix", "interface_provider", "interface_provider_account", "interface_provider_network", "interface_rir", "interface_rack", "interface_rack_reservation", "interface_rack_role", "interface_rack_type", "interface_rear_port", "interface_region", "interface_role", "interface_route_target", "interface_service", "interface_site", "interface_site_group", "interface_tag", "interface_tenant", "interface_tenant_group", "interface_tunnel", "interface_tunnel_group", "interface_tunnel_termination", "interface_vlan", "interface_vlan_group", "interface_vlan_translation_policy", "interface_vlan_translation_rule", "interface_vm_interface", "interface_vrf", "interface_virtual_chassis", "interface_virtual_circuit", "interface_virtual_circuit_termination", "interface_virtual_circuit_type", "interface_virtual_device_context", "interface_virtual_disk", "interface_virtual_machine", "interface_wireless_lan", "interface_wireless_lan_group", "interface_wireless_link", "interface_custom_field", "interface_custom_field_choice_set", "interface_journal_entry", "interface_module_type_profile", "interface_custom_link", "priority")
     GROUP_FIELD_NUMBER: _ClassVar[int]
     INTERFACE_ASN_FIELD_NUMBER: _ClassVar[int]
     INTERFACE_ASN_RANGE_FIELD_NUMBER: _ClassVar[int]
@@ -1414,6 +1452,11 @@ class FHRPGroupAssignment(_message.Message):
     INTERFACE_WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
     INTERFACE_WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
     INTERFACE_WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    INTERFACE_CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    INTERFACE_CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    INTERFACE_JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    INTERFACE_MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    INTERFACE_CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
     PRIORITY_FIELD_NUMBER: _ClassVar[int]
     group: FHRPGroup
     interface_asn: ASN
@@ -1504,8 +1547,13 @@ class FHRPGroupAssignment(_message.Message):
     interface_wireless_lan: WirelessLAN
     interface_wireless_lan_group: WirelessLANGroup
     interface_wireless_link: WirelessLink
+    interface_custom_field: CustomField
+    interface_custom_field_choice_set: CustomFieldChoiceSet
+    interface_journal_entry: JournalEntry
+    interface_module_type_profile: ModuleTypeProfile
+    interface_custom_link: CustomLink
     priority: int
-    def __init__(self, group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., interface_asn: _Optional[_Union[ASN, _Mapping]] = ..., interface_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., interface_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., interface_cable: _Optional[_Union[Cable, _Mapping]] = ..., interface_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., interface_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., interface_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., interface_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., interface_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., interface_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., interface_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., interface_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., interface_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., interface_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., interface_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., interface_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., interface_contact: _Optional[_Union[Contact, _Mapping]] = ..., interface_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., interface_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., interface_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., interface_device: _Optional[_Union[Device, _Mapping]] = ..., interface_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., interface_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., interface_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., interface_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., interface_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., interface_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., interface_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., interface_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., interface_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., interface_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., interface_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., interface_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., interface_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., interface_interface: _Optional[_Union[Interface, _Mapping]] = ..., interface_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., interface_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., interface_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., interface_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., interface_location: _Optional[_Union[Location, _Mapping]] = ..., interface_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., interface_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., interface_module: _Optional[_Union[Module, _Mapping]] = ..., interface_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., interface_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., interface_platform: _Optional[_Union[Platform, _Mapping]] = ..., interface_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., interface_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., interface_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., interface_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., interface_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., interface_provider: _Optional[_Union[Provider, _Mapping]] = ..., interface_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., interface_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., interface_rir: _Optional[_Union[RIR, _Mapping]] = ..., interface_rack: _Optional[_Union[Rack, _Mapping]] = ..., interface_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., interface_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., interface_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., interface_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., interface_region: _Optional[_Union[Region, _Mapping]] = ..., interface_role: _Optional[_Union[Role, _Mapping]] = ..., interface_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., interface_service: _Optional[_Union[Service, _Mapping]] = ..., interface_site: _Optional[_Union[Site, _Mapping]] = ..., interface_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., interface_tag: _Optional[_Union[Tag, _Mapping]] = ..., interface_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., interface_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., interface_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., interface_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., interface_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., interface_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., interface_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., interface_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., interface_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., interface_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., interface_vrf: _Optional[_Union[VRF, _Mapping]] = ..., interface_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., interface_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., interface_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., interface_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., interface_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., interface_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., interface_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., interface_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., interface_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., interface_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., priority: _Optional[int] = ...) -> None: ...
+    def __init__(self, group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., interface_asn: _Optional[_Union[ASN, _Mapping]] = ..., interface_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., interface_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., interface_cable: _Optional[_Union[Cable, _Mapping]] = ..., interface_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., interface_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., interface_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., interface_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., interface_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., interface_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., interface_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., interface_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., interface_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., interface_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., interface_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., interface_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., interface_contact: _Optional[_Union[Contact, _Mapping]] = ..., interface_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., interface_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., interface_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., interface_device: _Optional[_Union[Device, _Mapping]] = ..., interface_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., interface_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., interface_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., interface_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., interface_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., interface_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., interface_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., interface_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., interface_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., interface_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., interface_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., interface_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., interface_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., interface_interface: _Optional[_Union[Interface, _Mapping]] = ..., interface_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., interface_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., interface_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., interface_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., interface_location: _Optional[_Union[Location, _Mapping]] = ..., interface_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., interface_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., interface_module: _Optional[_Union[Module, _Mapping]] = ..., interface_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., interface_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., interface_platform: _Optional[_Union[Platform, _Mapping]] = ..., interface_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., interface_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., interface_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., interface_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., interface_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., interface_provider: _Optional[_Union[Provider, _Mapping]] = ..., interface_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., interface_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., interface_rir: _Optional[_Union[RIR, _Mapping]] = ..., interface_rack: _Optional[_Union[Rack, _Mapping]] = ..., interface_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., interface_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., interface_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., interface_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., interface_region: _Optional[_Union[Region, _Mapping]] = ..., interface_role: _Optional[_Union[Role, _Mapping]] = ..., interface_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., interface_service: _Optional[_Union[Service, _Mapping]] = ..., interface_site: _Optional[_Union[Site, _Mapping]] = ..., interface_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., interface_tag: _Optional[_Union[Tag, _Mapping]] = ..., interface_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., interface_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., interface_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., interface_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., interface_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., interface_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., interface_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., interface_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., interface_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., interface_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., interface_vrf: _Optional[_Union[VRF, _Mapping]] = ..., interface_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., interface_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., interface_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., interface_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., interface_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., interface_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., interface_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., interface_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., interface_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., interface_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., interface_custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., interface_custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., interface_journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., interface_module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., interface_custom_link: _Optional[_Union[CustomLink, _Mapping]] = ..., priority: _Optional[int] = ...) -> None: ...
 
 class FrontPort(_message.Message):
     __slots__ = ("device", "module", "name", "label", "type", "color", "rear_port", "rear_port_position", "description", "mark_connected", "tags", "custom_fields")
@@ -1543,7 +1591,7 @@ class FrontPort(_message.Message):
     def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., type: _Optional[str] = ..., color: _Optional[str] = ..., rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., rear_port_position: _Optional[int] = ..., description: _Optional[str] = ..., mark_connected: bool = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class GenericObject(_message.Message):
-    __slots__ = ("object_asn", "object_asn_range", "object_aggregate", "object_cable", "object_cable_path", "object_cable_termination", "object_circuit", "object_circuit_group", "object_circuit_group_assignment", "object_circuit_termination", "object_circuit_type", "object_cluster", "object_cluster_group", "object_cluster_type", "object_console_port", "object_console_server_port", "object_contact", "object_contact_assignment", "object_contact_group", "object_contact_role", "object_device", "object_device_bay", "object_device_role", "object_device_type", "object_fhrp_group", "object_fhrp_group_assignment", "object_front_port", "object_ike_policy", "object_ike_proposal", "object_ip_address", "object_ip_range", "object_ip_sec_policy", "object_ip_sec_profile", "object_ip_sec_proposal", "object_interface", "object_inventory_item", "object_inventory_item_role", "object_l2vpn", "object_l2vpn_termination", "object_location", "object_mac_address", "object_manufacturer", "object_module", "object_module_bay", "object_module_type", "object_platform", "object_power_feed", "object_power_outlet", "object_power_panel", "object_power_port", "object_prefix", "object_provider", "object_provider_account", "object_provider_network", "object_rir", "object_rack", "object_rack_reservation", "object_rack_role", "object_rack_type", "object_rear_port", "object_region", "object_role", "object_route_target", "object_service", "object_site", "object_site_group", "object_tag", "object_tenant", "object_tenant_group", "object_tunnel", "object_tunnel_group", "object_tunnel_termination", "object_vlan", "object_vlan_group", "object_vlan_translation_policy", "object_vlan_translation_rule", "object_vm_interface", "object_vrf", "object_virtual_chassis", "object_virtual_circuit", "object_virtual_circuit_termination", "object_virtual_circuit_type", "object_virtual_device_context", "object_virtual_disk", "object_virtual_machine", "object_wireless_lan", "object_wireless_lan_group", "object_wireless_link")
+    __slots__ = ("object_asn", "object_asn_range", "object_aggregate", "object_cable", "object_cable_path", "object_cable_termination", "object_circuit", "object_circuit_group", "object_circuit_group_assignment", "object_circuit_termination", "object_circuit_type", "object_cluster", "object_cluster_group", "object_cluster_type", "object_console_port", "object_console_server_port", "object_contact", "object_contact_assignment", "object_contact_group", "object_contact_role", "object_device", "object_device_bay", "object_device_role", "object_device_type", "object_fhrp_group", "object_fhrp_group_assignment", "object_front_port", "object_ike_policy", "object_ike_proposal", "object_ip_address", "object_ip_range", "object_ip_sec_policy", "object_ip_sec_profile", "object_ip_sec_proposal", "object_interface", "object_inventory_item", "object_inventory_item_role", "object_l2vpn", "object_l2vpn_termination", "object_location", "object_mac_address", "object_manufacturer", "object_module", "object_module_bay", "object_module_type", "object_platform", "object_power_feed", "object_power_outlet", "object_power_panel", "object_power_port", "object_prefix", "object_provider", "object_provider_account", "object_provider_network", "object_rir", "object_rack", "object_rack_reservation", "object_rack_role", "object_rack_type", "object_rear_port", "object_region", "object_role", "object_route_target", "object_service", "object_site", "object_site_group", "object_tag", "object_tenant", "object_tenant_group", "object_tunnel", "object_tunnel_group", "object_tunnel_termination", "object_vlan", "object_vlan_group", "object_vlan_translation_policy", "object_vlan_translation_rule", "object_vm_interface", "object_vrf", "object_virtual_chassis", "object_virtual_circuit", "object_virtual_circuit_termination", "object_virtual_circuit_type", "object_virtual_device_context", "object_virtual_disk", "object_virtual_machine", "object_wireless_lan", "object_wireless_lan_group", "object_wireless_link", "object_custom_field", "object_custom_field_choice_set", "object_journal_entry", "object_module_type_profile", "object_custom_link")
     OBJECT_ASN_FIELD_NUMBER: _ClassVar[int]
     OBJECT_ASN_RANGE_FIELD_NUMBER: _ClassVar[int]
     OBJECT_AGGREGATE_FIELD_NUMBER: _ClassVar[int]
@@ -1632,6 +1680,11 @@ class GenericObject(_message.Message):
     OBJECT_WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
     OBJECT_WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
     OBJECT_WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
     object_asn: ASN
     object_asn_range: ASNRange
     object_aggregate: Aggregate
@@ -1720,7 +1773,12 @@ class GenericObject(_message.Message):
     object_wireless_lan: WirelessLAN
     object_wireless_lan_group: WirelessLANGroup
     object_wireless_link: WirelessLink
-    def __init__(self, object_asn: _Optional[_Union[ASN, _Mapping]] = ..., object_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., object_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., object_cable: _Optional[_Union[Cable, _Mapping]] = ..., object_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., object_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., object_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., object_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., object_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., object_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., object_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., object_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., object_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., object_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., object_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., object_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., object_contact: _Optional[_Union[Contact, _Mapping]] = ..., object_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., object_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., object_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., object_device: _Optional[_Union[Device, _Mapping]] = ..., object_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., object_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., object_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., object_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., object_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., object_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., object_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., object_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., object_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., object_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., object_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., object_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., object_interface: _Optional[_Union[Interface, _Mapping]] = ..., object_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., object_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., object_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., object_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., object_location: _Optional[_Union[Location, _Mapping]] = ..., object_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., object_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., object_module: _Optional[_Union[Module, _Mapping]] = ..., object_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., object_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., object_platform: _Optional[_Union[Platform, _Mapping]] = ..., object_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., object_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., object_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., object_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., object_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., object_provider: _Optional[_Union[Provider, _Mapping]] = ..., object_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., object_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., object_rir: _Optional[_Union[RIR, _Mapping]] = ..., object_rack: _Optional[_Union[Rack, _Mapping]] = ..., object_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., object_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., object_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., object_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., object_region: _Optional[_Union[Region, _Mapping]] = ..., object_role: _Optional[_Union[Role, _Mapping]] = ..., object_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., object_service: _Optional[_Union[Service, _Mapping]] = ..., object_site: _Optional[_Union[Site, _Mapping]] = ..., object_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., object_tag: _Optional[_Union[Tag, _Mapping]] = ..., object_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., object_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., object_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., object_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., object_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., object_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., object_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., object_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., object_vrf: _Optional[_Union[VRF, _Mapping]] = ..., object_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., object_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., object_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., object_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., object_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., object_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., object_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., object_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., object_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ...) -> None: ...
+    object_custom_field: CustomField
+    object_custom_field_choice_set: CustomFieldChoiceSet
+    object_journal_entry: JournalEntry
+    object_module_type_profile: ModuleTypeProfile
+    object_custom_link: CustomLink
+    def __init__(self, object_asn: _Optional[_Union[ASN, _Mapping]] = ..., object_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., object_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., object_cable: _Optional[_Union[Cable, _Mapping]] = ..., object_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., object_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., object_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., object_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., object_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., object_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., object_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., object_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., object_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., object_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., object_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., object_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., object_contact: _Optional[_Union[Contact, _Mapping]] = ..., object_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., object_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., object_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., object_device: _Optional[_Union[Device, _Mapping]] = ..., object_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., object_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., object_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., object_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., object_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., object_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., object_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., object_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., object_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., object_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., object_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., object_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., object_interface: _Optional[_Union[Interface, _Mapping]] = ..., object_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., object_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., object_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., object_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., object_location: _Optional[_Union[Location, _Mapping]] = ..., object_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., object_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., object_module: _Optional[_Union[Module, _Mapping]] = ..., object_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., object_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., object_platform: _Optional[_Union[Platform, _Mapping]] = ..., object_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., object_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., object_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., object_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., object_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., object_provider: _Optional[_Union[Provider, _Mapping]] = ..., object_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., object_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., object_rir: _Optional[_Union[RIR, _Mapping]] = ..., object_rack: _Optional[_Union[Rack, _Mapping]] = ..., object_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., object_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., object_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., object_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., object_region: _Optional[_Union[Region, _Mapping]] = ..., object_role: _Optional[_Union[Role, _Mapping]] = ..., object_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., object_service: _Optional[_Union[Service, _Mapping]] = ..., object_site: _Optional[_Union[Site, _Mapping]] = ..., object_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., object_tag: _Optional[_Union[Tag, _Mapping]] = ..., object_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., object_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., object_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., object_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., object_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., object_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., object_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., object_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., object_vrf: _Optional[_Union[VRF, _Mapping]] = ..., object_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., object_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., object_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., object_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., object_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., object_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., object_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., object_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., object_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., object_custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., object_custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., object_journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., object_module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., object_custom_link: _Optional[_Union[CustomLink, _Mapping]] = ...) -> None: ...
 
 class IKEPolicy(_message.Message):
     __slots__ = ("name", "description", "version", "mode", "preshared_key", "comments", "tags", "custom_fields", "proposals")
@@ -1822,7 +1880,7 @@ class IPAddress(_message.Message):
     def __init__(self, address: _Optional[str] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[str] = ..., assigned_object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., assigned_object_interface: _Optional[_Union[Interface, _Mapping]] = ..., assigned_object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., nat_inside: _Optional[_Union[IPAddress, _Mapping]] = ..., dns_name: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class IPRange(_message.Message):
-    __slots__ = ("start_address", "end_address", "vrf", "tenant", "status", "role", "description", "comments", "tags", "mark_utilized", "custom_fields")
+    __slots__ = ("start_address", "end_address", "vrf", "tenant", "status", "role", "description", "comments", "tags", "mark_utilized", "custom_fields", "mark_populated")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -1841,6 +1899,7 @@ class IPRange(_message.Message):
     TAGS_FIELD_NUMBER: _ClassVar[int]
     MARK_UTILIZED_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    MARK_POPULATED_FIELD_NUMBER: _ClassVar[int]
     start_address: str
     end_address: str
     vrf: VRF
@@ -1852,7 +1911,8 @@ class IPRange(_message.Message):
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     mark_utilized: bool
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, start_address: _Optional[str] = ..., end_address: _Optional[str] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., mark_utilized: bool = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    mark_populated: bool
+    def __init__(self, start_address: _Optional[str] = ..., end_address: _Optional[str] = ..., vrf: _Optional[_Union[VRF, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., mark_utilized: bool = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., mark_populated: bool = ...) -> None: ...
 
 class IPSecPolicy(_message.Message):
     __slots__ = ("name", "description", "pfs_group", "comments", "tags", "custom_fields", "proposals")
@@ -2091,7 +2151,7 @@ class InventoryItemRole(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class L2VPN(_message.Message):
-    __slots__ = ("identifier", "name", "slug", "type", "description", "comments", "tenant", "tags", "custom_fields", "import_targets", "export_targets")
+    __slots__ = ("identifier", "name", "slug", "type", "description", "comments", "tenant", "tags", "custom_fields", "import_targets", "export_targets", "status")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2110,6 +2170,7 @@ class L2VPN(_message.Message):
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
     IMPORT_TARGETS_FIELD_NUMBER: _ClassVar[int]
     EXPORT_TARGETS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
     identifier: int
     name: str
     slug: str
@@ -2121,10 +2182,11 @@ class L2VPN(_message.Message):
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
     import_targets: _containers.RepeatedCompositeFieldContainer[RouteTarget]
     export_targets: _containers.RepeatedCompositeFieldContainer[RouteTarget]
-    def __init__(self, identifier: _Optional[int] = ..., name: _Optional[str] = ..., slug: _Optional[str] = ..., type: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., import_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ..., export_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ...) -> None: ...
+    status: str
+    def __init__(self, identifier: _Optional[int] = ..., name: _Optional[str] = ..., slug: _Optional[str] = ..., type: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., import_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ..., export_targets: _Optional[_Iterable[_Union[RouteTarget, _Mapping]]] = ..., status: _Optional[str] = ...) -> None: ...
 
 class L2VPNTermination(_message.Message):
-    __slots__ = ("l2vpn", "assigned_object_interface", "assigned_object_vlan", "assigned_object_vm_interface", "tags", "custom_fields")
+    __slots__ = ("l2vpn", "assigned_object_interface", "assigned_object_vlan", "assigned_object_vm_interface", "assigned_object_asn", "assigned_object_asn_range", "assigned_object_aggregate", "assigned_object_cable", "assigned_object_cable_path", "assigned_object_cable_termination", "assigned_object_circuit", "assigned_object_circuit_group", "assigned_object_circuit_group_assignment", "assigned_object_circuit_termination", "assigned_object_circuit_type", "assigned_object_cluster", "assigned_object_cluster_group", "assigned_object_cluster_type", "assigned_object_console_port", "assigned_object_console_server_port", "assigned_object_contact", "assigned_object_contact_assignment", "assigned_object_contact_group", "assigned_object_contact_role", "assigned_object_custom_field", "assigned_object_custom_field_choice_set", "assigned_object_device", "assigned_object_device_bay", "assigned_object_device_role", "assigned_object_device_type", "assigned_object_fhrp_group", "assigned_object_fhrp_group_assignment", "assigned_object_front_port", "assigned_object_ike_policy", "assigned_object_ike_proposal", "assigned_object_ip_address", "assigned_object_ip_range", "assigned_object_ip_sec_policy", "assigned_object_ip_sec_profile", "assigned_object_ip_sec_proposal", "assigned_object_inventory_item", "assigned_object_inventory_item_role", "assigned_object_journal_entry", "assigned_object_l2vpn", "assigned_object_l2vpn_termination", "assigned_object_location", "assigned_object_mac_address", "assigned_object_manufacturer", "assigned_object_module", "assigned_object_module_bay", "assigned_object_module_type", "assigned_object_module_type_profile", "assigned_object_platform", "assigned_object_power_feed", "assigned_object_power_outlet", "assigned_object_power_panel", "assigned_object_power_port", "assigned_object_prefix", "assigned_object_provider", "assigned_object_provider_account", "assigned_object_provider_network", "assigned_object_rir", "assigned_object_rack", "assigned_object_rack_reservation", "assigned_object_rack_role", "assigned_object_rack_type", "assigned_object_rear_port", "assigned_object_region", "assigned_object_role", "assigned_object_route_target", "assigned_object_service", "assigned_object_site", "assigned_object_site_group", "assigned_object_tag", "assigned_object_tenant", "assigned_object_tenant_group", "assigned_object_tunnel", "assigned_object_tunnel_group", "assigned_object_tunnel_termination", "assigned_object_vlan_group", "assigned_object_vlan_translation_policy", "assigned_object_vlan_translation_rule", "assigned_object_vrf", "assigned_object_virtual_chassis", "assigned_object_virtual_circuit", "assigned_object_virtual_circuit_termination", "assigned_object_virtual_circuit_type", "assigned_object_virtual_device_context", "assigned_object_virtual_disk", "assigned_object_virtual_machine", "assigned_object_wireless_lan", "assigned_object_wireless_lan_group", "assigned_object_wireless_link", "assigned_object_custom_link", "tags", "custom_fields")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2136,18 +2198,198 @@ class L2VPNTermination(_message.Message):
     ASSIGNED_OBJECT_INTERFACE_FIELD_NUMBER: _ClassVar[int]
     ASSIGNED_OBJECT_VLAN_FIELD_NUMBER: _ClassVar[int]
     ASSIGNED_OBJECT_VM_INTERFACE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_ASN_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_ASN_RANGE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_AGGREGATE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CABLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CABLE_PATH_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CABLE_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_GROUP_ASSIGNMENT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CLUSTER_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CLUSTER_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CLUSTER_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONSOLE_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONSOLE_SERVER_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_ASSIGNMENT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_BAY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_FHRP_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_FHRP_GROUP_ASSIGNMENT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_FRONT_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IKE_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IKE_PROPOSAL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_ADDRESS_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_RANGE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_SEC_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_SEC_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_SEC_PROPOSAL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_INVENTORY_ITEM_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_INVENTORY_ITEM_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_L2VPN_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_L2VPN_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_LOCATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MAC_ADDRESS_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MANUFACTURER_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_BAY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PLATFORM_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_FEED_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_OUTLET_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_PANEL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PREFIX_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PROVIDER_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PROVIDER_ACCOUNT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PROVIDER_NETWORK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RIR_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_RESERVATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_REAR_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_REGION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_ROUTE_TARGET_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_SERVICE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_SITE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_SITE_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TAG_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TENANT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TENANT_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TUNNEL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TUNNEL_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TUNNEL_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VLAN_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VLAN_TRANSLATION_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VLAN_TRANSLATION_RULE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VRF_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CHASSIS_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CIRCUIT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CIRCUIT_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CIRCUIT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_DEVICE_CONTEXT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_DISK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_MACHINE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
     l2vpn: L2VPN
     assigned_object_interface: Interface
     assigned_object_vlan: VLAN
     assigned_object_vm_interface: VMInterface
+    assigned_object_asn: ASN
+    assigned_object_asn_range: ASNRange
+    assigned_object_aggregate: Aggregate
+    assigned_object_cable: Cable
+    assigned_object_cable_path: CablePath
+    assigned_object_cable_termination: CableTermination
+    assigned_object_circuit: Circuit
+    assigned_object_circuit_group: CircuitGroup
+    assigned_object_circuit_group_assignment: CircuitGroupAssignment
+    assigned_object_circuit_termination: CircuitTermination
+    assigned_object_circuit_type: CircuitType
+    assigned_object_cluster: Cluster
+    assigned_object_cluster_group: ClusterGroup
+    assigned_object_cluster_type: ClusterType
+    assigned_object_console_port: ConsolePort
+    assigned_object_console_server_port: ConsoleServerPort
+    assigned_object_contact: Contact
+    assigned_object_contact_assignment: ContactAssignment
+    assigned_object_contact_group: ContactGroup
+    assigned_object_contact_role: ContactRole
+    assigned_object_custom_field: CustomField
+    assigned_object_custom_field_choice_set: CustomFieldChoiceSet
+    assigned_object_device: Device
+    assigned_object_device_bay: DeviceBay
+    assigned_object_device_role: DeviceRole
+    assigned_object_device_type: DeviceType
+    assigned_object_fhrp_group: FHRPGroup
+    assigned_object_fhrp_group_assignment: FHRPGroupAssignment
+    assigned_object_front_port: FrontPort
+    assigned_object_ike_policy: IKEPolicy
+    assigned_object_ike_proposal: IKEProposal
+    assigned_object_ip_address: IPAddress
+    assigned_object_ip_range: IPRange
+    assigned_object_ip_sec_policy: IPSecPolicy
+    assigned_object_ip_sec_profile: IPSecProfile
+    assigned_object_ip_sec_proposal: IPSecProposal
+    assigned_object_inventory_item: InventoryItem
+    assigned_object_inventory_item_role: InventoryItemRole
+    assigned_object_journal_entry: JournalEntry
+    assigned_object_l2vpn: L2VPN
+    assigned_object_l2vpn_termination: L2VPNTermination
+    assigned_object_location: Location
+    assigned_object_mac_address: MACAddress
+    assigned_object_manufacturer: Manufacturer
+    assigned_object_module: Module
+    assigned_object_module_bay: ModuleBay
+    assigned_object_module_type: ModuleType
+    assigned_object_module_type_profile: ModuleTypeProfile
+    assigned_object_platform: Platform
+    assigned_object_power_feed: PowerFeed
+    assigned_object_power_outlet: PowerOutlet
+    assigned_object_power_panel: PowerPanel
+    assigned_object_power_port: PowerPort
+    assigned_object_prefix: Prefix
+    assigned_object_provider: Provider
+    assigned_object_provider_account: ProviderAccount
+    assigned_object_provider_network: ProviderNetwork
+    assigned_object_rir: RIR
+    assigned_object_rack: Rack
+    assigned_object_rack_reservation: RackReservation
+    assigned_object_rack_role: RackRole
+    assigned_object_rack_type: RackType
+    assigned_object_rear_port: RearPort
+    assigned_object_region: Region
+    assigned_object_role: Role
+    assigned_object_route_target: RouteTarget
+    assigned_object_service: Service
+    assigned_object_site: Site
+    assigned_object_site_group: SiteGroup
+    assigned_object_tag: Tag
+    assigned_object_tenant: Tenant
+    assigned_object_tenant_group: TenantGroup
+    assigned_object_tunnel: Tunnel
+    assigned_object_tunnel_group: TunnelGroup
+    assigned_object_tunnel_termination: TunnelTermination
+    assigned_object_vlan_group: VLANGroup
+    assigned_object_vlan_translation_policy: VLANTranslationPolicy
+    assigned_object_vlan_translation_rule: VLANTranslationRule
+    assigned_object_vrf: VRF
+    assigned_object_virtual_chassis: VirtualChassis
+    assigned_object_virtual_circuit: VirtualCircuit
+    assigned_object_virtual_circuit_termination: VirtualCircuitTermination
+    assigned_object_virtual_circuit_type: VirtualCircuitType
+    assigned_object_virtual_device_context: VirtualDeviceContext
+    assigned_object_virtual_disk: VirtualDisk
+    assigned_object_virtual_machine: VirtualMachine
+    assigned_object_wireless_lan: WirelessLAN
+    assigned_object_wireless_lan_group: WirelessLANGroup
+    assigned_object_wireless_link: WirelessLink
+    assigned_object_custom_link: CustomLink
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., assigned_object_interface: _Optional[_Union[Interface, _Mapping]] = ..., assigned_object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., assigned_object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    def __init__(self, l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., assigned_object_interface: _Optional[_Union[Interface, _Mapping]] = ..., assigned_object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., assigned_object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., assigned_object_asn: _Optional[_Union[ASN, _Mapping]] = ..., assigned_object_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., assigned_object_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., assigned_object_cable: _Optional[_Union[Cable, _Mapping]] = ..., assigned_object_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., assigned_object_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., assigned_object_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., assigned_object_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., assigned_object_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., assigned_object_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., assigned_object_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., assigned_object_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., assigned_object_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., assigned_object_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., assigned_object_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., assigned_object_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., assigned_object_contact: _Optional[_Union[Contact, _Mapping]] = ..., assigned_object_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., assigned_object_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., assigned_object_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., assigned_object_custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., assigned_object_custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., assigned_object_device: _Optional[_Union[Device, _Mapping]] = ..., assigned_object_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., assigned_object_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., assigned_object_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., assigned_object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., assigned_object_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., assigned_object_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., assigned_object_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., assigned_object_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., assigned_object_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., assigned_object_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., assigned_object_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., assigned_object_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., assigned_object_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., assigned_object_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., assigned_object_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., assigned_object_journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., assigned_object_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., assigned_object_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., assigned_object_location: _Optional[_Union[Location, _Mapping]] = ..., assigned_object_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., assigned_object_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., assigned_object_module: _Optional[_Union[Module, _Mapping]] = ..., assigned_object_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., assigned_object_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., assigned_object_module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., assigned_object_platform: _Optional[_Union[Platform, _Mapping]] = ..., assigned_object_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., assigned_object_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., assigned_object_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., assigned_object_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., assigned_object_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., assigned_object_provider: _Optional[_Union[Provider, _Mapping]] = ..., assigned_object_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., assigned_object_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., assigned_object_rir: _Optional[_Union[RIR, _Mapping]] = ..., assigned_object_rack: _Optional[_Union[Rack, _Mapping]] = ..., assigned_object_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., assigned_object_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., assigned_object_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., assigned_object_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., assigned_object_region: _Optional[_Union[Region, _Mapping]] = ..., assigned_object_role: _Optional[_Union[Role, _Mapping]] = ..., assigned_object_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., assigned_object_service: _Optional[_Union[Service, _Mapping]] = ..., assigned_object_site: _Optional[_Union[Site, _Mapping]] = ..., assigned_object_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., assigned_object_tag: _Optional[_Union[Tag, _Mapping]] = ..., assigned_object_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., assigned_object_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., assigned_object_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., assigned_object_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., assigned_object_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., assigned_object_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., assigned_object_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., assigned_object_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., assigned_object_vrf: _Optional[_Union[VRF, _Mapping]] = ..., assigned_object_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., assigned_object_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., assigned_object_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., assigned_object_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., assigned_object_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., assigned_object_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., assigned_object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., assigned_object_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., assigned_object_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., assigned_object_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., assigned_object_custom_link: _Optional[_Union[CustomLink, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Location(_message.Message):
-    __slots__ = ("name", "slug", "site", "parent", "status", "tenant", "facility", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "site", "parent", "status", "tenant", "facility", "description", "tags", "custom_fields", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2165,6 +2407,7 @@ class Location(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     site: Site
@@ -2175,7 +2418,8 @@ class Location(_message.Message):
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., parent: _Optional[_Union[Location, _Mapping]] = ..., status: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., facility: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., parent: _Optional[_Union[Location, _Mapping]] = ..., status: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., facility: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class MACAddress(_message.Message):
     __slots__ = ("mac_address", "assigned_object_interface", "assigned_object_vm_interface", "description", "comments", "tags", "custom_fields")
@@ -2284,7 +2528,7 @@ class ModuleBay(_message.Message):
     def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., installed_module: _Optional[_Union[Module, _Mapping]] = ..., label: _Optional[str] = ..., position: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class ModuleType(_message.Message):
-    __slots__ = ("manufacturer", "model", "part_number", "airflow", "weight", "weight_unit", "description", "comments", "tags", "custom_fields")
+    __slots__ = ("manufacturer", "model", "part_number", "airflow", "weight", "weight_unit", "description", "comments", "tags", "custom_fields", "profile", "attributes")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2302,6 +2546,8 @@ class ModuleType(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    PROFILE_FIELD_NUMBER: _ClassVar[int]
+    ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     manufacturer: Manufacturer
     model: str
     part_number: str
@@ -2312,7 +2558,9 @@ class ModuleType(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., model: _Optional[str] = ..., part_number: _Optional[str] = ..., airflow: _Optional[str] = ..., weight: _Optional[float] = ..., weight_unit: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    profile: ModuleTypeProfile
+    attributes: str
+    def __init__(self, manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., model: _Optional[str] = ..., part_number: _Optional[str] = ..., airflow: _Optional[str] = ..., weight: _Optional[float] = ..., weight_unit: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., attributes: _Optional[str] = ...) -> None: ...
 
 class Platform(_message.Message):
     __slots__ = ("name", "slug", "manufacturer", "description", "tags", "custom_fields")
@@ -2381,7 +2629,7 @@ class PowerFeed(_message.Message):
     def __init__(self, power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., rack: _Optional[_Union[Rack, _Mapping]] = ..., name: _Optional[str] = ..., status: _Optional[str] = ..., type: _Optional[str] = ..., supply: _Optional[str] = ..., phase: _Optional[str] = ..., voltage: _Optional[int] = ..., amperage: _Optional[int] = ..., max_utilization: _Optional[int] = ..., mark_connected: bool = ..., description: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class PowerOutlet(_message.Message):
-    __slots__ = ("device", "module", "name", "label", "type", "color", "power_port", "feed_leg", "description", "mark_connected", "tags", "custom_fields")
+    __slots__ = ("device", "module", "name", "label", "type", "color", "power_port", "feed_leg", "description", "mark_connected", "tags", "custom_fields", "status")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2401,6 +2649,7 @@ class PowerOutlet(_message.Message):
     MARK_CONNECTED_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
     device: Device
     module: Module
     name: str
@@ -2413,7 +2662,8 @@ class PowerOutlet(_message.Message):
     mark_connected: bool
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., type: _Optional[str] = ..., color: _Optional[str] = ..., power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., feed_leg: _Optional[str] = ..., description: _Optional[str] = ..., mark_connected: bool = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    status: str
+    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., type: _Optional[str] = ..., color: _Optional[str] = ..., power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., feed_leg: _Optional[str] = ..., description: _Optional[str] = ..., mark_connected: bool = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., status: _Optional[str] = ...) -> None: ...
 
 class PowerPanel(_message.Message):
     __slots__ = ("site", "location", "name", "description", "comments", "tags", "custom_fields")
@@ -2617,7 +2867,7 @@ class RIR(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., is_private: bool = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Rack(_message.Message):
-    __slots__ = ("name", "facility_id", "site", "location", "tenant", "status", "role", "serial", "asset_tag", "rack_type", "form_factor", "width", "u_height", "starting_unit", "weight", "max_weight", "weight_unit", "desc_units", "outer_width", "outer_depth", "outer_unit", "mounting_depth", "airflow", "description", "comments", "tags", "custom_fields")
+    __slots__ = ("name", "facility_id", "site", "location", "tenant", "status", "role", "serial", "asset_tag", "rack_type", "form_factor", "width", "u_height", "starting_unit", "weight", "max_weight", "weight_unit", "desc_units", "outer_width", "outer_depth", "outer_unit", "mounting_depth", "airflow", "description", "comments", "tags", "custom_fields", "outer_height")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2652,6 +2902,7 @@ class Rack(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    OUTER_HEIGHT_FIELD_NUMBER: _ClassVar[int]
     name: str
     facility_id: str
     site: Site
@@ -2679,7 +2930,8 @@ class Rack(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., facility_id: _Optional[str] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., location: _Optional[_Union[Location, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[RackRole, _Mapping]] = ..., serial: _Optional[str] = ..., asset_tag: _Optional[str] = ..., rack_type: _Optional[_Union[RackType, _Mapping]] = ..., form_factor: _Optional[str] = ..., width: _Optional[int] = ..., u_height: _Optional[int] = ..., starting_unit: _Optional[int] = ..., weight: _Optional[float] = ..., max_weight: _Optional[int] = ..., weight_unit: _Optional[str] = ..., desc_units: bool = ..., outer_width: _Optional[int] = ..., outer_depth: _Optional[int] = ..., outer_unit: _Optional[str] = ..., mounting_depth: _Optional[int] = ..., airflow: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    outer_height: int
+    def __init__(self, name: _Optional[str] = ..., facility_id: _Optional[str] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., location: _Optional[_Union[Location, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[RackRole, _Mapping]] = ..., serial: _Optional[str] = ..., asset_tag: _Optional[str] = ..., rack_type: _Optional[_Union[RackType, _Mapping]] = ..., form_factor: _Optional[str] = ..., width: _Optional[int] = ..., u_height: _Optional[int] = ..., starting_unit: _Optional[int] = ..., weight: _Optional[float] = ..., max_weight: _Optional[int] = ..., weight_unit: _Optional[str] = ..., desc_units: bool = ..., outer_width: _Optional[int] = ..., outer_depth: _Optional[int] = ..., outer_unit: _Optional[str] = ..., mounting_depth: _Optional[int] = ..., airflow: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., outer_height: _Optional[int] = ...) -> None: ...
 
 class RackReservation(_message.Message):
     __slots__ = ("rack", "units", "tenant", "description", "comments", "tags", "custom_fields")
@@ -2730,7 +2982,7 @@ class RackRole(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class RackType(_message.Message):
-    __slots__ = ("manufacturer", "model", "slug", "description", "form_factor", "width", "u_height", "starting_unit", "desc_units", "outer_width", "outer_depth", "outer_unit", "weight", "max_weight", "weight_unit", "mounting_depth", "comments", "tags", "custom_fields")
+    __slots__ = ("manufacturer", "model", "slug", "description", "form_factor", "width", "u_height", "starting_unit", "desc_units", "outer_width", "outer_depth", "outer_unit", "weight", "max_weight", "weight_unit", "mounting_depth", "comments", "tags", "custom_fields", "outer_height")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2757,6 +3009,7 @@ class RackType(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    OUTER_HEIGHT_FIELD_NUMBER: _ClassVar[int]
     manufacturer: Manufacturer
     model: str
     slug: str
@@ -2776,7 +3029,8 @@ class RackType(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., model: _Optional[str] = ..., slug: _Optional[str] = ..., description: _Optional[str] = ..., form_factor: _Optional[str] = ..., width: _Optional[int] = ..., u_height: _Optional[int] = ..., starting_unit: _Optional[int] = ..., desc_units: bool = ..., outer_width: _Optional[int] = ..., outer_depth: _Optional[int] = ..., outer_unit: _Optional[str] = ..., weight: _Optional[float] = ..., max_weight: _Optional[int] = ..., weight_unit: _Optional[str] = ..., mounting_depth: _Optional[int] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    outer_height: int
+    def __init__(self, manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., model: _Optional[str] = ..., slug: _Optional[str] = ..., description: _Optional[str] = ..., form_factor: _Optional[str] = ..., width: _Optional[int] = ..., u_height: _Optional[int] = ..., starting_unit: _Optional[int] = ..., desc_units: bool = ..., outer_width: _Optional[int] = ..., outer_depth: _Optional[int] = ..., outer_unit: _Optional[str] = ..., weight: _Optional[float] = ..., max_weight: _Optional[int] = ..., weight_unit: _Optional[str] = ..., mounting_depth: _Optional[int] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., outer_height: _Optional[int] = ...) -> None: ...
 
 class RearPort(_message.Message):
     __slots__ = ("device", "module", "name", "label", "type", "color", "positions", "description", "mark_connected", "tags", "custom_fields")
@@ -2812,7 +3066,7 @@ class RearPort(_message.Message):
     def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., module: _Optional[_Union[Module, _Mapping]] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., type: _Optional[str] = ..., color: _Optional[str] = ..., positions: _Optional[int] = ..., description: _Optional[str] = ..., mark_connected: bool = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Region(_message.Message):
-    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2826,13 +3080,15 @@ class Region(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     parent: Region
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[Region, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[Region, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class Role(_message.Message):
     __slots__ = ("name", "slug", "weight", "description", "tags", "custom_fields")
@@ -2881,7 +3137,7 @@ class RouteTarget(_message.Message):
     def __init__(self, name: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class Service(_message.Message):
-    __slots__ = ("device", "virtual_machine", "name", "protocol", "ports", "description", "comments", "tags", "custom_fields", "ipaddresses")
+    __slots__ = ("device", "virtual_machine", "name", "protocol", "ports", "description", "comments", "tags", "custom_fields", "ipaddresses", "parent_object_device", "parent_object_fhrp_group", "parent_object_virtual_machine")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2899,6 +3155,9 @@ class Service(_message.Message):
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
     IPADDRESSES_FIELD_NUMBER: _ClassVar[int]
+    PARENT_OBJECT_DEVICE_FIELD_NUMBER: _ClassVar[int]
+    PARENT_OBJECT_FHRP_GROUP_FIELD_NUMBER: _ClassVar[int]
+    PARENT_OBJECT_VIRTUAL_MACHINE_FIELD_NUMBER: _ClassVar[int]
     device: Device
     virtual_machine: VirtualMachine
     name: str
@@ -2909,7 +3168,10 @@ class Service(_message.Message):
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
     ipaddresses: _containers.RepeatedCompositeFieldContainer[IPAddress]
-    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., name: _Optional[str] = ..., protocol: _Optional[str] = ..., ports: _Optional[_Iterable[int]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., ipaddresses: _Optional[_Iterable[_Union[IPAddress, _Mapping]]] = ...) -> None: ...
+    parent_object_device: Device
+    parent_object_fhrp_group: FHRPGroup
+    parent_object_virtual_machine: VirtualMachine
+    def __init__(self, device: _Optional[_Union[Device, _Mapping]] = ..., virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., name: _Optional[str] = ..., protocol: _Optional[str] = ..., ports: _Optional[_Iterable[int]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., ipaddresses: _Optional[_Iterable[_Union[IPAddress, _Mapping]]] = ..., parent_object_device: _Optional[_Union[Device, _Mapping]] = ..., parent_object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., parent_object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ...) -> None: ...
 
 class Site(_message.Message):
     __slots__ = ("name", "slug", "status", "region", "group", "tenant", "facility", "time_zone", "description", "physical_address", "shipping_address", "latitude", "longitude", "comments", "tags", "custom_fields", "asns")
@@ -2957,7 +3219,7 @@ class Site(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., status: _Optional[str] = ..., region: _Optional[_Union[Region, _Mapping]] = ..., group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., facility: _Optional[str] = ..., time_zone: _Optional[str] = ..., description: _Optional[str] = ..., physical_address: _Optional[str] = ..., shipping_address: _Optional[str] = ..., latitude: _Optional[float] = ..., longitude: _Optional[float] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., asns: _Optional[_Iterable[_Union[ASN, _Mapping]]] = ...) -> None: ...
 
 class SiteGroup(_message.Message):
-    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2971,23 +3233,31 @@ class SiteGroup(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     parent: SiteGroup
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[SiteGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[SiteGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class Tag(_message.Message):
-    __slots__ = ("name", "slug", "color")
+    __slots__ = ("name", "slug", "color", "description", "weight", "object_types")
     NAME_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     COLOR_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    WEIGHT_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_TYPES_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     color: str
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ...) -> None: ...
+    description: str
+    weight: int
+    object_types: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., color: _Optional[str] = ..., description: _Optional[str] = ..., weight: _Optional[int] = ..., object_types: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class Tenant(_message.Message):
     __slots__ = ("name", "slug", "group", "description", "comments", "tags", "custom_fields")
@@ -3015,7 +3285,7 @@ class Tenant(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., group: _Optional[_Union[TenantGroup, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class TenantGroup(_message.Message):
-    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -3029,13 +3299,15 @@ class TenantGroup(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     parent: TenantGroup
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[TenantGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[TenantGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class Tunnel(_message.Message):
     __slots__ = ("name", "status", "group", "encapsulation", "ipsec_profile", "tenant", "tunnel_id", "description", "comments", "tags", "custom_fields")
@@ -3092,7 +3364,7 @@ class TunnelGroup(_message.Message):
     def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class TunnelTermination(_message.Message):
-    __slots__ = ("tunnel", "role", "termination_asn", "termination_asn_range", "termination_aggregate", "termination_cable", "termination_cable_path", "termination_cable_termination", "termination_circuit", "termination_circuit_group", "termination_circuit_group_assignment", "termination_circuit_termination", "termination_circuit_type", "termination_cluster", "termination_cluster_group", "termination_cluster_type", "termination_console_port", "termination_console_server_port", "termination_contact", "termination_contact_assignment", "termination_contact_group", "termination_contact_role", "termination_device", "termination_device_bay", "termination_device_role", "termination_device_type", "termination_fhrp_group", "termination_fhrp_group_assignment", "termination_front_port", "termination_ike_policy", "termination_ike_proposal", "termination_ip_address", "termination_ip_range", "termination_ip_sec_policy", "termination_ip_sec_profile", "termination_ip_sec_proposal", "termination_interface", "termination_inventory_item", "termination_inventory_item_role", "termination_l2vpn", "termination_l2vpn_termination", "termination_location", "termination_mac_address", "termination_manufacturer", "termination_module", "termination_module_bay", "termination_module_type", "termination_platform", "termination_power_feed", "termination_power_outlet", "termination_power_panel", "termination_power_port", "termination_prefix", "termination_provider", "termination_provider_account", "termination_provider_network", "termination_rir", "termination_rack", "termination_rack_reservation", "termination_rack_role", "termination_rack_type", "termination_rear_port", "termination_region", "termination_role", "termination_route_target", "termination_service", "termination_site", "termination_site_group", "termination_tag", "termination_tenant", "termination_tenant_group", "termination_tunnel", "termination_tunnel_group", "termination_tunnel_termination", "termination_vlan", "termination_vlan_group", "termination_vlan_translation_policy", "termination_vlan_translation_rule", "termination_vm_interface", "termination_vrf", "termination_virtual_chassis", "termination_virtual_circuit", "termination_virtual_circuit_termination", "termination_virtual_circuit_type", "termination_virtual_device_context", "termination_virtual_disk", "termination_virtual_machine", "termination_wireless_lan", "termination_wireless_lan_group", "termination_wireless_link", "outside_ip", "tags", "custom_fields")
+    __slots__ = ("tunnel", "role", "termination_asn", "termination_asn_range", "termination_aggregate", "termination_cable", "termination_cable_path", "termination_cable_termination", "termination_circuit", "termination_circuit_group", "termination_circuit_group_assignment", "termination_circuit_termination", "termination_circuit_type", "termination_cluster", "termination_cluster_group", "termination_cluster_type", "termination_console_port", "termination_console_server_port", "termination_contact", "termination_contact_assignment", "termination_contact_group", "termination_contact_role", "termination_device", "termination_device_bay", "termination_device_role", "termination_device_type", "termination_fhrp_group", "termination_fhrp_group_assignment", "termination_front_port", "termination_ike_policy", "termination_ike_proposal", "termination_ip_address", "termination_ip_range", "termination_ip_sec_policy", "termination_ip_sec_profile", "termination_ip_sec_proposal", "termination_interface", "termination_inventory_item", "termination_inventory_item_role", "termination_l2vpn", "termination_l2vpn_termination", "termination_location", "termination_mac_address", "termination_manufacturer", "termination_module", "termination_module_bay", "termination_module_type", "termination_platform", "termination_power_feed", "termination_power_outlet", "termination_power_panel", "termination_power_port", "termination_prefix", "termination_provider", "termination_provider_account", "termination_provider_network", "termination_rir", "termination_rack", "termination_rack_reservation", "termination_rack_role", "termination_rack_type", "termination_rear_port", "termination_region", "termination_role", "termination_route_target", "termination_service", "termination_site", "termination_site_group", "termination_tag", "termination_tenant", "termination_tenant_group", "termination_tunnel", "termination_tunnel_group", "termination_tunnel_termination", "termination_vlan", "termination_vlan_group", "termination_vlan_translation_policy", "termination_vlan_translation_rule", "termination_vm_interface", "termination_vrf", "termination_virtual_chassis", "termination_virtual_circuit", "termination_virtual_circuit_termination", "termination_virtual_circuit_type", "termination_virtual_device_context", "termination_virtual_disk", "termination_virtual_machine", "termination_wireless_lan", "termination_wireless_lan_group", "termination_wireless_link", "termination_custom_field", "termination_custom_field_choice_set", "termination_journal_entry", "termination_module_type_profile", "termination_custom_link", "outside_ip", "tags", "custom_fields")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -3190,6 +3462,11 @@ class TunnelTermination(_message.Message):
     TERMINATION_WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
     TERMINATION_WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
     TERMINATION_WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    TERMINATION_CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    TERMINATION_CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    TERMINATION_JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    TERMINATION_MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    TERMINATION_CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
     OUTSIDE_IP_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
@@ -3283,10 +3560,15 @@ class TunnelTermination(_message.Message):
     termination_wireless_lan: WirelessLAN
     termination_wireless_lan_group: WirelessLANGroup
     termination_wireless_link: WirelessLink
+    termination_custom_field: CustomField
+    termination_custom_field_choice_set: CustomFieldChoiceSet
+    termination_journal_entry: JournalEntry
+    termination_module_type_profile: ModuleTypeProfile
+    termination_custom_link: CustomLink
     outside_ip: IPAddress
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., role: _Optional[str] = ..., termination_asn: _Optional[_Union[ASN, _Mapping]] = ..., termination_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., termination_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., termination_cable: _Optional[_Union[Cable, _Mapping]] = ..., termination_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., termination_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., termination_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., termination_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., termination_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., termination_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., termination_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., termination_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., termination_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., termination_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., termination_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., termination_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., termination_contact: _Optional[_Union[Contact, _Mapping]] = ..., termination_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., termination_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., termination_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., termination_device: _Optional[_Union[Device, _Mapping]] = ..., termination_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., termination_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., termination_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., termination_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., termination_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., termination_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., termination_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., termination_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., termination_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., termination_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., termination_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., termination_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., termination_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., termination_interface: _Optional[_Union[Interface, _Mapping]] = ..., termination_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., termination_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., termination_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., termination_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., termination_location: _Optional[_Union[Location, _Mapping]] = ..., termination_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., termination_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., termination_module: _Optional[_Union[Module, _Mapping]] = ..., termination_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., termination_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., termination_platform: _Optional[_Union[Platform, _Mapping]] = ..., termination_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., termination_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., termination_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., termination_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., termination_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., termination_provider: _Optional[_Union[Provider, _Mapping]] = ..., termination_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., termination_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., termination_rir: _Optional[_Union[RIR, _Mapping]] = ..., termination_rack: _Optional[_Union[Rack, _Mapping]] = ..., termination_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., termination_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., termination_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., termination_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., termination_region: _Optional[_Union[Region, _Mapping]] = ..., termination_role: _Optional[_Union[Role, _Mapping]] = ..., termination_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., termination_service: _Optional[_Union[Service, _Mapping]] = ..., termination_site: _Optional[_Union[Site, _Mapping]] = ..., termination_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., termination_tag: _Optional[_Union[Tag, _Mapping]] = ..., termination_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., termination_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., termination_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., termination_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., termination_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., termination_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., termination_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., termination_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., termination_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., termination_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., termination_vrf: _Optional[_Union[VRF, _Mapping]] = ..., termination_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., termination_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., termination_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., termination_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., termination_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., termination_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., termination_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., termination_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., termination_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., termination_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., outside_ip: _Optional[_Union[IPAddress, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    def __init__(self, tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., role: _Optional[str] = ..., termination_asn: _Optional[_Union[ASN, _Mapping]] = ..., termination_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., termination_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., termination_cable: _Optional[_Union[Cable, _Mapping]] = ..., termination_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., termination_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., termination_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., termination_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., termination_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., termination_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., termination_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., termination_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., termination_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., termination_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., termination_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., termination_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., termination_contact: _Optional[_Union[Contact, _Mapping]] = ..., termination_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., termination_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., termination_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., termination_device: _Optional[_Union[Device, _Mapping]] = ..., termination_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., termination_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., termination_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., termination_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., termination_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., termination_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., termination_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., termination_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., termination_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., termination_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., termination_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., termination_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., termination_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., termination_interface: _Optional[_Union[Interface, _Mapping]] = ..., termination_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., termination_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., termination_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., termination_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., termination_location: _Optional[_Union[Location, _Mapping]] = ..., termination_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., termination_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., termination_module: _Optional[_Union[Module, _Mapping]] = ..., termination_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., termination_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., termination_platform: _Optional[_Union[Platform, _Mapping]] = ..., termination_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., termination_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., termination_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., termination_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., termination_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., termination_provider: _Optional[_Union[Provider, _Mapping]] = ..., termination_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., termination_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., termination_rir: _Optional[_Union[RIR, _Mapping]] = ..., termination_rack: _Optional[_Union[Rack, _Mapping]] = ..., termination_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., termination_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., termination_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., termination_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., termination_region: _Optional[_Union[Region, _Mapping]] = ..., termination_role: _Optional[_Union[Role, _Mapping]] = ..., termination_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., termination_service: _Optional[_Union[Service, _Mapping]] = ..., termination_site: _Optional[_Union[Site, _Mapping]] = ..., termination_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., termination_tag: _Optional[_Union[Tag, _Mapping]] = ..., termination_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., termination_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., termination_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., termination_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., termination_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., termination_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., termination_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., termination_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., termination_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., termination_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., termination_vrf: _Optional[_Union[VRF, _Mapping]] = ..., termination_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., termination_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., termination_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., termination_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., termination_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., termination_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., termination_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., termination_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., termination_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., termination_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., termination_custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., termination_custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., termination_journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., termination_module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., termination_custom_link: _Optional[_Union[CustomLink, _Mapping]] = ..., outside_ip: _Optional[_Union[IPAddress, _Mapping]] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class VLAN(_message.Message):
     __slots__ = ("site", "group", "vid", "name", "tenant", "status", "role", "description", "qinq_role", "qinq_svlan", "comments", "tags", "custom_fields")
@@ -3326,7 +3608,7 @@ class VLAN(_message.Message):
     def __init__(self, site: _Optional[_Union[Site, _Mapping]] = ..., group: _Optional[_Union[VLANGroup, _Mapping]] = ..., vid: _Optional[int] = ..., name: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[Role, _Mapping]] = ..., description: _Optional[str] = ..., qinq_role: _Optional[str] = ..., qinq_svlan: _Optional[_Union[VLAN, _Mapping]] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class VLANGroup(_message.Message):
-    __slots__ = ("name", "slug", "scope_cluster", "scope_cluster_group", "scope_location", "scope_rack", "scope_region", "scope_site", "scope_site_group", "vid_ranges", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "scope_cluster", "scope_cluster_group", "scope_location", "scope_rack", "scope_region", "scope_site", "scope_site_group", "vid_ranges", "description", "tags", "custom_fields", "tenant")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -3347,6 +3629,7 @@ class VLANGroup(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    TENANT_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     scope_cluster: Cluster
@@ -3360,7 +3643,8 @@ class VLANGroup(_message.Message):
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., scope_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., scope_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., scope_location: _Optional[_Union[Location, _Mapping]] = ..., scope_rack: _Optional[_Union[Rack, _Mapping]] = ..., scope_region: _Optional[_Union[Region, _Mapping]] = ..., scope_site: _Optional[_Union[Site, _Mapping]] = ..., scope_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., vid_ranges: _Optional[_Iterable[int]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    tenant: Tenant
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., scope_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., scope_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., scope_location: _Optional[_Union[Location, _Mapping]] = ..., scope_rack: _Optional[_Union[Rack, _Mapping]] = ..., scope_region: _Optional[_Union[Region, _Mapping]] = ..., scope_site: _Optional[_Union[Site, _Mapping]] = ..., scope_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., vid_ranges: _Optional[_Iterable[int]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ...) -> None: ...
 
 class VLANTranslationPolicy(_message.Message):
     __slots__ = ("name", "description")
@@ -3705,7 +3989,7 @@ class WirelessLAN(_message.Message):
     def __init__(self, ssid: _Optional[str] = ..., description: _Optional[str] = ..., group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., status: _Optional[str] = ..., vlan: _Optional[_Union[VLAN, _Mapping]] = ..., scope_location: _Optional[_Union[Location, _Mapping]] = ..., scope_region: _Optional[_Union[Region, _Mapping]] = ..., scope_site: _Optional[_Union[Site, _Mapping]] = ..., scope_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., auth_type: _Optional[str] = ..., auth_cipher: _Optional[str] = ..., auth_psk: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
 
 class WirelessLANGroup(_message.Message):
-    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "parent", "description", "tags", "custom_fields", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -3719,13 +4003,15 @@ class WirelessLANGroup(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     parent: WirelessLANGroup
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., parent: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class WirelessLink(_message.Message):
     __slots__ = ("interface_a", "interface_b", "ssid", "status", "tenant", "auth_type", "auth_cipher", "auth_psk", "distance", "distance_unit", "description", "comments", "tags", "custom_fields")
@@ -3765,3 +4051,315 @@ class WirelessLink(_message.Message):
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
     def __init__(self, interface_a: _Optional[_Union[Interface, _Mapping]] = ..., interface_b: _Optional[_Union[Interface, _Mapping]] = ..., ssid: _Optional[str] = ..., status: _Optional[str] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., auth_type: _Optional[str] = ..., auth_cipher: _Optional[str] = ..., auth_psk: _Optional[str] = ..., distance: _Optional[float] = ..., distance_unit: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+
+class CustomField(_message.Message):
+    __slots__ = ("type", "related_object_type", "name", "label", "group_name", "description", "required", "unique", "search_weight", "filter_logic", "ui_visible", "ui_editable", "is_cloneable", "default", "related_object_filter", "weight", "validation_minimum", "validation_maximum", "validation_regex", "choice_set", "comments", "object_types")
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    RELATED_OBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    GROUP_NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_FIELD_NUMBER: _ClassVar[int]
+    UNIQUE_FIELD_NUMBER: _ClassVar[int]
+    SEARCH_WEIGHT_FIELD_NUMBER: _ClassVar[int]
+    FILTER_LOGIC_FIELD_NUMBER: _ClassVar[int]
+    UI_VISIBLE_FIELD_NUMBER: _ClassVar[int]
+    UI_EDITABLE_FIELD_NUMBER: _ClassVar[int]
+    IS_CLONEABLE_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    RELATED_OBJECT_FILTER_FIELD_NUMBER: _ClassVar[int]
+    WEIGHT_FIELD_NUMBER: _ClassVar[int]
+    VALIDATION_MINIMUM_FIELD_NUMBER: _ClassVar[int]
+    VALIDATION_MAXIMUM_FIELD_NUMBER: _ClassVar[int]
+    VALIDATION_REGEX_FIELD_NUMBER: _ClassVar[int]
+    CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_TYPES_FIELD_NUMBER: _ClassVar[int]
+    type: str
+    related_object_type: str
+    name: str
+    label: str
+    group_name: str
+    description: str
+    required: bool
+    unique: bool
+    search_weight: int
+    filter_logic: str
+    ui_visible: str
+    ui_editable: str
+    is_cloneable: bool
+    default: str
+    related_object_filter: str
+    weight: int
+    validation_minimum: int
+    validation_maximum: int
+    validation_regex: str
+    choice_set: CustomFieldChoiceSet
+    comments: str
+    object_types: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, type: _Optional[str] = ..., related_object_type: _Optional[str] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., group_name: _Optional[str] = ..., description: _Optional[str] = ..., required: bool = ..., unique: bool = ..., search_weight: _Optional[int] = ..., filter_logic: _Optional[str] = ..., ui_visible: _Optional[str] = ..., ui_editable: _Optional[str] = ..., is_cloneable: bool = ..., default: _Optional[str] = ..., related_object_filter: _Optional[str] = ..., weight: _Optional[int] = ..., validation_minimum: _Optional[int] = ..., validation_maximum: _Optional[int] = ..., validation_regex: _Optional[str] = ..., choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., comments: _Optional[str] = ..., object_types: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class CustomFieldChoiceSet(_message.Message):
+    __slots__ = ("name", "description", "base_choices", "order_alphabetically", "extra_choices")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    BASE_CHOICES_FIELD_NUMBER: _ClassVar[int]
+    ORDER_ALPHABETICALLY_FIELD_NUMBER: _ClassVar[int]
+    EXTRA_CHOICES_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    description: str
+    base_choices: str
+    order_alphabetically: bool
+    extra_choices: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., base_choices: _Optional[str] = ..., order_alphabetically: bool = ..., extra_choices: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class JournalEntry(_message.Message):
+    __slots__ = ("assigned_object_asn", "assigned_object_asn_range", "assigned_object_aggregate", "assigned_object_cable", "assigned_object_cable_path", "assigned_object_cable_termination", "assigned_object_circuit", "assigned_object_circuit_group", "assigned_object_circuit_group_assignment", "assigned_object_circuit_termination", "assigned_object_circuit_type", "assigned_object_cluster", "assigned_object_cluster_group", "assigned_object_cluster_type", "assigned_object_console_port", "assigned_object_console_server_port", "assigned_object_contact", "assigned_object_contact_assignment", "assigned_object_contact_group", "assigned_object_contact_role", "assigned_object_custom_field", "assigned_object_custom_field_choice_set", "assigned_object_device", "assigned_object_device_bay", "assigned_object_device_role", "assigned_object_device_type", "assigned_object_fhrp_group", "assigned_object_fhrp_group_assignment", "assigned_object_front_port", "assigned_object_ike_policy", "assigned_object_ike_proposal", "assigned_object_ip_address", "assigned_object_ip_range", "assigned_object_ip_sec_policy", "assigned_object_ip_sec_profile", "assigned_object_ip_sec_proposal", "assigned_object_interface", "assigned_object_inventory_item", "assigned_object_inventory_item_role", "assigned_object_journal_entry", "assigned_object_l2vpn", "assigned_object_l2vpn_termination", "assigned_object_location", "assigned_object_mac_address", "assigned_object_manufacturer", "assigned_object_module", "assigned_object_module_bay", "assigned_object_module_type", "assigned_object_module_type_profile", "assigned_object_platform", "assigned_object_power_feed", "assigned_object_power_outlet", "assigned_object_power_panel", "assigned_object_power_port", "assigned_object_prefix", "assigned_object_provider", "assigned_object_provider_account", "assigned_object_provider_network", "assigned_object_rir", "assigned_object_rack", "assigned_object_rack_reservation", "assigned_object_rack_role", "assigned_object_rack_type", "assigned_object_rear_port", "assigned_object_region", "assigned_object_role", "assigned_object_route_target", "assigned_object_service", "assigned_object_site", "assigned_object_site_group", "assigned_object_tag", "assigned_object_tenant", "assigned_object_tenant_group", "assigned_object_tunnel", "assigned_object_tunnel_group", "assigned_object_tunnel_termination", "assigned_object_vlan", "assigned_object_vlan_group", "assigned_object_vlan_translation_policy", "assigned_object_vlan_translation_rule", "assigned_object_vm_interface", "assigned_object_vrf", "assigned_object_virtual_chassis", "assigned_object_virtual_circuit", "assigned_object_virtual_circuit_termination", "assigned_object_virtual_circuit_type", "assigned_object_virtual_device_context", "assigned_object_virtual_disk", "assigned_object_virtual_machine", "assigned_object_wireless_lan", "assigned_object_wireless_lan_group", "assigned_object_wireless_link", "assigned_object_custom_link", "kind", "comments", "tags", "custom_fields")
+    class CustomFieldsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: CustomFieldValue
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[CustomFieldValue, _Mapping]] = ...) -> None: ...
+    ASSIGNED_OBJECT_ASN_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_ASN_RANGE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_AGGREGATE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CABLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CABLE_PATH_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CABLE_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_GROUP_ASSIGNMENT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CIRCUIT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CLUSTER_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CLUSTER_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CLUSTER_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONSOLE_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONSOLE_SERVER_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_ASSIGNMENT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CONTACT_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CUSTOM_FIELD_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CUSTOM_FIELD_CHOICE_SET_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_BAY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_DEVICE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_FHRP_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_FHRP_GROUP_ASSIGNMENT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_FRONT_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IKE_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IKE_PROPOSAL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_ADDRESS_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_RANGE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_SEC_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_SEC_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_IP_SEC_PROPOSAL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_INTERFACE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_INVENTORY_ITEM_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_INVENTORY_ITEM_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_JOURNAL_ENTRY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_L2VPN_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_L2VPN_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_LOCATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MAC_ADDRESS_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MANUFACTURER_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_BAY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_MODULE_TYPE_PROFILE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PLATFORM_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_FEED_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_OUTLET_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_PANEL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_POWER_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PREFIX_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PROVIDER_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PROVIDER_ACCOUNT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_PROVIDER_NETWORK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RIR_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_RESERVATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_RACK_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_REAR_PORT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_REGION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_ROUTE_TARGET_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_SERVICE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_SITE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_SITE_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TAG_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TENANT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TENANT_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TUNNEL_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TUNNEL_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_TUNNEL_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VLAN_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VLAN_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VLAN_TRANSLATION_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VLAN_TRANSLATION_RULE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VM_INTERFACE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VRF_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CHASSIS_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CIRCUIT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CIRCUIT_TERMINATION_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_CIRCUIT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_DEVICE_CONTEXT_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_DISK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_VIRTUAL_MACHINE_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_WIRELESS_LAN_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_WIRELESS_LAN_GROUP_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_WIRELESS_LINK_FIELD_NUMBER: _ClassVar[int]
+    ASSIGNED_OBJECT_CUSTOM_LINK_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
+    TAGS_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    assigned_object_asn: ASN
+    assigned_object_asn_range: ASNRange
+    assigned_object_aggregate: Aggregate
+    assigned_object_cable: Cable
+    assigned_object_cable_path: CablePath
+    assigned_object_cable_termination: CableTermination
+    assigned_object_circuit: Circuit
+    assigned_object_circuit_group: CircuitGroup
+    assigned_object_circuit_group_assignment: CircuitGroupAssignment
+    assigned_object_circuit_termination: CircuitTermination
+    assigned_object_circuit_type: CircuitType
+    assigned_object_cluster: Cluster
+    assigned_object_cluster_group: ClusterGroup
+    assigned_object_cluster_type: ClusterType
+    assigned_object_console_port: ConsolePort
+    assigned_object_console_server_port: ConsoleServerPort
+    assigned_object_contact: Contact
+    assigned_object_contact_assignment: ContactAssignment
+    assigned_object_contact_group: ContactGroup
+    assigned_object_contact_role: ContactRole
+    assigned_object_custom_field: CustomField
+    assigned_object_custom_field_choice_set: CustomFieldChoiceSet
+    assigned_object_device: Device
+    assigned_object_device_bay: DeviceBay
+    assigned_object_device_role: DeviceRole
+    assigned_object_device_type: DeviceType
+    assigned_object_fhrp_group: FHRPGroup
+    assigned_object_fhrp_group_assignment: FHRPGroupAssignment
+    assigned_object_front_port: FrontPort
+    assigned_object_ike_policy: IKEPolicy
+    assigned_object_ike_proposal: IKEProposal
+    assigned_object_ip_address: IPAddress
+    assigned_object_ip_range: IPRange
+    assigned_object_ip_sec_policy: IPSecPolicy
+    assigned_object_ip_sec_profile: IPSecProfile
+    assigned_object_ip_sec_proposal: IPSecProposal
+    assigned_object_interface: Interface
+    assigned_object_inventory_item: InventoryItem
+    assigned_object_inventory_item_role: InventoryItemRole
+    assigned_object_journal_entry: JournalEntry
+    assigned_object_l2vpn: L2VPN
+    assigned_object_l2vpn_termination: L2VPNTermination
+    assigned_object_location: Location
+    assigned_object_mac_address: MACAddress
+    assigned_object_manufacturer: Manufacturer
+    assigned_object_module: Module
+    assigned_object_module_bay: ModuleBay
+    assigned_object_module_type: ModuleType
+    assigned_object_module_type_profile: ModuleTypeProfile
+    assigned_object_platform: Platform
+    assigned_object_power_feed: PowerFeed
+    assigned_object_power_outlet: PowerOutlet
+    assigned_object_power_panel: PowerPanel
+    assigned_object_power_port: PowerPort
+    assigned_object_prefix: Prefix
+    assigned_object_provider: Provider
+    assigned_object_provider_account: ProviderAccount
+    assigned_object_provider_network: ProviderNetwork
+    assigned_object_rir: RIR
+    assigned_object_rack: Rack
+    assigned_object_rack_reservation: RackReservation
+    assigned_object_rack_role: RackRole
+    assigned_object_rack_type: RackType
+    assigned_object_rear_port: RearPort
+    assigned_object_region: Region
+    assigned_object_role: Role
+    assigned_object_route_target: RouteTarget
+    assigned_object_service: Service
+    assigned_object_site: Site
+    assigned_object_site_group: SiteGroup
+    assigned_object_tag: Tag
+    assigned_object_tenant: Tenant
+    assigned_object_tenant_group: TenantGroup
+    assigned_object_tunnel: Tunnel
+    assigned_object_tunnel_group: TunnelGroup
+    assigned_object_tunnel_termination: TunnelTermination
+    assigned_object_vlan: VLAN
+    assigned_object_vlan_group: VLANGroup
+    assigned_object_vlan_translation_policy: VLANTranslationPolicy
+    assigned_object_vlan_translation_rule: VLANTranslationRule
+    assigned_object_vm_interface: VMInterface
+    assigned_object_vrf: VRF
+    assigned_object_virtual_chassis: VirtualChassis
+    assigned_object_virtual_circuit: VirtualCircuit
+    assigned_object_virtual_circuit_termination: VirtualCircuitTermination
+    assigned_object_virtual_circuit_type: VirtualCircuitType
+    assigned_object_virtual_device_context: VirtualDeviceContext
+    assigned_object_virtual_disk: VirtualDisk
+    assigned_object_virtual_machine: VirtualMachine
+    assigned_object_wireless_lan: WirelessLAN
+    assigned_object_wireless_lan_group: WirelessLANGroup
+    assigned_object_wireless_link: WirelessLink
+    assigned_object_custom_link: CustomLink
+    kind: str
+    comments: str
+    tags: _containers.RepeatedCompositeFieldContainer[Tag]
+    custom_fields: _containers.MessageMap[str, CustomFieldValue]
+    def __init__(self, assigned_object_asn: _Optional[_Union[ASN, _Mapping]] = ..., assigned_object_asn_range: _Optional[_Union[ASNRange, _Mapping]] = ..., assigned_object_aggregate: _Optional[_Union[Aggregate, _Mapping]] = ..., assigned_object_cable: _Optional[_Union[Cable, _Mapping]] = ..., assigned_object_cable_path: _Optional[_Union[CablePath, _Mapping]] = ..., assigned_object_cable_termination: _Optional[_Union[CableTermination, _Mapping]] = ..., assigned_object_circuit: _Optional[_Union[Circuit, _Mapping]] = ..., assigned_object_circuit_group: _Optional[_Union[CircuitGroup, _Mapping]] = ..., assigned_object_circuit_group_assignment: _Optional[_Union[CircuitGroupAssignment, _Mapping]] = ..., assigned_object_circuit_termination: _Optional[_Union[CircuitTermination, _Mapping]] = ..., assigned_object_circuit_type: _Optional[_Union[CircuitType, _Mapping]] = ..., assigned_object_cluster: _Optional[_Union[Cluster, _Mapping]] = ..., assigned_object_cluster_group: _Optional[_Union[ClusterGroup, _Mapping]] = ..., assigned_object_cluster_type: _Optional[_Union[ClusterType, _Mapping]] = ..., assigned_object_console_port: _Optional[_Union[ConsolePort, _Mapping]] = ..., assigned_object_console_server_port: _Optional[_Union[ConsoleServerPort, _Mapping]] = ..., assigned_object_contact: _Optional[_Union[Contact, _Mapping]] = ..., assigned_object_contact_assignment: _Optional[_Union[ContactAssignment, _Mapping]] = ..., assigned_object_contact_group: _Optional[_Union[ContactGroup, _Mapping]] = ..., assigned_object_contact_role: _Optional[_Union[ContactRole, _Mapping]] = ..., assigned_object_custom_field: _Optional[_Union[CustomField, _Mapping]] = ..., assigned_object_custom_field_choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., assigned_object_device: _Optional[_Union[Device, _Mapping]] = ..., assigned_object_device_bay: _Optional[_Union[DeviceBay, _Mapping]] = ..., assigned_object_device_role: _Optional[_Union[DeviceRole, _Mapping]] = ..., assigned_object_device_type: _Optional[_Union[DeviceType, _Mapping]] = ..., assigned_object_fhrp_group: _Optional[_Union[FHRPGroup, _Mapping]] = ..., assigned_object_fhrp_group_assignment: _Optional[_Union[FHRPGroupAssignment, _Mapping]] = ..., assigned_object_front_port: _Optional[_Union[FrontPort, _Mapping]] = ..., assigned_object_ike_policy: _Optional[_Union[IKEPolicy, _Mapping]] = ..., assigned_object_ike_proposal: _Optional[_Union[IKEProposal, _Mapping]] = ..., assigned_object_ip_address: _Optional[_Union[IPAddress, _Mapping]] = ..., assigned_object_ip_range: _Optional[_Union[IPRange, _Mapping]] = ..., assigned_object_ip_sec_policy: _Optional[_Union[IPSecPolicy, _Mapping]] = ..., assigned_object_ip_sec_profile: _Optional[_Union[IPSecProfile, _Mapping]] = ..., assigned_object_ip_sec_proposal: _Optional[_Union[IPSecProposal, _Mapping]] = ..., assigned_object_interface: _Optional[_Union[Interface, _Mapping]] = ..., assigned_object_inventory_item: _Optional[_Union[InventoryItem, _Mapping]] = ..., assigned_object_inventory_item_role: _Optional[_Union[InventoryItemRole, _Mapping]] = ..., assigned_object_journal_entry: _Optional[_Union[JournalEntry, _Mapping]] = ..., assigned_object_l2vpn: _Optional[_Union[L2VPN, _Mapping]] = ..., assigned_object_l2vpn_termination: _Optional[_Union[L2VPNTermination, _Mapping]] = ..., assigned_object_location: _Optional[_Union[Location, _Mapping]] = ..., assigned_object_mac_address: _Optional[_Union[MACAddress, _Mapping]] = ..., assigned_object_manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., assigned_object_module: _Optional[_Union[Module, _Mapping]] = ..., assigned_object_module_bay: _Optional[_Union[ModuleBay, _Mapping]] = ..., assigned_object_module_type: _Optional[_Union[ModuleType, _Mapping]] = ..., assigned_object_module_type_profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., assigned_object_platform: _Optional[_Union[Platform, _Mapping]] = ..., assigned_object_power_feed: _Optional[_Union[PowerFeed, _Mapping]] = ..., assigned_object_power_outlet: _Optional[_Union[PowerOutlet, _Mapping]] = ..., assigned_object_power_panel: _Optional[_Union[PowerPanel, _Mapping]] = ..., assigned_object_power_port: _Optional[_Union[PowerPort, _Mapping]] = ..., assigned_object_prefix: _Optional[_Union[Prefix, _Mapping]] = ..., assigned_object_provider: _Optional[_Union[Provider, _Mapping]] = ..., assigned_object_provider_account: _Optional[_Union[ProviderAccount, _Mapping]] = ..., assigned_object_provider_network: _Optional[_Union[ProviderNetwork, _Mapping]] = ..., assigned_object_rir: _Optional[_Union[RIR, _Mapping]] = ..., assigned_object_rack: _Optional[_Union[Rack, _Mapping]] = ..., assigned_object_rack_reservation: _Optional[_Union[RackReservation, _Mapping]] = ..., assigned_object_rack_role: _Optional[_Union[RackRole, _Mapping]] = ..., assigned_object_rack_type: _Optional[_Union[RackType, _Mapping]] = ..., assigned_object_rear_port: _Optional[_Union[RearPort, _Mapping]] = ..., assigned_object_region: _Optional[_Union[Region, _Mapping]] = ..., assigned_object_role: _Optional[_Union[Role, _Mapping]] = ..., assigned_object_route_target: _Optional[_Union[RouteTarget, _Mapping]] = ..., assigned_object_service: _Optional[_Union[Service, _Mapping]] = ..., assigned_object_site: _Optional[_Union[Site, _Mapping]] = ..., assigned_object_site_group: _Optional[_Union[SiteGroup, _Mapping]] = ..., assigned_object_tag: _Optional[_Union[Tag, _Mapping]] = ..., assigned_object_tenant: _Optional[_Union[Tenant, _Mapping]] = ..., assigned_object_tenant_group: _Optional[_Union[TenantGroup, _Mapping]] = ..., assigned_object_tunnel: _Optional[_Union[Tunnel, _Mapping]] = ..., assigned_object_tunnel_group: _Optional[_Union[TunnelGroup, _Mapping]] = ..., assigned_object_tunnel_termination: _Optional[_Union[TunnelTermination, _Mapping]] = ..., assigned_object_vlan: _Optional[_Union[VLAN, _Mapping]] = ..., assigned_object_vlan_group: _Optional[_Union[VLANGroup, _Mapping]] = ..., assigned_object_vlan_translation_policy: _Optional[_Union[VLANTranslationPolicy, _Mapping]] = ..., assigned_object_vlan_translation_rule: _Optional[_Union[VLANTranslationRule, _Mapping]] = ..., assigned_object_vm_interface: _Optional[_Union[VMInterface, _Mapping]] = ..., assigned_object_vrf: _Optional[_Union[VRF, _Mapping]] = ..., assigned_object_virtual_chassis: _Optional[_Union[VirtualChassis, _Mapping]] = ..., assigned_object_virtual_circuit: _Optional[_Union[VirtualCircuit, _Mapping]] = ..., assigned_object_virtual_circuit_termination: _Optional[_Union[VirtualCircuitTermination, _Mapping]] = ..., assigned_object_virtual_circuit_type: _Optional[_Union[VirtualCircuitType, _Mapping]] = ..., assigned_object_virtual_device_context: _Optional[_Union[VirtualDeviceContext, _Mapping]] = ..., assigned_object_virtual_disk: _Optional[_Union[VirtualDisk, _Mapping]] = ..., assigned_object_virtual_machine: _Optional[_Union[VirtualMachine, _Mapping]] = ..., assigned_object_wireless_lan: _Optional[_Union[WirelessLAN, _Mapping]] = ..., assigned_object_wireless_lan_group: _Optional[_Union[WirelessLANGroup, _Mapping]] = ..., assigned_object_wireless_link: _Optional[_Union[WirelessLink, _Mapping]] = ..., assigned_object_custom_link: _Optional[_Union[CustomLink, _Mapping]] = ..., kind: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+
+class ModuleTypeProfile(_message.Message):
+    __slots__ = ("name", "description", "schema", "comments", "tags", "custom_fields")
+    class CustomFieldsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: CustomFieldValue
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[CustomFieldValue, _Mapping]] = ...) -> None: ...
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    SCHEMA_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
+    TAGS_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    description: str
+    schema: str
+    comments: str
+    tags: _containers.RepeatedCompositeFieldContainer[Tag]
+    custom_fields: _containers.MessageMap[str, CustomFieldValue]
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., schema: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+
+class CustomLink(_message.Message):
+    __slots__ = ("name", "enabled", "link_text", "link_url", "weight", "group_name", "button_class", "new_window", "object_types")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    LINK_TEXT_FIELD_NUMBER: _ClassVar[int]
+    LINK_URL_FIELD_NUMBER: _ClassVar[int]
+    WEIGHT_FIELD_NUMBER: _ClassVar[int]
+    GROUP_NAME_FIELD_NUMBER: _ClassVar[int]
+    BUTTON_CLASS_FIELD_NUMBER: _ClassVar[int]
+    NEW_WINDOW_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_TYPES_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    enabled: bool
+    link_text: str
+    link_url: str
+    weight: int
+    group_name: str
+    button_class: str
+    new_window: bool
+    object_types: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., enabled: bool = ..., link_text: _Optional[str] = ..., link_url: _Optional[str] = ..., weight: _Optional[int] = ..., group_name: _Optional[str] = ..., button_class: _Optional[str] = ..., new_window: bool = ..., object_types: _Optional[_Iterable[str]] = ...) -> None: ...
