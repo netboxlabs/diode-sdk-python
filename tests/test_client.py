@@ -103,6 +103,12 @@ def test_load_certs_returns_bytes():
     """Check that _load_certs returns bytes."""
     assert isinstance(_load_certs(), bytes)
 
+
+def test_parse_target_handles_ftp_prefix():
+    """Check that parse_target raises an error when the target contains ftp://."""
+    with pytest.raises(ValueError):
+        parse_target("ftp://localhost:8081")
+
 def test_parse_target_parses_authority_correctly():
     """Check that parse_target parses the authority correctly."""
     authority, path, tls_verify = parse_target("grpc://localhost:8081")
