@@ -195,7 +195,7 @@ class DiodeClient(DiodeClientInterface):
         if self._sentry_dsn is not None:
             _LOGGER.debug("Setting up Sentry")
             self._setup_sentry(
-            self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate
+                self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate
             )
 
     @property
@@ -280,7 +280,7 @@ class DiodeClient(DiodeClientInterface):
         raise RuntimeError("Max retries exceeded")
 
     def _setup_sentry(
-            self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float
+        self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float
     ):
         sentry_sdk.init(
             dsn=dsn,
