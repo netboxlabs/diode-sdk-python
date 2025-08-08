@@ -143,7 +143,13 @@ def test_parse_target_handles_no_path():
 
 def test_parse_target_parses_tls_verify_correctly():
     """Check that parse_target parses tls_verify correctly."""
+    _, _, tls_verify = parse_target("grpc://localhost:8081")
+    assert tls_verify is False
+    _, _, tls_verify = parse_target("http://localhost:8081")
+    assert tls_verify is False
     _, _, tls_verify = parse_target("grpcs://localhost:8081")
+    assert tls_verify is True
+    _, _, tls_verify = parse_target("https://localhost:8081")
     assert tls_verify is True
 
 
