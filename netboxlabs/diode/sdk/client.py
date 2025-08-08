@@ -352,9 +352,9 @@ class DiodeDryRunClient(DiodeClientInterface):
         """Exits the runtime context related to the channel object."""
 
     def ingest(
-            self,
-            entities: Iterable[Entity | ingester_pb2.Entity | None],
-            stream: str | None = _DEFAULT_STREAM,
+        self,
+        entities: Iterable[Entity | ingester_pb2.Entity | None],
+        stream: str | None = _DEFAULT_STREAM,
     ) -> ingester_pb2.IngestResponse:
         """Ingest entities in dry run mode."""
         request = ingester_pb2.IngestRequest(
