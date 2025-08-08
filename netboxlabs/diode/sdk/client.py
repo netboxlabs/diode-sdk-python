@@ -98,7 +98,7 @@ def _get_required_config_value(env_var_name: str, value: str | None = None) -> s
 
 
 def _get_optional_config_value(
-        env_var_name: str, value: str | None = None
+    env_var_name: str, value: str | None = None
 ) -> str | None:
     """Get optional config value either from provided value or environment variable."""
     if value is None:
@@ -117,16 +117,16 @@ class DiodeClient(DiodeClientInterface):
     _stub = None
 
     def __init__(
-            self,
-            target: str,
-            app_name: str,
-            app_version: str,
-            client_id: str | None = None,
-            client_secret: str | None = None,
-            sentry_dsn: str = None,
-            sentry_traces_sample_rate: float = 1.0,
-            sentry_profiles_sample_rate: float = 1.0,
-            max_auth_retries: int = 3,
+        self,
+        target: str,
+        app_name: str,
+        app_version: str,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+        sentry_dsn: str = None,
+        sentry_traces_sample_rate: float = 1.0,
+        sentry_profiles_sample_rate: float = 1.0,
+        max_auth_retries: int = 3,
     ):
         """Initiate a new client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
@@ -251,9 +251,9 @@ class DiodeClient(DiodeClientInterface):
         self._channel.close()
 
     def ingest(
-            self,
-            entities: Iterable[Entity | ingester_pb2.Entity | None],
-            stream: str | None = _DEFAULT_STREAM,
+        self,
+        entities: Iterable[Entity | ingester_pb2.Entity | None],
+        stream: str | None = _DEFAULT_STREAM,
     ) -> ingester_pb2.IngestResponse:
         """Ingest entities."""
         for attempt in range(self._max_auth_retries):
@@ -384,13 +384,13 @@ class DiodeDryRunClient(DiodeClientInterface):
 
 class _DiodeAuthentication:
     def __init__(
-            self,
-            target: str,
-            path: str,
-            tls_verify: bool,
-            client_id: str,
-            client_secret: str,
-            scope: str,
+        self,
+        target: str,
+        path: str,
+        tls_verify: bool,
+        client_id: str,
+        client_secret: str,
+        scope: str,
     ):
         self._target = target
         self._tls_verify = tls_verify
@@ -448,12 +448,12 @@ class _ClientCallDetails(
     collections.namedtuple(
         "_ClientCallDetails",
         (
-                "method",
-                "timeout",
-                "metadata",
-                "credentials",
-                "wait_for_ready",
-                "compression",
+            "method",
+            "timeout",
+            "metadata",
+            "credentials",
+            "wait_for_ready",
+            "compression",
         ),
     ),
     grpc.ClientCallDetails,
@@ -508,7 +508,7 @@ class DiodeMethodClientInterceptor(
         return self._intercept_call(continuation, client_call_details, request)
 
     def intercept_stream_unary(
-            self, continuation, client_call_details, request_iterator
+        self, continuation, client_call_details, request_iterator
     ):
         """Intercept stream unary."""
         return self._intercept_call(continuation, client_call_details, request_iterator)
