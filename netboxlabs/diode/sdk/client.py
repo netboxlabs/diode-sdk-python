@@ -195,7 +195,7 @@ class DiodeClient(DiodeClientInterface):
         if self._sentry_dsn is not None:
             _LOGGER.debug("Setting up Sentry")
             self._setup_sentry(
-                self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate
+            self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate
             )
 
     @property
