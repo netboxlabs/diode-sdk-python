@@ -103,19 +103,6 @@ def test_load_certs_returns_bytes():
     """Check that _load_certs returns bytes."""
     assert isinstance(_load_certs(), bytes)
 
-
-def test_parse_target_handles_http_prefix():
-    """Check that parse_target raises an error when the target contains http://."""
-    with pytest.raises(ValueError):
-        parse_target("http://localhost:8081")
-
-
-def test_parse_target_handles_https_prefix():
-    """Check that parse_target raises an error when the target contains https://."""
-    with pytest.raises(ValueError):
-        parse_target("https://localhost:8081")
-
-
 def test_parse_target_parses_authority_correctly():
     """Check that parse_target parses the authority correctly."""
     authority, path, tls_verify = parse_target("grpc://localhost:8081")
@@ -127,6 +114,12 @@ def test_parse_target_parses_authority_correctly():
 def test_parse_target_adds_default_port_if_missing():
     """Check that parse_target adds the default port if missing."""
     authority, _, _ = parse_target("grpc://localhost")
+    assert authority == "localhost:80"
+    authority, _, _ = parse_target("http://localhost")
+    assert authority == "localhost:80"
+    authority, _, _ = parse_target("grpcs://localhost")
+    assert authority == "localhost:443"
+    authority, _, _ = parse_target("https://localhost")
     assert authority == "localhost:443"
 
 
