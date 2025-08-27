@@ -21,6 +21,7 @@ pip install netboxlabs-diode-sdk
 ### Environment variables
 
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
+* `DIODE_CA_BUNDLE` - Optional path to CA bundle to override default certifi CA bundle.
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication

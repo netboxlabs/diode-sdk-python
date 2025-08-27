@@ -28,6 +28,7 @@ from netboxlabs.diode.sdk.version import version_semver
 
 _MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
 _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
+_DIODE_SDK_CA_BUNDLE_ENVVAR_NAME = "DIODE_CA_BUNDLE"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
@@ -54,8 +55,13 @@ class DiodeClientInterface:
 
 
 def _load_certs() -> bytes:
-    """Loads cacert.pem."""
-    with open(certifi.where(), "rb") as f:
+    """If envvar DIODE_CA_BUNDLE set, load it. Otherwise load certifi cacert.pem."""
+    ca_bundle_set = os.getenv(_DIODE_SDK_CA_BUNDLE_ENVVAR_NAME)
+    if ca_bundle_set:
+        cacert_bundle = ca_bundle_set
+    else:
+        cacert_bundle = certifi.where()
+    with open(cacert_bundle, "rb") as f:
         return f.read()
 
 
