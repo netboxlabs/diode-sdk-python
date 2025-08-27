@@ -143,6 +143,9 @@ class DiodeClient(DiodeClientInterface):
         self._target, self._path, self._tls_verify = parse_target(target)
         if self._cert_file:
             self._tls_verify = True
+
+        # Load certificates once if needed
+        self._certificates = _load_certs(self._cert_file) if (self._tls_verify or self._cert_file) else None
         self._app_name = app_name
         self._app_version = app_version
         self._platform = platform.platform()
@@ -173,7 +176,7 @@ class DiodeClient(DiodeClientInterface):
             self._channel = grpc.secure_channel(
                 self._target,
                 grpc.ssl_channel_credentials(
-                    root_certificates=_load_certs(self._cert_file),
+                    root_certificates=self._certificates,
                 ),
                 options=channel_opts,
             )
@@ -311,6 +314,7 @@ class DiodeClient(DiodeClientInterface):
             self._client_id,
             self._client_secret,
             scope,
+            self._certificates,
         )
         access_token = authentication_client.authenticate()
         self._metadata = list(
@@ -398,6 +402,7 @@ class _DiodeAuthentication:
         client_id: str,
         client_secret: str,
         scope: str,
+        certificates: bytes | None = None,
     ):
         self._target = target
         self._tls_verify = tls_verify
@@ -405,13 +410,21 @@ class _DiodeAuthentication:
         self._client_secret = client_secret
         self._path = path
         self._scope = scope
+        self._certificates = certificates
 
     def authenticate(self) -> str:
         """Request an OAuth2 token using client credentials and return it."""
-        if self._tls_verify:
+        if self._tls_verify or self._certificates:
+            # Create SSL context with custom certificates if provided
+            if self._certificates:
+                context = ssl.create_default_context()
+                context.load_verify_locations(cadata=self._certificates.decode('utf-8'))
+            else:
+                # Use default context for standard HTTPS with CA verification
+                context = None
             conn = http.client.HTTPSConnection(
                 self._target,
-                context=None if self._tls_verify else ssl._create_unverified_context(),
+                context=context,
             )
         else:
             conn = http.client.HTTPConnection(

@@ -948,3 +948,175 @@ def test_client_without_cert_file_uses_default_certs(mock_diode_authentication):
         
         # Verify secure_channel was called
         mock_secure_channel.assert_called_once()
+
+
+def test_diode_authentication_with_custom_certificates(tmp_path):
+    """Test _DiodeAuthentication with custom certificates."""
+    # Create a dummy certificate file  
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    
+    auth = _DiodeAuthentication(
+        target="example.com:443",
+        path="/api/v1",
+        tls_verify=True,
+        client_id="test_client",
+        client_secret="test_secret",
+        scope="test_scope",
+        certificates=cert_content,
+    )
+    
+    with (
+        mock.patch("http.client.HTTPSConnection") as mock_https_conn,
+        mock.patch("ssl.create_default_context") as mock_ssl_context,
+    ):
+        # Setup mocks
+        mock_context_instance = mock.Mock()
+        mock_ssl_context.return_value = mock_context_instance
+        
+        mock_conn_instance = mock.Mock()
+        mock_https_conn.return_value = mock_conn_instance
+        
+        mock_response = mock.Mock()
+        mock_response.status = 200
+        mock_response.read.return_value = b'{"access_token": "test_token"}'
+        mock_conn_instance.getresponse.return_value = mock_response
+        
+        # Call authenticate
+        token = auth.authenticate()
+        
+        # Verify SSL context was created and configured with custom certs
+        mock_ssl_context.assert_called_once()
+        mock_context_instance.load_verify_locations.assert_called_once_with(
+            cadata=cert_content.decode('utf-8')
+        )
+        
+        # Verify HTTPS connection was created with custom context
+        mock_https_conn.assert_called_once_with(
+            "example.com:443",
+            context=mock_context_instance,
+        )
+        
+        # Verify token was returned
+        assert token == "test_token"
+
+
+def test_diode_authentication_with_default_certificates():
+    """Test _DiodeAuthentication with default certificates (no custom certs)."""
+    auth = _DiodeAuthentication(
+        target="example.com:443",
+        path="/api/v1",
+        tls_verify=True,
+        client_id="test_client",
+        client_secret="test_secret", 
+        scope="test_scope",
+        certificates=None,
+    )
+    
+    with (
+        mock.patch("http.client.HTTPSConnection") as mock_https_conn,
+        mock.patch("ssl.create_default_context") as mock_ssl_context,
+    ):
+        # Setup mocks
+        mock_conn_instance = mock.Mock()
+        mock_https_conn.return_value = mock_conn_instance
+        
+        mock_response = mock.Mock()
+        mock_response.status = 200
+        mock_response.read.return_value = b'{"access_token": "test_token"}'
+        mock_conn_instance.getresponse.return_value = mock_response
+        
+        # Call authenticate
+        token = auth.authenticate()
+        
+        # Verify no custom SSL context was created (uses default)
+        mock_ssl_context.assert_not_called()
+        
+        # Verify HTTPS connection was created with None context (default)
+        mock_https_conn.assert_called_once_with(
+            "example.com:443", 
+            context=None,
+        )
+        
+        # Verify token was returned
+        assert token == "test_token"
+
+
+def test_diode_authentication_plain_http():
+    """Test _DiodeAuthentication with plain HTTP (no TLS)."""
+    auth = _DiodeAuthentication(
+        target="example.com:80",
+        path="/api/v1",
+        tls_verify=False,
+        client_id="test_client", 
+        client_secret="test_secret",
+        scope="test_scope",
+        certificates=None,
+    )
+    
+    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
+        # Setup mocks
+        mock_conn_instance = mock.Mock()
+        mock_http_conn.return_value = mock_conn_instance
+        
+        mock_response = mock.Mock()
+        mock_response.status = 200
+        mock_response.read.return_value = b'{"access_token": "test_token"}'
+        mock_conn_instance.getresponse.return_value = mock_response
+        
+        # Call authenticate
+        token = auth.authenticate()
+        
+        # Verify HTTP connection was created
+        mock_http_conn.assert_called_once_with("example.com:80")
+        
+        # Verify token was returned
+        assert token == "test_token"
+
+
+def test_certificate_loading_efficiency(tmp_path):
+    """Test that certificates are loaded only once during client initialization."""
+    # Create a dummy certificate file
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+    
+    with (
+        mock.patch("netboxlabs.diode.sdk.client._load_certs") as mock_load_certs,
+        mock.patch("netboxlabs.diode.sdk.client._DiodeAuthentication") as mock_auth_class,
+    ):
+        mock_load_certs.return_value = cert_content
+        mock_auth_instance = mock_auth_class.return_value
+        mock_auth_instance.authenticate.return_value = "test_token"
+        
+        # Create client with custom certificate
+        client = DiodeClient(
+            target="grpcs://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id="abcde",
+            client_secret="123456",
+            cert_file=str(cert_file),
+        )
+        
+        # Verify _load_certs was called exactly once during initialization
+        mock_load_certs.assert_called_once_with(str(cert_file))
+        
+        # Verify certificates are stored and reused
+        assert client._certificates == cert_content
+        
+        # Verify that the authentication class was created with the certificate bytes
+        mock_auth_class.assert_called_once()
+        auth_call_args = mock_auth_class.call_args
+        
+        # The last argument should be the certificate bytes
+        assert auth_call_args[0][-1] == cert_content  # certificates parameter
+        
+        # Reset the mock to verify no additional calls during authentication
+        mock_load_certs.reset_mock()
+        
+        # Authentication should have already been called during initialization
+        # and should have used the preloaded certificates
+        mock_auth_instance.authenticate.assert_called_once()
+        
+        # Verify _load_certs was NOT called again (certificates reused)
+        mock_load_certs.assert_not_called()
