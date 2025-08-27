@@ -29,6 +29,7 @@ from netboxlabs.diode.sdk.version import version_semver
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
 _DEFAULT_STREAM = "latest"
+_DIODE_CERT_FILE_ENVVAR_NAME = "DIODE_CERT_FILE"
 _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
@@ -52,9 +53,10 @@ class DiodeClientInterface:
     pass
 
 
-def _load_certs() -> bytes:
-    """Loads cacert.pem."""
-    with open(certifi.where(), "rb") as f:
+def _load_certs(cert_file: str | None = None) -> bytes:
+    """Loads cacert.pem or custom certificate file."""
+    cert_path = cert_file or certifi.where()
+    with open(cert_path, "rb") as f:
         return f.read()
 
 
@@ -126,15 +128,21 @@ class DiodeClient(DiodeClientInterface):
         sentry_traces_sample_rate: float = 1.0,
         sentry_profiles_sample_rate: float = 1.0,
         max_auth_retries: int = 3,
+        cert_file: str | None = None,
     ):
         """Initiate a new client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
-        self._max_auth_retries = _get_optional_config_value(
-            _MAX_RETRIES_ENVVAR_NAME, max_auth_retries
+        self._max_auth_retries = int(_get_optional_config_value(
+            _MAX_RETRIES_ENVVAR_NAME, str(max_auth_retries)
+        ) or max_auth_retries)
+        self._cert_file = _get_optional_config_value(
+            _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
         )
         self._target, self._path, self._tls_verify = parse_target(target)
+        if self._cert_file:
+            self._tls_verify = True
         self._app_name = app_name
         self._app_version = app_version
         self._platform = platform.platform()
@@ -160,12 +168,12 @@ class DiodeClient(DiodeClientInterface):
             ),
         )
 
-        if self._tls_verify:
+        if self._tls_verify or self._cert_file:
             _LOGGER.debug("Setting up gRPC secure channel")
             self._channel = grpc.secure_channel(
                 self._target,
                 grpc.ssl_channel_credentials(
-                    root_certificates=_load_certs(),
+                    root_certificates=_load_certs(self._cert_file),
                 ),
                 options=channel_opts,
             )

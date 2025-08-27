@@ -24,6 +24,7 @@ pip install netboxlabs-diode-sdk
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_CERT_FILE` - Path to custom certificate file for TLS connections
 * `DIODE_DRY_RUN_OUTPUT_DIR` - Directory where `DiodeDryRunClient` will write JSON files
 
 ### Example
@@ -76,6 +77,28 @@ if __name__ == "__main__":
     main()
 
 ```
+
+### Using custom certificates
+
+For secure connections with custom certificates, you can specify a certificate file:
+
+```python
+# Using constructor parameter
+with DiodeClient(
+    target="grpcs://example.com",
+    app_name="my-test-app", 
+    app_version="0.0.1",
+    cert_file="/path/to/custom-cert.pem"
+) as client:
+    # ... your code here
+```
+
+Or using environment variable:
+```bash
+export DIODE_CERT_FILE=/path/to/custom-cert.pem
+```
+
+When a custom certificate file is provided, TLS verification is automatically enabled regardless of the target scheme.
 
 ### Dry run mode
 
