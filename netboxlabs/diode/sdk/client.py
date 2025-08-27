@@ -26,16 +26,15 @@ from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
 
-_MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
-_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
-_DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
+_DEFAULT_STREAM = "latest"
+_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
+_DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
 _DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
 _INGEST_SCOPE = "diode:ingest"
-_DEFAULT_STREAM = "latest"
 _LOGGER = logging.getLogger(__name__)
-
+_MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
 
 def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
     """Yield entities from a file with concatenated JSON messages."""
