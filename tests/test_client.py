@@ -952,7 +952,7 @@ def test_client_secure_channel_uses_custom_cert(mock_diode_authentication, tmp_p
     ):
         mock_load_certs.return_value = cert_content
 
-        client = DiodeClient(
+        _ = DiodeClient(
             target="grpcs://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
@@ -980,7 +980,7 @@ def test_client_without_cert_file_uses_default_certs(mock_diode_authentication):
     ):
         mock_load_certs.return_value = b"default cert content"
 
-        client = DiodeClient(
+        _ = DiodeClient(
             target="grpcs://localhost:8081",
             app_name="my-producer",
             app_version="0.0.1",
@@ -1003,8 +1003,8 @@ def test_client_without_cert_file_uses_default_certs(mock_diode_authentication):
 def test_should_verify_tls_with_different_schemes():
     """Test _should_verify_tls with different URL schemes."""
     from netboxlabs.diode.sdk.client import (
-        _should_verify_tls,
         _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME,
+        _should_verify_tls,
     )
 
     # Clear environment variable to avoid interference
@@ -1020,8 +1020,8 @@ def test_should_verify_tls_with_different_schemes():
 def test_should_verify_tls_with_skip_env_var():
     """Test _should_verify_tls with DIODE_SKIP_TLS_VERIFY environment variable."""
     from netboxlabs.diode.sdk.client import (
-        _should_verify_tls,
         _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME,
+        _should_verify_tls,
     )
 
     original_env = os.environ.get(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME)
