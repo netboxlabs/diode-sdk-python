@@ -24,6 +24,8 @@ pip install netboxlabs-diode-sdk
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_CERT_FILE` - Path to custom certificate file for TLS connections
+* `DIODE_SKIP_TLS_VERIFY` - Skip TLS verification (default: `false`)
 * `DIODE_DRY_RUN_OUTPUT_DIR` - Directory where `DiodeDryRunClient` will write JSON files
 
 ### Example
@@ -75,6 +77,36 @@ def main():
 if __name__ == "__main__":
     main()
 
+```
+
+### TLS verification and certificates
+
+TLS verification is controlled by the target URL scheme:
+- **Secure schemes** (`grpcs://`, `https://`): TLS verification enabled
+- **Insecure schemes** (`grpc://`, `http://`): TLS verification disabled
+
+```python
+# TLS verification enabled (uses system certificates)
+client = DiodeClient(target="grpcs://example.com", ...)
+
+# TLS verification disabled
+client = DiodeClient(target="grpc://example.com", ...)
+```
+
+#### Using custom certificates
+
+```python
+# Via constructor parameter
+client = DiodeClient(target="grpcs://example.com", cert_file="/path/to/cert.pem", ...)
+
+# Or via environment variable
+export DIODE_CERT_FILE=/path/to/cert.pem
+```
+
+#### Disabling TLS verification
+
+```bash
+export DIODE_SKIP_TLS_VERIFY=true
 ```
 
 ### Dry run mode

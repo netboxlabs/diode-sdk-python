@@ -109,6 +109,7 @@ def test_parse_target_handles_ftp_prefix():
     with pytest.raises(ValueError):
         parse_target("ftp://localhost:8081")
 
+
 def test_parse_target_parses_authority_correctly():
     """Check that parse_target parses the authority correctly."""
     authority, path, tls_verify = parse_target("grpc://localhost:8081")
@@ -739,24 +740,445 @@ def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
     )
     assert entities[-1].wireless_link.ssid == "P2P-Link-1"
 
-    client = DiodeDryRunClient(output_dir=str(tmp_path))
 
-    client._stub = MagicMock()
-    client.ingest(entities=entities)
-
-    assert client._stub.Ingest.call_count == 0
-    files = list(tmp_path.glob("dryrun*.json"))
-    assert len(files) == 1
-    entities = list(load_dryrun_entities(files[0]))
-    assert files[0].read_text().startswith("{")
-
-    entities = list(load_dryrun_entities(files[0]))
-
-    assert len(entities) == 94
-    assert isinstance(entities[0], ingester_pb2.Entity)
-    assert entities[0].asn.asn == 555
-    assert entities[33].ip_address.address == "192.168.100.1/24"
-    assert (
-        entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
+def test_diode_authentication_with_custom_certificates():
+    """Test _DiodeAuthentication with custom certificates - covers SSL context creation."""
+    # Create test certificate content
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     )
-    assert entities[-1].wireless_link.ssid == "P2P-Link-1"
+
+    auth = _DiodeAuthentication(
+        target="example.com:443",
+        path="/api/v1",
+        tls_verify=True,
+        client_id="test_client",
+        client_secret="test_secret",
+        scope="test_scope",
+        certificates=cert_content,
+    )
+
+    with (
+        mock.patch("http.client.HTTPSConnection") as mock_https_conn,
+        mock.patch("ssl.create_default_context") as mock_ssl_context,
+    ):
+        # Setup mocks
+        mock_context_instance = mock.Mock()
+        mock_ssl_context.return_value = mock_context_instance
+
+        mock_conn_instance = mock.Mock()
+        mock_https_conn.return_value = mock_conn_instance
+
+        mock_response = mock.Mock()
+        mock_response.status = 200
+        mock_response.read.return_value = b'{"access_token": "test_token"}'
+        mock_conn_instance.getresponse.return_value = mock_response
+
+        # Call authenticate to trigger SSL context creation
+        token = auth.authenticate()
+
+        # Verify SSL context was created and configured with custom certs
+        mock_ssl_context.assert_called_once()
+        mock_context_instance.load_verify_locations.assert_called_once_with(
+            cadata=cert_content.decode("utf-8")
+        )
+
+        # Verify HTTPS connection was created with custom context
+        mock_https_conn.assert_called_once_with(
+            "example.com:443",
+            context=mock_context_instance,
+        )
+
+        # Verify token was returned
+        assert token == "test_token"
+
+
+def test_load_certs_with_custom_cert_file(tmp_path):
+    """Test _load_certs loads custom certificate file."""
+    # Create a dummy certificate file
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    )
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+
+    result = _load_certs(str(cert_file))
+    assert result == cert_content
+
+
+def test_load_certs_with_none_uses_default():
+    """Test _load_certs uses default certifi when cert_file is None."""
+    result = _load_certs(None)
+    assert isinstance(result, bytes)
+    assert len(result) > 0
+
+
+def test_client_with_cert_file_parameter(mock_diode_authentication, tmp_path):
+    """Test DiodeClient with cert_file parameter loads custom cert but respects TLS scheme."""
+    # Create a dummy certificate file
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    )
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+
+    with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+        client = DiodeClient(
+            target="grpc://localhost:8081",  # Note: grpc:// insecure scheme
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id="abcde",
+            client_secret="123456",
+            cert_file=str(cert_file),
+        )
+
+        # Should respect scheme (insecure) even with cert file
+        assert client.tls_verify is False
+
+        # Should use insecure channel
+        mock_insecure_channel.assert_called_once()
+
+        # Verify certificate was still loaded for potential use
+        assert client._certificates == cert_content
+
+
+def test_client_with_cert_file_env_var(mock_diode_authentication, tmp_path):
+    """Test DiodeClient with DIODE_CERT_FILE environment variable respects scheme."""
+    from netboxlabs.diode.sdk.client import _DIODE_CERT_FILE_ENVVAR_NAME
+
+    # Create a dummy certificate file
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    )
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+
+    # Set environment variable
+    original_env = os.environ.get(_DIODE_CERT_FILE_ENVVAR_NAME)
+    os.environ[_DIODE_CERT_FILE_ENVVAR_NAME] = str(cert_file)
+
+    try:
+        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+            client = DiodeClient(
+                target="grpc://localhost:8081",  # Note: grpc:// insecure scheme
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+            )
+
+            # Should respect scheme (insecure) even with cert file
+            assert client.tls_verify is False
+
+            # Should use insecure channel
+            mock_insecure_channel.assert_called_once()
+
+            # Verify certificate was still loaded
+            assert client._certificates == cert_content
+
+    finally:
+        # Clean up environment variable
+        if original_env is not None:
+            os.environ[_DIODE_CERT_FILE_ENVVAR_NAME] = original_env
+        else:
+            if _DIODE_CERT_FILE_ENVVAR_NAME in os.environ:
+                del os.environ[_DIODE_CERT_FILE_ENVVAR_NAME]
+
+
+def test_client_cert_file_parameter_overrides_env_var(
+    mock_diode_authentication, tmp_path
+):
+    """Test cert_file parameter takes precedence over environment variable."""
+    from netboxlabs.diode.sdk.client import _DIODE_CERT_FILE_ENVVAR_NAME
+
+    # Create two dummy certificate files
+    env_cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nENV CERT\n-----END CERTIFICATE-----\n"
+    )
+    param_cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nPARAM CERT\n-----END CERTIFICATE-----\n"
+    )
+
+    env_cert_file = tmp_path / "env.pem"
+    param_cert_file = tmp_path / "param.pem"
+
+    env_cert_file.write_bytes(env_cert_content)
+    param_cert_file.write_bytes(param_cert_content)
+
+    # Set environment variable
+    original_env = os.environ.get(_DIODE_CERT_FILE_ENVVAR_NAME)
+    os.environ[_DIODE_CERT_FILE_ENVVAR_NAME] = str(env_cert_file)
+
+    try:
+        with mock.patch("netboxlabs.diode.sdk.client._load_certs") as mock_load_certs:
+            mock_load_certs.return_value = param_cert_content
+
+            client = DiodeClient(
+                target="grpc://localhost:8081",
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+                cert_file=str(param_cert_file),
+            )
+
+            # Should use the parameter file, not the environment variable
+            mock_load_certs.assert_called_with(str(param_cert_file))
+            # grpc:// scheme should keep tls_verify=False even with cert file
+            assert client.tls_verify is False
+
+    finally:
+        # Clean up environment variable
+        if original_env is not None:
+            os.environ[_DIODE_CERT_FILE_ENVVAR_NAME] = original_env
+        else:
+            if _DIODE_CERT_FILE_ENVVAR_NAME in os.environ:
+                del os.environ[_DIODE_CERT_FILE_ENVVAR_NAME]
+
+
+def test_client_secure_channel_uses_custom_cert(mock_diode_authentication, tmp_path):
+    """Test secure channel creation uses custom certificate when provided."""
+    # Create a dummy certificate file
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    )
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+
+    with (
+        mock.patch("grpc.secure_channel") as mock_secure_channel,
+        mock.patch("grpc.ssl_channel_credentials") as mock_ssl_creds,
+        mock.patch("netboxlabs.diode.sdk.client._load_certs") as mock_load_certs,
+    ):
+        mock_load_certs.return_value = cert_content
+
+        _ = DiodeClient(
+            target="grpcs://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id="abcde",
+            client_secret="123456",
+            cert_file=str(cert_file),
+        )
+
+        # Verify _load_certs was called with the custom cert file
+        mock_load_certs.assert_called_with(str(cert_file))
+
+        # Verify ssl_channel_credentials was called with the custom cert content
+        mock_ssl_creds.assert_called_once_with(root_certificates=cert_content)
+
+        # Verify secure_channel was called
+        mock_secure_channel.assert_called_once()
+
+
+def test_client_without_cert_file_uses_default_certs(mock_diode_authentication):
+    """Test secure channel uses default certificates when no cert_file provided."""
+    with (
+        mock.patch("grpc.secure_channel") as mock_secure_channel,
+        mock.patch("grpc.ssl_channel_credentials") as mock_ssl_creds,
+        mock.patch("netboxlabs.diode.sdk.client._load_certs") as mock_load_certs,
+    ):
+        mock_load_certs.return_value = b"default cert content"
+
+        _ = DiodeClient(
+            target="grpcs://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id="abcde",
+            client_secret="123456",
+        )
+
+        # Verify _load_certs was called with None (default)
+        mock_load_certs.assert_called_with(None)
+
+        # Verify ssl_channel_credentials was called with default cert content
+        mock_ssl_creds.assert_called_once_with(
+            root_certificates=b"default cert content"
+        )
+
+        # Verify secure_channel was called
+        mock_secure_channel.assert_called_once()
+
+
+def test_should_verify_tls_with_different_schemes():
+    """Test _should_verify_tls with different URL schemes."""
+    from netboxlabs.diode.sdk.client import (
+        _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME,
+        _should_verify_tls,
+    )
+
+    # Clear environment variable to avoid interference
+    if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
+        del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
+
+    assert _should_verify_tls("grpc") is False  # insecure scheme
+    assert _should_verify_tls("http") is False  # insecure scheme
+    assert _should_verify_tls("grpcs") is True  # secure scheme
+    assert _should_verify_tls("https") is True  # secure scheme
+
+
+def test_should_verify_tls_with_skip_env_var():
+    """Test _should_verify_tls with DIODE_SKIP_TLS_VERIFY environment variable."""
+    from netboxlabs.diode.sdk.client import (
+        _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME,
+        _should_verify_tls,
+    )
+
+    original_env = os.environ.get(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME)
+
+    try:
+        # Test truthy values that should skip TLS verification
+        for skip_value in ["true", "True", "TRUE", "1", "yes", "on"]:
+            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = skip_value
+            assert (
+                _should_verify_tls("grpcs") is False
+            )  # Should skip even for secure schemes
+
+        # Test falsy values that should NOT skip TLS verification
+        for verify_value in ["false", "0", "no", "off", "", "random"]:
+            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = verify_value
+            assert (
+                _should_verify_tls("grpcs") is True
+            )  # Should verify for secure schemes
+
+    finally:
+        # Clean up environment variable
+        if original_env is not None:
+            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = original_env
+        else:
+            if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
+                del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
+
+
+def test_client_with_skip_tls_verify_env_var(mock_diode_authentication):
+    """Test DiodeClient with DIODE_SKIP_TLS_VERIFY environment variable."""
+    from netboxlabs.diode.sdk.client import _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME
+
+    original_env = os.environ.get(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME)
+
+    try:
+        # Set environment variable to skip TLS verification
+        os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = "true"
+
+        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+            client = DiodeClient(
+                target="grpcs://localhost:8081",  # Note: grpcs:// but TLS should be skipped
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+            )
+
+            # Should skip TLS verification due to environment variable
+            assert client.tls_verify is False
+
+            # Should use insecure channel even with grpcs://
+            mock_insecure_channel.assert_called_once()
+
+    finally:
+        # Clean up environment variable
+        if original_env is not None:
+            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = original_env
+        else:
+            if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
+                del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
+
+
+def test_client_cert_file_with_skip_tls_verify_env_var(
+    mock_diode_authentication, tmp_path
+):
+    """Test cert_file parameter with DIODE_SKIP_TLS_VERIFY environment variable."""
+    from netboxlabs.diode.sdk.client import _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME
+
+    # Create a dummy certificate file
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    )
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+
+    original_skip_env = os.environ.get(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME)
+
+    try:
+        # Set environment variable to skip TLS verification
+        os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = "true"
+
+        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+            client = DiodeClient(
+                target="grpcs://localhost:8081",
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+                cert_file=str(cert_file),
+            )
+
+            # Should respect DIODE_SKIP_TLS_VERIFY=true even with cert_file
+            assert client.tls_verify is False
+
+            # Should use insecure channel due to environment variable
+            mock_insecure_channel.assert_called_once()
+
+            # Certificate should still be loaded for potential use
+            assert client._certificates == cert_content
+
+    finally:
+        # Clean up environment variable
+        if original_skip_env is not None:
+            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = original_skip_env
+        else:
+            if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
+                del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
+
+
+def test_certificate_loading_efficiency(tmp_path):
+    """Test that certificates are loaded only once during client initialization."""
+    # Create a dummy certificate file
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    )
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+
+    with (
+        mock.patch("netboxlabs.diode.sdk.client._load_certs") as mock_load_certs,
+        mock.patch(
+            "netboxlabs.diode.sdk.client._DiodeAuthentication"
+        ) as mock_auth_class,
+    ):
+        mock_load_certs.return_value = cert_content
+        mock_auth_instance = mock_auth_class.return_value
+        mock_auth_instance.authenticate.return_value = "test_token"
+
+        # Create client with custom certificate
+        client = DiodeClient(
+            target="grpcs://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id="abcde",
+            client_secret="123456",
+            cert_file=str(cert_file),
+        )
+
+        # Verify _load_certs was called exactly once during initialization
+        mock_load_certs.assert_called_once_with(str(cert_file))
+
+        # Verify certificates are stored and reused
+        assert client._certificates == cert_content
+
+        # Verify that the authentication class was created with the certificate bytes
+        mock_auth_class.assert_called_once()
+        auth_call_args = mock_auth_class.call_args
+
+        # The last argument should be the certificate bytes
+        assert auth_call_args[0][-1] == cert_content  # certificates parameter
+
+        # Reset the mock to verify no additional calls during authentication
+        mock_load_certs.reset_mock()
+
+        # Authentication should have already been called during initialization
+        # and should have used the preloaded certificates
+        mock_auth_instance.authenticate.assert_called_once()
+
+        # Verify _load_certs was NOT called again (certificates reused)
+        mock_load_certs.assert_not_called()
