@@ -78,27 +78,35 @@ if __name__ == "__main__":
 
 ```
 
-### Using custom certificates
+### TLS verification and certificates
 
-For secure connections with custom certificates, you can specify a certificate file:
+TLS verification is controlled by the target URL scheme:
+- **Secure schemes** (`grpcs://`, `https://`): TLS verification enabled
+- **Insecure schemes** (`grpc://`, `http://`): TLS verification disabled
 
 ```python
-# Using constructor parameter
-with DiodeClient(
-    target="grpcs://example.com",
-    app_name="my-test-app", 
-    app_version="0.0.1",
-    cert_file="/path/to/custom-cert.pem"
-) as client:
-    # ... your code here
+# TLS verification enabled (uses system certificates)
+client = DiodeClient(target="grpcs://example.com", ...)
+
+# TLS verification disabled
+client = DiodeClient(target="grpc://example.com", ...)
 ```
 
-Or using environment variable:
+#### Using custom certificates
+
+```python
+# Via constructor parameter
+client = DiodeClient(target="grpcs://example.com", cert_file="/path/to/cert.pem", ...)
+
+# Or via environment variable
+export DIODE_CERT_FILE=/path/to/cert.pem
+```
+
+#### Disabling TLS verification
+
 ```bash
-export DIODE_CERT_FILE=/path/to/custom-cert.pem
+export DIODE_SKIP_TLS_VERIFY=true
 ```
-
-When a custom certificate file is provided, TLS verification is automatically enabled regardless of the target scheme.
 
 ### Dry run mode
 
