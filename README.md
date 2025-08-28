@@ -25,6 +25,7 @@ pip install netboxlabs-diode-sdk
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
 * `DIODE_CERT_FILE` - Path to custom certificate file for TLS connections
+* `DIODE_SKIP_TLS_VERIFY` - Skip TLS verification (default: `false`)
 * `DIODE_DRY_RUN_OUTPUT_DIR` - Directory where `DiodeDryRunClient` will write JSON files
 
 ### Example
