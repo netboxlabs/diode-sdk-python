@@ -32,6 +32,7 @@ _DEFAULT_STREAM = "latest"
 _DIODE_CERT_FILE_ENVVAR_NAME = "DIODE_CERT_FILE"
 _DIODE_SDK_LOG_LEVEL_ENVVAR_NAME = "DIODE_SDK_LOG_LEVEL"
 _DIODE_SENTRY_DSN_ENVVAR_NAME = "DIODE_SENTRY_DSN"
+_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME = "DIODE_SKIP_TLS_VERIFY"
 _DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
 _INGEST_SCOPE = "diode:ingest"
 _LOGGER = logging.getLogger(__name__)
@@ -60,6 +61,19 @@ def _load_certs(cert_file: str | None = None) -> bytes:
         return f.read()
 
 
+def _should_verify_tls(scheme: str) -> bool:
+    """Determine if TLS verification should be enabled based on scheme and environment variable."""
+    # Check if scheme is insecure
+    insecure_scheme = scheme in ["grpc", "http"]
+
+    # Check environment variable
+    skip_tls_env = os.getenv(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME, "").lower()
+    skip_tls_from_env = skip_tls_env in ["true", "1", "yes", "on"]
+
+    # TLS verification is enabled by default, disabled only for insecure schemes or env var
+    return not (insecure_scheme or skip_tls_from_env)
+
+
 def parse_target(target: str) -> tuple[str, str, bool]:
     """Parse the target into authority, path and tls_verify."""
     parsed_target = urlparse(target)
@@ -67,7 +81,8 @@ def parse_target(target: str) -> tuple[str, str, bool]:
     if parsed_target.scheme not in ["grpc", "grpcs", "http", "https"]:
         raise ValueError("target should start with grpc://, grpcs://, http:// or https://")
 
-    tls_verify = parsed_target.scheme in ["grpcs", "https"]
+    # Determine if TLS verification should be enabled
+    tls_verify = _should_verify_tls(parsed_target.scheme)
 
     authority = parsed_target.netloc
 
@@ -141,8 +156,6 @@ class DiodeClient(DiodeClientInterface):
             _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
         )
         self._target, self._path, self._tls_verify = parse_target(target)
-        if self._cert_file:
-            self._tls_verify = True
 
         # Load certificates once if needed
         self._certificates = _load_certs(self._cert_file) if (self._tls_verify or self._cert_file) else None
@@ -171,7 +184,7 @@ class DiodeClient(DiodeClientInterface):
             ),
         )
 
-        if self._tls_verify or self._cert_file:
+        if self._tls_verify and self._certificates:
             _LOGGER.debug("Setting up gRPC secure channel")
             self._channel = grpc.secure_channel(
                 self._target,
@@ -414,14 +427,9 @@ class _DiodeAuthentication:
 
     def authenticate(self) -> str:
         """Request an OAuth2 token using client credentials and return it."""
-        if self._tls_verify or self._certificates:
-            # Create SSL context with custom certificates if provided
-            if self._certificates:
-                context = ssl.create_default_context()
-                context.load_verify_locations(cadata=self._certificates.decode('utf-8'))
-            else:
-                # Use default context for standard HTTPS with CA verification
-                context = None
+        if self._tls_verify and self._certificates:
+            context = ssl.create_default_context()
+            context.load_verify_locations(cadata=self._certificates.decode('utf-8'))
             conn = http.client.HTTPSConnection(
                 self._target,
                 context=context,
