@@ -2,7 +2,7 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Timestamp: 2025-07-23 01:46:43Z
+# Timestamp: 2025-10-02 12:39:10Z
 #
 # ruff: noqa: C901
 
@@ -3591,11 +3591,14 @@ class Platform:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        parent: str | Platform | pb.Platform | None = None,
+        comments: str | None = None,
     ) -> pb.Platform:
         """Create a new Platform."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        parent = convert_to_protobuf(parent, pb.Platform)
         return pb.Platform(
             name=name,
             slug=slug,
@@ -3603,6 +3606,8 @@ class Platform:
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            parent=parent,
+            comments=comments,
         )
 
 
@@ -4013,6 +4018,7 @@ class RackReservation:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        status: str | None = None,
     ) -> pb.RackReservation:
         """Create a new RackReservation."""
         rack = convert_to_protobuf(rack, pb.Rack)
@@ -4027,6 +4033,7 @@ class RackReservation:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            status=status,
         )
 
 
@@ -5408,8 +5415,8 @@ class CustomField:
         default: str | None = None,
         related_object_filter: str | None = None,
         weight: int | None = None,
-        validation_minimum: int | None = None,
-        validation_maximum: int | None = None,
+        validation_minimum: float | None = None,
+        validation_maximum: float | None = None,
         validation_regex: str | None = None,
         choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
         comments: str | None = None,
