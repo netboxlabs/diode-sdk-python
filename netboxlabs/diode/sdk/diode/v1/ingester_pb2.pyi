@@ -2563,7 +2563,7 @@ class ModuleType(_message.Message):
     def __init__(self, manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., model: _Optional[str] = ..., part_number: _Optional[str] = ..., airflow: _Optional[str] = ..., weight: _Optional[float] = ..., weight_unit: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., profile: _Optional[_Union[ModuleTypeProfile, _Mapping]] = ..., attributes: _Optional[str] = ...) -> None: ...
 
 class Platform(_message.Message):
-    __slots__ = ("name", "slug", "manufacturer", "description", "tags", "custom_fields")
+    __slots__ = ("name", "slug", "manufacturer", "description", "tags", "custom_fields", "parent", "comments")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2577,13 +2577,17 @@ class Platform(_message.Message):
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    PARENT_FIELD_NUMBER: _ClassVar[int]
+    COMMENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     manufacturer: Manufacturer
     description: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    parent: Platform
+    comments: str
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., manufacturer: _Optional[_Union[Manufacturer, _Mapping]] = ..., description: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., parent: _Optional[_Union[Platform, _Mapping]] = ..., comments: _Optional[str] = ...) -> None: ...
 
 class PowerFeed(_message.Message):
     __slots__ = ("power_panel", "rack", "name", "status", "type", "supply", "phase", "voltage", "amperage", "max_utilization", "mark_connected", "description", "tenant", "comments", "tags", "custom_fields")
@@ -2934,7 +2938,7 @@ class Rack(_message.Message):
     def __init__(self, name: _Optional[str] = ..., facility_id: _Optional[str] = ..., site: _Optional[_Union[Site, _Mapping]] = ..., location: _Optional[_Union[Location, _Mapping]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., status: _Optional[str] = ..., role: _Optional[_Union[RackRole, _Mapping]] = ..., serial: _Optional[str] = ..., asset_tag: _Optional[str] = ..., rack_type: _Optional[_Union[RackType, _Mapping]] = ..., form_factor: _Optional[str] = ..., width: _Optional[int] = ..., u_height: _Optional[int] = ..., starting_unit: _Optional[int] = ..., weight: _Optional[float] = ..., max_weight: _Optional[int] = ..., weight_unit: _Optional[str] = ..., desc_units: bool = ..., outer_width: _Optional[int] = ..., outer_depth: _Optional[int] = ..., outer_unit: _Optional[str] = ..., mounting_depth: _Optional[int] = ..., airflow: _Optional[str] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., outer_height: _Optional[int] = ...) -> None: ...
 
 class RackReservation(_message.Message):
-    __slots__ = ("rack", "units", "tenant", "description", "comments", "tags", "custom_fields")
+    __slots__ = ("rack", "units", "tenant", "description", "comments", "tags", "custom_fields", "status")
     class CustomFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -2949,6 +2953,7 @@ class RackReservation(_message.Message):
     COMMENTS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
     rack: Rack
     units: _containers.RepeatedScalarFieldContainer[int]
     tenant: Tenant
@@ -2956,7 +2961,8 @@ class RackReservation(_message.Message):
     comments: str
     tags: _containers.RepeatedCompositeFieldContainer[Tag]
     custom_fields: _containers.MessageMap[str, CustomFieldValue]
-    def __init__(self, rack: _Optional[_Union[Rack, _Mapping]] = ..., units: _Optional[_Iterable[int]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ...) -> None: ...
+    status: str
+    def __init__(self, rack: _Optional[_Union[Rack, _Mapping]] = ..., units: _Optional[_Iterable[int]] = ..., tenant: _Optional[_Union[Tenant, _Mapping]] = ..., description: _Optional[str] = ..., comments: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[Tag, _Mapping]]] = ..., custom_fields: _Optional[_Mapping[str, CustomFieldValue]] = ..., status: _Optional[str] = ...) -> None: ...
 
 class RackRole(_message.Message):
     __slots__ = ("name", "slug", "color", "description", "tags", "custom_fields")
@@ -4092,13 +4098,13 @@ class CustomField(_message.Message):
     default: str
     related_object_filter: str
     weight: int
-    validation_minimum: int
-    validation_maximum: int
+    validation_minimum: float
+    validation_maximum: float
     validation_regex: str
     choice_set: CustomFieldChoiceSet
     comments: str
     object_types: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, type: _Optional[str] = ..., related_object_type: _Optional[str] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., group_name: _Optional[str] = ..., description: _Optional[str] = ..., required: bool = ..., unique: bool = ..., search_weight: _Optional[int] = ..., filter_logic: _Optional[str] = ..., ui_visible: _Optional[str] = ..., ui_editable: _Optional[str] = ..., is_cloneable: bool = ..., default: _Optional[str] = ..., related_object_filter: _Optional[str] = ..., weight: _Optional[int] = ..., validation_minimum: _Optional[int] = ..., validation_maximum: _Optional[int] = ..., validation_regex: _Optional[str] = ..., choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., comments: _Optional[str] = ..., object_types: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(self, type: _Optional[str] = ..., related_object_type: _Optional[str] = ..., name: _Optional[str] = ..., label: _Optional[str] = ..., group_name: _Optional[str] = ..., description: _Optional[str] = ..., required: bool = ..., unique: bool = ..., search_weight: _Optional[int] = ..., filter_logic: _Optional[str] = ..., ui_visible: _Optional[str] = ..., ui_editable: _Optional[str] = ..., is_cloneable: bool = ..., default: _Optional[str] = ..., related_object_filter: _Optional[str] = ..., weight: _Optional[int] = ..., validation_minimum: _Optional[float] = ..., validation_maximum: _Optional[float] = ..., validation_regex: _Optional[str] = ..., choice_set: _Optional[_Union[CustomFieldChoiceSet, _Mapping]] = ..., comments: _Optional[str] = ..., object_types: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class CustomFieldChoiceSet(_message.Message):
     __slots__ = ("name", "description", "base_choices", "order_alphabetically", "extra_choices")
