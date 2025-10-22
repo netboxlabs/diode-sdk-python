@@ -56,6 +56,7 @@ class QueueClientError(BaseError):
         message: str,
         response_body: str | None = None,
     ):
+        """Initialize QueueClientError."""
         self.status_code = status_code
         self.message = message
         self.response_body = response_body
