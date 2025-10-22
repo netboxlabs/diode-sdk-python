@@ -149,6 +149,24 @@ diode-replay-dryrun \
   my_app_92722156890707.json
 ```
 
+### Queue client
+
+`QueueClient` serializes ingestion payloads to JSON and posts them to an orb-agent endpoint via HTTP(S). This is useful when the orb-agent (or another intermediary) exposes a lightweight transport instead of gRPC.
+
+```python
+from netboxlabs.diode.sdk import Entity, QueueClient
+
+with QueueClient(
+    target="http://localhost:9000/queue",
+    app_name="my-producer",
+    app_version="0.0.1",
+    queue="devices",
+) as client:
+    client.ingest([Entity(site="Site1")])
+```
+
+The request body mirrors the gRPC ingest payload, augmented with SDK and producer metadata so orb-agent can enrich and forward the message. The client raises `QueueClientError` when the endpoint returns a non-2xx status. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables.
+
 ## Supported entities (object types)
 
 * ASN

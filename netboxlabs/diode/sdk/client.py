@@ -19,10 +19,14 @@ from urllib.parse import urlencode, urlparse
 import certifi
 import grpc
 import sentry_sdk
-from google.protobuf.json_format import MessageToJson, ParseDict
+from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
 
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
-from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
+from netboxlabs.diode.sdk.exceptions import (
+    DiodeClientError,
+    DiodeConfigError,
+    QueueClientError,
+)
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
 
@@ -404,6 +408,216 @@ class DiodeDryRunClient(DiodeClientInterface):
         else:
             print(output, file=sys.stdout)
         return ingester_pb2.IngestResponse()
+
+
+class QueueClient(DiodeClientInterface):
+    """Client that forwards ingestion payloads to orb-agent via HTTP."""
+
+    _name = "diode-sdk-python-queue"
+    _version = version_semver()
+
+    def __init__(
+        self,
+        target: str,
+        app_name: str,
+        app_version: str,
+        *,
+        queue: str | None = None,
+        timeout: float = 10.0,
+        headers: dict[str, str] | None = None,
+        cert_file: str | None = None,
+    ):
+        """Initiate a new queue client."""
+        log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
+        logging.basicConfig(level=log_level)
+
+        parsed_target = urlparse(target)
+        if parsed_target.scheme not in ["http", "https"]:
+            raise ValueError("QueueClient target should start with http:// or https://")
+        if not parsed_target.hostname:
+            raise ValueError("QueueClient target must include a hostname")
+
+        self._raw_target = target
+        self._app_name = app_name
+        self._app_version = app_version
+        self._scheme = parsed_target.scheme
+        self._host = parsed_target.hostname
+        self._port = parsed_target.port or (443 if self._scheme == "https" else 80)
+        path = parsed_target.path or ""
+        if path and not path.startswith("/"):
+            path = f"/{path}"
+        if not path:
+            path = "/ingest"
+        if parsed_target.query:
+            path = f"{path}?{parsed_target.query}"
+        self._path = path
+        self._queue = queue
+        self._timeout = timeout
+        self._platform = platform.platform()
+        self._python_version = platform.python_version()
+        self._tls_verify = _should_verify_tls(parsed_target.scheme)
+        self._cert_file = _get_optional_config_value(
+            _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
+        )
+        self._certificates = (
+            _load_certs(self._cert_file)
+            if self._cert_file and self._tls_verify
+            else None
+        )
+
+        default_headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
+        }
+        if headers:
+            default_headers.update(headers)
+        self._headers = default_headers
+
+    @property
+    def name(self) -> str:
+        """Retrieve the client name."""
+        return self._name
+
+    @property
+    def version(self) -> str:
+        """Retrieve the client version."""
+        return self._version
+
+    @property
+    def app_name(self) -> str:
+        """Retrieve the producer application name."""
+        return self._app_name
+
+    @property
+    def app_version(self) -> str:
+        """Retrieve the producer application version."""
+        return self._app_version
+
+    @property
+    def queue(self) -> str | None:
+        """Retrieve the target queue name."""
+        return self._queue
+
+    @property
+    def timeout(self) -> float:
+        """Retrieve the HTTP timeout."""
+        return self._timeout
+
+    @property
+    def target(self) -> str:
+        """Retrieve the original target."""
+        return self._raw_target
+
+    def __enter__(self):
+        """Enter the runtime context."""
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        """Exit the runtime context."""
+        self.close()
+
+    def close(self):
+        """Queue client maintains no persistent connections."""
+
+    def ingest(
+        self,
+        entities: Iterable[Entity | ingester_pb2.Entity | None],
+        stream: str | None = _DEFAULT_STREAM,
+    ) -> ingester_pb2.IngestResponse:
+        """Serialize entities and enqueue them via HTTP."""
+        payload = self._serialize_payload(entities, stream or _DEFAULT_STREAM)
+        status_code, response_body = self._send(
+            json.dumps(payload, separators=(",", ":"))
+        )
+        if status_code >= 400:
+            text_body = (
+                response_body.decode("utf-8", errors="ignore") if response_body else None
+            )
+            raise QueueClientError(status_code, "Queue request failed", text_body)
+
+        ingest_response = ingester_pb2.IngestResponse()
+        if response_body:
+            decoded_body = response_body.decode("utf-8", errors="ignore")
+            try:
+                response_data = json.loads(decoded_body)
+            except json.JSONDecodeError:
+                return ingest_response
+            try:
+                ParseDict(response_data, ingest_response)
+            except ValueError:
+                _LOGGER.debug(
+                    "Unable to parse queue response body into IngestResponse"
+                )
+        return ingest_response
+
+    def _serialize_payload(
+        self,
+        entities: Iterable[Entity | ingester_pb2.Entity | None],
+        stream: str,
+    ) -> dict:
+        """Serialize the ingestion payload for orb-agent."""
+        serialized_entities: list[dict] = []
+        for entity in entities:
+            if entity is None:
+                continue
+            if not isinstance(entity, ingester_pb2.Entity):
+                raise TypeError("QueueClient expects ingester_pb2.Entity instances")
+            serialized_entities.append(
+                MessageToDict(entity, preserving_proto_field_name=True)
+            )
+
+        payload: dict[str, object] = {
+            "id": str(uuid.uuid4()),
+            "stream": stream,
+            "sdk": {"name": self._name, "version": self._version},
+            "producer": {
+                "app_name": self._app_name,
+                "app_version": self._app_version,
+            },
+            "metadata": {
+                "platform": self._platform,
+                "python_version": self._python_version,
+            },
+            "entities": serialized_entities,
+        }
+        if self._queue:
+            payload["queue"] = self._queue
+        return payload
+
+    def _send(self, payload: str) -> tuple[int, bytes]:
+        """Send the serialized payload to orb-agent."""
+        if self._scheme == "https":
+            context = self._build_ssl_context()
+            connection = http.client.HTTPSConnection(
+                self._host,
+                self._port,
+                timeout=self._timeout,
+                context=context,
+            )
+        else:
+            connection = http.client.HTTPConnection(
+                self._host,
+                self._port,
+                timeout=self._timeout,
+            )
+
+        try:
+            connection.request("POST", self._path, payload, headers=self._headers)
+            response = connection.getresponse()
+            body = response.read()
+            return response.status, body
+        finally:
+            connection.close()
+
+    def _build_ssl_context(self) -> ssl.SSLContext:
+        """Return the SSL context honouring TLS verification settings."""
+        if not self._tls_verify:
+            return ssl._create_unverified_context()
+        context = ssl.create_default_context()
+        if self._certificates:
+            context.load_verify_locations(cadata=self._certificates.decode("utf-8"))
+        return context
 
 
 class _DiodeAuthentication:

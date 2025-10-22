@@ -15,6 +15,7 @@ from netboxlabs.diode.sdk.client import (
     _DIODE_SENTRY_DSN_ENVVAR_NAME,
     DiodeClient,
     DiodeDryRunClient,
+    QueueClient,
     DiodeMethodClientInterceptor,
     _ClientCallDetails,
     _DiodeAuthentication,
@@ -24,7 +25,11 @@ from netboxlabs.diode.sdk.client import (
     parse_target,
 )
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2
-from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
+from netboxlabs.diode.sdk.exceptions import (
+    DiodeClientError,
+    DiodeConfigError,
+    QueueClientError,
+)
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
 
@@ -739,6 +744,91 @@ def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
         entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
     )
     assert entities[-1].wireless_link.ssid == "P2P-Link-1"
+
+
+def test_queue_client_posts_serialized_entities():
+    """Ensure QueueClient serializes entities and posts them to orb-agent."""
+    with patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_response = mock.Mock()
+        mock_response.status = 202
+        mock_response.read.return_value = b'{"errors": []}'
+        mock_conn_instance.getresponse.return_value = mock_response
+
+        client = QueueClient(
+            target="http://orb-agent:8080/queue",
+            app_name="orb-producer",
+            app_version="1.2.3",
+            queue="orb",
+            timeout=2.0,
+        )
+
+        response = client.ingest(
+            entities=[Entity(site="Site1"), Entity(device="Device1")]
+        )
+
+        args, kwargs = mock_conn_instance.request.call_args
+        assert args[0] == "POST"
+        assert args[1] == "/queue"
+        payload = json.loads(args[2])
+        assert payload["queue"] == "orb"
+        assert payload["stream"] == "latest"
+        assert len(payload["entities"]) == 2
+        assert payload["entities"][0]["site"]["name"] == "Site1"
+        assert kwargs["headers"]["Content-Type"] == "application/json"
+        assert len(response.errors) == 0
+
+
+def test_queue_client_raises_on_http_error():
+    """Ensure QueueClient raises a QueueClientError on HTTP failure."""
+    with patch("http.client.HTTPConnection") as mock_http_conn:
+        mock_conn_instance = mock_http_conn.return_value
+        mock_response = mock.Mock()
+        mock_response.status = 500
+        mock_response.read.return_value = b'{"detail": "failed"}'
+        mock_conn_instance.getresponse.return_value = mock_response
+
+        client = QueueClient(
+            target="http://orb-agent:8080/queue",
+            app_name="orb-producer",
+            app_version="1.2.3",
+        )
+
+        with pytest.raises(QueueClientError) as excinfo:
+            client.ingest(entities=[Entity(site="Site1")])
+
+        assert excinfo.value.status_code == 500
+        assert "Queue request failed" in str(excinfo.value)
+
+
+def test_queue_client_https_uses_ssl_context():
+    """Ensure QueueClient configures SSL context for HTTPS targets."""
+    with (
+        patch("http.client.HTTPSConnection") as mock_https_conn,
+        patch("ssl.create_default_context") as mock_default_context,
+    ):
+        context_instance = mock.Mock()
+        mock_default_context.return_value = context_instance
+
+        mock_conn_instance = mock_https_conn.return_value
+        mock_response = mock.Mock()
+        mock_response.status = 200
+        mock_response.read.return_value = b""
+        mock_conn_instance.getresponse.return_value = mock_response
+
+        client = QueueClient(
+            target="https://orb-agent.local/queue",
+            app_name="orb-producer",
+            app_version="1.2.3",
+        )
+        client.ingest(entities=[Entity(site="Site1")])
+
+        mock_default_context.assert_called_once()
+        args, kwargs = mock_https_conn.call_args
+        assert args[0] == "orb-agent.local"
+        assert kwargs["context"] is context_instance
+        request_args, _ = mock_conn_instance.request.call_args
+        assert request_args[1] == "/queue"
 
 
 def test_diode_authentication_with_custom_certificates():

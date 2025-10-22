@@ -45,3 +45,29 @@ class DiodeClientError(RpcError):
     def __repr__(self):
         """Return string representation."""
         return f"<DiodeClientError status code: {self._status_code}, details: {self._details}>"
+
+
+class QueueClientError(BaseError):
+    """Raised when the queue client fails to enqueue a payload."""
+
+    def __init__(
+        self,
+        status_code: int,
+        message: str,
+        response_body: str | None = None,
+    ):
+        self.status_code = status_code
+        self.message = message
+        self.response_body = response_body
+        detail = message
+        if response_body:
+            detail = f"{message}: {response_body}"
+        super().__init__(f"{status_code} {detail}")
+
+    def __repr__(self):
+        """Return string representation."""
+        body = f", response_body={self.response_body!r}" if self.response_body else ""
+        return (
+            f"<QueueClientError status_code={self.status_code}, "
+            f"message={self.message!r}{body}>"
+        )
