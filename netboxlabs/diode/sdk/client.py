@@ -20,12 +20,15 @@ import certifi
 import grpc
 import sentry_sdk
 from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
+from opentelemetry.proto.collector.logs.v1 import logs_service_pb2, logs_service_pb2_grpc
+from opentelemetry.proto.common.v1 import common_pb2
+from opentelemetry.proto.logs.v1 import logs_pb2
 
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import (
     DiodeClientError,
     DiodeConfigError,
-    QueueClientError,
+    OtlpClientError,
 )
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
@@ -410,10 +413,10 @@ class DiodeDryRunClient(DiodeClientInterface):
         return ingester_pb2.IngestResponse()
 
 
-class QueueClient(DiodeClientInterface):
-    """Client that forwards ingestion payloads to orb-agent via HTTP."""
+class OtlpClient(DiodeClientInterface):
+    """Client that exports ingestion entities as OTLP logs."""
 
-    _name = "diode-sdk-python-queue"
+    _name = "diode-sdk-python-otlp"
     _version = version_semver()
 
     def __init__(
@@ -422,57 +425,73 @@ class QueueClient(DiodeClientInterface):
         app_name: str,
         app_version: str,
         *,
-        queue: str | None = None,
         timeout: float = 10.0,
-        headers: dict[str, str] | None = None,
+        metadata: dict[str, str] | Iterable[tuple[str, str]] | None = None,
         cert_file: str | None = None,
     ):
-        """Initiate a new queue client."""
+        """Initiate a new OTLP client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
-        parsed_target = urlparse(target)
-        if parsed_target.scheme not in ["http", "https"]:
-            raise ValueError("QueueClient target should start with http:// or https://")
-        if not parsed_target.hostname:
-            raise ValueError("QueueClient target must include a hostname")
-
-        self._raw_target = target
         self._app_name = app_name
         self._app_version = app_version
-        self._scheme = parsed_target.scheme
-        self._host = parsed_target.hostname
-        self._port = parsed_target.port or (443 if self._scheme == "https" else 80)
-        path = parsed_target.path or ""
-        if path and not path.startswith("/"):
-            path = f"/{path}"
-        if not path:
-            path = "/ingest"
-        if parsed_target.query:
-            path = f"{path}?{parsed_target.query}"
-        self._path = path
-        self._queue = queue
-        self._timeout = timeout
         self._platform = platform.platform()
         self._python_version = platform.python_version()
-        self._tls_verify = _should_verify_tls(parsed_target.scheme)
+        self._timeout = timeout
+
+        self._target, self._path, self._tls_verify = parse_target(target)
         self._cert_file = _get_optional_config_value(
             _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
         )
         self._certificates = (
             _load_certs(self._cert_file)
-            if self._cert_file and self._tls_verify
+            if (self._tls_verify or self._cert_file)
             else None
         )
 
-        default_headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "User-Agent": f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
-        }
-        if headers:
-            default_headers.update(headers)
-        self._headers = default_headers
+        channel_opts = (
+            (
+                "grpc.primary_user_agent",
+                f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
+            ),
+        )
+
+        if self._tls_verify:
+            credentials = (
+                grpc.ssl_channel_credentials(root_certificates=self._certificates)
+                if self._certificates
+                else grpc.ssl_channel_credentials()
+            )
+            base_channel = grpc.secure_channel(
+                self._target,
+                credentials,
+                options=channel_opts,
+            )
+        else:
+            base_channel = grpc.insecure_channel(
+                target=self._target,
+                options=channel_opts,
+            )
+
+        self._base_channel = base_channel
+        channel = base_channel
+        if self._path:
+            interceptor = DiodeMethodClientInterceptor(subpath=self._path)
+            channel = grpc.intercept_channel(base_channel, interceptor)
+
+        self._channel = channel
+        self._stub = logs_service_pb2_grpc.LogsServiceStub(channel)
+        self._metadata = self._prepare_metadata(metadata)
+
+    @staticmethod
+    def _prepare_metadata(
+        metadata: dict[str, str] | Iterable[tuple[str, str]] | None,
+    ) -> tuple[tuple[str, str], ...] | None:
+        if metadata is None:
+            return None
+        if isinstance(metadata, dict):
+            return tuple(metadata.items())
+        return tuple(metadata)
 
     @property
     def name(self) -> str:
@@ -495,19 +514,14 @@ class QueueClient(DiodeClientInterface):
         return self._app_version
 
     @property
-    def queue(self) -> str | None:
-        """Retrieve the target queue name."""
-        return self._queue
-
-    @property
     def timeout(self) -> float:
-        """Retrieve the HTTP timeout."""
+        """Retrieve the export timeout."""
         return self._timeout
 
     @property
     def target(self) -> str:
-        """Retrieve the original target."""
-        return self._raw_target
+        """Retrieve the export target."""
+        return self._target
 
     def __enter__(self):
         """Enter the runtime context."""
@@ -518,106 +532,114 @@ class QueueClient(DiodeClientInterface):
         self.close()
 
     def close(self):
-        """Queue client maintains no persistent connections."""
+        """Close the underlying channel."""
+        if getattr(self, "_base_channel", None):
+            self._base_channel.close()
 
     def ingest(
         self,
         entities: Iterable[Entity | ingester_pb2.Entity | None],
         stream: str | None = _DEFAULT_STREAM,
     ) -> ingester_pb2.IngestResponse:
-        """Serialize entities and enqueue them via HTTP."""
-        payload = self._serialize_payload(entities, stream or _DEFAULT_STREAM)
-        status_code, response_body = self._send(
-            json.dumps(payload, separators=(",", ":"))
-        )
-        if status_code >= 400:
-            text_body = (
-                response_body.decode("utf-8", errors="ignore") if response_body else None
+        """Export entities as OTLP logs."""
+        stream = stream or _DEFAULT_STREAM
+        log_records = [
+            self._entity_to_log_record(entity, stream)
+            for entity in self._normalize_entities(entities)
+        ]
+
+        if not log_records:
+            return ingester_pb2.IngestResponse()
+
+        request = self._build_export_request(log_records)
+
+        try:
+            self._stub.Export(
+                request,
+                timeout=self._timeout,
+                metadata=self._metadata,
             )
-            raise QueueClientError(status_code, "Queue request failed", text_body)
+        except grpc.RpcError as err:
+            raise OtlpClientError(err) from err
 
-        ingest_response = ingester_pb2.IngestResponse()
-        if response_body:
-            decoded_body = response_body.decode("utf-8", errors="ignore")
-            try:
-                response_data = json.loads(decoded_body)
-            except json.JSONDecodeError:
-                return ingest_response
-            try:
-                ParseDict(response_data, ingest_response)
-            except ValueError:
-                _LOGGER.debug(
-                    "Unable to parse queue response body into IngestResponse"
-                )
-        return ingest_response
+        return ingester_pb2.IngestResponse()
 
-    def _serialize_payload(
-        self,
-        entities: Iterable[Entity | ingester_pb2.Entity | None],
-        stream: str,
-    ) -> dict:
-        """Serialize the ingestion payload for orb-agent."""
-        serialized_entities: list[dict] = []
+    def _normalize_entities(
+        self, entities: Iterable[Entity | ingester_pb2.Entity | None]
+    ) -> list[ingester_pb2.Entity]:
+        normalized: list[ingester_pb2.Entity] = []
         for entity in entities:
             if entity is None:
                 continue
             if not isinstance(entity, ingester_pb2.Entity):
-                raise TypeError("QueueClient expects ingester_pb2.Entity instances")
-            serialized_entities.append(
-                MessageToDict(entity, preserving_proto_field_name=True)
+                raise TypeError("OtlpClient expects ingester_pb2.Entity instances")
+            normalized.append(entity)
+        return normalized
+
+    def _build_export_request(
+        self, log_records: list[logs_pb2.LogRecord]
+    ) -> logs_service_pb2.ExportLogsServiceRequest:
+        resource_logs = logs_pb2.ResourceLogs()
+        resource_logs.resource.attributes.extend(self._resource_attributes())
+
+        scope_logs = resource_logs.scope_logs.add()
+        scope_logs.scope.CopyFrom(
+            common_pb2.InstrumentationScope(
+                name=self._name,
+                version=self._version,
             )
+        )
+        scope_logs.log_records.extend(log_records)
 
-        payload: dict[str, object] = {
-            "id": str(uuid.uuid4()),
-            "stream": stream,
-            "sdk": {"name": self._name, "version": self._version},
-            "producer": {
-                "app_name": self._app_name,
-                "app_version": self._app_version,
-            },
-            "metadata": {
-                "platform": self._platform,
-                "python_version": self._python_version,
-            },
-            "entities": serialized_entities,
-        }
-        if self._queue:
-            payload["queue"] = self._queue
-        return payload
+        request = logs_service_pb2.ExportLogsServiceRequest()
+        request.resource_logs.append(resource_logs)
+        return request
 
-    def _send(self, payload: str) -> tuple[int, bytes]:
-        """Send the serialized payload to orb-agent."""
-        if self._scheme == "https":
-            context = self._build_ssl_context()
-            connection = http.client.HTTPSConnection(
-                self._host,
-                self._port,
-                timeout=self._timeout,
-                context=context,
-            )
-        else:
-            connection = http.client.HTTPConnection(
-                self._host,
-                self._port,
-                timeout=self._timeout,
-            )
+    def _resource_attributes(self) -> list[common_pb2.KeyValue]:
+        return [
+            self._string_kv("service.name", self._app_name),
+            self._string_kv("service.version", self._app_version),
+            self._string_kv("telemetry.sdk.name", self._name),
+            self._string_kv("telemetry.sdk.language", "python"),
+            self._string_kv("telemetry.sdk.version", self._version),
+            self._string_kv("os.description", self._platform),
+            self._string_kv("process.runtime.version", self._python_version),
+        ]
 
-        try:
-            connection.request("POST", self._path, payload, headers=self._headers)
-            response = connection.getresponse()
-            body = response.read()
-            return response.status, body
-        finally:
-            connection.close()
+    def _entity_to_log_record(
+        self, entity: ingester_pb2.Entity, stream: str
+    ) -> logs_pb2.LogRecord:
+        entity_dict = MessageToDict(entity, preserving_proto_field_name=True)
+        body_json = json.dumps(entity_dict, separators=(",", ":"))
+        now = time.time_ns()
+        entity_type = entity.WhichOneof("entity") or "unknown"
 
-    def _build_ssl_context(self) -> ssl.SSLContext:
-        """Return the SSL context honouring TLS verification settings."""
-        if not self._tls_verify:
-            return ssl._create_unverified_context()
-        context = ssl.create_default_context()
-        if self._certificates:
-            context.load_verify_locations(cadata=self._certificates.decode("utf-8"))
-        return context
+        log_record = logs_pb2.LogRecord(
+            time_unix_nano=now,
+            observed_time_unix_nano=now,
+            severity_number=logs_pb2.SeverityNumber.SEVERITY_NUMBER_INFO,
+            severity_text="INFO",
+        )
+        log_record.body.CopyFrom(
+            common_pb2.AnyValue(string_value=body_json)
+        )
+        log_record.trace_id = uuid.uuid4().bytes
+        log_record.span_id = uuid.uuid4().bytes[:8]
+        log_record.attributes.extend(
+            [
+                self._string_kv("diode.entity_type", entity_type),
+                self._string_kv("diode.stream", stream),
+                self._string_kv("diode.sdk.name", self._name),
+                self._string_kv("diode.sdk.version", self._version),
+                self._string_kv("diode.producer.app_name", self._app_name),
+                self._string_kv("diode.producer.app_version", self._app_version),
+            ]
+        )
+        return log_record
+
+    @staticmethod
+    def _string_kv(key: str, value: str) -> common_pb2.KeyValue:
+        return common_pb2.KeyValue(key=key, value=common_pb2.AnyValue(string_value=value))
 
 
 class _DiodeAuthentication:

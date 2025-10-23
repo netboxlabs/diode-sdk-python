@@ -16,7 +16,7 @@ from netboxlabs.diode.sdk.client import (
     DiodeClient,
     DiodeDryRunClient,
     DiodeMethodClientInterceptor,
-    QueueClient,
+    OtlpClient,
     _ClientCallDetails,
     _DiodeAuthentication,
     _get_sentry_dsn,
@@ -28,7 +28,7 @@ from netboxlabs.diode.sdk.diode.v1 import ingester_pb2
 from netboxlabs.diode.sdk.exceptions import (
     DiodeClientError,
     DiodeConfigError,
-    QueueClientError,
+    OtlpClientError,
 )
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
@@ -746,89 +746,103 @@ def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
     assert entities[-1].wireless_link.ssid == "P2P-Link-1"
 
 
-def test_queue_client_posts_serialized_entities():
-    """Ensure QueueClient serializes entities and posts them to orb-agent."""
-    with patch("http.client.HTTPConnection") as mock_http_conn:
-        mock_conn_instance = mock_http_conn.return_value
-        mock_response = mock.Mock()
-        mock_response.status = 202
-        mock_response.read.return_value = b'{"errors": []}'
-        mock_conn_instance.getresponse.return_value = mock_response
+def test_otlp_client_exports_entities():
+    """Ensure OtlpClient serializes entities and exports them as logs."""
+    with (
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+    ):
+        mock_insecure_channel.return_value = mock.Mock()
+        stub_instance = mock_stub_cls.return_value
 
-        client = QueueClient(
-            target="http://orb-agent:8080/queue",
+        client = OtlpClient(
+            target="grpc://collector:4317",
             app_name="orb-producer",
             app_version="1.2.3",
-            queue="orb",
-            timeout=2.0,
         )
 
         response = client.ingest(
             entities=[Entity(site="Site1"), Entity(device="Device1")]
         )
 
-        args, kwargs = mock_conn_instance.request.call_args
-        assert args[0] == "POST"
-        assert args[1] == "/queue"
-        payload = json.loads(args[2])
-        assert payload["queue"] == "orb"
-        assert payload["stream"] == "latest"
-        assert len(payload["entities"]) == 2
-        assert payload["entities"][0]["site"]["name"] == "Site1"
-        assert kwargs["headers"]["Content-Type"] == "application/json"
-        assert len(response.errors) == 0
+        stub_instance.Export.assert_called_once()
+        export_args, export_kwargs = stub_instance.Export.call_args
+        request = export_args[0]
+        resource_logs = request.resource_logs[0]
+        scope_logs = resource_logs.scope_logs[0]
+        log_records = scope_logs.log_records
+        assert len(log_records) == 2
+        body = json.loads(log_records[0].body.string_value)
+        assert body["site"]["name"] == "Site1"
+        attributes = {kv.key: kv.value.string_value for kv in log_records[0].attributes}
+        assert attributes["diode.stream"] == "latest"
+        assert export_kwargs["timeout"] == client.timeout
+        assert isinstance(response, ingester_pb2.IngestResponse)
 
 
-def test_queue_client_raises_on_http_error():
-    """Ensure QueueClient raises a QueueClientError on HTTP failure."""
-    with patch("http.client.HTTPConnection") as mock_http_conn:
-        mock_conn_instance = mock_http_conn.return_value
-        mock_response = mock.Mock()
-        mock_response.status = 500
-        mock_response.read.return_value = b'{"detail": "failed"}'
-        mock_conn_instance.getresponse.return_value = mock_response
+def test_otlp_client_raises_on_rpc_error():
+    """Ensure OtlpClient wraps gRPC errors in OtlpClientError."""
 
-        client = QueueClient(
-            target="http://orb-agent:8080/queue",
+    class DummyRpcError(grpc.RpcError):
+        def __init__(self, code, details):
+            self._code = code
+            self._details = details
+
+        def code(self):
+            return self._code
+
+        def details(self):
+            return self._details
+
+    with (
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+    ):
+        mock_insecure_channel.return_value = mock.Mock()
+        stub_instance = mock_stub_cls.return_value
+        stub_instance.Export.side_effect = DummyRpcError(
+            grpc.StatusCode.UNAVAILABLE, "endpoint offline"
+        )
+
+        client = OtlpClient(
+            target="grpc://collector:4317",
             app_name="orb-producer",
             app_version="1.2.3",
         )
 
-        with pytest.raises(QueueClientError) as excinfo:
+        with pytest.raises(OtlpClientError) as excinfo:
             client.ingest(entities=[Entity(site="Site1")])
 
-        assert excinfo.value.status_code == 500
-        assert "Queue request failed" in str(excinfo.value)
+        assert excinfo.value.status_code == grpc.StatusCode.UNAVAILABLE
+        assert "details=endpoint offline" in str(excinfo.value)
 
 
-def test_queue_client_https_uses_ssl_context():
-    """Ensure QueueClient configures SSL context for HTTPS targets."""
+def test_otlp_client_grpcs_uses_secure_channel():
+    """Ensure OtlpClient configures SSL credentials for secure targets."""
     with (
-        patch("http.client.HTTPSConnection") as mock_https_conn,
-        patch("ssl.create_default_context") as mock_default_context,
+        patch("netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials") as mock_ssl_credentials,
+        patch("netboxlabs.diode.sdk.client.grpc.secure_channel") as mock_secure_channel,
+        patch("netboxlabs.diode.sdk.client.grpc.intercept_channel") as mock_intercept_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"),
     ):
-        context_instance = mock.Mock()
-        mock_default_context.return_value = context_instance
+        base_channel = mock.Mock()
+        mock_secure_channel.return_value = base_channel
+        intercept_channel = mock.Mock()
+        mock_intercept_channel.return_value = intercept_channel
+        mock_ssl_credentials.return_value = mock.Mock()
 
-        mock_conn_instance = mock_https_conn.return_value
-        mock_response = mock.Mock()
-        mock_response.status = 200
-        mock_response.read.return_value = b""
-        mock_conn_instance.getresponse.return_value = mock_response
-
-        client = QueueClient(
-            target="https://orb-agent.local/queue",
+        client = OtlpClient(
+            target="grpcs://collector.example:4317/custom",
             app_name="orb-producer",
             app_version="1.2.3",
         )
-        client.ingest(entities=[Entity(site="Site1")])
 
-        mock_default_context.assert_called_once()
-        args, kwargs = mock_https_conn.call_args
-        assert args[0] == "orb-agent.local"
-        assert kwargs["context"] is context_instance
-        request_args, _ = mock_conn_instance.request.call_args
-        assert request_args[1] == "/queue"
+        mock_ssl_credentials.assert_called_once()
+        mock_secure_channel.assert_called_once()
+        mock_intercept_channel.assert_called_once()
+
+        client.close()
+        base_channel.close.assert_called_once()
 
 
 def test_diode_authentication_with_custom_certificates():

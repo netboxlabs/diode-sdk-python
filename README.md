@@ -149,23 +149,22 @@ diode-replay-dryrun \
   my_app_92722156890707.json
 ```
 
-### Queue client
+### OTLP client
 
-`QueueClient` serializes ingestion payloads to JSON and posts them to an orb-agent endpoint via HTTP(S). This is useful when the orb-agent (or another intermediary) exposes a lightweight transport instead of gRPC.
+`OtlpClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP endpoint (gRPC). This is useful when a collector ingests log data and forwards it to Diode.
 
 ```python
-from netboxlabs.diode.sdk import Entity, QueueClient
+from netboxlabs.diode.sdk import Entity, OtlpClient
 
-with QueueClient(
-    target="http://localhost:9000/queue",
+with OtlpClient(
+    target="grpc://localhost:4317",
     app_name="my-producer",
     app_version="0.0.1",
-    queue="devices",
 ) as client:
     client.ingest([Entity(site="Site1")])
 ```
 
-The request body mirrors the gRPC ingest payload, augmented with SDK and producer metadata so orb-agent can enrich and forward the message. The client raises `QueueClientError` when the endpoint returns a non-2xx status. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables.
+Each entity is serialised to JSON and sent as a log record with producer metadata so downstream collectors can enrich and forward the payload. The client raises `OtlpClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables.
 
 ## Supported entities (object types)
 

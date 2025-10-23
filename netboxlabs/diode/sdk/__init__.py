@@ -5,11 +5,11 @@
 from netboxlabs.diode.sdk.client import (
     DiodeClient,
     DiodeDryRunClient,
-    QueueClient,
+    OtlpClient,
     load_dryrun_entities,
 )
 
 assert DiodeClient
 assert DiodeDryRunClient
-assert QueueClient
+assert OtlpClient
 assert load_dryrun_entities

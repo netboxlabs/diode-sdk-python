@@ -47,28 +47,40 @@ class DiodeClientError(RpcError):
         return f"<DiodeClientError status code: {self._status_code}, details: {self._details}>"
 
 
-class QueueClientError(BaseError):
-    """Raised when the queue client fails to enqueue a payload."""
+class OtlpClientError(BaseError):
+    """Raised when the OTLP client fails to export log data."""
 
-    def __init__(
-        self,
-        status_code: int,
-        message: str,
-        response_body: str | None = None,
-    ):
-        """Initialize QueueClientError."""
-        self.status_code = status_code
-        self.message = message
-        self.response_body = response_body
-        detail = message
-        if response_body:
-            detail = f"{message}: {response_body}"
-        super().__init__(f"{status_code} {detail}")
+    def __init__(self, error: Exception, message: str | None = None):
+        """Initialize OtlpClientError."""
+        self._message = message or "OTLP export failed"
+        self.status_code = None
+        self.details = None
+
+        if isinstance(error, grpc.RpcError):
+            try:
+                self.status_code = error.code()
+            except Exception:  # pragma: no cover - defensive
+                self.status_code = None
+            try:
+                self.details = error.details()
+            except Exception:  # pragma: no cover - defensive
+                self.details = None
+        else:
+            self.details = str(error)
+
+        parts: list[str] = [self._message]
+        if self.status_code is not None:
+            status_name = getattr(self.status_code, "name", str(self.status_code))
+            parts.append(f"status={status_name}")
+        if self.details:
+            parts.append(f"details={self.details}")
+
+        super().__init__(", ".join(parts))
 
     def __repr__(self):
         """Return string representation."""
-        body = f", response_body={self.response_body!r}" if self.response_body else ""
+        status = getattr(self.status_code, "name", self.status_code)
         return (
-            f"<QueueClientError status_code={self.status_code}, "
-            f"message={self.message!r}{body}>"
+            f"<OtlpClientError message={self._message!r}, "
+            f"status_code={status!r}, details={self.details!r}>"
         )
