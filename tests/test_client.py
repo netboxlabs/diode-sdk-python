@@ -16,7 +16,7 @@ from netboxlabs.diode.sdk.client import (
     DiodeClient,
     DiodeDryRunClient,
     DiodeMethodClientInterceptor,
-    OtlpClient,
+    DiodeOTLPClient,
     _ClientCallDetails,
     _DiodeAuthentication,
     _get_sentry_dsn,
@@ -28,7 +28,7 @@ from netboxlabs.diode.sdk.diode.v1 import ingester_pb2
 from netboxlabs.diode.sdk.exceptions import (
     DiodeClientError,
     DiodeConfigError,
-    OtlpClientError,
+    OTLPClientError,
 )
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
@@ -747,7 +747,7 @@ def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
 
 
 def test_otlp_client_exports_entities():
-    """Ensure OtlpClient serializes entities and exports them as logs."""
+    """Ensure DiodeOTLPClient serializes entities and exports them as logs."""
     with (
         patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
         patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
@@ -755,7 +755,7 @@ def test_otlp_client_exports_entities():
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
 
-        client = OtlpClient(
+        client = DiodeOTLPClient(
             target="grpc://collector:4317",
             app_name="orb-producer",
             app_version="1.2.3",
@@ -781,7 +781,7 @@ def test_otlp_client_exports_entities():
 
 
 def test_otlp_client_raises_on_rpc_error():
-    """Ensure OtlpClient wraps gRPC errors in OtlpClientError."""
+    """Ensure DiodeOTLPClient wraps gRPC errors in OTLPClientError."""
 
     class DummyRpcError(grpc.RpcError):
         def __init__(self, code, details):
@@ -804,13 +804,13 @@ def test_otlp_client_raises_on_rpc_error():
             grpc.StatusCode.UNAVAILABLE, "endpoint offline"
         )
 
-        client = OtlpClient(
+        client = DiodeOTLPClient(
             target="grpc://collector:4317",
             app_name="orb-producer",
             app_version="1.2.3",
         )
 
-        with pytest.raises(OtlpClientError) as excinfo:
+        with pytest.raises(OTLPClientError) as excinfo:
             client.ingest(entities=[Entity(site="Site1")])
 
         assert excinfo.value.status_code == grpc.StatusCode.UNAVAILABLE
@@ -818,7 +818,7 @@ def test_otlp_client_raises_on_rpc_error():
 
 
 def test_otlp_client_grpcs_uses_secure_channel():
-    """Ensure OtlpClient configures SSL credentials for secure targets."""
+    """Ensure DiodeOTLPClient configures SSL credentials for secure targets."""
     with (
         patch("netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials") as mock_ssl_credentials,
         patch("netboxlabs.diode.sdk.client.grpc.secure_channel") as mock_secure_channel,
@@ -831,7 +831,7 @@ def test_otlp_client_grpcs_uses_secure_channel():
         mock_intercept_channel.return_value = intercept_channel
         mock_ssl_credentials.return_value = mock.Mock()
 
-        client = OtlpClient(
+        client = DiodeOTLPClient(
             target="grpcs://collector.example:4317/custom",
             app_name="orb-producer",
             app_version="1.2.3",

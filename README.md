@@ -151,12 +151,12 @@ diode-replay-dryrun \
 
 ### OTLP client
 
-`OtlpClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP endpoint (gRPC). This is useful when a collector ingests log data and forwards it to Diode.
+`DiodeOTLPClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP endpoint (gRPC). This is useful when a collector ingests log data and forwards it to Diode.
 
 ```python
-from netboxlabs.diode.sdk import Entity, OtlpClient
+from netboxlabs.diode.sdk import Entity, DiodeOTLPClient
 
-with OtlpClient(
+with DiodeOTLPClient(
     target="grpc://localhost:4317",
     app_name="my-producer",
     app_version="0.0.1",
@@ -164,7 +164,7 @@ with OtlpClient(
     client.ingest([Entity(site="Site1")])
 ```
 
-Each entity is serialised to JSON and sent as a log record with producer metadata so downstream collectors can enrich and forward the payload. The client raises `OtlpClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables.
+Each entity is serialised to JSON and sent as a log record with producer metadata so downstream collectors can enrich and forward the payload. The client raises `OTLPClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables.
 
 ## Supported entities (object types)
 

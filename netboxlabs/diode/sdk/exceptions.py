@@ -47,11 +47,11 @@ class DiodeClientError(RpcError):
         return f"<DiodeClientError status code: {self._status_code}, details: {self._details}>"
 
 
-class OtlpClientError(BaseError):
+class OTLPClientError(BaseError):
     """Raised when the OTLP client fails to export log data."""
 
     def __init__(self, error: Exception, message: str | None = None):
-        """Initialize OtlpClientError."""
+        """Initialize OTLPClientError."""
         self._message = message or "OTLP export failed"
         self.status_code = None
         self.details = None
@@ -81,6 +81,6 @@ class OtlpClientError(BaseError):
         """Return string representation."""
         status = getattr(self.status_code, "name", self.status_code)
         return (
-            f"<OtlpClientError message={self._message!r}, "
+            f"<OTLPClientError message={self._message!r}, "
             f"status_code={status!r}, details={self.details!r}>"
         )

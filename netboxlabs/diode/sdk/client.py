@@ -28,7 +28,7 @@ from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import (
     DiodeClientError,
     DiodeConfigError,
-    OtlpClientError,
+    OTLPClientError,
 )
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
@@ -413,8 +413,8 @@ class DiodeDryRunClient(DiodeClientInterface):
         return ingester_pb2.IngestResponse()
 
 
-class OtlpClient(DiodeClientInterface):
-    """Client that exports ingestion entities as OTLP logs."""
+class DiodeOTLPClient(DiodeClientInterface):
+    """Diode OTLP client that exports ingestion entities as OTLP logs."""
 
     _name = "diode-sdk-python-otlp"
     _version = version_semver()
@@ -429,7 +429,7 @@ class OtlpClient(DiodeClientInterface):
         metadata: dict[str, str] | Iterable[tuple[str, str]] | None = None,
         cert_file: str | None = None,
     ):
-        """Initiate a new OTLP client."""
+        """Initiate a new Diode OTLP client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
@@ -560,7 +560,7 @@ class OtlpClient(DiodeClientInterface):
                 metadata=self._metadata,
             )
         except grpc.RpcError as err:
-            raise OtlpClientError(err) from err
+            raise OTLPClientError(err) from err
 
         return ingester_pb2.IngestResponse()
 
@@ -572,7 +572,7 @@ class OtlpClient(DiodeClientInterface):
             if entity is None:
                 continue
             if not isinstance(entity, ingester_pb2.Entity):
-                raise TypeError("OtlpClient expects ingester_pb2.Entity instances")
+                raise TypeError("DiodeOTLPClient expects ingester_pb2.Entity instances")
             normalized.append(entity)
         return normalized
 
