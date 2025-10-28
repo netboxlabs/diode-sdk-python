@@ -19,7 +19,7 @@ from urllib.parse import urlencode, urlparse
 import certifi
 import grpc
 import sentry_sdk
-from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
+from google.protobuf.json_format import MessageToJson, ParseDict
 from opentelemetry.proto.collector.logs.v1 import (
     logs_service_pb2,
     logs_service_pb2_grpc,
@@ -555,14 +555,14 @@ class DiodeOTLPClient(DiodeClientInterface):
         """Export entities as OTLP logs."""
         stream = stream or _DEFAULT_STREAM
         log_records = [
-            self._entity_to_log_record(entity, stream)
+            self._entity_to_log_record(entity)
             for entity in self._normalize_entities(entities)
         ]
 
         if not log_records:
             return ingester_pb2.IngestResponse()
 
-        request = self._build_export_request(log_records)
+        request = self._build_export_request(log_records, stream)
 
         try:
             self._stub.Export(
@@ -588,11 +588,15 @@ class DiodeOTLPClient(DiodeClientInterface):
         return normalized
 
     def _build_export_request(
-        self, log_records: list[logs_pb2.LogRecord]
+        self,
+        log_records: list[logs_pb2.LogRecord],
+        stream: str | None,
     ) -> logs_service_pb2.ExportLogsServiceRequest:
         resource_logs = logs_pb2.ResourceLogs()
         resource_logs.resource.attributes.extend(self._resource_attributes())
-
+        resource_logs.resource.attributes.append(
+            self._string_kv("diode.stream", stream)
+        )
         scope_logs = resource_logs.scope_logs.add()
         scope_logs.scope.CopyFrom(
             common_pb2.InstrumentationScope(
@@ -608,19 +612,17 @@ class DiodeOTLPClient(DiodeClientInterface):
 
     def _resource_attributes(self) -> list[common_pb2.KeyValue]:
         return [
-            self._string_kv("sdk.name", self._name),
-            self._string_kv("sdk.version", self._version),
-            self._string_kv("producer.app_name", self._app_name),
-            self._string_kv("producer.app_version", self._app_version),
+            self._string_kv("service.name", self._app_name),
+            self._string_kv("service.version", self._app_version),
             self._string_kv("os.description", self._platform),
             self._string_kv("process.runtime.version", self._python_version),
         ]
 
     def _entity_to_log_record(
-        self, entity: ingester_pb2.Entity, stream: str
+        self,
+        entity: ingester_pb2.Entity,
     ) -> logs_pb2.LogRecord:
-        entity_dict = MessageToDict(entity, preserving_proto_field_name=True)
-        body_json = json.dumps(entity_dict, separators=(",", ":"))
+        body_json = MessageToJson(entity, preserving_proto_field_name=True)
         now = time.time_ns()
         entity_type = entity.WhichOneof("entity") or "unknown"
 
