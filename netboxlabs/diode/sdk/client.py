@@ -623,12 +623,10 @@ class DiodeOTLPClient(DiodeClientInterface):
         entity: ingester_pb2.Entity,
     ) -> logs_pb2.LogRecord:
         body_json = MessageToJson(entity, preserving_proto_field_name=True)
-        now = time.time_ns()
         entity_type = entity.WhichOneof("entity") or "unknown"
 
         log_record = logs_pb2.LogRecord(
-            time_unix_nano=now,
-            observed_time_unix_nano=now,
+            time_unix_nano=time.time_ns(),
             severity_number=logs_pb2.SeverityNumber.SEVERITY_NUMBER_INFO,
             severity_text="INFO",
         )
