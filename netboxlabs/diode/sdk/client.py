@@ -20,7 +20,10 @@ import certifi
 import grpc
 import sentry_sdk
 from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
-from opentelemetry.proto.collector.logs.v1 import logs_service_pb2, logs_service_pb2_grpc
+from opentelemetry.proto.collector.logs.v1 import (
+    logs_service_pb2,
+    logs_service_pb2_grpc,
+)
 from opentelemetry.proto.common.v1 import common_pb2
 from opentelemetry.proto.logs.v1 import logs_pb2
 
@@ -44,6 +47,7 @@ _DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
 _INGEST_SCOPE = "diode:ingest"
 _LOGGER = logging.getLogger(__name__)
 _MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
+
 
 def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
     """Yield entities from a file with concatenated JSON messages."""
@@ -86,7 +90,9 @@ def parse_target(target: str) -> tuple[str, str, bool]:
     parsed_target = urlparse(target)
 
     if parsed_target.scheme not in ["grpc", "grpcs", "http", "https"]:
-        raise ValueError("target should start with grpc://, grpcs://, http:// or https://")
+        raise ValueError(
+            "target should start with grpc://, grpcs://, http:// or https://"
+        )
 
     # Determine if TLS verification should be enabled
     tls_verify = _should_verify_tls(parsed_target.scheme)
@@ -156,16 +162,21 @@ class DiodeClient(DiodeClientInterface):
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
-        self._max_auth_retries = int(_get_optional_config_value(
-            _MAX_RETRIES_ENVVAR_NAME, str(max_auth_retries)
-        ) or max_auth_retries)
+        self._max_auth_retries = int(
+            _get_optional_config_value(_MAX_RETRIES_ENVVAR_NAME, str(max_auth_retries))
+            or max_auth_retries
+        )
         self._cert_file = _get_optional_config_value(
             _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
         )
         self._target, self._path, self._tls_verify = parse_target(target)
 
         # Load certificates once if needed
-        self._certificates = _load_certs(self._cert_file) if (self._tls_verify or self._cert_file) else None
+        self._certificates = (
+            _load_certs(self._cert_file)
+            if (self._tls_verify or self._cert_file)
+            else None
+        )
         self._app_name = app_name
         self._app_version = app_version
         self._platform = platform.platform()
@@ -597,11 +608,10 @@ class DiodeOTLPClient(DiodeClientInterface):
 
     def _resource_attributes(self) -> list[common_pb2.KeyValue]:
         return [
-            self._string_kv("service.name", self._app_name),
-            self._string_kv("service.version", self._app_version),
-            self._string_kv("telemetry.sdk.name", self._name),
-            self._string_kv("telemetry.sdk.language", "python"),
-            self._string_kv("telemetry.sdk.version", self._version),
+            self._string_kv("sdk.name", self._name),
+            self._string_kv("sdk.version", self._version),
+            self._string_kv("producer.app_name", self._app_name),
+            self._string_kv("producer.app_version", self._app_version),
             self._string_kv("os.description", self._platform),
             self._string_kv("process.runtime.version", self._python_version),
         ]
@@ -620,26 +630,19 @@ class DiodeOTLPClient(DiodeClientInterface):
             severity_number=logs_pb2.SeverityNumber.SEVERITY_NUMBER_INFO,
             severity_text="INFO",
         )
-        log_record.body.CopyFrom(
-            common_pb2.AnyValue(string_value=body_json)
-        )
-        log_record.trace_id = uuid.uuid4().bytes
-        log_record.span_id = uuid.uuid4().bytes[:8]
+        log_record.body.CopyFrom(common_pb2.AnyValue(string_value=body_json))
         log_record.attributes.extend(
             [
-                self._string_kv("diode.entity_type", entity_type),
-                self._string_kv("diode.stream", stream),
-                self._string_kv("diode.sdk.name", self._name),
-                self._string_kv("diode.sdk.version", self._version),
-                self._string_kv("diode.producer.app_name", self._app_name),
-                self._string_kv("diode.producer.app_version", self._app_version),
+                self._string_kv("diode.entity", entity_type),
             ]
         )
         return log_record
 
     @staticmethod
     def _string_kv(key: str, value: str) -> common_pb2.KeyValue:
-        return common_pb2.KeyValue(key=key, value=common_pb2.AnyValue(string_value=value))
+        return common_pb2.KeyValue(
+            key=key, value=common_pb2.AnyValue(string_value=value)
+        )
 
 
 class _DiodeAuthentication:
@@ -665,7 +668,7 @@ class _DiodeAuthentication:
         """Request an OAuth2 token using client credentials and return it."""
         if self._tls_verify and self._certificates:
             context = ssl.create_default_context()
-            context.load_verify_locations(cadata=self._certificates.decode('utf-8'))
+            context.load_verify_locations(cadata=self._certificates.decode("utf-8"))
             conn = http.client.HTTPSConnection(
                 self._target,
                 context=context,

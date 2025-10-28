@@ -775,7 +775,7 @@ def test_otlp_client_exports_entities():
         body = json.loads(log_records[0].body.string_value)
         assert body["site"]["name"] == "Site1"
         attributes = {kv.key: kv.value.string_value for kv in log_records[0].attributes}
-        assert attributes["diode.stream"] == "latest"
+        assert attributes["diode.entity"] == "site"
         assert export_kwargs["timeout"] == client.timeout
         assert isinstance(response, ingester_pb2.IngestResponse)
 
