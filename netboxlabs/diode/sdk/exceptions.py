@@ -45,3 +45,42 @@ class DiodeClientError(RpcError):
     def __repr__(self):
         """Return string representation."""
         return f"<DiodeClientError status code: {self._status_code}, details: {self._details}>"
+
+
+class OTLPClientError(BaseError):
+    """Raised when the OTLP client fails to export log data."""
+
+    def __init__(self, error: Exception, message: str | None = None):
+        """Initialize OTLPClientError."""
+        self._message = message or "OTLP export failed"
+        self.status_code = None
+        self.details = None
+
+        if isinstance(error, grpc.RpcError):
+            try:
+                self.status_code = error.code()
+            except Exception:  # pragma: no cover - defensive
+                self.status_code = None
+            try:
+                self.details = error.details()
+            except Exception:  # pragma: no cover - defensive
+                self.details = None
+        else:
+            self.details = str(error)
+
+        parts: list[str] = [self._message]
+        if self.status_code is not None:
+            status_name = getattr(self.status_code, "name", str(self.status_code))
+            parts.append(f"status={status_name}")
+        if self.details:
+            parts.append(f"details={self.details}")
+
+        super().__init__(", ".join(parts))
+
+    def __repr__(self):
+        """Return string representation."""
+        status = getattr(self.status_code, "name", self.status_code)
+        return (
+            f"<OTLPClientError message={self._message!r}, "
+            f"status_code={status!r}, details={self.details!r}>"
+        )

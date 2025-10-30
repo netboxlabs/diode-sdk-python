@@ -16,6 +16,7 @@ from netboxlabs.diode.sdk.client import (
     DiodeClient,
     DiodeDryRunClient,
     DiodeMethodClientInterceptor,
+    DiodeOTLPClient,
     _ClientCallDetails,
     _DiodeAuthentication,
     _get_sentry_dsn,
@@ -24,7 +25,11 @@ from netboxlabs.diode.sdk.client import (
     parse_target,
 )
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2
-from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
+from netboxlabs.diode.sdk.exceptions import (
+    DiodeClientError,
+    DiodeConfigError,
+    OTLPClientError,
+)
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
 
@@ -739,6 +744,105 @@ def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
         entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
     )
     assert entities[-1].wireless_link.ssid == "P2P-Link-1"
+
+
+def test_otlp_client_exports_entities():
+    """Ensure DiodeOTLPClient serializes entities and exports them as logs."""
+    with (
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+    ):
+        mock_insecure_channel.return_value = mock.Mock()
+        stub_instance = mock_stub_cls.return_value
+
+        client = DiodeOTLPClient(
+            target="grpc://collector:4317",
+            app_name="orb-producer",
+            app_version="1.2.3",
+        )
+
+        response = client.ingest(
+            entities=[Entity(site="Site1"), Entity(device="Device1")]
+        )
+
+        stub_instance.Export.assert_called_once()
+        export_args, export_kwargs = stub_instance.Export.call_args
+        request = export_args[0]
+        resource_logs = request.resource_logs[0]
+        scope_logs = resource_logs.scope_logs[0]
+        log_records = scope_logs.log_records
+        assert len(log_records) == 2
+        body = json.loads(log_records[0].body.string_value)
+        assert body["site"]["name"] == "Site1"
+        attributes = {kv.key: kv.value.string_value for kv in log_records[0].attributes}
+        assert attributes["diode.entity"] == "site"
+        assert export_kwargs["timeout"] == client.timeout
+        assert isinstance(response, ingester_pb2.IngestResponse)
+
+
+def test_otlp_client_raises_on_rpc_error():
+    """Ensure DiodeOTLPClient wraps gRPC errors in OTLPClientError."""
+
+    class DummyRpcError(grpc.RpcError):
+        def __init__(self, code, details):
+            self._code = code
+            self._details = details
+
+        def code(self):
+            return self._code
+
+        def details(self):
+            return self._details
+
+    with (
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+    ):
+        mock_insecure_channel.return_value = mock.Mock()
+        stub_instance = mock_stub_cls.return_value
+        stub_instance.Export.side_effect = DummyRpcError(
+            grpc.StatusCode.UNAVAILABLE, "endpoint offline"
+        )
+
+        client = DiodeOTLPClient(
+            target="grpc://collector:4317",
+            app_name="orb-producer",
+            app_version="1.2.3",
+        )
+
+        with pytest.raises(OTLPClientError) as excinfo:
+            client.ingest(entities=[Entity(site="Site1")])
+
+        assert excinfo.value.status_code == grpc.StatusCode.UNAVAILABLE
+        assert "details=endpoint offline" in str(excinfo.value)
+
+
+def test_otlp_client_grpcs_uses_secure_channel():
+    """Ensure DiodeOTLPClient configures SSL credentials for secure targets."""
+    with (
+        patch("netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials") as mock_ssl_credentials,
+        patch("netboxlabs.diode.sdk.client.grpc.secure_channel") as mock_secure_channel,
+        patch("netboxlabs.diode.sdk.client.grpc.intercept_channel") as mock_intercept_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"),
+    ):
+        base_channel = mock.Mock()
+        mock_secure_channel.return_value = base_channel
+        intercept_channel = mock.Mock()
+        mock_intercept_channel.return_value = intercept_channel
+        mock_ssl_credentials.return_value = mock.Mock()
+
+        client = DiodeOTLPClient(
+            target="grpcs://collector.example:4317/custom",
+            app_name="orb-producer",
+            app_version="1.2.3",
+        )
+
+        mock_ssl_credentials.assert_called_once()
+        mock_secure_channel.assert_called_once()
+        mock_intercept_channel.assert_called_once()
+
+        client.close()
+        base_channel.close.assert_called_once()
 
 
 def test_diode_authentication_with_custom_certificates():
