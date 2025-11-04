@@ -14,6 +14,7 @@ import time
 import uuid
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlencode, urlparse
 
 import certifi
@@ -33,8 +34,10 @@ from netboxlabs.diode.sdk.exceptions import (
     DiodeConfigError,
     OTLPClientError,
 )
-from netboxlabs.diode.sdk.ingester import Entity
+from netboxlabs.diode.sdk.ingester import Entity, convert_dict_to_struct
 from netboxlabs.diode.sdk.version import version_semver
+
+Metadata = dict[str, Any]
 
 _CLIENT_ID_ENVVAR_NAME = "DIODE_CLIENT_ID"
 _CLIENT_SECRET_ENVVAR_NAME = "DIODE_CLIENT_SECRET"
@@ -295,10 +298,13 @@ class DiodeClient(DiodeClientInterface):
         self,
         entities: Iterable[Entity | ingester_pb2.Entity | None],
         stream: str | None = _DEFAULT_STREAM,
+        *,
+        metadata: Metadata | None = None,
     ) -> ingester_pb2.IngestResponse:
-        """Ingest entities."""
+        """Ingest entities with optional request-level metadata."""
         for attempt in range(self._max_auth_retries):
             try:
+                request_metadata = convert_dict_to_struct(metadata) if metadata else None
                 request = ingester_pb2.IngestRequest(
                     stream=stream,
                     id=str(uuid.uuid4()),
@@ -308,6 +314,8 @@ class DiodeClient(DiodeClientInterface):
                     producer_app_name=self.app_name,
                     producer_app_version=self.app_version,
                 )
+                if request_metadata is not None:
+                    request.metadata.CopyFrom(request_metadata)
                 return self._stub.Ingest(request, metadata=self._metadata)
             except grpc.RpcError as err:
                 if err.code() == grpc.StatusCode.UNAUTHENTICATED:
@@ -397,8 +405,11 @@ class DiodeDryRunClient(DiodeClientInterface):
         self,
         entities: Iterable[Entity | ingester_pb2.Entity | None],
         stream: str | None = _DEFAULT_STREAM,
+        *,
+        metadata: Metadata | None = None,
     ) -> ingester_pb2.IngestResponse:
-        """Ingest entities in dry run mode."""
+        """Ingest entities in dry run mode with optional request-level metadata."""
+        request_metadata = convert_dict_to_struct(metadata) if metadata else None
         request = ingester_pb2.IngestRequest(
             stream=stream,
             id=str(uuid.uuid4()),
@@ -407,6 +418,8 @@ class DiodeDryRunClient(DiodeClientInterface):
             sdk_name=self.name,
             sdk_version=self.version,
         )
+        if request_metadata is not None:
+            request.metadata.CopyFrom(request_metadata)
 
         output = MessageToJson(request, preserving_proto_field_name=True)
         if self._output_dir:
@@ -551,8 +564,10 @@ class DiodeOTLPClient(DiodeClientInterface):
         self,
         entities: Iterable[Entity | ingester_pb2.Entity | None],
         stream: str | None = _DEFAULT_STREAM,
+        *,
+        metadata: Metadata | None = None,
     ) -> ingester_pb2.IngestResponse:
-        """Export entities as OTLP logs."""
+        """Export entities as OTLP logs with optional request-level metadata."""
         stream = stream or _DEFAULT_STREAM
         log_records = [
             self._entity_to_log_record(entity)
@@ -562,7 +577,7 @@ class DiodeOTLPClient(DiodeClientInterface):
         if not log_records:
             return ingester_pb2.IngestResponse()
 
-        request = self._build_export_request(log_records, stream)
+        request = self._build_export_request(log_records, stream, metadata)
 
         try:
             self._stub.Export(
@@ -591,12 +606,21 @@ class DiodeOTLPClient(DiodeClientInterface):
         self,
         log_records: list[logs_pb2.LogRecord],
         stream: str | None,
+        metadata: Metadata | None = None,
     ) -> logs_service_pb2.ExportLogsServiceRequest:
         resource_logs = logs_pb2.ResourceLogs()
         resource_logs.resource.attributes.extend(self._resource_attributes())
         resource_logs.resource.attributes.append(
             self._string_kv("diode.stream", stream)
         )
+
+        # Add request-level metadata as resource attributes with diode.metadata.* prefix
+        if metadata:
+            for key, value in metadata.items():
+                resource_attr = self._metadata_value_to_kv(f"diode.metadata.{key}", value)
+                if resource_attr:
+                    resource_logs.resource.attributes.append(resource_attr)
+
         scope_logs = resource_logs.scope_logs.add()
         scope_logs.scope.CopyFrom(
             common_pb2.InstrumentationScope(
@@ -643,6 +667,51 @@ class DiodeOTLPClient(DiodeClientInterface):
         return common_pb2.KeyValue(
             key=key, value=common_pb2.AnyValue(string_value=value)
         )
+
+    @staticmethod
+    def _value_to_any_value(value: Any) -> common_pb2.AnyValue | None:  # noqa: C901
+        """Convert a Python value to OTLP AnyValue recursively."""
+        if value is None:
+            return None
+        if isinstance(value, bool):
+            # Check bool before int since bool is a subclass of int in Python
+            return common_pb2.AnyValue(bool_value=value)
+        if isinstance(value, str):
+            return common_pb2.AnyValue(string_value=value)
+        if isinstance(value, int):
+            return common_pb2.AnyValue(int_value=value)
+        if isinstance(value, float):
+            return common_pb2.AnyValue(double_value=value)
+        if isinstance(value, list):
+            # Recursively convert list items
+            array_values = []
+            for item in value:
+                any_value = DiodeOTLPClient._value_to_any_value(item)
+                if any_value:
+                    array_values.append(any_value)
+            return common_pb2.AnyValue(
+                array_value=common_pb2.ArrayValue(values=array_values)
+            )
+        if isinstance(value, dict):
+            # Recursively convert dict to KeyValueList
+            kvlist = common_pb2.KeyValueList()
+            for k, v in value.items():
+                any_value = DiodeOTLPClient._value_to_any_value(v)
+                if any_value:
+                    kvlist.values.append(
+                        common_pb2.KeyValue(key=k, value=any_value)
+                    )
+            return common_pb2.AnyValue(kvlist_value=kvlist)
+        # Skip unsupported types
+        return None
+
+    @staticmethod
+    def _metadata_value_to_kv(key: str, value: Any) -> common_pb2.KeyValue | None:
+        """Convert metadata key-value pair to OTLP KeyValue with appropriate type."""
+        any_value = DiodeOTLPClient._value_to_any_value(value)
+        if any_value:
+            return common_pb2.KeyValue(key=key, value=any_value)
+        return None
 
 
 class _DiodeAuthentication:
