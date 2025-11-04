@@ -2,7 +2,7 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Timestamp: 2025-10-02 12:39:10Z
+# Timestamp: 2025-11-04 12:25:51Z
 #
 # ruff: noqa: C901
 
@@ -11,7 +11,10 @@ from __future__ import annotations
 import datetime
 import re
 from typing import Any
+
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf import struct_pb2 as _struct_pb2
+
 import netboxlabs.diode.sdk.diode.v1.ingester_pb2 as pb
 
 PRIMARY_VALUE_MAP = {
@@ -109,6 +112,15 @@ def is_field_set(value: Any, field_name: str) -> bool:
         if field_descriptor.name == field_name:
             return True
     return False
+
+
+def convert_dict_to_struct(value: dict | None) -> _struct_pb2.Struct | None:
+    """Convert a Python dict to a protobuf Struct."""
+    if value is None:
+        return None
+    struct = _struct_pb2.Struct()
+    struct.update(value)
+    return struct
 
 
 def convert_to_protobuf(value: Any, protobuf_class):
@@ -237,6 +249,7 @@ class Entity:
         journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
         module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         custom_link: str | CustomLink | pb.CustomLink | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -332,11 +345,203 @@ class Entity:
         journal_entry = convert_to_protobuf(journal_entry, pb.JournalEntry)
         module_type_profile = convert_to_protobuf(module_type_profile, pb.ModuleTypeProfile)
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
+        metadata = convert_dict_to_struct(metadata)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
             timestamp = ts
-        return pb.Entity(
+
+        # Extract metadata from the entity if present
+        _entity_metadata = None
+        if asn is not None and hasattr(asn, '_metadata'):
+            _entity_metadata = asn._metadata
+        if asn_range is not None and hasattr(asn_range, '_metadata'):
+            _entity_metadata = asn_range._metadata
+        if aggregate is not None and hasattr(aggregate, '_metadata'):
+            _entity_metadata = aggregate._metadata
+        if cable is not None and hasattr(cable, '_metadata'):
+            _entity_metadata = cable._metadata
+        if cable_path is not None and hasattr(cable_path, '_metadata'):
+            _entity_metadata = cable_path._metadata
+        if cable_termination is not None and hasattr(cable_termination, '_metadata'):
+            _entity_metadata = cable_termination._metadata
+        if circuit is not None and hasattr(circuit, '_metadata'):
+            _entity_metadata = circuit._metadata
+        if circuit_group is not None and hasattr(circuit_group, '_metadata'):
+            _entity_metadata = circuit_group._metadata
+        if circuit_group_assignment is not None and hasattr(circuit_group_assignment, '_metadata'):
+            _entity_metadata = circuit_group_assignment._metadata
+        if circuit_termination is not None and hasattr(circuit_termination, '_metadata'):
+            _entity_metadata = circuit_termination._metadata
+        if circuit_type is not None and hasattr(circuit_type, '_metadata'):
+            _entity_metadata = circuit_type._metadata
+        if cluster is not None and hasattr(cluster, '_metadata'):
+            _entity_metadata = cluster._metadata
+        if cluster_group is not None and hasattr(cluster_group, '_metadata'):
+            _entity_metadata = cluster_group._metadata
+        if cluster_type is not None and hasattr(cluster_type, '_metadata'):
+            _entity_metadata = cluster_type._metadata
+        if console_port is not None and hasattr(console_port, '_metadata'):
+            _entity_metadata = console_port._metadata
+        if console_server_port is not None and hasattr(console_server_port, '_metadata'):
+            _entity_metadata = console_server_port._metadata
+        if contact is not None and hasattr(contact, '_metadata'):
+            _entity_metadata = contact._metadata
+        if contact_assignment is not None and hasattr(contact_assignment, '_metadata'):
+            _entity_metadata = contact_assignment._metadata
+        if contact_group is not None and hasattr(contact_group, '_metadata'):
+            _entity_metadata = contact_group._metadata
+        if contact_role is not None and hasattr(contact_role, '_metadata'):
+            _entity_metadata = contact_role._metadata
+        if device is not None and hasattr(device, '_metadata'):
+            _entity_metadata = device._metadata
+        if device_bay is not None and hasattr(device_bay, '_metadata'):
+            _entity_metadata = device_bay._metadata
+        if device_role is not None and hasattr(device_role, '_metadata'):
+            _entity_metadata = device_role._metadata
+        if device_type is not None and hasattr(device_type, '_metadata'):
+            _entity_metadata = device_type._metadata
+        if fhrp_group is not None and hasattr(fhrp_group, '_metadata'):
+            _entity_metadata = fhrp_group._metadata
+        if fhrp_group_assignment is not None and hasattr(fhrp_group_assignment, '_metadata'):
+            _entity_metadata = fhrp_group_assignment._metadata
+        if front_port is not None and hasattr(front_port, '_metadata'):
+            _entity_metadata = front_port._metadata
+        if ike_policy is not None and hasattr(ike_policy, '_metadata'):
+            _entity_metadata = ike_policy._metadata
+        if ike_proposal is not None and hasattr(ike_proposal, '_metadata'):
+            _entity_metadata = ike_proposal._metadata
+        if ip_address is not None and hasattr(ip_address, '_metadata'):
+            _entity_metadata = ip_address._metadata
+        if ip_range is not None and hasattr(ip_range, '_metadata'):
+            _entity_metadata = ip_range._metadata
+        if ip_sec_policy is not None and hasattr(ip_sec_policy, '_metadata'):
+            _entity_metadata = ip_sec_policy._metadata
+        if ip_sec_profile is not None and hasattr(ip_sec_profile, '_metadata'):
+            _entity_metadata = ip_sec_profile._metadata
+        if ip_sec_proposal is not None and hasattr(ip_sec_proposal, '_metadata'):
+            _entity_metadata = ip_sec_proposal._metadata
+        if interface is not None and hasattr(interface, '_metadata'):
+            _entity_metadata = interface._metadata
+        if inventory_item is not None and hasattr(inventory_item, '_metadata'):
+            _entity_metadata = inventory_item._metadata
+        if inventory_item_role is not None and hasattr(inventory_item_role, '_metadata'):
+            _entity_metadata = inventory_item_role._metadata
+        if l2vpn is not None and hasattr(l2vpn, '_metadata'):
+            _entity_metadata = l2vpn._metadata
+        if l2vpn_termination is not None and hasattr(l2vpn_termination, '_metadata'):
+            _entity_metadata = l2vpn_termination._metadata
+        if location is not None and hasattr(location, '_metadata'):
+            _entity_metadata = location._metadata
+        if mac_address is not None and hasattr(mac_address, '_metadata'):
+            _entity_metadata = mac_address._metadata
+        if manufacturer is not None and hasattr(manufacturer, '_metadata'):
+            _entity_metadata = manufacturer._metadata
+        if module is not None and hasattr(module, '_metadata'):
+            _entity_metadata = module._metadata
+        if module_bay is not None and hasattr(module_bay, '_metadata'):
+            _entity_metadata = module_bay._metadata
+        if module_type is not None and hasattr(module_type, '_metadata'):
+            _entity_metadata = module_type._metadata
+        if platform is not None and hasattr(platform, '_metadata'):
+            _entity_metadata = platform._metadata
+        if power_feed is not None and hasattr(power_feed, '_metadata'):
+            _entity_metadata = power_feed._metadata
+        if power_outlet is not None and hasattr(power_outlet, '_metadata'):
+            _entity_metadata = power_outlet._metadata
+        if power_panel is not None and hasattr(power_panel, '_metadata'):
+            _entity_metadata = power_panel._metadata
+        if power_port is not None and hasattr(power_port, '_metadata'):
+            _entity_metadata = power_port._metadata
+        if prefix is not None and hasattr(prefix, '_metadata'):
+            _entity_metadata = prefix._metadata
+        if provider is not None and hasattr(provider, '_metadata'):
+            _entity_metadata = provider._metadata
+        if provider_account is not None and hasattr(provider_account, '_metadata'):
+            _entity_metadata = provider_account._metadata
+        if provider_network is not None and hasattr(provider_network, '_metadata'):
+            _entity_metadata = provider_network._metadata
+        if rir is not None and hasattr(rir, '_metadata'):
+            _entity_metadata = rir._metadata
+        if rack is not None and hasattr(rack, '_metadata'):
+            _entity_metadata = rack._metadata
+        if rack_reservation is not None and hasattr(rack_reservation, '_metadata'):
+            _entity_metadata = rack_reservation._metadata
+        if rack_role is not None and hasattr(rack_role, '_metadata'):
+            _entity_metadata = rack_role._metadata
+        if rack_type is not None and hasattr(rack_type, '_metadata'):
+            _entity_metadata = rack_type._metadata
+        if rear_port is not None and hasattr(rear_port, '_metadata'):
+            _entity_metadata = rear_port._metadata
+        if region is not None and hasattr(region, '_metadata'):
+            _entity_metadata = region._metadata
+        if role is not None and hasattr(role, '_metadata'):
+            _entity_metadata = role._metadata
+        if route_target is not None and hasattr(route_target, '_metadata'):
+            _entity_metadata = route_target._metadata
+        if service is not None and hasattr(service, '_metadata'):
+            _entity_metadata = service._metadata
+        if site is not None and hasattr(site, '_metadata'):
+            _entity_metadata = site._metadata
+        if site_group is not None and hasattr(site_group, '_metadata'):
+            _entity_metadata = site_group._metadata
+        if tag is not None and hasattr(tag, '_metadata'):
+            _entity_metadata = tag._metadata
+        if tenant is not None and hasattr(tenant, '_metadata'):
+            _entity_metadata = tenant._metadata
+        if tenant_group is not None and hasattr(tenant_group, '_metadata'):
+            _entity_metadata = tenant_group._metadata
+        if tunnel is not None and hasattr(tunnel, '_metadata'):
+            _entity_metadata = tunnel._metadata
+        if tunnel_group is not None and hasattr(tunnel_group, '_metadata'):
+            _entity_metadata = tunnel_group._metadata
+        if tunnel_termination is not None and hasattr(tunnel_termination, '_metadata'):
+            _entity_metadata = tunnel_termination._metadata
+        if vlan is not None and hasattr(vlan, '_metadata'):
+            _entity_metadata = vlan._metadata
+        if vlan_group is not None and hasattr(vlan_group, '_metadata'):
+            _entity_metadata = vlan_group._metadata
+        if vlan_translation_policy is not None and hasattr(vlan_translation_policy, '_metadata'):
+            _entity_metadata = vlan_translation_policy._metadata
+        if vlan_translation_rule is not None and hasattr(vlan_translation_rule, '_metadata'):
+            _entity_metadata = vlan_translation_rule._metadata
+        if vm_interface is not None and hasattr(vm_interface, '_metadata'):
+            _entity_metadata = vm_interface._metadata
+        if vrf is not None and hasattr(vrf, '_metadata'):
+            _entity_metadata = vrf._metadata
+        if virtual_chassis is not None and hasattr(virtual_chassis, '_metadata'):
+            _entity_metadata = virtual_chassis._metadata
+        if virtual_circuit is not None and hasattr(virtual_circuit, '_metadata'):
+            _entity_metadata = virtual_circuit._metadata
+        if virtual_circuit_termination is not None and hasattr(virtual_circuit_termination, '_metadata'):
+            _entity_metadata = virtual_circuit_termination._metadata
+        if virtual_circuit_type is not None and hasattr(virtual_circuit_type, '_metadata'):
+            _entity_metadata = virtual_circuit_type._metadata
+        if virtual_device_context is not None and hasattr(virtual_device_context, '_metadata'):
+            _entity_metadata = virtual_device_context._metadata
+        if virtual_disk is not None and hasattr(virtual_disk, '_metadata'):
+            _entity_metadata = virtual_disk._metadata
+        if virtual_machine is not None and hasattr(virtual_machine, '_metadata'):
+            _entity_metadata = virtual_machine._metadata
+        if wireless_lan is not None and hasattr(wireless_lan, '_metadata'):
+            _entity_metadata = wireless_lan._metadata
+        if wireless_lan_group is not None and hasattr(wireless_lan_group, '_metadata'):
+            _entity_metadata = wireless_lan_group._metadata
+        if wireless_link is not None and hasattr(wireless_link, '_metadata'):
+            _entity_metadata = wireless_link._metadata
+        if custom_field is not None and hasattr(custom_field, '_metadata'):
+            _entity_metadata = custom_field._metadata
+        if custom_field_choice_set is not None and hasattr(custom_field_choice_set, '_metadata'):
+            _entity_metadata = custom_field_choice_set._metadata
+        if journal_entry is not None and hasattr(journal_entry, '_metadata'):
+            _entity_metadata = journal_entry._metadata
+        if module_type_profile is not None and hasattr(module_type_profile, '_metadata'):
+            _entity_metadata = module_type_profile._metadata
+        if custom_link is not None and hasattr(custom_link, '_metadata'):
+            _entity_metadata = custom_link._metadata
+        if _entity_metadata is not None:
+            metadata = _entity_metadata
+        result = pb.Entity(
             timestamp=timestamp,
             asn=asn,
             asn_range=asn_range,
@@ -431,7 +636,9 @@ class Entity:
             journal_entry=journal_entry,
             module_type_profile=module_type_profile,
             custom_link=custom_link,
+            metadata=metadata,
         )
+        return result
 
 
 class ASN:
@@ -446,13 +653,19 @@ class ASN:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ASN:
         """Create a new ASN."""
         rir = convert_to_protobuf(rir, pb.RIR)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ASN(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ASN(
             asn=asn,
             rir=rir,
             tenant=tenant,
@@ -461,6 +674,9 @@ class ASN:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ASNRange:
@@ -477,13 +693,19 @@ class ASNRange:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ASNRange:
         """Create a new ASNRange."""
         rir = convert_to_protobuf(rir, pb.RIR)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ASNRange(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ASNRange(
             name=name,
             slug=slug,
             rir=rir,
@@ -494,6 +716,9 @@ class ASNRange:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Aggregate:
@@ -509,13 +734,19 @@ class Aggregate:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Aggregate:
         """Create a new Aggregate."""
         rir = convert_to_protobuf(rir, pb.RIR)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Aggregate(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Aggregate(
             prefix=prefix,
             rir=rir,
             tenant=tenant,
@@ -525,6 +756,9 @@ class Aggregate:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Cable:
@@ -545,6 +779,7 @@ class Cable:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Cable:
         """Create a new Cable."""
         a_terminations = convert_to_protobuf_list(a_terminations, pb.GenericObject)
@@ -552,7 +787,12 @@ class Cable:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Cable(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Cable(
             type=type,
             a_terminations=a_terminations,
             b_terminations=b_terminations,
@@ -567,6 +807,9 @@ class Cable:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CablePath:
@@ -577,13 +820,22 @@ class CablePath:
         is_active: bool | None = None,
         is_complete: bool | None = None,
         is_split: bool | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CablePath:
         """Create a new CablePath."""
-        return pb.CablePath(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CablePath(
             is_active=is_active,
             is_complete=is_complete,
             is_split=is_split,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CableTermination:
@@ -602,6 +854,7 @@ class CableTermination:
         termination_power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
         termination_power_port: str | PowerPort | pb.PowerPort | None = None,
         termination_rear_port: str | RearPort | pb.RearPort | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CableTermination:
         """Create a new CableTermination."""
         cable = convert_to_protobuf(cable, pb.Cable)
@@ -614,7 +867,12 @@ class CableTermination:
         termination_power_outlet = convert_to_protobuf(termination_power_outlet, pb.PowerOutlet)
         termination_power_port = convert_to_protobuf(termination_power_port, pb.PowerPort)
         termination_rear_port = convert_to_protobuf(termination_rear_port, pb.RearPort)
-        return pb.CableTermination(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CableTermination(
             cable=cable,
             cable_end=cable_end,
             termination_circuit_termination=termination_circuit_termination,
@@ -627,6 +885,9 @@ class CableTermination:
             termination_power_port=termination_power_port,
             termination_rear_port=termination_rear_port,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Circuit:
@@ -650,6 +911,7 @@ class Circuit:
         tags: list[str | Tag | pb.Tag] | None = None,
         assignments: list[str | CircuitGroupAssignment | pb.CircuitGroupAssignment] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Circuit:
         """Create a new Circuit."""
         provider = convert_to_protobuf(provider, pb.Provider)
@@ -659,7 +921,12 @@ class Circuit:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         assignments = convert_to_protobuf_list(assignments, pb.CircuitGroupAssignment)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Circuit(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Circuit(
             cid=cid,
             provider=provider,
             provider_account=provider_account,
@@ -677,6 +944,9 @@ class Circuit:
             assignments=assignments,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CircuitGroup:
@@ -690,12 +960,18 @@ class CircuitGroup:
         tenant: str | Tenant | pb.Tenant | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitGroup:
         """Create a new CircuitGroup."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.CircuitGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CircuitGroup(
             name=name,
             slug=slug,
             description=description,
@@ -703,6 +979,9 @@ class CircuitGroup:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CircuitGroupAssignment:
@@ -715,19 +994,28 @@ class CircuitGroupAssignment:
         member_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
         priority: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitGroupAssignment:
         """Create a new CircuitGroupAssignment."""
         group = convert_to_protobuf(group, pb.CircuitGroup)
         member_circuit = convert_to_protobuf(member_circuit, pb.Circuit)
         member_virtual_circuit = convert_to_protobuf(member_virtual_circuit, pb.VirtualCircuit)
         tags = convert_to_protobuf_list(tags, pb.Tag)
-        return pb.CircuitGroupAssignment(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CircuitGroupAssignment(
             group=group,
             member_circuit=member_circuit,
             member_virtual_circuit=member_virtual_circuit,
             priority=priority,
             tags=tags,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CircuitTermination:
@@ -750,6 +1038,7 @@ class CircuitTermination:
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitTermination:
         """Create a new CircuitTermination."""
         circuit = convert_to_protobuf(circuit, pb.Circuit)
@@ -760,7 +1049,12 @@ class CircuitTermination:
         termination_site_group = convert_to_protobuf(termination_site_group, pb.SiteGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.CircuitTermination(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CircuitTermination(
             circuit=circuit,
             term_side=term_side,
             termination_location=termination_location,
@@ -777,6 +1071,9 @@ class CircuitTermination:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CircuitType:
@@ -790,11 +1087,17 @@ class CircuitType:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitType:
         """Create a new CircuitType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.CircuitType(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CircuitType(
             name=name,
             slug=slug,
             color=color,
@@ -802,6 +1105,9 @@ class CircuitType:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Cluster:
@@ -822,6 +1128,7 @@ class Cluster:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Cluster:
         """Create a new Cluster."""
         type = convert_to_protobuf(type, pb.ClusterType)
@@ -833,7 +1140,12 @@ class Cluster:
         scope_site_group = convert_to_protobuf(scope_site_group, pb.SiteGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Cluster(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Cluster(
             name=name,
             type=type,
             group=group,
@@ -848,6 +1160,9 @@ class Cluster:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ClusterGroup:
@@ -860,17 +1175,26 @@ class ClusterGroup:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ClusterGroup:
         """Create a new ClusterGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ClusterGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ClusterGroup(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ClusterType:
@@ -883,17 +1207,26 @@ class ClusterType:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ClusterType:
         """Create a new ClusterType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ClusterType(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ClusterType(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ConsolePort:
@@ -911,13 +1244,19 @@ class ConsolePort:
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ConsolePort:
         """Create a new ConsolePort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ConsolePort(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ConsolePort(
             device=device,
             module=module,
             name=name,
@@ -929,6 +1268,9 @@ class ConsolePort:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ConsoleServerPort:
@@ -946,13 +1288,19 @@ class ConsoleServerPort:
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ConsoleServerPort:
         """Create a new ConsoleServerPort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ConsoleServerPort(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ConsoleServerPort(
             device=device,
             module=module,
             name=name,
@@ -964,6 +1312,9 @@ class ConsoleServerPort:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Contact:
@@ -983,13 +1334,19 @@ class Contact:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         groups: list[str | ContactGroup | pb.ContactGroup] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Contact:
         """Create a new Contact."""
         group = convert_to_protobuf(group, pb.ContactGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         groups = convert_to_protobuf_list(groups, pb.ContactGroup)
-        return pb.Contact(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Contact(
             group=group,
             name=name,
             title=title,
@@ -1003,6 +1360,9 @@ class Contact:
             custom_fields=custom_fields,
             groups=groups,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ContactAssignment:
@@ -1108,6 +1468,7 @@ class ContactAssignment:
         priority: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ContactAssignment:
         """Create a new ContactAssignment."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -1207,7 +1568,12 @@ class ContactAssignment:
         role = convert_to_protobuf(role, pb.ContactRole)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ContactAssignment(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ContactAssignment(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
             object_aggregate=object_aggregate,
@@ -1307,6 +1673,9 @@ class ContactAssignment:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ContactGroup:
@@ -1321,12 +1690,18 @@ class ContactGroup:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ContactGroup:
         """Create a new ContactGroup."""
         parent = convert_to_protobuf(parent, pb.ContactGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ContactGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ContactGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -1335,6 +1710,9 @@ class ContactGroup:
             custom_fields=custom_fields,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ContactRole:
@@ -1347,17 +1725,26 @@ class ContactRole:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ContactRole:
         """Create a new ContactRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ContactRole(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ContactRole(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CustomFieldObjectReference:
@@ -1458,6 +1845,7 @@ class CustomFieldObjectReference:
         journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
         module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         custom_link: str | CustomLink | pb.CustomLink | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -1553,7 +1941,7 @@ class CustomFieldObjectReference:
         journal_entry = convert_to_protobuf(journal_entry, pb.JournalEntry)
         module_type_profile = convert_to_protobuf(module_type_profile, pb.ModuleTypeProfile)
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
-        return pb.CustomFieldObjectReference(
+        result = pb.CustomFieldObjectReference(
             asn=asn,
             asn_range=asn_range,
             aggregate=aggregate,
@@ -1648,6 +2036,7 @@ class CustomFieldObjectReference:
             module_type_profile=module_type_profile,
             custom_link=custom_link,
         )
+        return result
 
 
 class CustomFieldValue:
@@ -1668,11 +2057,12 @@ class CustomFieldValue:
         json: str | None = None,
         selection: str | None = None,
         object: str | CustomFieldObjectReference | pb.CustomFieldObjectReference | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomFieldValue:
         """Create a new CustomFieldValue."""
         multiple_objects = convert_to_protobuf_list(multiple_objects, pb.CustomFieldObjectReference)
         object = convert_to_protobuf(object, pb.CustomFieldObjectReference)
-        return pb.CustomFieldValue(
+        result = pb.CustomFieldValue(
             multiple_selection=multiple_selection,
             multiple_objects=multiple_objects,
             text=text,
@@ -1687,6 +2077,7 @@ class CustomFieldValue:
             selection=selection,
             object=object,
         )
+        return result
 
 
 class Device:
@@ -1723,6 +2114,7 @@ class Device:
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Device:
         """Create a new Device."""
         device_type = convert_to_protobuf(device_type, pb.DeviceType)
@@ -1749,7 +2141,12 @@ class Device:
                 platform.manufacturer.CopyFrom(manufacturer)
             if device_type is not None and not device_type.HasField('manufacturer'):
                 device_type.manufacturer.CopyFrom(manufacturer)
-        return pb.Device(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Device(
             name=name,
             device_type=device_type,
             role=role,
@@ -1778,6 +2175,9 @@ class Device:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class DeviceBay:
@@ -1792,13 +2192,19 @@ class DeviceBay:
         installed_device: str | Device | pb.Device | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.DeviceBay:
         """Create a new DeviceBay."""
         device = convert_to_protobuf(device, pb.Device)
         installed_device = convert_to_protobuf(installed_device, pb.Device)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.DeviceBay(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.DeviceBay(
             device=device,
             name=name,
             label=label,
@@ -1807,6 +2213,9 @@ class DeviceBay:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class DeviceRole:
@@ -1823,12 +2232,18 @@ class DeviceRole:
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         parent: str | DeviceRole | pb.DeviceRole | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.DeviceRole:
         """Create a new DeviceRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         parent = convert_to_protobuf(parent, pb.DeviceRole)
-        return pb.DeviceRole(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.DeviceRole(
             name=name,
             slug=slug,
             color=color,
@@ -1839,6 +2254,9 @@ class DeviceRole:
             parent=parent,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class DeviceType:
@@ -1862,13 +2280,19 @@ class DeviceType:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.DeviceType:
         """Create a new DeviceType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         default_platform = convert_to_protobuf(default_platform, pb.Platform)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.DeviceType(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.DeviceType(
             manufacturer=manufacturer,
             default_platform=default_platform,
             model=model,
@@ -1886,6 +2310,9 @@ class DeviceType:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class FHRPGroup:
@@ -1902,11 +2329,17 @@ class FHRPGroup:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroup:
         """Create a new FHRPGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.FHRPGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.FHRPGroup(
             name=name,
             protocol=protocol,
             group_id=group_id,
@@ -1917,6 +2350,9 @@ class FHRPGroup:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class FHRPGroupAssignment:
@@ -2019,6 +2455,7 @@ class FHRPGroupAssignment:
         interface_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         interface_custom_link: str | CustomLink | pb.CustomLink | None = None,
         priority: int | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroupAssignment:
         """Create a new FHRPGroupAssignment."""
         group = convert_to_protobuf(group, pb.FHRPGroup)
@@ -2115,7 +2552,12 @@ class FHRPGroupAssignment:
         interface_journal_entry = convert_to_protobuf(interface_journal_entry, pb.JournalEntry)
         interface_module_type_profile = convert_to_protobuf(interface_module_type_profile, pb.ModuleTypeProfile)
         interface_custom_link = convert_to_protobuf(interface_custom_link, pb.CustomLink)
-        return pb.FHRPGroupAssignment(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.FHRPGroupAssignment(
             group=group,
             interface_asn=interface_asn,
             interface_asn_range=interface_asn_range,
@@ -2212,6 +2654,9 @@ class FHRPGroupAssignment:
             interface_custom_link=interface_custom_link,
             priority=priority,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class FrontPort:
@@ -2231,6 +2676,7 @@ class FrontPort:
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.FrontPort:
         """Create a new FrontPort."""
         device = convert_to_protobuf(device, pb.Device)
@@ -2238,7 +2684,12 @@ class FrontPort:
         rear_port = convert_to_protobuf(rear_port, pb.RearPort)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.FrontPort(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.FrontPort(
             device=device,
             module=module,
             name=name,
@@ -2252,6 +2703,9 @@ class FrontPort:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class GenericObject:
@@ -2352,6 +2806,7 @@ class GenericObject:
         object_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
         object_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         object_custom_link: str | CustomLink | pb.CustomLink | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.GenericObject:
         """Create a new GenericObject."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -2447,7 +2902,7 @@ class GenericObject:
         object_journal_entry = convert_to_protobuf(object_journal_entry, pb.JournalEntry)
         object_module_type_profile = convert_to_protobuf(object_module_type_profile, pb.ModuleTypeProfile)
         object_custom_link = convert_to_protobuf(object_custom_link, pb.CustomLink)
-        return pb.GenericObject(
+        result = pb.GenericObject(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
             object_aggregate=object_aggregate,
@@ -2542,6 +2997,7 @@ class GenericObject:
             object_module_type_profile=object_module_type_profile,
             object_custom_link=object_custom_link,
         )
+        return result
 
 
 class IKEPolicy:
@@ -2558,12 +3014,18 @@ class IKEPolicy:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         proposals: list[str | IKEProposal | pb.IKEProposal] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IKEPolicy:
         """Create a new IKEPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         proposals = convert_to_protobuf_list(proposals, pb.IKEProposal)
-        return pb.IKEPolicy(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.IKEPolicy(
             name=name,
             description=description,
             version=version,
@@ -2574,6 +3036,9 @@ class IKEPolicy:
             custom_fields=custom_fields,
             proposals=proposals,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class IKEProposal:
@@ -2591,11 +3056,17 @@ class IKEProposal:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IKEProposal:
         """Create a new IKEProposal."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IKEProposal(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.IKEProposal(
             name=name,
             description=description,
             authentication_method=authentication_method,
@@ -2607,6 +3078,9 @@ class IKEProposal:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class IPAddress:
@@ -2635,6 +3109,7 @@ class IPAddress:
         site: str | Site | pb.Site = None,
         device_role: str | DeviceRole | pb.DeviceRole = None,
         device: str | Device | pb.Device = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPAddress:
         """Create a new IPAddress."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
@@ -2677,7 +3152,12 @@ class IPAddress:
                 assigned_object_interface.device.CopyFrom(device)
             if assigned_object_vm_interface is not None and not assigned_object_vm_interface.HasField('device'):
                 assigned_object_vm_interface.device.CopyFrom(device)
-        return pb.IPAddress(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.IPAddress(
             address=address,
             vrf=vrf,
             tenant=tenant,
@@ -2693,6 +3173,9 @@ class IPAddress:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class IPRange:
@@ -2712,6 +3195,7 @@ class IPRange:
         mark_utilized: bool | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         mark_populated: bool | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPRange:
         """Create a new IPRange."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
@@ -2719,7 +3203,12 @@ class IPRange:
         role = convert_to_protobuf(role, pb.Role)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IPRange(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.IPRange(
             start_address=start_address,
             end_address=end_address,
             vrf=vrf,
@@ -2733,6 +3222,9 @@ class IPRange:
             custom_fields=custom_fields,
             mark_populated=mark_populated,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class IPSecPolicy:
@@ -2747,12 +3239,18 @@ class IPSecPolicy:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         proposals: list[str | IPSecProposal | pb.IPSecProposal] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPSecPolicy:
         """Create a new IPSecPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         proposals = convert_to_protobuf_list(proposals, pb.IPSecProposal)
-        return pb.IPSecPolicy(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.IPSecPolicy(
             name=name,
             description=description,
             pfs_group=pfs_group,
@@ -2761,6 +3259,9 @@ class IPSecPolicy:
             custom_fields=custom_fields,
             proposals=proposals,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class IPSecProfile:
@@ -2776,13 +3277,19 @@ class IPSecProfile:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPSecProfile:
         """Create a new IPSecProfile."""
         ike_policy = convert_to_protobuf(ike_policy, pb.IKEPolicy)
         ipsec_policy = convert_to_protobuf(ipsec_policy, pb.IPSecPolicy)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IPSecProfile(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.IPSecProfile(
             name=name,
             description=description,
             mode=mode,
@@ -2792,6 +3299,9 @@ class IPSecProfile:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class IPSecProposal:
@@ -2808,11 +3318,17 @@ class IPSecProposal:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPSecProposal:
         """Create a new IPSecProposal."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IPSecProposal(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.IPSecProposal(
             name=name,
             description=description,
             encryption_algorithm=encryption_algorithm,
@@ -2823,6 +3339,9 @@ class IPSecProposal:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Interface:
@@ -2870,6 +3389,7 @@ class Interface:
         platform: str | Platform | pb.Platform = None,
         site: str | Site | pb.Site = None,
         role: str | DeviceRole | pb.DeviceRole = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Interface:
         """Create a new Interface."""
         device = convert_to_protobuf(device, pb.Device)
@@ -2913,7 +3433,12 @@ class Interface:
         if role is not None:
             if device is not None and not device.HasField('role'):
                 device.role.CopyFrom(role)
-        return pb.Interface(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Interface(
             device=device,
             module=module,
             name=name,
@@ -2949,6 +3474,9 @@ class Interface:
             tagged_vlans=tagged_vlans,
             wireless_lans=wireless_lans,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class InventoryItem:
@@ -2977,6 +3505,7 @@ class InventoryItem:
         component_rear_port: str | RearPort | pb.RearPort | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.InventoryItem:
         """Create a new InventoryItem."""
         device = convert_to_protobuf(device, pb.Device)
@@ -2992,7 +3521,12 @@ class InventoryItem:
         component_rear_port = convert_to_protobuf(component_rear_port, pb.RearPort)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.InventoryItem(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.InventoryItem(
             device=device,
             parent=parent,
             name=name,
@@ -3015,6 +3549,9 @@ class InventoryItem:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class InventoryItemRole:
@@ -3028,11 +3565,17 @@ class InventoryItemRole:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.InventoryItemRole:
         """Create a new InventoryItemRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.InventoryItemRole(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.InventoryItemRole(
             name=name,
             slug=slug,
             color=color,
@@ -3040,6 +3583,9 @@ class InventoryItemRole:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class L2VPN:
@@ -3059,6 +3605,7 @@ class L2VPN:
         import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         status: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.L2VPN:
         """Create a new L2VPN."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
@@ -3066,7 +3613,12 @@ class L2VPN:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
         export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
-        return pb.L2VPN(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.L2VPN(
             identifier=identifier,
             name=name,
             slug=slug,
@@ -3080,6 +3632,9 @@ class L2VPN:
             export_targets=export_targets,
             status=status,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class L2VPNTermination:
@@ -3183,6 +3738,7 @@ class L2VPNTermination:
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.L2VPNTermination:
         """Create a new L2VPNTermination."""
         l2vpn = convert_to_protobuf(l2vpn, pb.L2VPN)
@@ -3281,7 +3837,12 @@ class L2VPNTermination:
         assigned_object_custom_link = convert_to_protobuf(assigned_object_custom_link, pb.CustomLink)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.L2VPNTermination(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.L2VPNTermination(
             l2vpn=l2vpn,
             assigned_object_interface=assigned_object_interface,
             assigned_object_vlan=assigned_object_vlan,
@@ -3379,6 +3940,9 @@ class L2VPNTermination:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Location:
@@ -3397,6 +3961,7 @@ class Location:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Location:
         """Create a new Location."""
         site = convert_to_protobuf(site, pb.Site)
@@ -3404,7 +3969,12 @@ class Location:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Location(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Location(
             name=name,
             slug=slug,
             site=site,
@@ -3417,6 +3987,9 @@ class Location:
             custom_fields=custom_fields,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class MACAddress:
@@ -3431,13 +4004,19 @@ class MACAddress:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.MACAddress:
         """Create a new MACAddress."""
         assigned_object_interface = convert_to_protobuf(assigned_object_interface, pb.Interface)
         assigned_object_vm_interface = convert_to_protobuf(assigned_object_vm_interface, pb.VMInterface)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.MACAddress(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.MACAddress(
             mac_address=mac_address,
             assigned_object_interface=assigned_object_interface,
             assigned_object_vm_interface=assigned_object_vm_interface,
@@ -3446,6 +4025,9 @@ class MACAddress:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Manufacturer:
@@ -3458,17 +4040,26 @@ class Manufacturer:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Manufacturer:
         """Create a new Manufacturer."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Manufacturer(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Manufacturer(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Module:
@@ -3486,6 +4077,7 @@ class Module:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Module:
         """Create a new Module."""
         device = convert_to_protobuf(device, pb.Device)
@@ -3493,7 +4085,12 @@ class Module:
         module_type = convert_to_protobuf(module_type, pb.ModuleType)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Module(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Module(
             device=device,
             module_bay=module_bay,
             module_type=module_type,
@@ -3505,6 +4102,9 @@ class Module:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ModuleBay:
@@ -3521,6 +4121,7 @@ class ModuleBay:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ModuleBay:
         """Create a new ModuleBay."""
         device = convert_to_protobuf(device, pb.Device)
@@ -3528,7 +4129,12 @@ class ModuleBay:
         installed_module = convert_to_protobuf(installed_module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ModuleBay(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ModuleBay(
             device=device,
             module=module,
             name=name,
@@ -3539,6 +4145,9 @@ class ModuleBay:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ModuleType:
@@ -3558,13 +4167,19 @@ class ModuleType:
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         attributes: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ModuleType:
         """Create a new ModuleType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         profile = convert_to_protobuf(profile, pb.ModuleTypeProfile)
-        return pb.ModuleType(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ModuleType(
             manufacturer=manufacturer,
             model=model,
             part_number=part_number,
@@ -3578,6 +4193,9 @@ class ModuleType:
             profile=profile,
             attributes=attributes,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Platform:
@@ -3593,13 +4211,19 @@ class Platform:
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         parent: str | Platform | pb.Platform | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Platform:
         """Create a new Platform."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         parent = convert_to_protobuf(parent, pb.Platform)
-        return pb.Platform(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Platform(
             name=name,
             slug=slug,
             manufacturer=manufacturer,
@@ -3609,6 +4233,9 @@ class Platform:
             parent=parent,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class PowerFeed:
@@ -3632,6 +4259,7 @@ class PowerFeed:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerFeed:
         """Create a new PowerFeed."""
         power_panel = convert_to_protobuf(power_panel, pb.PowerPanel)
@@ -3639,7 +4267,12 @@ class PowerFeed:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerFeed(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.PowerFeed(
             power_panel=power_panel,
             rack=rack,
             name=name,
@@ -3657,6 +4290,9 @@ class PowerFeed:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class PowerOutlet:
@@ -3677,6 +4313,7 @@ class PowerOutlet:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         status: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerOutlet:
         """Create a new PowerOutlet."""
         device = convert_to_protobuf(device, pb.Device)
@@ -3684,7 +4321,12 @@ class PowerOutlet:
         power_port = convert_to_protobuf(power_port, pb.PowerPort)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerOutlet(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.PowerOutlet(
             device=device,
             module=module,
             name=name,
@@ -3699,6 +4341,9 @@ class PowerOutlet:
             custom_fields=custom_fields,
             status=status,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class PowerPanel:
@@ -3713,13 +4358,19 @@ class PowerPanel:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerPanel:
         """Create a new PowerPanel."""
         site = convert_to_protobuf(site, pb.Site)
         location = convert_to_protobuf(location, pb.Location)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerPanel(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.PowerPanel(
             site=site,
             location=location,
             name=name,
@@ -3728,6 +4379,9 @@ class PowerPanel:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class PowerPort:
@@ -3746,13 +4400,19 @@ class PowerPort:
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerPort:
         """Create a new PowerPort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerPort(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.PowerPort(
             device=device,
             module=module,
             name=name,
@@ -3765,6 +4425,9 @@ class PowerPort:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Prefix:
@@ -3788,6 +4451,7 @@ class Prefix:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Prefix:
         """Create a new Prefix."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
@@ -3800,7 +4464,12 @@ class Prefix:
         role = convert_to_protobuf(role, pb.Role)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Prefix(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Prefix(
             prefix=prefix,
             vrf=vrf,
             scope_location=scope_location,
@@ -3818,6 +4487,9 @@ class Prefix:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Provider:
@@ -3833,13 +4505,19 @@ class Provider:
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         accounts: list[str | ProviderAccount | pb.ProviderAccount] | None = None,
         asns: list[str | ASN | pb.ASN] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Provider:
         """Create a new Provider."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         accounts = convert_to_protobuf_list(accounts, pb.ProviderAccount)
         asns = convert_to_protobuf_list(asns, pb.ASN)
-        return pb.Provider(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Provider(
             name=name,
             slug=slug,
             description=description,
@@ -3849,6 +4527,9 @@ class Provider:
             accounts=accounts,
             asns=asns,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ProviderAccount:
@@ -3863,12 +4544,18 @@ class ProviderAccount:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ProviderAccount:
         """Create a new ProviderAccount."""
         provider = convert_to_protobuf(provider, pb.Provider)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ProviderAccount(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ProviderAccount(
             provider=provider,
             name=name,
             account=account,
@@ -3877,6 +4564,9 @@ class ProviderAccount:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ProviderNetwork:
@@ -3891,12 +4581,18 @@ class ProviderNetwork:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ProviderNetwork:
         """Create a new ProviderNetwork."""
         provider = convert_to_protobuf(provider, pb.Provider)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ProviderNetwork(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ProviderNetwork(
             provider=provider,
             name=name,
             service_id=service_id,
@@ -3905,6 +4601,9 @@ class ProviderNetwork:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class RIR:
@@ -3918,11 +4617,17 @@ class RIR:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RIR:
         """Create a new RIR."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RIR(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.RIR(
             name=name,
             slug=slug,
             is_private=is_private,
@@ -3930,6 +4635,9 @@ class RIR:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Rack:
@@ -3965,6 +4673,7 @@ class Rack:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         outer_height: int | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Rack:
         """Create a new Rack."""
         site = convert_to_protobuf(site, pb.Site)
@@ -3974,7 +4683,12 @@ class Rack:
         rack_type = convert_to_protobuf(rack_type, pb.RackType)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Rack(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Rack(
             name=name,
             facility_id=facility_id,
             site=site,
@@ -4004,6 +4718,9 @@ class Rack:
             custom_fields=custom_fields,
             outer_height=outer_height,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class RackReservation:
@@ -4019,13 +4736,19 @@ class RackReservation:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         status: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RackReservation:
         """Create a new RackReservation."""
         rack = convert_to_protobuf(rack, pb.Rack)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RackReservation(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.RackReservation(
             rack=rack,
             units=units,
             tenant=tenant,
@@ -4035,6 +4758,9 @@ class RackReservation:
             custom_fields=custom_fields,
             status=status,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class RackRole:
@@ -4048,11 +4774,17 @@ class RackRole:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RackRole:
         """Create a new RackRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RackRole(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.RackRole(
             name=name,
             slug=slug,
             color=color,
@@ -4060,6 +4792,9 @@ class RackRole:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class RackType:
@@ -4087,12 +4822,18 @@ class RackType:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         outer_height: int | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RackType:
         """Create a new RackType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RackType(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.RackType(
             manufacturer=manufacturer,
             model=model,
             slug=slug,
@@ -4114,6 +4855,9 @@ class RackType:
             custom_fields=custom_fields,
             outer_height=outer_height,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class RearPort:
@@ -4132,13 +4876,19 @@ class RearPort:
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RearPort:
         """Create a new RearPort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RearPort(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.RearPort(
             device=device,
             module=module,
             name=name,
@@ -4151,6 +4901,9 @@ class RearPort:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Region:
@@ -4165,12 +4918,18 @@ class Region:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Region:
         """Create a new Region."""
         parent = convert_to_protobuf(parent, pb.Region)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Region(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Region(
             name=name,
             slug=slug,
             parent=parent,
@@ -4179,6 +4938,9 @@ class Region:
             custom_fields=custom_fields,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Role:
@@ -4192,11 +4954,17 @@ class Role:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Role:
         """Create a new Role."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Role(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Role(
             name=name,
             slug=slug,
             weight=weight,
@@ -4204,6 +4972,9 @@ class Role:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class RouteTarget:
@@ -4217,12 +4988,18 @@ class RouteTarget:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RouteTarget:
         """Create a new RouteTarget."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RouteTarget(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.RouteTarget(
             name=name,
             tenant=tenant,
             description=description,
@@ -4230,6 +5007,9 @@ class RouteTarget:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Service:
@@ -4250,6 +5030,7 @@ class Service:
         parent_object_device: str | Device | pb.Device | None = None,
         parent_object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         parent_object_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Service:
         """Create a new Service."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4260,7 +5041,12 @@ class Service:
         parent_object_device = convert_to_protobuf(parent_object_device, pb.Device)
         parent_object_fhrp_group = convert_to_protobuf(parent_object_fhrp_group, pb.FHRPGroup)
         parent_object_virtual_machine = convert_to_protobuf(parent_object_virtual_machine, pb.VirtualMachine)
-        return pb.Service(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Service(
             device=device,
             virtual_machine=virtual_machine,
             name=name,
@@ -4275,6 +5061,9 @@ class Service:
             parent_object_fhrp_group=parent_object_fhrp_group,
             parent_object_virtual_machine=parent_object_virtual_machine,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Site:
@@ -4299,6 +5088,7 @@ class Site:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         asns: list[str | ASN | pb.ASN] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Site:
         """Create a new Site."""
         region = convert_to_protobuf(region, pb.Region)
@@ -4307,7 +5097,12 @@ class Site:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         asns = convert_to_protobuf_list(asns, pb.ASN)
-        return pb.Site(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Site(
             name=name,
             slug=slug,
             status=status,
@@ -4326,6 +5121,9 @@ class Site:
             custom_fields=custom_fields,
             asns=asns,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class SiteGroup:
@@ -4340,12 +5138,18 @@ class SiteGroup:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.SiteGroup:
         """Create a new SiteGroup."""
         parent = convert_to_protobuf(parent, pb.SiteGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.SiteGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.SiteGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -4354,6 +5158,9 @@ class SiteGroup:
             custom_fields=custom_fields,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Tag:
@@ -4367,9 +5174,15 @@ class Tag:
         description: str | None = None,
         weight: int | None = None,
         object_types: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Tag:
         """Create a new Tag."""
-        return pb.Tag(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Tag(
             name=name,
             slug=slug,
             color=color,
@@ -4377,6 +5190,9 @@ class Tag:
             weight=weight,
             object_types=object_types,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Tenant:
@@ -4391,12 +5207,18 @@ class Tenant:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Tenant:
         """Create a new Tenant."""
         group = convert_to_protobuf(group, pb.TenantGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Tenant(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Tenant(
             name=name,
             slug=slug,
             group=group,
@@ -4405,6 +5227,9 @@ class Tenant:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class TenantGroup:
@@ -4419,12 +5244,18 @@ class TenantGroup:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.TenantGroup:
         """Create a new TenantGroup."""
         parent = convert_to_protobuf(parent, pb.TenantGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.TenantGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.TenantGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -4433,6 +5264,9 @@ class TenantGroup:
             custom_fields=custom_fields,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class Tunnel:
@@ -4451,6 +5285,7 @@ class Tunnel:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Tunnel:
         """Create a new Tunnel."""
         group = convert_to_protobuf(group, pb.TunnelGroup)
@@ -4458,7 +5293,12 @@ class Tunnel:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Tunnel(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.Tunnel(
             name=name,
             status=status,
             group=group,
@@ -4471,6 +5311,9 @@ class Tunnel:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class TunnelGroup:
@@ -4483,17 +5326,26 @@ class TunnelGroup:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.TunnelGroup:
         """Create a new TunnelGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.TunnelGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.TunnelGroup(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class TunnelTermination:
@@ -4599,6 +5451,7 @@ class TunnelTermination:
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.TunnelTermination:
         """Create a new TunnelTermination."""
         tunnel = convert_to_protobuf(tunnel, pb.Tunnel)
@@ -4698,7 +5551,12 @@ class TunnelTermination:
         outside_ip = convert_to_protobuf(outside_ip, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.TunnelTermination(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.TunnelTermination(
             tunnel=tunnel,
             role=role,
             termination_asn=termination_asn,
@@ -4798,6 +5656,9 @@ class TunnelTermination:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VLAN:
@@ -4818,6 +5679,7 @@ class VLAN:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLAN:
         """Create a new VLAN."""
         site = convert_to_protobuf(site, pb.Site)
@@ -4827,7 +5689,12 @@ class VLAN:
         qinq_svlan = convert_to_protobuf(qinq_svlan, pb.VLAN)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VLAN(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VLAN(
             site=site,
             group=group,
             vid=vid,
@@ -4842,6 +5709,9 @@ class VLAN:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VLANGroup:
@@ -4863,6 +5733,7 @@ class VLANGroup:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLANGroup:
         """Create a new VLANGroup."""
         scope_cluster = convert_to_protobuf(scope_cluster, pb.Cluster)
@@ -4875,7 +5746,12 @@ class VLANGroup:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
-        return pb.VLANGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VLANGroup(
             name=name,
             slug=slug,
             scope_cluster=scope_cluster,
@@ -4891,6 +5767,9 @@ class VLANGroup:
             custom_fields=custom_fields,
             tenant=tenant,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VLANTranslationPolicy:
@@ -4900,12 +5779,21 @@ class VLANTranslationPolicy:
         cls,
         name: str | None = None,
         description: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLANTranslationPolicy:
         """Create a new VLANTranslationPolicy."""
-        return pb.VLANTranslationPolicy(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VLANTranslationPolicy(
             name=name,
             description=description,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VLANTranslationRule:
@@ -4917,15 +5805,24 @@ class VLANTranslationRule:
         local_vid: int | None = None,
         remote_vid: int | None = None,
         description: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLANTranslationRule:
         """Create a new VLANTranslationRule."""
         policy = convert_to_protobuf(policy, pb.VLANTranslationPolicy)
-        return pb.VLANTranslationRule(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VLANTranslationRule(
             policy=policy,
             local_vid=local_vid,
             remote_vid=remote_vid,
             description=description,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VMInterface:
@@ -4949,6 +5846,7 @@ class VMInterface:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VMInterface:
         """Create a new VMInterface."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
@@ -4962,7 +5860,12 @@ class VMInterface:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         tagged_vlans = convert_to_protobuf_list(tagged_vlans, pb.VLAN)
-        return pb.VMInterface(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VMInterface(
             virtual_machine=virtual_machine,
             name=name,
             enabled=enabled,
@@ -4980,6 +5883,9 @@ class VMInterface:
             custom_fields=custom_fields,
             tagged_vlans=tagged_vlans,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VRF:
@@ -4997,6 +5903,7 @@ class VRF:
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VRF:
         """Create a new VRF."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
@@ -5004,7 +5911,12 @@ class VRF:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
         export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
-        return pb.VRF(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VRF(
             name=name,
             rd=rd,
             tenant=tenant,
@@ -5016,6 +5928,9 @@ class VRF:
             import_targets=import_targets,
             export_targets=export_targets,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VirtualChassis:
@@ -5030,12 +5945,18 @@ class VirtualChassis:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualChassis:
         """Create a new VirtualChassis."""
         master = convert_to_protobuf(master, pb.Device)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualChassis(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VirtualChassis(
             name=name,
             domain=domain,
             master=master,
@@ -5044,6 +5965,9 @@ class VirtualChassis:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VirtualCircuit:
@@ -5061,6 +5985,7 @@ class VirtualCircuit:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualCircuit:
         """Create a new VirtualCircuit."""
         provider_network = convert_to_protobuf(provider_network, pb.ProviderNetwork)
@@ -5069,7 +5994,12 @@ class VirtualCircuit:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualCircuit(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VirtualCircuit(
             cid=cid,
             provider_network=provider_network,
             provider_account=provider_account,
@@ -5081,6 +6011,9 @@ class VirtualCircuit:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VirtualCircuitTermination:
@@ -5094,13 +6027,19 @@ class VirtualCircuitTermination:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualCircuitTermination:
         """Create a new VirtualCircuitTermination."""
         virtual_circuit = convert_to_protobuf(virtual_circuit, pb.VirtualCircuit)
         interface = convert_to_protobuf(interface, pb.Interface)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualCircuitTermination(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VirtualCircuitTermination(
             virtual_circuit=virtual_circuit,
             role=role,
             interface=interface,
@@ -5108,6 +6047,9 @@ class VirtualCircuitTermination:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VirtualCircuitType:
@@ -5121,11 +6063,17 @@ class VirtualCircuitType:
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualCircuitType:
         """Create a new VirtualCircuitType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualCircuitType(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VirtualCircuitType(
             name=name,
             slug=slug,
             color=color,
@@ -5133,6 +6081,9 @@ class VirtualCircuitType:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VirtualDeviceContext:
@@ -5151,6 +6102,7 @@ class VirtualDeviceContext:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualDeviceContext:
         """Create a new VirtualDeviceContext."""
         device = convert_to_protobuf(device, pb.Device)
@@ -5159,7 +6111,12 @@ class VirtualDeviceContext:
         primary_ip6 = convert_to_protobuf(primary_ip6, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualDeviceContext(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VirtualDeviceContext(
             name=name,
             device=device,
             identifier=identifier,
@@ -5172,6 +6129,9 @@ class VirtualDeviceContext:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VirtualDisk:
@@ -5185,12 +6145,18 @@ class VirtualDisk:
         size: int | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualDisk:
         """Create a new VirtualDisk."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualDisk(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VirtualDisk(
             virtual_machine=virtual_machine,
             name=name,
             description=description,
@@ -5198,6 +6164,9 @@ class VirtualDisk:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class VirtualMachine:
@@ -5223,6 +6192,7 @@ class VirtualMachine:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualMachine:
         """Create a new VirtualMachine."""
         site = convert_to_protobuf(site, pb.Site)
@@ -5248,7 +6218,12 @@ class VirtualMachine:
         if role is not None:
             if device is not None and not device.HasField('role'):
                 device.role.CopyFrom(role)
-        return pb.VirtualMachine(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.VirtualMachine(
             name=name,
             status=status,
             site=site,
@@ -5268,6 +6243,9 @@ class VirtualMachine:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class WirelessLAN:
@@ -5291,6 +6269,7 @@ class WirelessLAN:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.WirelessLAN:
         """Create a new WirelessLAN."""
         group = convert_to_protobuf(group, pb.WirelessLANGroup)
@@ -5302,7 +6281,12 @@ class WirelessLAN:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.WirelessLAN(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.WirelessLAN(
             ssid=ssid,
             description=description,
             group=group,
@@ -5320,6 +6304,9 @@ class WirelessLAN:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class WirelessLANGroup:
@@ -5334,12 +6321,18 @@ class WirelessLANGroup:
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.WirelessLANGroup:
         """Create a new WirelessLANGroup."""
         parent = convert_to_protobuf(parent, pb.WirelessLANGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.WirelessLANGroup(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.WirelessLANGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -5348,6 +6341,9 @@ class WirelessLANGroup:
             custom_fields=custom_fields,
             comments=comments,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class WirelessLink:
@@ -5369,6 +6365,7 @@ class WirelessLink:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.WirelessLink:
         """Create a new WirelessLink."""
         interface_a = convert_to_protobuf(interface_a, pb.Interface)
@@ -5376,7 +6373,12 @@ class WirelessLink:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.WirelessLink(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.WirelessLink(
             interface_a=interface_a,
             interface_b=interface_b,
             ssid=ssid,
@@ -5392,6 +6394,9 @@ class WirelessLink:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CustomField:
@@ -5421,10 +6426,16 @@ class CustomField:
         choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
         comments: str | None = None,
         object_types: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomField:
         """Create a new CustomField."""
         choice_set = convert_to_protobuf(choice_set, pb.CustomFieldChoiceSet)
-        return pb.CustomField(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CustomField(
             type=type,
             related_object_type=related_object_type,
             name=name,
@@ -5448,6 +6459,9 @@ class CustomField:
             comments=comments,
             object_types=object_types,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CustomFieldChoiceSet:
@@ -5460,15 +6474,24 @@ class CustomFieldChoiceSet:
         base_choices: str | None = None,
         order_alphabetically: bool | None = None,
         extra_choices: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomFieldChoiceSet:
         """Create a new CustomFieldChoiceSet."""
-        return pb.CustomFieldChoiceSet(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CustomFieldChoiceSet(
             name=name,
             description=description,
             base_choices=base_choices,
             order_alphabetically=order_alphabetically,
             extra_choices=extra_choices,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class JournalEntry:
@@ -5573,6 +6596,7 @@ class JournalEntry:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.JournalEntry:
         """Create a new JournalEntry."""
         assigned_object_asn = convert_to_protobuf(assigned_object_asn, pb.ASN)
@@ -5670,7 +6694,12 @@ class JournalEntry:
         assigned_object_custom_link = convert_to_protobuf(assigned_object_custom_link, pb.CustomLink)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.JournalEntry(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.JournalEntry(
             assigned_object_asn=assigned_object_asn,
             assigned_object_asn_range=assigned_object_asn_range,
             assigned_object_aggregate=assigned_object_aggregate,
@@ -5769,6 +6798,9 @@ class JournalEntry:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class ModuleTypeProfile:
@@ -5782,11 +6814,17 @@ class ModuleTypeProfile:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ModuleTypeProfile:
         """Create a new ModuleTypeProfile."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ModuleTypeProfile(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.ModuleTypeProfile(
             name=name,
             description=description,
             schema=schema,
@@ -5794,6 +6832,9 @@ class ModuleTypeProfile:
             tags=tags,
             custom_fields=custom_fields,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
 
 
 class CustomLink:
@@ -5810,9 +6851,15 @@ class CustomLink:
         button_class: str | None = None,
         new_window: bool | None = None,
         object_types: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomLink:
         """Create a new CustomLink."""
-        return pb.CustomLink(
+        # Store metadata on the protobuf message for later extraction
+        if metadata is not None:
+            _metadata = convert_dict_to_struct(metadata)
+        else:
+            _metadata = None
+        result = pb.CustomLink(
             name=name,
             enabled=enabled,
             link_text=link_text,
@@ -5823,3 +6870,6 @@ class CustomLink:
             new_window=new_window,
             object_types=object_types,
         )
+        if _metadata is not None:
+            result._metadata = _metadata
+        return result
