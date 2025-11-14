@@ -138,7 +138,7 @@ def test_platform_instantiation_with_all_fields():
         tags=["tag1", "tag2"],
     )
     assert isinstance(platform, PlatformPb)
-    assert hasattr(platform, 'metadata')
+    assert hasattr(platform, "metadata")
     assert platform.name == "Platform1"
     assert platform.slug == "platform1"
     assert platform.description == "This is a platform"
@@ -158,7 +158,7 @@ def test_platform_instantiation_with_explicit_manufacturer():
         tags=["tag1", "tag2"],
     )
     assert isinstance(platform, PlatformPb)
-    assert hasattr(platform, 'metadata')
+    assert hasattr(platform, "metadata")
 
     # Test user-facing API: works like protobuf
     assert platform.name == "Platform1"
@@ -365,14 +365,24 @@ def test_ip_address_instantiation_with_all_fields():
     assert ip_address.assigned_object_interface.name == "Interface1"
     assert isinstance(ip_address.assigned_object_interface.device, DevicePb)
     assert ip_address.assigned_object_interface.device.name == "Device1"
-    assert isinstance(ip_address.assigned_object_interface.device.device_type, DeviceTypePb)
-    assert ip_address.assigned_object_interface.device.device_type.model == "DeviceType1"
+    assert isinstance(
+        ip_address.assigned_object_interface.device.device_type, DeviceTypePb
+    )
+    assert (
+        ip_address.assigned_object_interface.device.device_type.model == "DeviceType1"
+    )
     assert isinstance(ip_address.assigned_object_interface.device.role, DeviceRolePb)
     assert ip_address.assigned_object_interface.device.role.name == "Role1"
     assert isinstance(ip_address.assigned_object_interface.device.platform, PlatformPb)
     assert ip_address.assigned_object_interface.device.platform.name == "Platform1"
-    assert isinstance(ip_address.assigned_object_interface.device.platform.manufacturer, ManufacturerPb)
-    assert ip_address.assigned_object_interface.device.platform.manufacturer.name == "Manufacturer1"
+    assert isinstance(
+        ip_address.assigned_object_interface.device.platform.manufacturer,
+        ManufacturerPb,
+    )
+    assert (
+        ip_address.assigned_object_interface.device.platform.manufacturer.name
+        == "Manufacturer1"
+    )
     assert isinstance(ip_address.assigned_object_interface.device.site, SitePb)
     assert ip_address.assigned_object_interface.device.site.name == "Site1"
     assert ip_address.status == "active"
@@ -408,8 +418,14 @@ def test_ip_address_instantiation_with_explicit_nested_object_types():
         tags=["tag1", "tag2"],
     )
     assert isinstance(ip_address, IPAddressPb)
-    assert ip_address.assigned_object_interface.device.platform.manufacturer.name == "Manufacturer1"
-    assert ip_address.assigned_object_interface.device.device_type.manufacturer.name == "Manufacturer1"
+    assert (
+        ip_address.assigned_object_interface.device.platform.manufacturer.name
+        == "Manufacturer1"
+    )
+    assert (
+        ip_address.assigned_object_interface.device.device_type.manufacturer.name
+        == "Manufacturer1"
+    )
     assert ip_address.status == "active"
     assert ip_address.dns_name == "dns.example.com"
     assert ip_address.description == "This is an IP address"
@@ -435,12 +451,20 @@ def test_ip_address_instantiation_with_manufacturer_populated_to_device_type_and
     assert isinstance(ip_address, IPAddressPb)
     assert isinstance(ip_address.assigned_object_interface, InterfacePb)
     assert isinstance(ip_address.assigned_object_interface.device, DevicePb)
-    assert isinstance(ip_address.assigned_object_interface.device.device_type, DeviceTypePb)
+    assert isinstance(
+        ip_address.assigned_object_interface.device.device_type, DeviceTypePb
+    )
     assert isinstance(ip_address.assigned_object_interface.device.role, DeviceRolePb)
     assert isinstance(ip_address.assigned_object_interface.device.platform, PlatformPb)
     assert isinstance(ip_address.assigned_object_interface.device.site, SitePb)
-    assert ip_address.assigned_object_interface.device.platform.manufacturer.name == "Manufacturer1"
-    assert ip_address.assigned_object_interface.device.device_type.manufacturer.name == "Manufacturer1"
+    assert (
+        ip_address.assigned_object_interface.device.platform.manufacturer.name
+        == "Manufacturer1"
+    )
+    assert (
+        ip_address.assigned_object_interface.device.device_type.manufacturer.name
+        == "Manufacturer1"
+    )
     assert ip_address.status == "active"
     assert ip_address.dns_name == "dns.example.com"
 
@@ -822,6 +846,7 @@ def test_entity_instantiation_with_vm_interface():
     assert isinstance(entity.vm_interface, VMInterfacePb)
     assert entity.vm_interface.name == "VMInterface1"
 
+
 def test_entity_with_metadata():
     """Test Entity with entity-level metadata."""
     metadata = {
@@ -853,7 +878,7 @@ def test_entity_with_nested_metadata():
         "config": {
             "auto_sync": True,
             "retry_count": 3,
-        }
+        },
     }
 
     device = Device(name="TestDevice", metadata=metadata)
@@ -936,7 +961,9 @@ def test_device_with_metadata():
     assert entity.device.name == "switch-01"
     assert entity.device.HasField("metadata")
     assert entity.device.metadata.fields["rack_position"].string_value == "A1"
-    assert entity.device.metadata.fields["warranty_expires"].string_value == "2025-12-31"
+    assert (
+        entity.device.metadata.fields["warranty_expires"].string_value == "2025-12-31"
+    )
 
 
 def test_multiple_entities_with_different_metadata():
@@ -944,7 +971,11 @@ def test_multiple_entities_with_different_metadata():
     entities = [
         Entity(site=Site(name="Site1", metadata={"region": "us-west", "priority": 1})),
         Entity(site=Site(name="Site2", metadata={"region": "us-east", "priority": 2})),
-        Entity(device=Device(name="Device1", metadata={"rack": "A1", "power_source": "UPS-1"})),
+        Entity(
+            device=Device(
+                name="Device1", metadata={"rack": "A1", "power_source": "UPS-1"}
+            )
+        ),
     ]
 
     assert entities[0].site.metadata.fields["region"].string_value == "us-west"
@@ -965,7 +996,7 @@ def test_entity_with_nested_entity_both_with_metadata():
             "vendor_id": "CSCO-001",
             "support_tier": "platinum",
             "contract_number": "SUP-12345",
-        }
+        },
     )
 
     platform = Platform(
@@ -975,7 +1006,7 @@ def test_entity_with_nested_entity_both_with_metadata():
             "platform_version": "17.3.4",
             "certified": True,
             "eol_date": "2030-12-31",
-        }
+        },
     )
 
     assert isinstance(platform, PlatformPb)
@@ -987,13 +1018,18 @@ def test_entity_with_nested_entity_both_with_metadata():
     assert isinstance(platform.manufacturer, ManufacturerPb)
     assert platform.manufacturer.HasField("metadata")
     assert platform.manufacturer.metadata.fields["vendor_id"].string_value == "CSCO-001"
-    assert platform.manufacturer.metadata.fields["support_tier"].string_value == "platinum"
-    assert platform.manufacturer.metadata.fields["contract_number"].string_value == "SUP-12345"
+    assert (
+        platform.manufacturer.metadata.fields["support_tier"].string_value == "platinum"
+    )
+    assert (
+        platform.manufacturer.metadata.fields["contract_number"].string_value
+        == "SUP-12345"
+    )
     assert platform.manufacturer.name == "Cisco Systems"
 
     platform_entity = Entity(platform=platform)
     assert isinstance(platform_entity, EntityPb)
-    assert platform_entity.HasField('platform')
+    assert platform_entity.HasField("platform")
     assert platform_entity.platform.name == "Cisco IOS XE"
-    assert platform_entity.platform.HasField('manufacturer')
+    assert platform_entity.platform.HasField("manufacturer")
     assert platform_entity.platform.manufacturer.name == "Cisco Systems"

@@ -749,8 +749,12 @@ def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
 def test_otlp_client_exports_entities():
     """Ensure DiodeOTLPClient serializes entities and exports them as logs."""
     with (
-        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
-        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
+        ) as mock_insecure_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
+        ) as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
@@ -795,8 +799,12 @@ def test_otlp_client_raises_on_rpc_error():
             return self._details
 
     with (
-        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
-        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
+        ) as mock_insecure_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
+        ) as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
@@ -820,9 +828,13 @@ def test_otlp_client_raises_on_rpc_error():
 def test_otlp_client_grpcs_uses_secure_channel():
     """Ensure DiodeOTLPClient configures SSL credentials for secure targets."""
     with (
-        patch("netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials") as mock_ssl_credentials,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials"
+        ) as mock_ssl_credentials,
         patch("netboxlabs.diode.sdk.client.grpc.secure_channel") as mock_secure_channel,
-        patch("netboxlabs.diode.sdk.client.grpc.intercept_channel") as mock_intercept_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.intercept_channel"
+        ) as mock_intercept_channel,
         patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"),
     ):
         base_channel = mock.Mock()
@@ -1287,6 +1299,7 @@ def test_certificate_loading_efficiency(tmp_path):
         # Verify _load_certs was NOT called again (certificates reused)
         mock_load_certs.assert_not_called()
 
+
 # ==================== Request-Level Metadata Tests ====================
 
 
@@ -1295,7 +1308,7 @@ def test_grpc_client_ingest_with_request_metadata(mock_diode_authentication):
     with patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_channel:
         mock_stub = MagicMock()
         mock_channel.return_value = MagicMock()
-        
+
         client = DiodeClient(
             target="grpc://localhost:8081",
             app_name="test-app",
@@ -1305,24 +1318,24 @@ def test_grpc_client_ingest_with_request_metadata(mock_diode_authentication):
         )
         client._stub = mock_stub
         mock_stub.Ingest.return_value = ingester_pb2.IngestResponse()
-        
+
         # Ingest with request-level metadata
         metadata = {
             "batch_id": "batch-123",
             "record_count": 150,
             "validated": True,
         }
-        
+
         response = client.ingest(
             entities=[Entity(site="TestSite")],
             metadata=metadata,
         )
-        
+
         # Verify Ingest was called
         assert mock_stub.Ingest.called
         call_args = mock_stub.Ingest.call_args[0]
         request = call_args[0]
-        
+
         # Verify metadata is in the request
         assert request.HasField("metadata")
         assert "batch_id" in request.metadata.fields
@@ -1331,7 +1344,7 @@ def test_grpc_client_ingest_with_request_metadata(mock_diode_authentication):
         assert request.metadata.fields["record_count"].number_value == 150
         assert "validated" in request.metadata.fields
         assert request.metadata.fields["validated"].bool_value is True
-        
+
         assert isinstance(response, ingester_pb2.IngestResponse)
 
 
@@ -1340,7 +1353,7 @@ def test_grpc_client_ingest_without_metadata(mock_diode_authentication):
     with patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_channel:
         mock_stub = MagicMock()
         mock_channel.return_value = MagicMock()
-        
+
         client = DiodeClient(
             target="grpc://localhost:8081",
             app_name="test-app",
@@ -1350,15 +1363,15 @@ def test_grpc_client_ingest_without_metadata(mock_diode_authentication):
         )
         client._stub = mock_stub
         mock_stub.Ingest.return_value = ingester_pb2.IngestResponse()
-        
+
         # Ingest without metadata
         response = client.ingest(entities=[Entity(site="TestSite")])
-        
+
         # Verify Ingest was called
         assert mock_stub.Ingest.called
         call_args = mock_stub.Ingest.call_args[0]
         request = call_args[0]
-        
+
         # Verify metadata field exists but is empty
         assert not request.HasField("metadata") or len(request.metadata.fields) == 0
         assert isinstance(response, ingester_pb2.IngestResponse)
@@ -1368,36 +1381,36 @@ def test_dryrun_client_includes_metadata_in_output(tmp_path):
     """Test DiodeDryRunClient includes request-level metadata in JSON output."""
     output_dir = tmp_path / "dryrun_output"
     output_dir.mkdir()
-    
+
     client = DiodeDryRunClient(
         app_name="test-producer",
         output_dir=str(output_dir),
     )
-    
+
     metadata = {
         "import_id": "imp-456",
         "source": "csv-import",
         "priority": 5,
     }
-    
+
     client.ingest(
         entities=[Entity(site="Site1"), Entity(device="Device1")],
         metadata=metadata,
     )
-    
+
     # Find the generated JSON file
     json_files = list(output_dir.glob("*.json"))
     assert len(json_files) == 1
-    
+
     with open(json_files[0]) as f:
         data = json.load(f)
-    
+
     # Verify metadata is in the output
     assert "metadata" in data
     assert data["metadata"]["import_id"] == "imp-456"
     assert data["metadata"]["source"] == "csv-import"
     assert data["metadata"]["priority"] == 5
-    
+
     # Verify entities are present
     assert "entities" in data
     assert len(data["entities"]) == 2
@@ -1406,40 +1419,42 @@ def test_dryrun_client_includes_metadata_in_output(tmp_path):
 def test_otlp_client_maps_metadata_to_resource_attributes():
     """Test DiodeOTLPClient maps request metadata to OTLP resource attributes."""
     with (
-        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
-        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
+        ) as mock_insecure_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
+        ) as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
-        
+
         client = DiodeOTLPClient(
             target="grpc://collector:4317",
             app_name="test-app",
             app_version="1.0.0",
         )
-        
+
         metadata = {
             "environment": "production",
             "region": "us-west",
             "instance_count": 10,
         }
-        
+
         client.ingest(
             entities=[Entity(site="TestSite")],
             metadata=metadata,
         )
-        
+
         # Get the Export call arguments
         stub_instance.Export.assert_called_once()
         export_args, _ = stub_instance.Export.call_args
         request = export_args[0]
         resource_logs = request.resource_logs[0]
-        
+
         # Extract resource attributes
-        attributes = {
-            kv.key: kv.value for kv in resource_logs.resource.attributes
-        }
-        
+        attributes = {kv.key: kv.value for kv in resource_logs.resource.attributes}
+
         # Verify metadata is mapped with diode.metadata.* prefix
         assert "diode.metadata.environment" in attributes
         assert attributes["diode.metadata.environment"].string_value == "production"
@@ -1452,18 +1467,22 @@ def test_otlp_client_maps_metadata_to_resource_attributes():
 def test_otlp_client_handles_nested_metadata():
     """Test DiodeOTLPClient handles nested metadata structures."""
     with (
-        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
-        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
+        ) as mock_insecure_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
+        ) as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
-        
+
         client = DiodeOTLPClient(
             target="grpc://collector:4317",
             app_name="test-app",
             app_version="1.0.0",
         )
-        
+
         metadata = {
             "tags": ["prod", "critical"],
             "config": {
@@ -1472,26 +1491,24 @@ def test_otlp_client_handles_nested_metadata():
                 "features": {
                     "validation": True,
                     "auto_sync": False,
-                }
-            }
+                },
+            },
         }
-        
+
         client.ingest(
             entities=[Entity(site="TestSite")],
             metadata=metadata,
         )
-        
+
         # Get the Export call arguments
         stub_instance.Export.assert_called_once()
         export_args, _ = stub_instance.Export.call_args
         request = export_args[0]
         resource_logs = request.resource_logs[0]
-        
+
         # Extract resource attributes
-        attributes = {
-            kv.key: kv.value for kv in resource_logs.resource.attributes
-        }
-        
+        attributes = {kv.key: kv.value for kv in resource_logs.resource.attributes}
+
         # Verify nested metadata is present
         assert "diode.metadata.tags" in attributes
         assert attributes["diode.metadata.tags"].HasField("array_value")
@@ -1499,12 +1516,12 @@ def test_otlp_client_handles_nested_metadata():
         assert len(tags_array) == 2
         assert tags_array[0].string_value == "prod"
         assert tags_array[1].string_value == "critical"
-        
+
         assert "diode.metadata.config" in attributes
         assert attributes["diode.metadata.config"].HasField("kvlist_value")
         config_kvlist = attributes["diode.metadata.config"].kvlist_value.values
         config_dict = {kv.key: kv.value for kv in config_kvlist}
-        
+
         assert "retry_count" in config_dict
         assert config_dict["retry_count"].int_value == 3
         assert "timeout" in config_dict
@@ -1516,18 +1533,22 @@ def test_otlp_client_handles_nested_metadata():
 def test_otlp_client_metadata_type_conversion():
     """Test DiodeOTLPClient correctly converts different Python types."""
     with (
-        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
-        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
+        ) as mock_insecure_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
+        ) as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
-        
+
         client = DiodeOTLPClient(
             target="grpc://collector:4317",
             app_name="test-app",
             app_version="1.0.0",
         )
-        
+
         metadata = {
             "string_val": "test",
             "int_val": 42,
@@ -1535,23 +1556,21 @@ def test_otlp_client_metadata_type_conversion():
             "bool_true": True,
             "bool_false": False,
         }
-        
+
         client.ingest(
             entities=[Entity(site="TestSite")],
             metadata=metadata,
         )
-        
+
         # Get the Export call arguments
         stub_instance.Export.assert_called_once()
         export_args, _ = stub_instance.Export.call_args
         request = export_args[0]
         resource_logs = request.resource_logs[0]
-        
+
         # Extract resource attributes
-        attributes = {
-            kv.key: kv.value for kv in resource_logs.resource.attributes
-        }
-        
+        attributes = {kv.key: kv.value for kv in resource_logs.resource.attributes}
+
         # Verify type conversions
         assert attributes["diode.metadata.string_val"].string_value == "test"
         assert attributes["diode.metadata.int_val"].int_value == 42
@@ -1563,32 +1582,34 @@ def test_otlp_client_metadata_type_conversion():
 def test_otlp_client_without_metadata():
     """Test DiodeOTLPClient works without metadata (backward compatibility)."""
     with (
-        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
-        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
+        ) as mock_insecure_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
+        ) as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
-        
+
         client = DiodeOTLPClient(
             target="grpc://collector:4317",
             app_name="test-app",
             app_version="1.0.0",
         )
-        
+
         # Ingest without metadata
         client.ingest(entities=[Entity(site="TestSite")])
-        
+
         # Get the Export call arguments
         stub_instance.Export.assert_called_once()
         export_args, _ = stub_instance.Export.call_args
         request = export_args[0]
         resource_logs = request.resource_logs[0]
-        
+
         # Extract resource attributes
-        attributes = {
-            kv.key for kv in resource_logs.resource.attributes
-        }
-        
+        attributes = {kv.key for kv in resource_logs.resource.attributes}
+
         # Verify no diode.metadata.* attributes are present
         metadata_attrs = [k for k in attributes if k.startswith("diode.metadata.")]
         assert len(metadata_attrs) == 0
