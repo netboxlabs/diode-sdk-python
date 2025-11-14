@@ -12,8 +12,8 @@ import datetime
 import re
 from typing import Any
 
-from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf import struct_pb2 as _struct_pb2
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
 
 import netboxlabs.diode.sdk.diode.v1.ingester_pb2 as pb
 
