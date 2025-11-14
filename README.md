@@ -90,7 +90,7 @@ Entities support attaching custom metadata as key-value pairs. Metadata can be u
 
 ```python
 from netboxlabs.diode.sdk import DiodeClient, Entity
-from netboxlabs.diode.sdk.ingester import Device, Site
+from netboxlabs.diode.sdk.ingester import Device, Site, IPAddress
 
 with DiodeClient(
     target="grpc://localhost:8080/diode",
@@ -98,64 +98,54 @@ with DiodeClient(
     app_version="1.0.0",
 ) as client:
     # Create a device with metadata
-    # Note: Both the device and its nested site can have metadata
-    device_entity = Entity(
-        device=Device(
-            name="Device A",
-            device_type="Device Type A",
-            site=Site(
-                name="Site ABC",
-                # Nested entities can also have metadata
-                metadata={
-                    "site_region": "us-west",
-                    "site_cost_center": "CC-001",
-                }
-            ),
-            role="Role ABC",
+    # Note: Both the device and its nested site can have its own metadata
+    device = Device(
+        name="Device A",
+        device_type="Device Type A",
+        site=Site(
+            name="Site ABC",
+            metadata={
+                "site_region": "us-west",
+                "site_cost_center": "CC-001",
+            },
         ),
-        # Add metadata to track additional information about the device
+        role="Role ABC",
         metadata={
             "source": "network_discovery",
             "discovered_at": "2024-01-15T10:30:00Z",
             "import_batch": "batch-123",
             "priority": 1,
             "verified": True,
-        }
+        },
     )
 
     # Create an IP address with metadata
-    from netboxlabs.diode.sdk.ingester import IPAddress
-    ip_entity = Entity(
-        ip_address=IPAddress(
-            address="192.168.1.10/24",
-            status="active",
-        ),
-        # Metadata can store various data types
+    ip_address = IPAddress(
+        address="192.168.1.10/24",
+        status="active",
         metadata={
             "last_scan": "2024-01-15T12:00:00Z",
             "scan_id": "scan-456",
             "response_time": 23.5,
             "reachable": True,
             "owner_team": "network-ops",
-        }
+        },
     )
 
     # Create a site with metadata
-    site_entity = Entity(
-        site=Site(
-            name="Data Center 1",
-            status="active",
-        ),
+    site = Site(
+        name="Data Center 1",
+        status="active",
         metadata={
             "region": "us-west",
             "cost_center": "CC-001",
             "capacity": 500,
             "is_primary": True,
             "contact_email": "dc1-ops@example.com",
-        }
+        },
     )
 
-    entities = [device_entity, ip_entity, site_entity]
+    entities = [Entity(device=device), Entity(ip_address=ip_address), Entity(site=site)]
     response = client.ingest(entities=entities)
     if response.errors:
         print(f"Errors: {response.errors}")
@@ -174,17 +164,19 @@ with DiodeClient(
     app_name="my-app",
     app_version="1.0.0",
 ) as client:
-    # Create entities
-    entities = [
-        Entity(device=Device(
-            name="Device A",
-            site=Site(name="Site ABC"),
-        )),
-        Entity(device=Device(
-            name="Device B",
-            site=Site(name="Site XYZ"),
-        )),
-    ]
+    # Create device A
+    device_a = Device(
+        name="Device A",
+        site=Site(name="Site ABC"),
+    )
+
+    # Create device B
+    device_b = Device(
+        name="Device B",
+        site=Site(name="Site XYZ"),
+    )
+
+    entities = [Entity(device=device_a), Entity(device=device_b)]
 
     # Add request-level metadata to track the ingestion batch
     response = client.ingest(
@@ -195,7 +187,7 @@ with DiodeClient(
             "import_type": "automated",
             "record_count": len(entities),
             "validated": True,
-        }
+        },
     )
     if response.errors:
         print(f"Errors: {response.errors}")
@@ -379,7 +371,7 @@ with DiodeOTLPClient(
             "deployment": "us-west-2",
             "version": "1.2.3",
             "priority": 5,
-        }
+        },
     )
 ```
 
