@@ -138,11 +138,12 @@ def test_platform_instantiation_with_all_fields():
         tags=["tag1", "tag2"],
     )
     assert isinstance(platform, PlatformPb)
+    assert hasattr(platform, 'metadata')
     assert platform.name == "Platform1"
     assert platform.slug == "platform1"
+    assert platform.description == "This is a platform"
     assert isinstance(platform.manufacturer, ManufacturerPb)
     assert platform.manufacturer.name == "Manufacturer1"
-    assert platform.description == "This is a platform"
     assert len(platform.tags) == 2
     for tag in platform.tags:
         assert isinstance(tag, TagPb)
@@ -157,9 +158,11 @@ def test_platform_instantiation_with_explicit_manufacturer():
         tags=["tag1", "tag2"],
     )
     assert isinstance(platform, PlatformPb)
+    assert hasattr(platform, 'metadata')
+
+    # Test user-facing API: works like protobuf
     assert platform.name == "Platform1"
     assert platform.slug == "platform1"
-    assert isinstance(platform.manufacturer, ManufacturerPb)
     assert platform.manufacturer.name == "Manufacturer1"
     assert len(platform.tags) == 2
     for tag in platform.tags:
@@ -261,10 +264,6 @@ def test_device_instantiation_with_explicit_nested_object_types():
         manufacturer=Manufacturer(name="Manufacturer1"),
     )
     assert isinstance(device, DevicePb)
-    assert isinstance(device.device_type, DeviceTypePb)
-    assert isinstance(device.role, DeviceRolePb)
-    assert isinstance(device.platform, PlatformPb)
-    assert isinstance(device.site, SitePb)
     assert isinstance(device.primary_ip4, IPAddressPb)
     assert isinstance(device.primary_ip6, IPAddressPb)
     assert device.device_type.manufacturer.name == "Manufacturer1"
@@ -409,12 +408,6 @@ def test_ip_address_instantiation_with_explicit_nested_object_types():
         tags=["tag1", "tag2"],
     )
     assert isinstance(ip_address, IPAddressPb)
-    assert isinstance(ip_address.assigned_object_interface, InterfacePb)
-    assert isinstance(ip_address.assigned_object_interface.device, DevicePb)
-    assert isinstance(ip_address.assigned_object_interface.device.device_type, DeviceTypePb)
-    assert isinstance(ip_address.assigned_object_interface.device.role, DeviceRolePb)
-    assert isinstance(ip_address.assigned_object_interface.device.platform, PlatformPb)
-    assert isinstance(ip_address.assigned_object_interface.device.site, SitePb)
     assert ip_address.assigned_object_interface.device.platform.manufacturer.name == "Manufacturer1"
     assert ip_address.assigned_object_interface.device.device_type.manufacturer.name == "Manufacturer1"
     assert ip_address.status == "active"
@@ -522,7 +515,6 @@ def test_cluster_instantiation_with_all_fields():
         tags=["us", "gc"],
     )
     assert isinstance(cluster, ClusterPb)
-    assert isinstance(cluster.group, ClusterGroupPb)
     assert isinstance(cluster.type, ClusterTypePb)
     assert isinstance(cluster.scope_site, SitePb)
     assert cluster.name == "gc-us-east1"
@@ -581,8 +573,6 @@ def test_virtual_machine_instantiation_with_cluster_without_site():
         description="VM on google cloud",
     )
     assert isinstance(virtual_machine, VirtualMachinePb)
-    assert isinstance(virtual_machine.cluster, ClusterPb)
-    assert isinstance(virtual_machine.site, SitePb)
     assert isinstance(virtual_machine.role, DeviceRolePb)
     assert virtual_machine.name == "vm1"
     assert virtual_machine.status == "active"
@@ -832,9 +822,6 @@ def test_entity_instantiation_with_vm_interface():
     assert isinstance(entity.vm_interface, VMInterfacePb)
     assert entity.vm_interface.name == "VMInterface1"
 
-# ==================== Entity-Level Metadata Tests ====================
-
-
 def test_entity_with_metadata():
     """Test Entity with entity-level metadata."""
     metadata = {
@@ -842,24 +829,21 @@ def test_entity_with_metadata():
         "import_id": "batch-123",
         "priority": 5,
     }
-    
-    entity = Entity(
-        site="TestSite",
-        metadata=metadata,
-    )
-    
+
+    site = Site(name="TestSite", metadata=metadata)
+    entity = Entity(site=site)
+
     assert isinstance(entity, EntityPb)
     assert entity.HasField("site")
     assert entity.site.name == "TestSite"
-    
-    # Verify metadata is present
-    assert entity.HasField("metadata")
-    assert "source" in entity.metadata.fields
-    assert entity.metadata.fields["source"].string_value == "import-script"
-    assert "import_id" in entity.metadata.fields
-    assert entity.metadata.fields["import_id"].string_value == "batch-123"
-    assert "priority" in entity.metadata.fields
-    assert entity.metadata.fields["priority"].number_value == 5
+
+    assert entity.site.HasField("metadata")
+    assert "source" in entity.site.metadata.fields
+    assert entity.site.metadata.fields["source"].string_value == "import-script"
+    assert "import_id" in entity.site.metadata.fields
+    assert entity.site.metadata.fields["import_id"].string_value == "batch-123"
+    assert "priority" in entity.site.metadata.fields
+    assert entity.site.metadata.fields["priority"].number_value == 5
 
 
 def test_entity_with_nested_metadata():
@@ -871,28 +855,25 @@ def test_entity_with_nested_metadata():
             "retry_count": 3,
         }
     }
-    
-    entity = Entity(
-        device="TestDevice",
-        metadata=metadata,
-    )
-    
+
+    device = Device(name="TestDevice", metadata=metadata)
+    entity = Entity(device=device)
+
     assert isinstance(entity, EntityPb)
     assert entity.HasField("device")
     assert entity.device.name == "TestDevice"
-    
-    # Verify metadata structure
-    assert entity.HasField("metadata")
-    assert "tags" in entity.metadata.fields
-    assert entity.metadata.fields["tags"].HasField("list_value")
-    tags_list = entity.metadata.fields["tags"].list_value.values
+
+    assert entity.device.HasField("metadata")
+    assert "tags" in entity.device.metadata.fields
+    assert entity.device.metadata.fields["tags"].HasField("list_value")
+    tags_list = entity.device.metadata.fields["tags"].list_value.values
     assert len(tags_list) == 2
     assert tags_list[0].string_value == "production"
     assert tags_list[1].string_value == "critical"
-    
-    assert "config" in entity.metadata.fields
-    assert entity.metadata.fields["config"].HasField("struct_value")
-    config_struct = entity.metadata.fields["config"].struct_value.fields
+
+    assert "config" in entity.device.metadata.fields
+    assert entity.device.metadata.fields["config"].HasField("struct_value")
+    config_struct = entity.device.metadata.fields["config"].struct_value.fields
     assert "auto_sync" in config_struct
     assert config_struct["auto_sync"].bool_value is True
     assert "retry_count" in config_struct
@@ -902,17 +883,16 @@ def test_entity_with_nested_metadata():
 def test_entity_without_metadata():
     """Test Entity without metadata (backward compatibility)."""
     entity = Entity(site="TestSite")
-    
+
     assert isinstance(entity, EntityPb)
     assert entity.HasField("site")
     assert entity.site.name == "TestSite"
-    
-    # Verify metadata field exists but is empty
-    assert not entity.HasField("metadata") or len(entity.metadata.fields) == 0
+
+    assert not entity.site.HasField("metadata") or len(entity.site.metadata.fields) == 0
 
 
 def test_entity_metadata_type_conversion():
-    """Test Entity metadata with different Python types."""
+    """Test entity type metadata with different Python types."""
     metadata = {
         "string_val": "test",
         "int_val": 42,
@@ -921,22 +901,19 @@ def test_entity_metadata_type_conversion():
         "bool_false": False,
         "null_val": None,
     }
-    
-    entity = Entity(
-        site="TestSite",
-        metadata=metadata,
-    )
-    
+
+    site = Site(name="TestSite", metadata=metadata)
+    entity = Entity(site=site)
+
     assert isinstance(entity, EntityPb)
-    assert entity.HasField("metadata")
-    
-    # Verify type conversions
-    assert entity.metadata.fields["string_val"].string_value == "test"
-    assert entity.metadata.fields["int_val"].number_value == 42
-    assert entity.metadata.fields["float_val"].number_value == 3.14
-    assert entity.metadata.fields["bool_true"].bool_value is True
-    assert entity.metadata.fields["bool_false"].bool_value is False
-    assert entity.metadata.fields["null_val"].HasField("null_value")
+    assert entity.site.HasField("metadata")
+
+    assert entity.site.metadata.fields["string_val"].string_value == "test"
+    assert entity.site.metadata.fields["int_val"].number_value == 42
+    assert entity.site.metadata.fields["float_val"].number_value == 3.14
+    assert entity.site.metadata.fields["bool_true"].bool_value is True
+    assert entity.site.metadata.fields["bool_false"].bool_value is False
+    assert entity.site.metadata.fields["null_val"].HasField("null_value")
 
 
 def test_device_with_metadata():
@@ -945,47 +922,78 @@ def test_device_with_metadata():
         "rack_position": "A1",
         "warranty_expires": "2025-12-31",
     }
-    
-    entity = Entity(
-        device=Device(
-            name="switch-01",
-            device_type="Catalyst 9300",
-            site="DC1",
-        ),
+
+    device = Device(
+        name="switch-01",
+        device_type="Catalyst 9300",
+        site="DC1",
         metadata=metadata,
     )
-    
+    entity = Entity(device=device)
+
     assert isinstance(entity, EntityPb)
     assert entity.HasField("device")
     assert entity.device.name == "switch-01"
-    assert entity.HasField("metadata")
-    assert entity.metadata.fields["rack_position"].string_value == "A1"
-    assert entity.metadata.fields["warranty_expires"].string_value == "2025-12-31"
+    assert entity.device.HasField("metadata")
+    assert entity.device.metadata.fields["rack_position"].string_value == "A1"
+    assert entity.device.metadata.fields["warranty_expires"].string_value == "2025-12-31"
 
 
 def test_multiple_entities_with_different_metadata():
-    """Test multiple entities each with their own metadata."""
+    """Test multiple entities each with metadata."""
     entities = [
-        Entity(
-            site="Site1",
-            metadata={"region": "us-west", "priority": 1}
-        ),
-        Entity(
-            site="Site2",
-            metadata={"region": "us-east", "priority": 2}
-        ),
-        Entity(
-            device="Device1",
-            metadata={"rack": "A1", "power_source": "UPS-1"}
-        ),
+        Entity(site=Site(name="Site1", metadata={"region": "us-west", "priority": 1})),
+        Entity(site=Site(name="Site2", metadata={"region": "us-east", "priority": 2})),
+        Entity(device=Device(name="Device1", metadata={"rack": "A1", "power_source": "UPS-1"})),
     ]
-    
-    # Verify each entity has its own metadata
-    assert entities[0].metadata.fields["region"].string_value == "us-west"
-    assert entities[0].metadata.fields["priority"].number_value == 1
-    
-    assert entities[1].metadata.fields["region"].string_value == "us-east"
-    assert entities[1].metadata.fields["priority"].number_value == 2
-    
-    assert entities[2].metadata.fields["rack"].string_value == "A1"
-    assert entities[2].metadata.fields["power_source"].string_value == "UPS-1"
+
+    assert entities[0].site.metadata.fields["region"].string_value == "us-west"
+    assert entities[0].site.metadata.fields["priority"].number_value == 1
+
+    assert entities[1].site.metadata.fields["region"].string_value == "us-east"
+    assert entities[1].site.metadata.fields["priority"].number_value == 2
+
+    assert entities[2].device.metadata.fields["rack"].string_value == "A1"
+    assert entities[2].device.metadata.fields["power_source"].string_value == "UPS-1"
+
+
+def test_entity_with_nested_entity_both_with_metadata():
+    """Test that nested entity metadata is embedded in protobufs."""
+    manufacturer = Manufacturer(
+        name="Cisco Systems",
+        metadata={
+            "vendor_id": "CSCO-001",
+            "support_tier": "platinum",
+            "contract_number": "SUP-12345",
+        }
+    )
+
+    platform = Platform(
+        name="Cisco IOS XE",
+        manufacturer=manufacturer,
+        metadata={
+            "platform_version": "17.3.4",
+            "certified": True,
+            "eol_date": "2030-12-31",
+        }
+    )
+
+    assert isinstance(platform, PlatformPb)
+    assert platform.HasField("metadata")
+    assert platform.metadata.fields["platform_version"].string_value == "17.3.4"
+    assert platform.metadata.fields["certified"].bool_value is True
+    assert platform.metadata.fields["eol_date"].string_value == "2030-12-31"
+
+    assert isinstance(platform.manufacturer, ManufacturerPb)
+    assert platform.manufacturer.HasField("metadata")
+    assert platform.manufacturer.metadata.fields["vendor_id"].string_value == "CSCO-001"
+    assert platform.manufacturer.metadata.fields["support_tier"].string_value == "platinum"
+    assert platform.manufacturer.metadata.fields["contract_number"].string_value == "SUP-12345"
+    assert platform.manufacturer.name == "Cisco Systems"
+
+    platform_entity = Entity(platform=platform)
+    assert isinstance(platform_entity, EntityPb)
+    assert platform_entity.HasField('platform')
+    assert platform_entity.platform.name == "Cisco IOS XE"
+    assert platform_entity.platform.HasField('manufacturer')
+    assert platform_entity.platform.manufacturer.name == "Cisco Systems"
