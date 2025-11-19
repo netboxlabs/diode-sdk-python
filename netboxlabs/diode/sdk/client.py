@@ -409,7 +409,6 @@ class DiodeDryRunClient(DiodeClientInterface):
         metadata: Metadata | None = None,
     ) -> ingester_pb2.IngestResponse:
         """Ingest entities in dry run mode with optional request-level metadata."""
-        request_metadata = convert_dict_to_struct(metadata) if metadata else None
         request = ingester_pb2.IngestRequest(
             stream=stream,
             id=str(uuid.uuid4()),
@@ -418,7 +417,8 @@ class DiodeDryRunClient(DiodeClientInterface):
             sdk_name=self.name,
             sdk_version=self.version,
         )
-        if request_metadata is not None:
+        if metadata is not None:
+            request_metadata = convert_dict_to_struct(metadata)
             request.metadata.CopyFrom(request_metadata)
 
         output = MessageToJson(request, preserving_proto_field_name=True)
