@@ -304,7 +304,19 @@ class DiodeClient(DiodeClientInterface):
         """Ingest entities with optional request-level metadata."""
         for attempt in range(self._max_auth_retries):
             try:
-                request_metadata = convert_dict_to_struct(metadata) if metadata else None
+                request = ingester_pb2.IngestRequest(
+                    stream=stream,
+                    id=str(uuid.uuid4()),
+                    entities=entities,
+                    sdk_name=self.name,
+                    sdk_version=self.version,
+                    producer_app_name=self.app_name,
+                    producer_app_version=self.app_version,
+                )
+                if metadata is not None:
+                    request_metadata = convert_dict_to_struct(metadata)
+                    request.metadata.CopyFrom(request_metadata)
+                return self._stub.Ingest(request, metadata=self._metadata)
                 request = ingester_pb2.IngestRequest(
                     stream=stream,
                     id=str(uuid.uuid4()),
