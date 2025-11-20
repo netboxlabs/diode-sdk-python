@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2
 from netboxlabs.diode.sdk.ingester import Entity
 
 _DEFAULT_STREAM: str
+
+Metadata = dict[str, Any]
 
 @runtime_checkable
 class DiodeClientInterface(Protocol):
@@ -20,6 +22,8 @@ class DiodeClientInterface(Protocol):
         self,
         entities: Iterable[Entity | ingester_pb2.Entity | None],
         stream: str | None = _DEFAULT_STREAM,
+        *,
+        metadata: Metadata | None = None,
     ) -> ingester_pb2.IngestResponse: ...
     def __enter__(self) -> DiodeClientInterface: ...
     def __exit__(self, exc_type, exc_value, exc_traceback) -> None: ...

@@ -2,7 +2,7 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Timestamp: 2025-10-02 12:39:10Z
+# Timestamp: 2025-11-14 18:10:22Z
 #
 # ruff: noqa: C901
 
@@ -11,94 +11,97 @@ from __future__ import annotations
 import datetime
 import re
 from typing import Any
+
+from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+
 import netboxlabs.diode.sdk.diode.v1.ingester_pb2 as pb
 
 PRIMARY_VALUE_MAP = {
-    'ASN': 'asn',
-    'ASNRange': 'name',
-    'Circuit': 'cid',
-    'CircuitGroup': 'name',
-    'CircuitType': 'name',
-    'Cluster': 'name',
-    'ClusterGroup': 'name',
-    'ClusterType': 'name',
-    'ConsolePort': 'name',
-    'ConsoleServerPort': 'name',
-    'Contact': 'name',
-    'ContactGroup': 'name',
-    'ContactRole': 'name',
-    'Device': 'name',
-    'DeviceBay': 'name',
-    'DeviceRole': 'name',
-    'DeviceType': 'model',
-    'FHRPGroup': 'name',
-    'FrontPort': 'name',
-    'IKEPolicy': 'name',
-    'IKEProposal': 'name',
-    'IPAddress': 'address',
-    'IPSecPolicy': 'name',
-    'IPSecProfile': 'name',
-    'IPSecProposal': 'name',
-    'Interface': 'name',
-    'InventoryItem': 'name',
-    'InventoryItemRole': 'name',
-    'L2VPN': 'name',
-    'Location': 'name',
-    'MACAddress': 'mac_address',
-    'Manufacturer': 'name',
-    'ModuleBay': 'name',
-    'ModuleType': 'model',
-    'Platform': 'name',
-    'PowerFeed': 'name',
-    'PowerOutlet': 'name',
-    'PowerPanel': 'name',
-    'PowerPort': 'name',
-    'Prefix': 'prefix',
-    'Provider': 'name',
-    'ProviderAccount': 'name',
-    'ProviderNetwork': 'name',
-    'RIR': 'name',
-    'Rack': 'name',
-    'RackRole': 'name',
-    'RackType': 'model',
-    'RearPort': 'name',
-    'Region': 'name',
-    'Role': 'name',
-    'RouteTarget': 'name',
-    'Service': 'name',
-    'Site': 'name',
-    'SiteGroup': 'name',
-    'Tag': 'name',
-    'Tenant': 'name',
-    'TenantGroup': 'name',
-    'Tunnel': 'name',
-    'TunnelGroup': 'name',
-    'VLAN': 'name',
-    'VLANGroup': 'name',
-    'VLANTranslationPolicy': 'name',
-    'VMInterface': 'name',
-    'VRF': 'name',
-    'VirtualChassis': 'name',
-    'VirtualCircuit': 'cid',
-    'VirtualCircuitType': 'name',
-    'VirtualDeviceContext': 'name',
-    'VirtualDisk': 'name',
-    'VirtualMachine': 'name',
-    'WirelessLAN': 'ssid',
-    'WirelessLANGroup': 'name',
-    'CustomField': 'name',
-    'CustomFieldChoiceSet': 'name',
-    'ModuleTypeProfile': 'name',
-    'CustomLink': 'name',
+    "ASN": "asn",
+    "ASNRange": "name",
+    "Circuit": "cid",
+    "CircuitGroup": "name",
+    "CircuitType": "name",
+    "Cluster": "name",
+    "ClusterGroup": "name",
+    "ClusterType": "name",
+    "ConsolePort": "name",
+    "ConsoleServerPort": "name",
+    "Contact": "name",
+    "ContactGroup": "name",
+    "ContactRole": "name",
+    "Device": "name",
+    "DeviceBay": "name",
+    "DeviceRole": "name",
+    "DeviceType": "model",
+    "FHRPGroup": "name",
+    "FrontPort": "name",
+    "IKEPolicy": "name",
+    "IKEProposal": "name",
+    "IPAddress": "address",
+    "IPSecPolicy": "name",
+    "IPSecProfile": "name",
+    "IPSecProposal": "name",
+    "Interface": "name",
+    "InventoryItem": "name",
+    "InventoryItemRole": "name",
+    "L2VPN": "name",
+    "Location": "name",
+    "MACAddress": "mac_address",
+    "Manufacturer": "name",
+    "ModuleBay": "name",
+    "ModuleType": "model",
+    "Platform": "name",
+    "PowerFeed": "name",
+    "PowerOutlet": "name",
+    "PowerPanel": "name",
+    "PowerPort": "name",
+    "Prefix": "prefix",
+    "Provider": "name",
+    "ProviderAccount": "name",
+    "ProviderNetwork": "name",
+    "RIR": "name",
+    "Rack": "name",
+    "RackRole": "name",
+    "RackType": "model",
+    "RearPort": "name",
+    "Region": "name",
+    "Role": "name",
+    "RouteTarget": "name",
+    "Service": "name",
+    "Site": "name",
+    "SiteGroup": "name",
+    "Tag": "name",
+    "Tenant": "name",
+    "TenantGroup": "name",
+    "Tunnel": "name",
+    "TunnelGroup": "name",
+    "VLAN": "name",
+    "VLANGroup": "name",
+    "VLANTranslationPolicy": "name",
+    "VMInterface": "name",
+    "VRF": "name",
+    "VirtualChassis": "name",
+    "VirtualCircuit": "cid",
+    "VirtualCircuitType": "name",
+    "VirtualDeviceContext": "name",
+    "VirtualDisk": "name",
+    "VirtualMachine": "name",
+    "WirelessLAN": "ssid",
+    "WirelessLANGroup": "name",
+    "CustomField": "name",
+    "CustomFieldChoiceSet": "name",
+    "ModuleTypeProfile": "name",
+    "CustomLink": "name",
 }
 
 
 def slugify(value: Any) -> str:
     """Utility to convert a value to a slug."""
-    value = str(value).strip().strip('_').lower()
-    value = re.sub(r'[^\w\s-]', '', value)
-    return re.sub(r'[-\s]+', '-', value)
+    value = str(value).strip().strip("_").lower()
+    value = re.sub(r"[^\w\s-]", "", value)
+    return re.sub(r"[-\s]+", "-", value)
 
 
 def is_field_set(value: Any, field_name: str) -> bool:
@@ -111,14 +114,25 @@ def is_field_set(value: Any, field_name: str) -> bool:
     return False
 
 
+def convert_dict_to_struct(value: dict | None) -> _struct_pb2.Struct | None:
+    """Convert a Python dict to a protobuf Struct."""
+    if value is None:
+        return None
+    struct = _struct_pb2.Struct()
+    struct.update(value)
+    return struct
+
+
 def convert_to_protobuf(value: Any, protobuf_class):
     """Convert a value to a protobuf message."""
     if value is None:
         return None
-    if isinstance(value, str|int|float):
+    if isinstance(value, str | int | float):
         pvk = PRIMARY_VALUE_MAP.get(protobuf_class.__name__)
         if pvk is None:
-            raise ValueError(f'{protobuf_class.__name__} cannot be initialized with {type(value)}')
+            raise ValueError(
+                f"{protobuf_class.__name__} cannot be initialized with {type(value)}"
+            )
         kwargs = {pvk: value}
         value = protobuf_class(**kwargs)
     return value
@@ -152,16 +166,24 @@ class Entity:
         cable_termination: str | CableTermination | pb.CableTermination | None = None,
         circuit: str | Circuit | pb.Circuit | None = None,
         circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         circuit_type: str | CircuitType | pb.CircuitType | None = None,
         cluster: str | Cluster | pb.Cluster | None = None,
         cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         cluster_type: str | ClusterType | pb.ClusterType | None = None,
         console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         contact: str | Contact | pb.Contact | None = None,
-        contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
+        contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
         contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         contact_role: str | ContactRole | pb.ContactRole | None = None,
         device: str | Device | pb.Device | None = None,
@@ -169,7 +191,9 @@ class Entity:
         device_role: str | DeviceRole | pb.DeviceRole | None = None,
         device_type: str | DeviceType | pb.DeviceType | None = None,
         fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         front_port: str | FrontPort | pb.FrontPort | None = None,
         ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
@@ -180,7 +204,9 @@ class Entity:
         ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
         interface: str | Interface | pb.Interface | None = None,
         inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
+        inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
         l2vpn: str | L2VPN | pb.L2VPN | None = None,
         l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
         location: str | Location | pb.Location | None = None,
@@ -215,27 +241,43 @@ class Entity:
         tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         tunnel: str | Tunnel | pb.Tunnel | None = None,
         tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         vlan: str | VLAN | pb.VLAN | None = None,
         vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         vm_interface: str | VMInterface | pb.VMInterface | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
         virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
         wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
         wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         custom_field: str | CustomField | pb.CustomField | None = None,
-        custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
-        module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         custom_link: str | CustomLink | pb.CustomLink | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
@@ -247,16 +289,24 @@ class Entity:
         cable_termination = convert_to_protobuf(cable_termination, pb.CableTermination)
         circuit = convert_to_protobuf(circuit, pb.Circuit)
         circuit_group = convert_to_protobuf(circuit_group, pb.CircuitGroup)
-        circuit_group_assignment = convert_to_protobuf(circuit_group_assignment, pb.CircuitGroupAssignment)
-        circuit_termination = convert_to_protobuf(circuit_termination, pb.CircuitTermination)
+        circuit_group_assignment = convert_to_protobuf(
+            circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        circuit_termination = convert_to_protobuf(
+            circuit_termination, pb.CircuitTermination
+        )
         circuit_type = convert_to_protobuf(circuit_type, pb.CircuitType)
         cluster = convert_to_protobuf(cluster, pb.Cluster)
         cluster_group = convert_to_protobuf(cluster_group, pb.ClusterGroup)
         cluster_type = convert_to_protobuf(cluster_type, pb.ClusterType)
         console_port = convert_to_protobuf(console_port, pb.ConsolePort)
-        console_server_port = convert_to_protobuf(console_server_port, pb.ConsoleServerPort)
+        console_server_port = convert_to_protobuf(
+            console_server_port, pb.ConsoleServerPort
+        )
         contact = convert_to_protobuf(contact, pb.Contact)
-        contact_assignment = convert_to_protobuf(contact_assignment, pb.ContactAssignment)
+        contact_assignment = convert_to_protobuf(
+            contact_assignment, pb.ContactAssignment
+        )
         contact_group = convert_to_protobuf(contact_group, pb.ContactGroup)
         contact_role = convert_to_protobuf(contact_role, pb.ContactRole)
         device = convert_to_protobuf(device, pb.Device)
@@ -264,7 +314,9 @@ class Entity:
         device_role = convert_to_protobuf(device_role, pb.DeviceRole)
         device_type = convert_to_protobuf(device_type, pb.DeviceType)
         fhrp_group = convert_to_protobuf(fhrp_group, pb.FHRPGroup)
-        fhrp_group_assignment = convert_to_protobuf(fhrp_group_assignment, pb.FHRPGroupAssignment)
+        fhrp_group_assignment = convert_to_protobuf(
+            fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
         front_port = convert_to_protobuf(front_port, pb.FrontPort)
         ike_policy = convert_to_protobuf(ike_policy, pb.IKEPolicy)
         ike_proposal = convert_to_protobuf(ike_proposal, pb.IKEProposal)
@@ -275,7 +327,9 @@ class Entity:
         ip_sec_proposal = convert_to_protobuf(ip_sec_proposal, pb.IPSecProposal)
         interface = convert_to_protobuf(interface, pb.Interface)
         inventory_item = convert_to_protobuf(inventory_item, pb.InventoryItem)
-        inventory_item_role = convert_to_protobuf(inventory_item_role, pb.InventoryItemRole)
+        inventory_item_role = convert_to_protobuf(
+            inventory_item_role, pb.InventoryItemRole
+        )
         l2vpn = convert_to_protobuf(l2vpn, pb.L2VPN)
         l2vpn_termination = convert_to_protobuf(l2vpn_termination, pb.L2VPNTermination)
         location = convert_to_protobuf(location, pb.Location)
@@ -310,33 +364,51 @@ class Entity:
         tenant_group = convert_to_protobuf(tenant_group, pb.TenantGroup)
         tunnel = convert_to_protobuf(tunnel, pb.Tunnel)
         tunnel_group = convert_to_protobuf(tunnel_group, pb.TunnelGroup)
-        tunnel_termination = convert_to_protobuf(tunnel_termination, pb.TunnelTermination)
+        tunnel_termination = convert_to_protobuf(
+            tunnel_termination, pb.TunnelTermination
+        )
         vlan = convert_to_protobuf(vlan, pb.VLAN)
         vlan_group = convert_to_protobuf(vlan_group, pb.VLANGroup)
-        vlan_translation_policy = convert_to_protobuf(vlan_translation_policy, pb.VLANTranslationPolicy)
-        vlan_translation_rule = convert_to_protobuf(vlan_translation_rule, pb.VLANTranslationRule)
+        vlan_translation_policy = convert_to_protobuf(
+            vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        vlan_translation_rule = convert_to_protobuf(
+            vlan_translation_rule, pb.VLANTranslationRule
+        )
         vm_interface = convert_to_protobuf(vm_interface, pb.VMInterface)
         vrf = convert_to_protobuf(vrf, pb.VRF)
         virtual_chassis = convert_to_protobuf(virtual_chassis, pb.VirtualChassis)
         virtual_circuit = convert_to_protobuf(virtual_circuit, pb.VirtualCircuit)
-        virtual_circuit_termination = convert_to_protobuf(virtual_circuit_termination, pb.VirtualCircuitTermination)
-        virtual_circuit_type = convert_to_protobuf(virtual_circuit_type, pb.VirtualCircuitType)
-        virtual_device_context = convert_to_protobuf(virtual_device_context, pb.VirtualDeviceContext)
+        virtual_circuit_termination = convert_to_protobuf(
+            virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        virtual_circuit_type = convert_to_protobuf(
+            virtual_circuit_type, pb.VirtualCircuitType
+        )
+        virtual_device_context = convert_to_protobuf(
+            virtual_device_context, pb.VirtualDeviceContext
+        )
         virtual_disk = convert_to_protobuf(virtual_disk, pb.VirtualDisk)
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         wireless_lan = convert_to_protobuf(wireless_lan, pb.WirelessLAN)
-        wireless_lan_group = convert_to_protobuf(wireless_lan_group, pb.WirelessLANGroup)
+        wireless_lan_group = convert_to_protobuf(
+            wireless_lan_group, pb.WirelessLANGroup
+        )
         wireless_link = convert_to_protobuf(wireless_link, pb.WirelessLink)
         custom_field = convert_to_protobuf(custom_field, pb.CustomField)
-        custom_field_choice_set = convert_to_protobuf(custom_field_choice_set, pb.CustomFieldChoiceSet)
+        custom_field_choice_set = convert_to_protobuf(
+            custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
         journal_entry = convert_to_protobuf(journal_entry, pb.JournalEntry)
-        module_type_profile = convert_to_protobuf(module_type_profile, pb.ModuleTypeProfile)
+        module_type_profile = convert_to_protobuf(
+            module_type_profile, pb.ModuleTypeProfile
+        )
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
             timestamp = ts
-        return pb.Entity(
+        result = pb.Entity(
             timestamp=timestamp,
             asn=asn,
             asn_range=asn_range,
@@ -432,6 +504,7 @@ class Entity:
             module_type_profile=module_type_profile,
             custom_link=custom_link,
         )
+        return result
 
 
 class ASN:
@@ -445,14 +518,18 @@ class ASN:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ASN:
         """Create a new ASN."""
         rir = convert_to_protobuf(rir, pb.RIR)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ASN(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ASN(
             asn=asn,
             rir=rir,
             tenant=tenant,
@@ -460,7 +537,9 @@ class ASN:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ASNRange:
@@ -476,14 +555,18 @@ class ASNRange:
         tenant: str | Tenant | pb.Tenant | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ASNRange:
         """Create a new ASNRange."""
         rir = convert_to_protobuf(rir, pb.RIR)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ASNRange(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ASNRange(
             name=name,
             slug=slug,
             rir=rir,
@@ -493,7 +576,9 @@ class ASNRange:
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Aggregate:
@@ -508,14 +593,18 @@ class Aggregate:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Aggregate:
         """Create a new Aggregate."""
         rir = convert_to_protobuf(rir, pb.RIR)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Aggregate(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Aggregate(
             prefix=prefix,
             rir=rir,
             tenant=tenant,
@@ -524,7 +613,9 @@ class Aggregate:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Cable:
@@ -544,7 +635,10 @@ class Cable:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Cable:
         """Create a new Cable."""
         a_terminations = convert_to_protobuf_list(a_terminations, pb.GenericObject)
@@ -552,7 +646,8 @@ class Cable:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Cable(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Cable(
             type=type,
             a_terminations=a_terminations,
             b_terminations=b_terminations,
@@ -566,7 +661,9 @@ class Cable:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class CablePath:
@@ -577,13 +674,17 @@ class CablePath:
         is_active: bool | None = None,
         is_complete: bool | None = None,
         is_split: bool | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CablePath:
         """Create a new CablePath."""
-        return pb.CablePath(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CablePath(
             is_active=is_active,
             is_complete=is_complete,
             is_split=is_split,
+            metadata=metadata,
         )
+        return result
 
 
 class CableTermination:
@@ -593,28 +694,48 @@ class CableTermination:
         cls,
         cable: str | Cable | pb.Cable | None = None,
         cable_end: str | None = None,
-        termination_circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        termination_circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         termination_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        termination_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        termination_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         termination_front_port: str | FrontPort | pb.FrontPort | None = None,
         termination_interface: str | Interface | pb.Interface | None = None,
         termination_power_feed: str | PowerFeed | pb.PowerFeed | None = None,
         termination_power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
         termination_power_port: str | PowerPort | pb.PowerPort | None = None,
         termination_rear_port: str | RearPort | pb.RearPort | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CableTermination:
         """Create a new CableTermination."""
         cable = convert_to_protobuf(cable, pb.Cable)
-        termination_circuit_termination = convert_to_protobuf(termination_circuit_termination, pb.CircuitTermination)
-        termination_console_port = convert_to_protobuf(termination_console_port, pb.ConsolePort)
-        termination_console_server_port = convert_to_protobuf(termination_console_server_port, pb.ConsoleServerPort)
-        termination_front_port = convert_to_protobuf(termination_front_port, pb.FrontPort)
+        termination_circuit_termination = convert_to_protobuf(
+            termination_circuit_termination, pb.CircuitTermination
+        )
+        termination_console_port = convert_to_protobuf(
+            termination_console_port, pb.ConsolePort
+        )
+        termination_console_server_port = convert_to_protobuf(
+            termination_console_server_port, pb.ConsoleServerPort
+        )
+        termination_front_port = convert_to_protobuf(
+            termination_front_port, pb.FrontPort
+        )
         termination_interface = convert_to_protobuf(termination_interface, pb.Interface)
-        termination_power_feed = convert_to_protobuf(termination_power_feed, pb.PowerFeed)
-        termination_power_outlet = convert_to_protobuf(termination_power_outlet, pb.PowerOutlet)
-        termination_power_port = convert_to_protobuf(termination_power_port, pb.PowerPort)
+        termination_power_feed = convert_to_protobuf(
+            termination_power_feed, pb.PowerFeed
+        )
+        termination_power_outlet = convert_to_protobuf(
+            termination_power_outlet, pb.PowerOutlet
+        )
+        termination_power_port = convert_to_protobuf(
+            termination_power_port, pb.PowerPort
+        )
         termination_rear_port = convert_to_protobuf(termination_rear_port, pb.RearPort)
-        return pb.CableTermination(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CableTermination(
             cable=cable,
             cable_end=cable_end,
             termination_circuit_termination=termination_circuit_termination,
@@ -626,7 +747,9 @@ class CableTermination:
             termination_power_outlet=termination_power_outlet,
             termination_power_port=termination_power_port,
             termination_rear_port=termination_rear_port,
+            metadata=metadata,
         )
+        return result
 
 
 class Circuit:
@@ -648,8 +771,13 @@ class Circuit:
         distance_unit: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        assignments: list[str | CircuitGroupAssignment | pb.CircuitGroupAssignment] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        assignments: (
+            list[str | CircuitGroupAssignment | pb.CircuitGroupAssignment] | None
+        ) = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Circuit:
         """Create a new Circuit."""
         provider = convert_to_protobuf(provider, pb.Provider)
@@ -659,7 +787,8 @@ class Circuit:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         assignments = convert_to_protobuf_list(assignments, pb.CircuitGroupAssignment)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Circuit(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Circuit(
             cid=cid,
             provider=provider,
             provider_account=provider_account,
@@ -676,7 +805,9 @@ class Circuit:
             tags=tags,
             assignments=assignments,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class CircuitGroup:
@@ -689,20 +820,26 @@ class CircuitGroup:
         description: str | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitGroup:
         """Create a new CircuitGroup."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.CircuitGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CircuitGroup(
             name=name,
             slug=slug,
             description=description,
             tenant=tenant,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class CircuitGroupAssignment:
@@ -715,19 +852,25 @@ class CircuitGroupAssignment:
         member_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
         priority: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitGroupAssignment:
         """Create a new CircuitGroupAssignment."""
         group = convert_to_protobuf(group, pb.CircuitGroup)
         member_circuit = convert_to_protobuf(member_circuit, pb.Circuit)
-        member_virtual_circuit = convert_to_protobuf(member_virtual_circuit, pb.VirtualCircuit)
+        member_virtual_circuit = convert_to_protobuf(
+            member_virtual_circuit, pb.VirtualCircuit
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
-        return pb.CircuitGroupAssignment(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CircuitGroupAssignment(
             group=group,
             member_circuit=member_circuit,
             member_virtual_circuit=member_virtual_circuit,
             priority=priority,
             tags=tags,
+            metadata=metadata,
         )
+        return result
 
 
 class CircuitTermination:
@@ -738,7 +881,9 @@ class CircuitTermination:
         circuit: str | Circuit | pb.Circuit | None = None,
         term_side: str | None = None,
         termination_location: str | Location | pb.Location | None = None,
-        termination_provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
+        termination_provider_network: (
+            str | ProviderNetwork | pb.ProviderNetwork | None
+        ) = None,
         termination_region: str | Region | pb.Region | None = None,
         termination_site: str | Site | pb.Site | None = None,
         termination_site_group: str | SiteGroup | pb.SiteGroup | None = None,
@@ -749,18 +894,26 @@ class CircuitTermination:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitTermination:
         """Create a new CircuitTermination."""
         circuit = convert_to_protobuf(circuit, pb.Circuit)
         termination_location = convert_to_protobuf(termination_location, pb.Location)
-        termination_provider_network = convert_to_protobuf(termination_provider_network, pb.ProviderNetwork)
+        termination_provider_network = convert_to_protobuf(
+            termination_provider_network, pb.ProviderNetwork
+        )
         termination_region = convert_to_protobuf(termination_region, pb.Region)
         termination_site = convert_to_protobuf(termination_site, pb.Site)
-        termination_site_group = convert_to_protobuf(termination_site_group, pb.SiteGroup)
+        termination_site_group = convert_to_protobuf(
+            termination_site_group, pb.SiteGroup
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.CircuitTermination(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CircuitTermination(
             circuit=circuit,
             term_side=term_side,
             termination_location=termination_location,
@@ -776,7 +929,9 @@ class CircuitTermination:
             mark_connected=mark_connected,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class CircuitType:
@@ -789,19 +944,25 @@ class CircuitType:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitType:
         """Create a new CircuitType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.CircuitType(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CircuitType(
             name=name,
             slug=slug,
             color=color,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Cluster:
@@ -821,7 +982,10 @@ class Cluster:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Cluster:
         """Create a new Cluster."""
         type = convert_to_protobuf(type, pb.ClusterType)
@@ -833,7 +997,8 @@ class Cluster:
         scope_site_group = convert_to_protobuf(scope_site_group, pb.SiteGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Cluster(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Cluster(
             name=name,
             type=type,
             group=group,
@@ -847,7 +1012,9 @@ class Cluster:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ClusterGroup:
@@ -859,18 +1026,24 @@ class ClusterGroup:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ClusterGroup:
         """Create a new ClusterGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ClusterGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ClusterGroup(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ClusterType:
@@ -882,18 +1055,24 @@ class ClusterType:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ClusterType:
         """Create a new ClusterType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ClusterType(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ClusterType(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ConsolePort:
@@ -910,14 +1089,18 @@ class ConsolePort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ConsolePort:
         """Create a new ConsolePort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ConsolePort(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ConsolePort(
             device=device,
             module=module,
             name=name,
@@ -928,7 +1111,9 @@ class ConsolePort:
             mark_connected=mark_connected,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ConsoleServerPort:
@@ -945,14 +1130,18 @@ class ConsoleServerPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ConsoleServerPort:
         """Create a new ConsoleServerPort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ConsoleServerPort(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ConsoleServerPort(
             device=device,
             module=module,
             name=name,
@@ -963,7 +1152,9 @@ class ConsoleServerPort:
             mark_connected=mark_connected,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Contact:
@@ -981,15 +1172,19 @@ class Contact:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         groups: list[str | ContactGroup | pb.ContactGroup] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Contact:
         """Create a new Contact."""
         group = convert_to_protobuf(group, pb.ContactGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         groups = convert_to_protobuf_list(groups, pb.ContactGroup)
-        return pb.Contact(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Contact(
             group=group,
             name=name,
             title=title,
@@ -1002,7 +1197,9 @@ class Contact:
             tags=tags,
             custom_fields=custom_fields,
             groups=groups,
+            metadata=metadata,
         )
+        return result
 
 
 class ContactAssignment:
@@ -1015,19 +1212,29 @@ class ContactAssignment:
         object_aggregate: str | Aggregate | pb.Aggregate | None = None,
         object_cable: str | Cable | pb.Cable | None = None,
         object_cable_path: str | CablePath | pb.CablePath | None = None,
-        object_cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        object_cable_termination: (
+            str | CableTermination | pb.CableTermination | None
+        ) = None,
         object_circuit: str | Circuit | pb.Circuit | None = None,
         object_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        object_circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        object_circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        object_circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        object_circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         object_cluster: str | Cluster | pb.Cluster | None = None,
         object_cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         object_cluster_type: str | ClusterType | pb.ClusterType | None = None,
         object_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        object_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        object_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         object_contact: str | Contact | pb.Contact | None = None,
-        object_contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
+        object_contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
         object_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         object_contact_role: str | ContactRole | pb.ContactRole | None = None,
         object_device: str | Device | pb.Device | None = None,
@@ -1035,7 +1242,9 @@ class ContactAssignment:
         object_device_role: str | DeviceRole | pb.DeviceRole | None = None,
         object_device_type: str | DeviceType | pb.DeviceType | None = None,
         object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        object_fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        object_fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         object_front_port: str | FrontPort | pb.FrontPort | None = None,
         object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
@@ -1046,9 +1255,13 @@ class ContactAssignment:
         object_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
         object_interface: str | Interface | pb.Interface | None = None,
         object_inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        object_inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
+        object_inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
         object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        object_l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        object_l2vpn_termination: (
+            str | L2VPNTermination | pb.L2VPNTermination | None
+        ) = None,
         object_location: str | Location | pb.Location | None = None,
         object_mac_address: str | MACAddress | pb.MACAddress | None = None,
         object_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
@@ -1062,11 +1275,17 @@ class ContactAssignment:
         object_power_port: str | PowerPort | pb.PowerPort | None = None,
         object_prefix: str | Prefix | pb.Prefix | None = None,
         object_provider: str | Provider | pb.Provider | None = None,
-        object_provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
-        object_provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
+        object_provider_account: (
+            str | ProviderAccount | pb.ProviderAccount | None
+        ) = None,
+        object_provider_network: (
+            str | ProviderNetwork | pb.ProviderNetwork | None
+        ) = None,
         object_rir: str | RIR | pb.RIR | None = None,
         object_rack: str | Rack | pb.Rack | None = None,
-        object_rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        object_rack_reservation: (
+            str | RackReservation | pb.RackReservation | None
+        ) = None,
         object_rack_role: str | RackRole | pb.RackRole | None = None,
         object_rack_type: str | RackType | pb.RackType | None = None,
         object_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -1081,33 +1300,54 @@ class ContactAssignment:
         object_tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        object_tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        object_tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         object_vlan: str | VLAN | pb.VLAN | None = None,
         object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        object_vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        object_vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        object_vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        object_vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         object_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         object_vrf: str | VRF | pb.VRF | None = None,
         object_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         object_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        object_virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        object_virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        object_virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        object_virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        object_virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        object_virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         object_virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
         object_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         object_wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
-        object_wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
+        object_wireless_lan_group: (
+            str | WirelessLANGroup | pb.WirelessLANGroup | None
+        ) = None,
         object_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         object_custom_field: str | CustomField | pb.CustomField | None = None,
-        object_custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        object_custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         object_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
-        object_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        object_module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         contact: str | Contact | pb.Contact | None = None,
         role: str | ContactRole | pb.ContactRole | None = None,
         priority: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ContactAssignment:
         """Create a new ContactAssignment."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -1115,40 +1355,68 @@ class ContactAssignment:
         object_aggregate = convert_to_protobuf(object_aggregate, pb.Aggregate)
         object_cable = convert_to_protobuf(object_cable, pb.Cable)
         object_cable_path = convert_to_protobuf(object_cable_path, pb.CablePath)
-        object_cable_termination = convert_to_protobuf(object_cable_termination, pb.CableTermination)
+        object_cable_termination = convert_to_protobuf(
+            object_cable_termination, pb.CableTermination
+        )
         object_circuit = convert_to_protobuf(object_circuit, pb.Circuit)
-        object_circuit_group = convert_to_protobuf(object_circuit_group, pb.CircuitGroup)
-        object_circuit_group_assignment = convert_to_protobuf(object_circuit_group_assignment, pb.CircuitGroupAssignment)
-        object_circuit_termination = convert_to_protobuf(object_circuit_termination, pb.CircuitTermination)
+        object_circuit_group = convert_to_protobuf(
+            object_circuit_group, pb.CircuitGroup
+        )
+        object_circuit_group_assignment = convert_to_protobuf(
+            object_circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        object_circuit_termination = convert_to_protobuf(
+            object_circuit_termination, pb.CircuitTermination
+        )
         object_circuit_type = convert_to_protobuf(object_circuit_type, pb.CircuitType)
         object_cluster = convert_to_protobuf(object_cluster, pb.Cluster)
-        object_cluster_group = convert_to_protobuf(object_cluster_group, pb.ClusterGroup)
+        object_cluster_group = convert_to_protobuf(
+            object_cluster_group, pb.ClusterGroup
+        )
         object_cluster_type = convert_to_protobuf(object_cluster_type, pb.ClusterType)
         object_console_port = convert_to_protobuf(object_console_port, pb.ConsolePort)
-        object_console_server_port = convert_to_protobuf(object_console_server_port, pb.ConsoleServerPort)
+        object_console_server_port = convert_to_protobuf(
+            object_console_server_port, pb.ConsoleServerPort
+        )
         object_contact = convert_to_protobuf(object_contact, pb.Contact)
-        object_contact_assignment = convert_to_protobuf(object_contact_assignment, pb.ContactAssignment)
-        object_contact_group = convert_to_protobuf(object_contact_group, pb.ContactGroup)
+        object_contact_assignment = convert_to_protobuf(
+            object_contact_assignment, pb.ContactAssignment
+        )
+        object_contact_group = convert_to_protobuf(
+            object_contact_group, pb.ContactGroup
+        )
         object_contact_role = convert_to_protobuf(object_contact_role, pb.ContactRole)
         object_device = convert_to_protobuf(object_device, pb.Device)
         object_device_bay = convert_to_protobuf(object_device_bay, pb.DeviceBay)
         object_device_role = convert_to_protobuf(object_device_role, pb.DeviceRole)
         object_device_type = convert_to_protobuf(object_device_type, pb.DeviceType)
         object_fhrp_group = convert_to_protobuf(object_fhrp_group, pb.FHRPGroup)
-        object_fhrp_group_assignment = convert_to_protobuf(object_fhrp_group_assignment, pb.FHRPGroupAssignment)
+        object_fhrp_group_assignment = convert_to_protobuf(
+            object_fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
         object_front_port = convert_to_protobuf(object_front_port, pb.FrontPort)
         object_ike_policy = convert_to_protobuf(object_ike_policy, pb.IKEPolicy)
         object_ike_proposal = convert_to_protobuf(object_ike_proposal, pb.IKEProposal)
         object_ip_address = convert_to_protobuf(object_ip_address, pb.IPAddress)
         object_ip_range = convert_to_protobuf(object_ip_range, pb.IPRange)
         object_ip_sec_policy = convert_to_protobuf(object_ip_sec_policy, pb.IPSecPolicy)
-        object_ip_sec_profile = convert_to_protobuf(object_ip_sec_profile, pb.IPSecProfile)
-        object_ip_sec_proposal = convert_to_protobuf(object_ip_sec_proposal, pb.IPSecProposal)
+        object_ip_sec_profile = convert_to_protobuf(
+            object_ip_sec_profile, pb.IPSecProfile
+        )
+        object_ip_sec_proposal = convert_to_protobuf(
+            object_ip_sec_proposal, pb.IPSecProposal
+        )
         object_interface = convert_to_protobuf(object_interface, pb.Interface)
-        object_inventory_item = convert_to_protobuf(object_inventory_item, pb.InventoryItem)
-        object_inventory_item_role = convert_to_protobuf(object_inventory_item_role, pb.InventoryItemRole)
+        object_inventory_item = convert_to_protobuf(
+            object_inventory_item, pb.InventoryItem
+        )
+        object_inventory_item_role = convert_to_protobuf(
+            object_inventory_item_role, pb.InventoryItemRole
+        )
         object_l2vpn = convert_to_protobuf(object_l2vpn, pb.L2VPN)
-        object_l2vpn_termination = convert_to_protobuf(object_l2vpn_termination, pb.L2VPNTermination)
+        object_l2vpn_termination = convert_to_protobuf(
+            object_l2vpn_termination, pb.L2VPNTermination
+        )
         object_location = convert_to_protobuf(object_location, pb.Location)
         object_mac_address = convert_to_protobuf(object_mac_address, pb.MACAddress)
         object_manufacturer = convert_to_protobuf(object_manufacturer, pb.Manufacturer)
@@ -1162,11 +1430,17 @@ class ContactAssignment:
         object_power_port = convert_to_protobuf(object_power_port, pb.PowerPort)
         object_prefix = convert_to_protobuf(object_prefix, pb.Prefix)
         object_provider = convert_to_protobuf(object_provider, pb.Provider)
-        object_provider_account = convert_to_protobuf(object_provider_account, pb.ProviderAccount)
-        object_provider_network = convert_to_protobuf(object_provider_network, pb.ProviderNetwork)
+        object_provider_account = convert_to_protobuf(
+            object_provider_account, pb.ProviderAccount
+        )
+        object_provider_network = convert_to_protobuf(
+            object_provider_network, pb.ProviderNetwork
+        )
         object_rir = convert_to_protobuf(object_rir, pb.RIR)
         object_rack = convert_to_protobuf(object_rack, pb.Rack)
-        object_rack_reservation = convert_to_protobuf(object_rack_reservation, pb.RackReservation)
+        object_rack_reservation = convert_to_protobuf(
+            object_rack_reservation, pb.RackReservation
+        )
         object_rack_role = convert_to_protobuf(object_rack_role, pb.RackRole)
         object_rack_type = convert_to_protobuf(object_rack_type, pb.RackType)
         object_rear_port = convert_to_protobuf(object_rear_port, pb.RearPort)
@@ -1181,33 +1455,62 @@ class ContactAssignment:
         object_tenant_group = convert_to_protobuf(object_tenant_group, pb.TenantGroup)
         object_tunnel = convert_to_protobuf(object_tunnel, pb.Tunnel)
         object_tunnel_group = convert_to_protobuf(object_tunnel_group, pb.TunnelGroup)
-        object_tunnel_termination = convert_to_protobuf(object_tunnel_termination, pb.TunnelTermination)
+        object_tunnel_termination = convert_to_protobuf(
+            object_tunnel_termination, pb.TunnelTermination
+        )
         object_vlan = convert_to_protobuf(object_vlan, pb.VLAN)
         object_vlan_group = convert_to_protobuf(object_vlan_group, pb.VLANGroup)
-        object_vlan_translation_policy = convert_to_protobuf(object_vlan_translation_policy, pb.VLANTranslationPolicy)
-        object_vlan_translation_rule = convert_to_protobuf(object_vlan_translation_rule, pb.VLANTranslationRule)
+        object_vlan_translation_policy = convert_to_protobuf(
+            object_vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        object_vlan_translation_rule = convert_to_protobuf(
+            object_vlan_translation_rule, pb.VLANTranslationRule
+        )
         object_vm_interface = convert_to_protobuf(object_vm_interface, pb.VMInterface)
         object_vrf = convert_to_protobuf(object_vrf, pb.VRF)
-        object_virtual_chassis = convert_to_protobuf(object_virtual_chassis, pb.VirtualChassis)
-        object_virtual_circuit = convert_to_protobuf(object_virtual_circuit, pb.VirtualCircuit)
-        object_virtual_circuit_termination = convert_to_protobuf(object_virtual_circuit_termination, pb.VirtualCircuitTermination)
-        object_virtual_circuit_type = convert_to_protobuf(object_virtual_circuit_type, pb.VirtualCircuitType)
-        object_virtual_device_context = convert_to_protobuf(object_virtual_device_context, pb.VirtualDeviceContext)
+        object_virtual_chassis = convert_to_protobuf(
+            object_virtual_chassis, pb.VirtualChassis
+        )
+        object_virtual_circuit = convert_to_protobuf(
+            object_virtual_circuit, pb.VirtualCircuit
+        )
+        object_virtual_circuit_termination = convert_to_protobuf(
+            object_virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        object_virtual_circuit_type = convert_to_protobuf(
+            object_virtual_circuit_type, pb.VirtualCircuitType
+        )
+        object_virtual_device_context = convert_to_protobuf(
+            object_virtual_device_context, pb.VirtualDeviceContext
+        )
         object_virtual_disk = convert_to_protobuf(object_virtual_disk, pb.VirtualDisk)
-        object_virtual_machine = convert_to_protobuf(object_virtual_machine, pb.VirtualMachine)
+        object_virtual_machine = convert_to_protobuf(
+            object_virtual_machine, pb.VirtualMachine
+        )
         object_wireless_lan = convert_to_protobuf(object_wireless_lan, pb.WirelessLAN)
-        object_wireless_lan_group = convert_to_protobuf(object_wireless_lan_group, pb.WirelessLANGroup)
-        object_wireless_link = convert_to_protobuf(object_wireless_link, pb.WirelessLink)
+        object_wireless_lan_group = convert_to_protobuf(
+            object_wireless_lan_group, pb.WirelessLANGroup
+        )
+        object_wireless_link = convert_to_protobuf(
+            object_wireless_link, pb.WirelessLink
+        )
         object_custom_field = convert_to_protobuf(object_custom_field, pb.CustomField)
-        object_custom_field_choice_set = convert_to_protobuf(object_custom_field_choice_set, pb.CustomFieldChoiceSet)
-        object_journal_entry = convert_to_protobuf(object_journal_entry, pb.JournalEntry)
-        object_module_type_profile = convert_to_protobuf(object_module_type_profile, pb.ModuleTypeProfile)
+        object_custom_field_choice_set = convert_to_protobuf(
+            object_custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
+        object_journal_entry = convert_to_protobuf(
+            object_journal_entry, pb.JournalEntry
+        )
+        object_module_type_profile = convert_to_protobuf(
+            object_module_type_profile, pb.ModuleTypeProfile
+        )
         object_custom_link = convert_to_protobuf(object_custom_link, pb.CustomLink)
         contact = convert_to_protobuf(contact, pb.Contact)
         role = convert_to_protobuf(role, pb.ContactRole)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ContactAssignment(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ContactAssignment(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
             object_aggregate=object_aggregate,
@@ -1306,7 +1609,9 @@ class ContactAssignment:
             priority=priority,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ContactGroup:
@@ -1319,14 +1624,18 @@ class ContactGroup:
         parent: str | ContactGroup | pb.ContactGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ContactGroup:
         """Create a new ContactGroup."""
         parent = convert_to_protobuf(parent, pb.ContactGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ContactGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ContactGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -1334,7 +1643,9 @@ class ContactGroup:
             tags=tags,
             custom_fields=custom_fields,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class ContactRole:
@@ -1346,18 +1657,24 @@ class ContactRole:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ContactRole:
         """Create a new ContactRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ContactRole(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ContactRole(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class CustomFieldObjectReference:
@@ -1373,16 +1690,24 @@ class CustomFieldObjectReference:
         cable_termination: str | CableTermination | pb.CableTermination | None = None,
         circuit: str | Circuit | pb.Circuit | None = None,
         circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         circuit_type: str | CircuitType | pb.CircuitType | None = None,
         cluster: str | Cluster | pb.Cluster | None = None,
         cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         cluster_type: str | ClusterType | pb.ClusterType | None = None,
         console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         contact: str | Contact | pb.Contact | None = None,
-        contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
+        contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
         contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         contact_role: str | ContactRole | pb.ContactRole | None = None,
         device: str | Device | pb.Device | None = None,
@@ -1390,7 +1715,9 @@ class CustomFieldObjectReference:
         device_role: str | DeviceRole | pb.DeviceRole | None = None,
         device_type: str | DeviceType | pb.DeviceType | None = None,
         fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         front_port: str | FrontPort | pb.FrontPort | None = None,
         ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
@@ -1401,7 +1728,9 @@ class CustomFieldObjectReference:
         ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
         interface: str | Interface | pb.Interface | None = None,
         inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
+        inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
         l2vpn: str | L2VPN | pb.L2VPN | None = None,
         l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
         location: str | Location | pb.Location | None = None,
@@ -1436,27 +1765,43 @@ class CustomFieldObjectReference:
         tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         tunnel: str | Tunnel | pb.Tunnel | None = None,
         tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         vlan: str | VLAN | pb.VLAN | None = None,
         vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         vm_interface: str | VMInterface | pb.VMInterface | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
         virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
         wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
         wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         custom_field: str | CustomField | pb.CustomField | None = None,
-        custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
-        module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         custom_link: str | CustomLink | pb.CustomLink | None = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
@@ -1468,16 +1813,24 @@ class CustomFieldObjectReference:
         cable_termination = convert_to_protobuf(cable_termination, pb.CableTermination)
         circuit = convert_to_protobuf(circuit, pb.Circuit)
         circuit_group = convert_to_protobuf(circuit_group, pb.CircuitGroup)
-        circuit_group_assignment = convert_to_protobuf(circuit_group_assignment, pb.CircuitGroupAssignment)
-        circuit_termination = convert_to_protobuf(circuit_termination, pb.CircuitTermination)
+        circuit_group_assignment = convert_to_protobuf(
+            circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        circuit_termination = convert_to_protobuf(
+            circuit_termination, pb.CircuitTermination
+        )
         circuit_type = convert_to_protobuf(circuit_type, pb.CircuitType)
         cluster = convert_to_protobuf(cluster, pb.Cluster)
         cluster_group = convert_to_protobuf(cluster_group, pb.ClusterGroup)
         cluster_type = convert_to_protobuf(cluster_type, pb.ClusterType)
         console_port = convert_to_protobuf(console_port, pb.ConsolePort)
-        console_server_port = convert_to_protobuf(console_server_port, pb.ConsoleServerPort)
+        console_server_port = convert_to_protobuf(
+            console_server_port, pb.ConsoleServerPort
+        )
         contact = convert_to_protobuf(contact, pb.Contact)
-        contact_assignment = convert_to_protobuf(contact_assignment, pb.ContactAssignment)
+        contact_assignment = convert_to_protobuf(
+            contact_assignment, pb.ContactAssignment
+        )
         contact_group = convert_to_protobuf(contact_group, pb.ContactGroup)
         contact_role = convert_to_protobuf(contact_role, pb.ContactRole)
         device = convert_to_protobuf(device, pb.Device)
@@ -1485,7 +1838,9 @@ class CustomFieldObjectReference:
         device_role = convert_to_protobuf(device_role, pb.DeviceRole)
         device_type = convert_to_protobuf(device_type, pb.DeviceType)
         fhrp_group = convert_to_protobuf(fhrp_group, pb.FHRPGroup)
-        fhrp_group_assignment = convert_to_protobuf(fhrp_group_assignment, pb.FHRPGroupAssignment)
+        fhrp_group_assignment = convert_to_protobuf(
+            fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
         front_port = convert_to_protobuf(front_port, pb.FrontPort)
         ike_policy = convert_to_protobuf(ike_policy, pb.IKEPolicy)
         ike_proposal = convert_to_protobuf(ike_proposal, pb.IKEProposal)
@@ -1496,7 +1851,9 @@ class CustomFieldObjectReference:
         ip_sec_proposal = convert_to_protobuf(ip_sec_proposal, pb.IPSecProposal)
         interface = convert_to_protobuf(interface, pb.Interface)
         inventory_item = convert_to_protobuf(inventory_item, pb.InventoryItem)
-        inventory_item_role = convert_to_protobuf(inventory_item_role, pb.InventoryItemRole)
+        inventory_item_role = convert_to_protobuf(
+            inventory_item_role, pb.InventoryItemRole
+        )
         l2vpn = convert_to_protobuf(l2vpn, pb.L2VPN)
         l2vpn_termination = convert_to_protobuf(l2vpn_termination, pb.L2VPNTermination)
         location = convert_to_protobuf(location, pb.Location)
@@ -1531,29 +1888,47 @@ class CustomFieldObjectReference:
         tenant_group = convert_to_protobuf(tenant_group, pb.TenantGroup)
         tunnel = convert_to_protobuf(tunnel, pb.Tunnel)
         tunnel_group = convert_to_protobuf(tunnel_group, pb.TunnelGroup)
-        tunnel_termination = convert_to_protobuf(tunnel_termination, pb.TunnelTermination)
+        tunnel_termination = convert_to_protobuf(
+            tunnel_termination, pb.TunnelTermination
+        )
         vlan = convert_to_protobuf(vlan, pb.VLAN)
         vlan_group = convert_to_protobuf(vlan_group, pb.VLANGroup)
-        vlan_translation_policy = convert_to_protobuf(vlan_translation_policy, pb.VLANTranslationPolicy)
-        vlan_translation_rule = convert_to_protobuf(vlan_translation_rule, pb.VLANTranslationRule)
+        vlan_translation_policy = convert_to_protobuf(
+            vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        vlan_translation_rule = convert_to_protobuf(
+            vlan_translation_rule, pb.VLANTranslationRule
+        )
         vm_interface = convert_to_protobuf(vm_interface, pb.VMInterface)
         vrf = convert_to_protobuf(vrf, pb.VRF)
         virtual_chassis = convert_to_protobuf(virtual_chassis, pb.VirtualChassis)
         virtual_circuit = convert_to_protobuf(virtual_circuit, pb.VirtualCircuit)
-        virtual_circuit_termination = convert_to_protobuf(virtual_circuit_termination, pb.VirtualCircuitTermination)
-        virtual_circuit_type = convert_to_protobuf(virtual_circuit_type, pb.VirtualCircuitType)
-        virtual_device_context = convert_to_protobuf(virtual_device_context, pb.VirtualDeviceContext)
+        virtual_circuit_termination = convert_to_protobuf(
+            virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        virtual_circuit_type = convert_to_protobuf(
+            virtual_circuit_type, pb.VirtualCircuitType
+        )
+        virtual_device_context = convert_to_protobuf(
+            virtual_device_context, pb.VirtualDeviceContext
+        )
         virtual_disk = convert_to_protobuf(virtual_disk, pb.VirtualDisk)
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         wireless_lan = convert_to_protobuf(wireless_lan, pb.WirelessLAN)
-        wireless_lan_group = convert_to_protobuf(wireless_lan_group, pb.WirelessLANGroup)
+        wireless_lan_group = convert_to_protobuf(
+            wireless_lan_group, pb.WirelessLANGroup
+        )
         wireless_link = convert_to_protobuf(wireless_link, pb.WirelessLink)
         custom_field = convert_to_protobuf(custom_field, pb.CustomField)
-        custom_field_choice_set = convert_to_protobuf(custom_field_choice_set, pb.CustomFieldChoiceSet)
+        custom_field_choice_set = convert_to_protobuf(
+            custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
         journal_entry = convert_to_protobuf(journal_entry, pb.JournalEntry)
-        module_type_profile = convert_to_protobuf(module_type_profile, pb.ModuleTypeProfile)
+        module_type_profile = convert_to_protobuf(
+            module_type_profile, pb.ModuleTypeProfile
+        )
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
-        return pb.CustomFieldObjectReference(
+        result = pb.CustomFieldObjectReference(
             asn=asn,
             asn_range=asn_range,
             aggregate=aggregate,
@@ -1648,6 +2023,7 @@ class CustomFieldObjectReference:
             module_type_profile=module_type_profile,
             custom_link=custom_link,
         )
+        return result
 
 
 class CustomFieldValue:
@@ -1656,7 +2032,10 @@ class CustomFieldValue:
     def __new__(
         cls,
         multiple_selection: list[str] | None = None,
-        multiple_objects: list[str | CustomFieldObjectReference | pb.CustomFieldObjectReference] | None = None,
+        multiple_objects: (
+            list[str | CustomFieldObjectReference | pb.CustomFieldObjectReference]
+            | None
+        ) = None,
         text: str | None = None,
         long_text: str | None = None,
         integer: int | None = None,
@@ -1667,12 +2046,16 @@ class CustomFieldValue:
         url: str | None = None,
         json: str | None = None,
         selection: str | None = None,
-        object: str | CustomFieldObjectReference | pb.CustomFieldObjectReference | None = None,
+        object: (
+            str | CustomFieldObjectReference | pb.CustomFieldObjectReference | None
+        ) = None,
     ) -> pb.CustomFieldValue:
         """Create a new CustomFieldValue."""
-        multiple_objects = convert_to_protobuf_list(multiple_objects, pb.CustomFieldObjectReference)
+        multiple_objects = convert_to_protobuf_list(
+            multiple_objects, pb.CustomFieldObjectReference
+        )
         object = convert_to_protobuf(object, pb.CustomFieldObjectReference)
-        return pb.CustomFieldValue(
+        result = pb.CustomFieldValue(
             multiple_selection=multiple_selection,
             multiple_objects=multiple_objects,
             text=text,
@@ -1687,6 +2070,7 @@ class CustomFieldValue:
             selection=selection,
             object=object,
         )
+        return result
 
 
 class Device:
@@ -1720,7 +2104,10 @@ class Device:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
     ) -> pb.Device:
@@ -1739,17 +2126,18 @@ class Device:
         virtual_chassis = convert_to_protobuf(virtual_chassis, pb.VirtualChassis)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
 
         # apply shortcuts
         if manufacturer is not None:
-            if platform is not None and not platform.HasField('manufacturer'):
+            if platform is not None and not platform.HasField("manufacturer"):
                 platform.manufacturer.CopyFrom(manufacturer)
-            if device_type is not None and not device_type.HasField('manufacturer'):
+            if device_type is not None and not device_type.HasField("manufacturer"):
                 device_type.manufacturer.CopyFrom(manufacturer)
-        return pb.Device(
+        result = pb.Device(
             name=name,
             device_type=device_type,
             role=role,
@@ -1777,7 +2165,9 @@ class Device:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class DeviceBay:
@@ -1791,14 +2181,18 @@ class DeviceBay:
         description: str | None = None,
         installed_device: str | Device | pb.Device | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.DeviceBay:
         """Create a new DeviceBay."""
         device = convert_to_protobuf(device, pb.Device)
         installed_device = convert_to_protobuf(installed_device, pb.Device)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.DeviceBay(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.DeviceBay(
             device=device,
             name=name,
             label=label,
@@ -1806,7 +2200,9 @@ class DeviceBay:
             installed_device=installed_device,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class DeviceRole:
@@ -1820,15 +2216,19 @@ class DeviceRole:
         vm_role: bool | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         parent: str | DeviceRole | pb.DeviceRole | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.DeviceRole:
         """Create a new DeviceRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         parent = convert_to_protobuf(parent, pb.DeviceRole)
-        return pb.DeviceRole(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.DeviceRole(
             name=name,
             slug=slug,
             color=color,
@@ -1838,7 +2238,9 @@ class DeviceRole:
             custom_fields=custom_fields,
             parent=parent,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class DeviceType:
@@ -1861,14 +2263,18 @@ class DeviceType:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.DeviceType:
         """Create a new DeviceType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         default_platform = convert_to_protobuf(default_platform, pb.Platform)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.DeviceType(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.DeviceType(
             manufacturer=manufacturer,
             default_platform=default_platform,
             model=model,
@@ -1885,7 +2291,9 @@ class DeviceType:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class FHRPGroup:
@@ -1901,12 +2309,16 @@ class FHRPGroup:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroup:
         """Create a new FHRPGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.FHRPGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.FHRPGroup(
             name=name,
             protocol=protocol,
             group_id=group_id,
@@ -1916,7 +2328,9 @@ class FHRPGroup:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class FHRPGroupAssignment:
@@ -1930,19 +2344,29 @@ class FHRPGroupAssignment:
         interface_aggregate: str | Aggregate | pb.Aggregate | None = None,
         interface_cable: str | Cable | pb.Cable | None = None,
         interface_cable_path: str | CablePath | pb.CablePath | None = None,
-        interface_cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        interface_cable_termination: (
+            str | CableTermination | pb.CableTermination | None
+        ) = None,
         interface_circuit: str | Circuit | pb.Circuit | None = None,
         interface_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        interface_circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        interface_circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        interface_circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        interface_circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         interface_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         interface_cluster: str | Cluster | pb.Cluster | None = None,
         interface_cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         interface_cluster_type: str | ClusterType | pb.ClusterType | None = None,
         interface_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        interface_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        interface_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         interface_contact: str | Contact | pb.Contact | None = None,
-        interface_contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
+        interface_contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
         interface_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         interface_contact_role: str | ContactRole | pb.ContactRole | None = None,
         interface_device: str | Device | pb.Device | None = None,
@@ -1950,7 +2374,9 @@ class FHRPGroupAssignment:
         interface_device_role: str | DeviceRole | pb.DeviceRole | None = None,
         interface_device_type: str | DeviceType | pb.DeviceType | None = None,
         interface_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        interface_fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        interface_fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         interface_front_port: str | FrontPort | pb.FrontPort | None = None,
         interface_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         interface_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
@@ -1961,9 +2387,13 @@ class FHRPGroupAssignment:
         interface_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
         interface_interface: str | Interface | pb.Interface | None = None,
         interface_inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        interface_inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
+        interface_inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
         interface_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        interface_l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        interface_l2vpn_termination: (
+            str | L2VPNTermination | pb.L2VPNTermination | None
+        ) = None,
         interface_location: str | Location | pb.Location | None = None,
         interface_mac_address: str | MACAddress | pb.MACAddress | None = None,
         interface_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
@@ -1977,11 +2407,17 @@ class FHRPGroupAssignment:
         interface_power_port: str | PowerPort | pb.PowerPort | None = None,
         interface_prefix: str | Prefix | pb.Prefix | None = None,
         interface_provider: str | Provider | pb.Provider | None = None,
-        interface_provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
-        interface_provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
+        interface_provider_account: (
+            str | ProviderAccount | pb.ProviderAccount | None
+        ) = None,
+        interface_provider_network: (
+            str | ProviderNetwork | pb.ProviderNetwork | None
+        ) = None,
         interface_rir: str | RIR | pb.RIR | None = None,
         interface_rack: str | Rack | pb.Rack | None = None,
-        interface_rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        interface_rack_reservation: (
+            str | RackReservation | pb.RackReservation | None
+        ) = None,
         interface_rack_role: str | RackRole | pb.RackRole | None = None,
         interface_rack_type: str | RackType | pb.RackType | None = None,
         interface_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -1996,29 +2432,54 @@ class FHRPGroupAssignment:
         interface_tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         interface_tunnel: str | Tunnel | pb.Tunnel | None = None,
         interface_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        interface_tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        interface_tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         interface_vlan: str | VLAN | pb.VLAN | None = None,
         interface_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        interface_vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        interface_vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        interface_vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        interface_vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         interface_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         interface_vrf: str | VRF | pb.VRF | None = None,
-        interface_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
-        interface_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        interface_virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        interface_virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        interface_virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        interface_virtual_chassis: (
+            str | VirtualChassis | pb.VirtualChassis | None
+        ) = None,
+        interface_virtual_circuit: (
+            str | VirtualCircuit | pb.VirtualCircuit | None
+        ) = None,
+        interface_virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        interface_virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        interface_virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         interface_virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
-        interface_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
+        interface_virtual_machine: (
+            str | VirtualMachine | pb.VirtualMachine | None
+        ) = None,
         interface_wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
-        interface_wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
+        interface_wireless_lan_group: (
+            str | WirelessLANGroup | pb.WirelessLANGroup | None
+        ) = None,
         interface_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         interface_custom_field: str | CustomField | pb.CustomField | None = None,
-        interface_custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        interface_custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         interface_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
-        interface_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        interface_module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         interface_custom_link: str | CustomLink | pb.CustomLink | None = None,
         priority: int | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroupAssignment:
         """Create a new FHRPGroupAssignment."""
         group = convert_to_protobuf(group, pb.FHRPGroup)
@@ -2027,95 +2488,200 @@ class FHRPGroupAssignment:
         interface_aggregate = convert_to_protobuf(interface_aggregate, pb.Aggregate)
         interface_cable = convert_to_protobuf(interface_cable, pb.Cable)
         interface_cable_path = convert_to_protobuf(interface_cable_path, pb.CablePath)
-        interface_cable_termination = convert_to_protobuf(interface_cable_termination, pb.CableTermination)
+        interface_cable_termination = convert_to_protobuf(
+            interface_cable_termination, pb.CableTermination
+        )
         interface_circuit = convert_to_protobuf(interface_circuit, pb.Circuit)
-        interface_circuit_group = convert_to_protobuf(interface_circuit_group, pb.CircuitGroup)
-        interface_circuit_group_assignment = convert_to_protobuf(interface_circuit_group_assignment, pb.CircuitGroupAssignment)
-        interface_circuit_termination = convert_to_protobuf(interface_circuit_termination, pb.CircuitTermination)
-        interface_circuit_type = convert_to_protobuf(interface_circuit_type, pb.CircuitType)
+        interface_circuit_group = convert_to_protobuf(
+            interface_circuit_group, pb.CircuitGroup
+        )
+        interface_circuit_group_assignment = convert_to_protobuf(
+            interface_circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        interface_circuit_termination = convert_to_protobuf(
+            interface_circuit_termination, pb.CircuitTermination
+        )
+        interface_circuit_type = convert_to_protobuf(
+            interface_circuit_type, pb.CircuitType
+        )
         interface_cluster = convert_to_protobuf(interface_cluster, pb.Cluster)
-        interface_cluster_group = convert_to_protobuf(interface_cluster_group, pb.ClusterGroup)
-        interface_cluster_type = convert_to_protobuf(interface_cluster_type, pb.ClusterType)
-        interface_console_port = convert_to_protobuf(interface_console_port, pb.ConsolePort)
-        interface_console_server_port = convert_to_protobuf(interface_console_server_port, pb.ConsoleServerPort)
+        interface_cluster_group = convert_to_protobuf(
+            interface_cluster_group, pb.ClusterGroup
+        )
+        interface_cluster_type = convert_to_protobuf(
+            interface_cluster_type, pb.ClusterType
+        )
+        interface_console_port = convert_to_protobuf(
+            interface_console_port, pb.ConsolePort
+        )
+        interface_console_server_port = convert_to_protobuf(
+            interface_console_server_port, pb.ConsoleServerPort
+        )
         interface_contact = convert_to_protobuf(interface_contact, pb.Contact)
-        interface_contact_assignment = convert_to_protobuf(interface_contact_assignment, pb.ContactAssignment)
-        interface_contact_group = convert_to_protobuf(interface_contact_group, pb.ContactGroup)
-        interface_contact_role = convert_to_protobuf(interface_contact_role, pb.ContactRole)
+        interface_contact_assignment = convert_to_protobuf(
+            interface_contact_assignment, pb.ContactAssignment
+        )
+        interface_contact_group = convert_to_protobuf(
+            interface_contact_group, pb.ContactGroup
+        )
+        interface_contact_role = convert_to_protobuf(
+            interface_contact_role, pb.ContactRole
+        )
         interface_device = convert_to_protobuf(interface_device, pb.Device)
         interface_device_bay = convert_to_protobuf(interface_device_bay, pb.DeviceBay)
-        interface_device_role = convert_to_protobuf(interface_device_role, pb.DeviceRole)
-        interface_device_type = convert_to_protobuf(interface_device_type, pb.DeviceType)
+        interface_device_role = convert_to_protobuf(
+            interface_device_role, pb.DeviceRole
+        )
+        interface_device_type = convert_to_protobuf(
+            interface_device_type, pb.DeviceType
+        )
         interface_fhrp_group = convert_to_protobuf(interface_fhrp_group, pb.FHRPGroup)
-        interface_fhrp_group_assignment = convert_to_protobuf(interface_fhrp_group_assignment, pb.FHRPGroupAssignment)
+        interface_fhrp_group_assignment = convert_to_protobuf(
+            interface_fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
         interface_front_port = convert_to_protobuf(interface_front_port, pb.FrontPort)
         interface_ike_policy = convert_to_protobuf(interface_ike_policy, pb.IKEPolicy)
-        interface_ike_proposal = convert_to_protobuf(interface_ike_proposal, pb.IKEProposal)
+        interface_ike_proposal = convert_to_protobuf(
+            interface_ike_proposal, pb.IKEProposal
+        )
         interface_ip_address = convert_to_protobuf(interface_ip_address, pb.IPAddress)
         interface_ip_range = convert_to_protobuf(interface_ip_range, pb.IPRange)
-        interface_ip_sec_policy = convert_to_protobuf(interface_ip_sec_policy, pb.IPSecPolicy)
-        interface_ip_sec_profile = convert_to_protobuf(interface_ip_sec_profile, pb.IPSecProfile)
-        interface_ip_sec_proposal = convert_to_protobuf(interface_ip_sec_proposal, pb.IPSecProposal)
+        interface_ip_sec_policy = convert_to_protobuf(
+            interface_ip_sec_policy, pb.IPSecPolicy
+        )
+        interface_ip_sec_profile = convert_to_protobuf(
+            interface_ip_sec_profile, pb.IPSecProfile
+        )
+        interface_ip_sec_proposal = convert_to_protobuf(
+            interface_ip_sec_proposal, pb.IPSecProposal
+        )
         interface_interface = convert_to_protobuf(interface_interface, pb.Interface)
-        interface_inventory_item = convert_to_protobuf(interface_inventory_item, pb.InventoryItem)
-        interface_inventory_item_role = convert_to_protobuf(interface_inventory_item_role, pb.InventoryItemRole)
+        interface_inventory_item = convert_to_protobuf(
+            interface_inventory_item, pb.InventoryItem
+        )
+        interface_inventory_item_role = convert_to_protobuf(
+            interface_inventory_item_role, pb.InventoryItemRole
+        )
         interface_l2vpn = convert_to_protobuf(interface_l2vpn, pb.L2VPN)
-        interface_l2vpn_termination = convert_to_protobuf(interface_l2vpn_termination, pb.L2VPNTermination)
+        interface_l2vpn_termination = convert_to_protobuf(
+            interface_l2vpn_termination, pb.L2VPNTermination
+        )
         interface_location = convert_to_protobuf(interface_location, pb.Location)
-        interface_mac_address = convert_to_protobuf(interface_mac_address, pb.MACAddress)
-        interface_manufacturer = convert_to_protobuf(interface_manufacturer, pb.Manufacturer)
+        interface_mac_address = convert_to_protobuf(
+            interface_mac_address, pb.MACAddress
+        )
+        interface_manufacturer = convert_to_protobuf(
+            interface_manufacturer, pb.Manufacturer
+        )
         interface_module = convert_to_protobuf(interface_module, pb.Module)
         interface_module_bay = convert_to_protobuf(interface_module_bay, pb.ModuleBay)
-        interface_module_type = convert_to_protobuf(interface_module_type, pb.ModuleType)
+        interface_module_type = convert_to_protobuf(
+            interface_module_type, pb.ModuleType
+        )
         interface_platform = convert_to_protobuf(interface_platform, pb.Platform)
         interface_power_feed = convert_to_protobuf(interface_power_feed, pb.PowerFeed)
-        interface_power_outlet = convert_to_protobuf(interface_power_outlet, pb.PowerOutlet)
-        interface_power_panel = convert_to_protobuf(interface_power_panel, pb.PowerPanel)
+        interface_power_outlet = convert_to_protobuf(
+            interface_power_outlet, pb.PowerOutlet
+        )
+        interface_power_panel = convert_to_protobuf(
+            interface_power_panel, pb.PowerPanel
+        )
         interface_power_port = convert_to_protobuf(interface_power_port, pb.PowerPort)
         interface_prefix = convert_to_protobuf(interface_prefix, pb.Prefix)
         interface_provider = convert_to_protobuf(interface_provider, pb.Provider)
-        interface_provider_account = convert_to_protobuf(interface_provider_account, pb.ProviderAccount)
-        interface_provider_network = convert_to_protobuf(interface_provider_network, pb.ProviderNetwork)
+        interface_provider_account = convert_to_protobuf(
+            interface_provider_account, pb.ProviderAccount
+        )
+        interface_provider_network = convert_to_protobuf(
+            interface_provider_network, pb.ProviderNetwork
+        )
         interface_rir = convert_to_protobuf(interface_rir, pb.RIR)
         interface_rack = convert_to_protobuf(interface_rack, pb.Rack)
-        interface_rack_reservation = convert_to_protobuf(interface_rack_reservation, pb.RackReservation)
+        interface_rack_reservation = convert_to_protobuf(
+            interface_rack_reservation, pb.RackReservation
+        )
         interface_rack_role = convert_to_protobuf(interface_rack_role, pb.RackRole)
         interface_rack_type = convert_to_protobuf(interface_rack_type, pb.RackType)
         interface_rear_port = convert_to_protobuf(interface_rear_port, pb.RearPort)
         interface_region = convert_to_protobuf(interface_region, pb.Region)
         interface_role = convert_to_protobuf(interface_role, pb.Role)
-        interface_route_target = convert_to_protobuf(interface_route_target, pb.RouteTarget)
+        interface_route_target = convert_to_protobuf(
+            interface_route_target, pb.RouteTarget
+        )
         interface_service = convert_to_protobuf(interface_service, pb.Service)
         interface_site = convert_to_protobuf(interface_site, pb.Site)
         interface_site_group = convert_to_protobuf(interface_site_group, pb.SiteGroup)
         interface_tag = convert_to_protobuf(interface_tag, pb.Tag)
         interface_tenant = convert_to_protobuf(interface_tenant, pb.Tenant)
-        interface_tenant_group = convert_to_protobuf(interface_tenant_group, pb.TenantGroup)
+        interface_tenant_group = convert_to_protobuf(
+            interface_tenant_group, pb.TenantGroup
+        )
         interface_tunnel = convert_to_protobuf(interface_tunnel, pb.Tunnel)
-        interface_tunnel_group = convert_to_protobuf(interface_tunnel_group, pb.TunnelGroup)
-        interface_tunnel_termination = convert_to_protobuf(interface_tunnel_termination, pb.TunnelTermination)
+        interface_tunnel_group = convert_to_protobuf(
+            interface_tunnel_group, pb.TunnelGroup
+        )
+        interface_tunnel_termination = convert_to_protobuf(
+            interface_tunnel_termination, pb.TunnelTermination
+        )
         interface_vlan = convert_to_protobuf(interface_vlan, pb.VLAN)
         interface_vlan_group = convert_to_protobuf(interface_vlan_group, pb.VLANGroup)
-        interface_vlan_translation_policy = convert_to_protobuf(interface_vlan_translation_policy, pb.VLANTranslationPolicy)
-        interface_vlan_translation_rule = convert_to_protobuf(interface_vlan_translation_rule, pb.VLANTranslationRule)
-        interface_vm_interface = convert_to_protobuf(interface_vm_interface, pb.VMInterface)
+        interface_vlan_translation_policy = convert_to_protobuf(
+            interface_vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        interface_vlan_translation_rule = convert_to_protobuf(
+            interface_vlan_translation_rule, pb.VLANTranslationRule
+        )
+        interface_vm_interface = convert_to_protobuf(
+            interface_vm_interface, pb.VMInterface
+        )
         interface_vrf = convert_to_protobuf(interface_vrf, pb.VRF)
-        interface_virtual_chassis = convert_to_protobuf(interface_virtual_chassis, pb.VirtualChassis)
-        interface_virtual_circuit = convert_to_protobuf(interface_virtual_circuit, pb.VirtualCircuit)
-        interface_virtual_circuit_termination = convert_to_protobuf(interface_virtual_circuit_termination, pb.VirtualCircuitTermination)
-        interface_virtual_circuit_type = convert_to_protobuf(interface_virtual_circuit_type, pb.VirtualCircuitType)
-        interface_virtual_device_context = convert_to_protobuf(interface_virtual_device_context, pb.VirtualDeviceContext)
-        interface_virtual_disk = convert_to_protobuf(interface_virtual_disk, pb.VirtualDisk)
-        interface_virtual_machine = convert_to_protobuf(interface_virtual_machine, pb.VirtualMachine)
-        interface_wireless_lan = convert_to_protobuf(interface_wireless_lan, pb.WirelessLAN)
-        interface_wireless_lan_group = convert_to_protobuf(interface_wireless_lan_group, pb.WirelessLANGroup)
-        interface_wireless_link = convert_to_protobuf(interface_wireless_link, pb.WirelessLink)
-        interface_custom_field = convert_to_protobuf(interface_custom_field, pb.CustomField)
-        interface_custom_field_choice_set = convert_to_protobuf(interface_custom_field_choice_set, pb.CustomFieldChoiceSet)
-        interface_journal_entry = convert_to_protobuf(interface_journal_entry, pb.JournalEntry)
-        interface_module_type_profile = convert_to_protobuf(interface_module_type_profile, pb.ModuleTypeProfile)
-        interface_custom_link = convert_to_protobuf(interface_custom_link, pb.CustomLink)
-        return pb.FHRPGroupAssignment(
+        interface_virtual_chassis = convert_to_protobuf(
+            interface_virtual_chassis, pb.VirtualChassis
+        )
+        interface_virtual_circuit = convert_to_protobuf(
+            interface_virtual_circuit, pb.VirtualCircuit
+        )
+        interface_virtual_circuit_termination = convert_to_protobuf(
+            interface_virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        interface_virtual_circuit_type = convert_to_protobuf(
+            interface_virtual_circuit_type, pb.VirtualCircuitType
+        )
+        interface_virtual_device_context = convert_to_protobuf(
+            interface_virtual_device_context, pb.VirtualDeviceContext
+        )
+        interface_virtual_disk = convert_to_protobuf(
+            interface_virtual_disk, pb.VirtualDisk
+        )
+        interface_virtual_machine = convert_to_protobuf(
+            interface_virtual_machine, pb.VirtualMachine
+        )
+        interface_wireless_lan = convert_to_protobuf(
+            interface_wireless_lan, pb.WirelessLAN
+        )
+        interface_wireless_lan_group = convert_to_protobuf(
+            interface_wireless_lan_group, pb.WirelessLANGroup
+        )
+        interface_wireless_link = convert_to_protobuf(
+            interface_wireless_link, pb.WirelessLink
+        )
+        interface_custom_field = convert_to_protobuf(
+            interface_custom_field, pb.CustomField
+        )
+        interface_custom_field_choice_set = convert_to_protobuf(
+            interface_custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
+        interface_journal_entry = convert_to_protobuf(
+            interface_journal_entry, pb.JournalEntry
+        )
+        interface_module_type_profile = convert_to_protobuf(
+            interface_module_type_profile, pb.ModuleTypeProfile
+        )
+        interface_custom_link = convert_to_protobuf(
+            interface_custom_link, pb.CustomLink
+        )
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.FHRPGroupAssignment(
             group=group,
             interface_asn=interface_asn,
             interface_asn_range=interface_asn_range,
@@ -2211,7 +2777,9 @@ class FHRPGroupAssignment:
             interface_module_type_profile=interface_module_type_profile,
             interface_custom_link=interface_custom_link,
             priority=priority,
+            metadata=metadata,
         )
+        return result
 
 
 class FrontPort:
@@ -2230,7 +2798,10 @@ class FrontPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.FrontPort:
         """Create a new FrontPort."""
         device = convert_to_protobuf(device, pb.Device)
@@ -2238,7 +2809,8 @@ class FrontPort:
         rear_port = convert_to_protobuf(rear_port, pb.RearPort)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.FrontPort(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.FrontPort(
             device=device,
             module=module,
             name=name,
@@ -2251,7 +2823,9 @@ class FrontPort:
             mark_connected=mark_connected,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class GenericObject:
@@ -2264,19 +2838,29 @@ class GenericObject:
         object_aggregate: str | Aggregate | pb.Aggregate | None = None,
         object_cable: str | Cable | pb.Cable | None = None,
         object_cable_path: str | CablePath | pb.CablePath | None = None,
-        object_cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        object_cable_termination: (
+            str | CableTermination | pb.CableTermination | None
+        ) = None,
         object_circuit: str | Circuit | pb.Circuit | None = None,
         object_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        object_circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        object_circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        object_circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        object_circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         object_cluster: str | Cluster | pb.Cluster | None = None,
         object_cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         object_cluster_type: str | ClusterType | pb.ClusterType | None = None,
         object_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        object_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        object_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         object_contact: str | Contact | pb.Contact | None = None,
-        object_contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
+        object_contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
         object_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         object_contact_role: str | ContactRole | pb.ContactRole | None = None,
         object_device: str | Device | pb.Device | None = None,
@@ -2284,7 +2868,9 @@ class GenericObject:
         object_device_role: str | DeviceRole | pb.DeviceRole | None = None,
         object_device_type: str | DeviceType | pb.DeviceType | None = None,
         object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        object_fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        object_fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         object_front_port: str | FrontPort | pb.FrontPort | None = None,
         object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
@@ -2295,9 +2881,13 @@ class GenericObject:
         object_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
         object_interface: str | Interface | pb.Interface | None = None,
         object_inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        object_inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
+        object_inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
         object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        object_l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        object_l2vpn_termination: (
+            str | L2VPNTermination | pb.L2VPNTermination | None
+        ) = None,
         object_location: str | Location | pb.Location | None = None,
         object_mac_address: str | MACAddress | pb.MACAddress | None = None,
         object_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
@@ -2311,11 +2901,17 @@ class GenericObject:
         object_power_port: str | PowerPort | pb.PowerPort | None = None,
         object_prefix: str | Prefix | pb.Prefix | None = None,
         object_provider: str | Provider | pb.Provider | None = None,
-        object_provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
-        object_provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
+        object_provider_account: (
+            str | ProviderAccount | pb.ProviderAccount | None
+        ) = None,
+        object_provider_network: (
+            str | ProviderNetwork | pb.ProviderNetwork | None
+        ) = None,
         object_rir: str | RIR | pb.RIR | None = None,
         object_rack: str | Rack | pb.Rack | None = None,
-        object_rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        object_rack_reservation: (
+            str | RackReservation | pb.RackReservation | None
+        ) = None,
         object_rack_role: str | RackRole | pb.RackRole | None = None,
         object_rack_type: str | RackType | pb.RackType | None = None,
         object_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -2330,27 +2926,45 @@ class GenericObject:
         object_tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        object_tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        object_tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         object_vlan: str | VLAN | pb.VLAN | None = None,
         object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        object_vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        object_vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        object_vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        object_vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         object_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         object_vrf: str | VRF | pb.VRF | None = None,
         object_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         object_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        object_virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        object_virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        object_virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        object_virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        object_virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        object_virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         object_virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
         object_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         object_wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
-        object_wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
+        object_wireless_lan_group: (
+            str | WirelessLANGroup | pb.WirelessLANGroup | None
+        ) = None,
         object_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         object_custom_field: str | CustomField | pb.CustomField | None = None,
-        object_custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        object_custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         object_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
-        object_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        object_module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         object_custom_link: str | CustomLink | pb.CustomLink | None = None,
     ) -> pb.GenericObject:
         """Create a new GenericObject."""
@@ -2359,40 +2973,68 @@ class GenericObject:
         object_aggregate = convert_to_protobuf(object_aggregate, pb.Aggregate)
         object_cable = convert_to_protobuf(object_cable, pb.Cable)
         object_cable_path = convert_to_protobuf(object_cable_path, pb.CablePath)
-        object_cable_termination = convert_to_protobuf(object_cable_termination, pb.CableTermination)
+        object_cable_termination = convert_to_protobuf(
+            object_cable_termination, pb.CableTermination
+        )
         object_circuit = convert_to_protobuf(object_circuit, pb.Circuit)
-        object_circuit_group = convert_to_protobuf(object_circuit_group, pb.CircuitGroup)
-        object_circuit_group_assignment = convert_to_protobuf(object_circuit_group_assignment, pb.CircuitGroupAssignment)
-        object_circuit_termination = convert_to_protobuf(object_circuit_termination, pb.CircuitTermination)
+        object_circuit_group = convert_to_protobuf(
+            object_circuit_group, pb.CircuitGroup
+        )
+        object_circuit_group_assignment = convert_to_protobuf(
+            object_circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        object_circuit_termination = convert_to_protobuf(
+            object_circuit_termination, pb.CircuitTermination
+        )
         object_circuit_type = convert_to_protobuf(object_circuit_type, pb.CircuitType)
         object_cluster = convert_to_protobuf(object_cluster, pb.Cluster)
-        object_cluster_group = convert_to_protobuf(object_cluster_group, pb.ClusterGroup)
+        object_cluster_group = convert_to_protobuf(
+            object_cluster_group, pb.ClusterGroup
+        )
         object_cluster_type = convert_to_protobuf(object_cluster_type, pb.ClusterType)
         object_console_port = convert_to_protobuf(object_console_port, pb.ConsolePort)
-        object_console_server_port = convert_to_protobuf(object_console_server_port, pb.ConsoleServerPort)
+        object_console_server_port = convert_to_protobuf(
+            object_console_server_port, pb.ConsoleServerPort
+        )
         object_contact = convert_to_protobuf(object_contact, pb.Contact)
-        object_contact_assignment = convert_to_protobuf(object_contact_assignment, pb.ContactAssignment)
-        object_contact_group = convert_to_protobuf(object_contact_group, pb.ContactGroup)
+        object_contact_assignment = convert_to_protobuf(
+            object_contact_assignment, pb.ContactAssignment
+        )
+        object_contact_group = convert_to_protobuf(
+            object_contact_group, pb.ContactGroup
+        )
         object_contact_role = convert_to_protobuf(object_contact_role, pb.ContactRole)
         object_device = convert_to_protobuf(object_device, pb.Device)
         object_device_bay = convert_to_protobuf(object_device_bay, pb.DeviceBay)
         object_device_role = convert_to_protobuf(object_device_role, pb.DeviceRole)
         object_device_type = convert_to_protobuf(object_device_type, pb.DeviceType)
         object_fhrp_group = convert_to_protobuf(object_fhrp_group, pb.FHRPGroup)
-        object_fhrp_group_assignment = convert_to_protobuf(object_fhrp_group_assignment, pb.FHRPGroupAssignment)
+        object_fhrp_group_assignment = convert_to_protobuf(
+            object_fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
         object_front_port = convert_to_protobuf(object_front_port, pb.FrontPort)
         object_ike_policy = convert_to_protobuf(object_ike_policy, pb.IKEPolicy)
         object_ike_proposal = convert_to_protobuf(object_ike_proposal, pb.IKEProposal)
         object_ip_address = convert_to_protobuf(object_ip_address, pb.IPAddress)
         object_ip_range = convert_to_protobuf(object_ip_range, pb.IPRange)
         object_ip_sec_policy = convert_to_protobuf(object_ip_sec_policy, pb.IPSecPolicy)
-        object_ip_sec_profile = convert_to_protobuf(object_ip_sec_profile, pb.IPSecProfile)
-        object_ip_sec_proposal = convert_to_protobuf(object_ip_sec_proposal, pb.IPSecProposal)
+        object_ip_sec_profile = convert_to_protobuf(
+            object_ip_sec_profile, pb.IPSecProfile
+        )
+        object_ip_sec_proposal = convert_to_protobuf(
+            object_ip_sec_proposal, pb.IPSecProposal
+        )
         object_interface = convert_to_protobuf(object_interface, pb.Interface)
-        object_inventory_item = convert_to_protobuf(object_inventory_item, pb.InventoryItem)
-        object_inventory_item_role = convert_to_protobuf(object_inventory_item_role, pb.InventoryItemRole)
+        object_inventory_item = convert_to_protobuf(
+            object_inventory_item, pb.InventoryItem
+        )
+        object_inventory_item_role = convert_to_protobuf(
+            object_inventory_item_role, pb.InventoryItemRole
+        )
         object_l2vpn = convert_to_protobuf(object_l2vpn, pb.L2VPN)
-        object_l2vpn_termination = convert_to_protobuf(object_l2vpn_termination, pb.L2VPNTermination)
+        object_l2vpn_termination = convert_to_protobuf(
+            object_l2vpn_termination, pb.L2VPNTermination
+        )
         object_location = convert_to_protobuf(object_location, pb.Location)
         object_mac_address = convert_to_protobuf(object_mac_address, pb.MACAddress)
         object_manufacturer = convert_to_protobuf(object_manufacturer, pb.Manufacturer)
@@ -2406,11 +3048,17 @@ class GenericObject:
         object_power_port = convert_to_protobuf(object_power_port, pb.PowerPort)
         object_prefix = convert_to_protobuf(object_prefix, pb.Prefix)
         object_provider = convert_to_protobuf(object_provider, pb.Provider)
-        object_provider_account = convert_to_protobuf(object_provider_account, pb.ProviderAccount)
-        object_provider_network = convert_to_protobuf(object_provider_network, pb.ProviderNetwork)
+        object_provider_account = convert_to_protobuf(
+            object_provider_account, pb.ProviderAccount
+        )
+        object_provider_network = convert_to_protobuf(
+            object_provider_network, pb.ProviderNetwork
+        )
         object_rir = convert_to_protobuf(object_rir, pb.RIR)
         object_rack = convert_to_protobuf(object_rack, pb.Rack)
-        object_rack_reservation = convert_to_protobuf(object_rack_reservation, pb.RackReservation)
+        object_rack_reservation = convert_to_protobuf(
+            object_rack_reservation, pb.RackReservation
+        )
         object_rack_role = convert_to_protobuf(object_rack_role, pb.RackRole)
         object_rack_type = convert_to_protobuf(object_rack_type, pb.RackType)
         object_rear_port = convert_to_protobuf(object_rear_port, pb.RearPort)
@@ -2425,29 +3073,57 @@ class GenericObject:
         object_tenant_group = convert_to_protobuf(object_tenant_group, pb.TenantGroup)
         object_tunnel = convert_to_protobuf(object_tunnel, pb.Tunnel)
         object_tunnel_group = convert_to_protobuf(object_tunnel_group, pb.TunnelGroup)
-        object_tunnel_termination = convert_to_protobuf(object_tunnel_termination, pb.TunnelTermination)
+        object_tunnel_termination = convert_to_protobuf(
+            object_tunnel_termination, pb.TunnelTermination
+        )
         object_vlan = convert_to_protobuf(object_vlan, pb.VLAN)
         object_vlan_group = convert_to_protobuf(object_vlan_group, pb.VLANGroup)
-        object_vlan_translation_policy = convert_to_protobuf(object_vlan_translation_policy, pb.VLANTranslationPolicy)
-        object_vlan_translation_rule = convert_to_protobuf(object_vlan_translation_rule, pb.VLANTranslationRule)
+        object_vlan_translation_policy = convert_to_protobuf(
+            object_vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        object_vlan_translation_rule = convert_to_protobuf(
+            object_vlan_translation_rule, pb.VLANTranslationRule
+        )
         object_vm_interface = convert_to_protobuf(object_vm_interface, pb.VMInterface)
         object_vrf = convert_to_protobuf(object_vrf, pb.VRF)
-        object_virtual_chassis = convert_to_protobuf(object_virtual_chassis, pb.VirtualChassis)
-        object_virtual_circuit = convert_to_protobuf(object_virtual_circuit, pb.VirtualCircuit)
-        object_virtual_circuit_termination = convert_to_protobuf(object_virtual_circuit_termination, pb.VirtualCircuitTermination)
-        object_virtual_circuit_type = convert_to_protobuf(object_virtual_circuit_type, pb.VirtualCircuitType)
-        object_virtual_device_context = convert_to_protobuf(object_virtual_device_context, pb.VirtualDeviceContext)
+        object_virtual_chassis = convert_to_protobuf(
+            object_virtual_chassis, pb.VirtualChassis
+        )
+        object_virtual_circuit = convert_to_protobuf(
+            object_virtual_circuit, pb.VirtualCircuit
+        )
+        object_virtual_circuit_termination = convert_to_protobuf(
+            object_virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        object_virtual_circuit_type = convert_to_protobuf(
+            object_virtual_circuit_type, pb.VirtualCircuitType
+        )
+        object_virtual_device_context = convert_to_protobuf(
+            object_virtual_device_context, pb.VirtualDeviceContext
+        )
         object_virtual_disk = convert_to_protobuf(object_virtual_disk, pb.VirtualDisk)
-        object_virtual_machine = convert_to_protobuf(object_virtual_machine, pb.VirtualMachine)
+        object_virtual_machine = convert_to_protobuf(
+            object_virtual_machine, pb.VirtualMachine
+        )
         object_wireless_lan = convert_to_protobuf(object_wireless_lan, pb.WirelessLAN)
-        object_wireless_lan_group = convert_to_protobuf(object_wireless_lan_group, pb.WirelessLANGroup)
-        object_wireless_link = convert_to_protobuf(object_wireless_link, pb.WirelessLink)
+        object_wireless_lan_group = convert_to_protobuf(
+            object_wireless_lan_group, pb.WirelessLANGroup
+        )
+        object_wireless_link = convert_to_protobuf(
+            object_wireless_link, pb.WirelessLink
+        )
         object_custom_field = convert_to_protobuf(object_custom_field, pb.CustomField)
-        object_custom_field_choice_set = convert_to_protobuf(object_custom_field_choice_set, pb.CustomFieldChoiceSet)
-        object_journal_entry = convert_to_protobuf(object_journal_entry, pb.JournalEntry)
-        object_module_type_profile = convert_to_protobuf(object_module_type_profile, pb.ModuleTypeProfile)
+        object_custom_field_choice_set = convert_to_protobuf(
+            object_custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
+        object_journal_entry = convert_to_protobuf(
+            object_journal_entry, pb.JournalEntry
+        )
+        object_module_type_profile = convert_to_protobuf(
+            object_module_type_profile, pb.ModuleTypeProfile
+        )
         object_custom_link = convert_to_protobuf(object_custom_link, pb.CustomLink)
-        return pb.GenericObject(
+        result = pb.GenericObject(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
             object_aggregate=object_aggregate,
@@ -2542,6 +3218,7 @@ class GenericObject:
             object_module_type_profile=object_module_type_profile,
             object_custom_link=object_custom_link,
         )
+        return result
 
 
 class IKEPolicy:
@@ -2556,14 +3233,18 @@ class IKEPolicy:
         preshared_key: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         proposals: list[str | IKEProposal | pb.IKEProposal] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IKEPolicy:
         """Create a new IKEPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         proposals = convert_to_protobuf_list(proposals, pb.IKEProposal)
-        return pb.IKEPolicy(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.IKEPolicy(
             name=name,
             description=description,
             version=version,
@@ -2573,7 +3254,9 @@ class IKEPolicy:
             tags=tags,
             custom_fields=custom_fields,
             proposals=proposals,
+            metadata=metadata,
         )
+        return result
 
 
 class IKEProposal:
@@ -2590,12 +3273,16 @@ class IKEProposal:
         sa_lifetime: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IKEProposal:
         """Create a new IKEProposal."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IKEProposal(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.IKEProposal(
             name=name,
             description=description,
             authentication_method=authentication_method,
@@ -2606,7 +3293,9 @@ class IKEProposal:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class IPAddress:
@@ -2627,7 +3316,10 @@ class IPAddress:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
         device_type: str | DeviceType | pb.DeviceType = None,
@@ -2639,12 +3331,19 @@ class IPAddress:
         """Create a new IPAddress."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
-        assigned_object_fhrp_group = convert_to_protobuf(assigned_object_fhrp_group, pb.FHRPGroup)
-        assigned_object_interface = convert_to_protobuf(assigned_object_interface, pb.Interface)
-        assigned_object_vm_interface = convert_to_protobuf(assigned_object_vm_interface, pb.VMInterface)
+        assigned_object_fhrp_group = convert_to_protobuf(
+            assigned_object_fhrp_group, pb.FHRPGroup
+        )
+        assigned_object_interface = convert_to_protobuf(
+            assigned_object_interface, pb.Interface
+        )
+        assigned_object_vm_interface = convert_to_protobuf(
+            assigned_object_vm_interface, pb.VMInterface
+        )
         nat_inside = convert_to_protobuf(nat_inside, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -2656,28 +3355,34 @@ class IPAddress:
 
         # apply shortcuts
         if manufacturer is not None:
-            if platform is not None and not platform.HasField('manufacturer'):
+            if platform is not None and not platform.HasField("manufacturer"):
                 platform.manufacturer.CopyFrom(manufacturer)
-            if device_type is not None and not device_type.HasField('manufacturer'):
+            if device_type is not None and not device_type.HasField("manufacturer"):
                 device_type.manufacturer.CopyFrom(manufacturer)
         if device_type is not None:
-            if device is not None and not device.HasField('device_type'):
+            if device is not None and not device.HasField("device_type"):
                 device.device_type.CopyFrom(device_type)
         if platform is not None:
-            if device is not None and not device.HasField('platform'):
+            if device is not None and not device.HasField("platform"):
                 device.platform.CopyFrom(platform)
         if site is not None:
-            if device is not None and not device.HasField('site'):
+            if device is not None and not device.HasField("site"):
                 device.site.CopyFrom(site)
         if device_role is not None:
-            if device is not None and not device.HasField('role'):
+            if device is not None and not device.HasField("role"):
                 device.role.CopyFrom(device_role)
         if device is not None:
-            if assigned_object_interface is not None and not assigned_object_interface.HasField('device'):
+            if (
+                assigned_object_interface is not None
+                and not assigned_object_interface.HasField("device")
+            ):
                 assigned_object_interface.device.CopyFrom(device)
-            if assigned_object_vm_interface is not None and not assigned_object_vm_interface.HasField('device'):
+            if (
+                assigned_object_vm_interface is not None
+                and not assigned_object_vm_interface.HasField("device")
+            ):
                 assigned_object_vm_interface.device.CopyFrom(device)
-        return pb.IPAddress(
+        result = pb.IPAddress(
             address=address,
             vrf=vrf,
             tenant=tenant,
@@ -2692,7 +3397,9 @@ class IPAddress:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class IPRange:
@@ -2710,8 +3417,11 @@ class IPRange:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         mark_utilized: bool | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         mark_populated: bool | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPRange:
         """Create a new IPRange."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
@@ -2719,7 +3429,8 @@ class IPRange:
         role = convert_to_protobuf(role, pb.Role)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IPRange(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.IPRange(
             start_address=start_address,
             end_address=end_address,
             vrf=vrf,
@@ -2732,7 +3443,9 @@ class IPRange:
             mark_utilized=mark_utilized,
             custom_fields=custom_fields,
             mark_populated=mark_populated,
+            metadata=metadata,
         )
+        return result
 
 
 class IPSecPolicy:
@@ -2745,14 +3458,18 @@ class IPSecPolicy:
         pfs_group: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         proposals: list[str | IPSecProposal | pb.IPSecProposal] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPSecPolicy:
         """Create a new IPSecPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         proposals = convert_to_protobuf_list(proposals, pb.IPSecProposal)
-        return pb.IPSecPolicy(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.IPSecPolicy(
             name=name,
             description=description,
             pfs_group=pfs_group,
@@ -2760,7 +3477,9 @@ class IPSecPolicy:
             tags=tags,
             custom_fields=custom_fields,
             proposals=proposals,
+            metadata=metadata,
         )
+        return result
 
 
 class IPSecProfile:
@@ -2775,14 +3494,18 @@ class IPSecProfile:
         ipsec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPSecProfile:
         """Create a new IPSecProfile."""
         ike_policy = convert_to_protobuf(ike_policy, pb.IKEPolicy)
         ipsec_policy = convert_to_protobuf(ipsec_policy, pb.IPSecPolicy)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IPSecProfile(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.IPSecProfile(
             name=name,
             description=description,
             mode=mode,
@@ -2791,7 +3514,9 @@ class IPSecProfile:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class IPSecProposal:
@@ -2807,12 +3532,16 @@ class IPSecProposal:
         sa_lifetime_data: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.IPSecProposal:
         """Create a new IPSecProposal."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.IPSecProposal(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.IPSecProposal(
             name=name,
             description=description,
             encryption_algorithm=encryption_algorithm,
@@ -2822,7 +3551,9 @@ class IPSecProposal:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Interface:
@@ -2856,14 +3587,19 @@ class Interface:
         tx_power: int | None = None,
         untagged_vlan: str | VLAN | pb.VLAN | None = None,
         qinq_svlan: str | VLAN | pb.VLAN | None = None,
-        vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
+        vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
         mark_connected: bool | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         vdcs: list[str | VirtualDeviceContext | pb.VirtualDeviceContext] | None = None,
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
         wireless_lans: list[str | WirelessLAN | pb.WirelessLAN] | None = None,
+        metadata: dict[str, Any] | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
         device_type: str | DeviceType | pb.DeviceType = None,
@@ -2880,13 +3616,16 @@ class Interface:
         primary_mac_address = convert_to_protobuf(primary_mac_address, pb.MACAddress)
         untagged_vlan = convert_to_protobuf(untagged_vlan, pb.VLAN)
         qinq_svlan = convert_to_protobuf(qinq_svlan, pb.VLAN)
-        vlan_translation_policy = convert_to_protobuf(vlan_translation_policy, pb.VLANTranslationPolicy)
+        vlan_translation_policy = convert_to_protobuf(
+            vlan_translation_policy, pb.VLANTranslationPolicy
+        )
         vrf = convert_to_protobuf(vrf, pb.VRF)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         vdcs = convert_to_protobuf_list(vdcs, pb.VirtualDeviceContext)
         tagged_vlans = convert_to_protobuf_list(tagged_vlans, pb.VLAN)
         wireless_lans = convert_to_protobuf_list(wireless_lans, pb.WirelessLAN)
+        metadata = convert_dict_to_struct(metadata)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -2897,23 +3636,23 @@ class Interface:
 
         # apply shortcuts
         if manufacturer is not None:
-            if platform is not None and not platform.HasField('manufacturer'):
+            if platform is not None and not platform.HasField("manufacturer"):
                 platform.manufacturer.CopyFrom(manufacturer)
-            if device_type is not None and not device_type.HasField('manufacturer'):
+            if device_type is not None and not device_type.HasField("manufacturer"):
                 device_type.manufacturer.CopyFrom(manufacturer)
         if device_type is not None:
-            if device is not None and not device.HasField('device_type'):
+            if device is not None and not device.HasField("device_type"):
                 device.device_type.CopyFrom(device_type)
         if platform is not None:
-            if device is not None and not device.HasField('platform'):
+            if device is not None and not device.HasField("platform"):
                 device.platform.CopyFrom(platform)
         if site is not None:
-            if device is not None and not device.HasField('site'):
+            if device is not None and not device.HasField("site"):
                 device.site.CopyFrom(site)
         if role is not None:
-            if device is not None and not device.HasField('role'):
+            if device is not None and not device.HasField("role"):
                 device.role.CopyFrom(role)
-        return pb.Interface(
+        result = pb.Interface(
             device=device,
             module=module,
             name=name,
@@ -2948,7 +3687,9 @@ class Interface:
             vdcs=vdcs,
             tagged_vlans=tagged_vlans,
             wireless_lans=wireless_lans,
+            metadata=metadata,
         )
+        return result
 
 
 class InventoryItem:
@@ -2969,30 +3710,42 @@ class InventoryItem:
         discovered: bool | None = None,
         description: str | None = None,
         component_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        component_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        component_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         component_front_port: str | FrontPort | pb.FrontPort | None = None,
         component_interface: str | Interface | pb.Interface | None = None,
         component_power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
         component_power_port: str | PowerPort | pb.PowerPort | None = None,
         component_rear_port: str | RearPort | pb.RearPort | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.InventoryItem:
         """Create a new InventoryItem."""
         device = convert_to_protobuf(device, pb.Device)
         parent = convert_to_protobuf(parent, pb.InventoryItem)
         role = convert_to_protobuf(role, pb.InventoryItemRole)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
-        component_console_port = convert_to_protobuf(component_console_port, pb.ConsolePort)
-        component_console_server_port = convert_to_protobuf(component_console_server_port, pb.ConsoleServerPort)
+        component_console_port = convert_to_protobuf(
+            component_console_port, pb.ConsolePort
+        )
+        component_console_server_port = convert_to_protobuf(
+            component_console_server_port, pb.ConsoleServerPort
+        )
         component_front_port = convert_to_protobuf(component_front_port, pb.FrontPort)
         component_interface = convert_to_protobuf(component_interface, pb.Interface)
-        component_power_outlet = convert_to_protobuf(component_power_outlet, pb.PowerOutlet)
+        component_power_outlet = convert_to_protobuf(
+            component_power_outlet, pb.PowerOutlet
+        )
         component_power_port = convert_to_protobuf(component_power_port, pb.PowerPort)
         component_rear_port = convert_to_protobuf(component_rear_port, pb.RearPort)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.InventoryItem(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.InventoryItem(
             device=device,
             parent=parent,
             name=name,
@@ -3014,7 +3767,9 @@ class InventoryItem:
             component_rear_port=component_rear_port,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class InventoryItemRole:
@@ -3027,19 +3782,25 @@ class InventoryItemRole:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.InventoryItemRole:
         """Create a new InventoryItemRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.InventoryItemRole(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.InventoryItemRole(
             name=name,
             slug=slug,
             color=color,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class L2VPN:
@@ -3055,10 +3816,13 @@ class L2VPN:
         comments: str | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         status: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.L2VPN:
         """Create a new L2VPN."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
@@ -3066,7 +3830,8 @@ class L2VPN:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
         export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
-        return pb.L2VPN(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.L2VPN(
             identifier=identifier,
             name=name,
             slug=slug,
@@ -3079,7 +3844,9 @@ class L2VPN:
             import_targets=import_targets,
             export_targets=export_targets,
             status=status,
+            metadata=metadata,
         )
+        return result
 
 
 class L2VPNTermination:
@@ -3096,49 +3863,85 @@ class L2VPNTermination:
         assigned_object_aggregate: str | Aggregate | pb.Aggregate | None = None,
         assigned_object_cable: str | Cable | pb.Cable | None = None,
         assigned_object_cable_path: str | CablePath | pb.CablePath | None = None,
-        assigned_object_cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        assigned_object_cable_termination: (
+            str | CableTermination | pb.CableTermination | None
+        ) = None,
         assigned_object_circuit: str | Circuit | pb.Circuit | None = None,
-        assigned_object_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        assigned_object_circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        assigned_object_circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        assigned_object_circuit_group: (
+            str | CircuitGroup | pb.CircuitGroup | None
+        ) = None,
+        assigned_object_circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        assigned_object_circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         assigned_object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         assigned_object_cluster: str | Cluster | pb.Cluster | None = None,
-        assigned_object_cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
+        assigned_object_cluster_group: (
+            str | ClusterGroup | pb.ClusterGroup | None
+        ) = None,
         assigned_object_cluster_type: str | ClusterType | pb.ClusterType | None = None,
         assigned_object_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        assigned_object_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        assigned_object_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         assigned_object_contact: str | Contact | pb.Contact | None = None,
-        assigned_object_contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
-        assigned_object_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
+        assigned_object_contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
+        assigned_object_contact_group: (
+            str | ContactGroup | pb.ContactGroup | None
+        ) = None,
         assigned_object_contact_role: str | ContactRole | pb.ContactRole | None = None,
         assigned_object_custom_field: str | CustomField | pb.CustomField | None = None,
-        assigned_object_custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        assigned_object_custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         assigned_object_device: str | Device | pb.Device | None = None,
         assigned_object_device_bay: str | DeviceBay | pb.DeviceBay | None = None,
         assigned_object_device_role: str | DeviceRole | pb.DeviceRole | None = None,
         assigned_object_device_type: str | DeviceType | pb.DeviceType | None = None,
         assigned_object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        assigned_object_fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        assigned_object_fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         assigned_object_front_port: str | FrontPort | pb.FrontPort | None = None,
         assigned_object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         assigned_object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         assigned_object_ip_address: str | IPAddress | pb.IPAddress | None = None,
         assigned_object_ip_range: str | IPRange | pb.IPRange | None = None,
         assigned_object_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
-        assigned_object_ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
-        assigned_object_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
-        assigned_object_inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        assigned_object_inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
-        assigned_object_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        assigned_object_ip_sec_profile: (
+            str | IPSecProfile | pb.IPSecProfile | None
+        ) = None,
+        assigned_object_ip_sec_proposal: (
+            str | IPSecProposal | pb.IPSecProposal | None
+        ) = None,
+        assigned_object_inventory_item: (
+            str | InventoryItem | pb.InventoryItem | None
+        ) = None,
+        assigned_object_inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
+        assigned_object_journal_entry: (
+            str | JournalEntry | pb.JournalEntry | None
+        ) = None,
         assigned_object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        assigned_object_l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        assigned_object_l2vpn_termination: (
+            str | L2VPNTermination | pb.L2VPNTermination | None
+        ) = None,
         assigned_object_location: str | Location | pb.Location | None = None,
         assigned_object_mac_address: str | MACAddress | pb.MACAddress | None = None,
-        assigned_object_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
+        assigned_object_manufacturer: (
+            str | Manufacturer | pb.Manufacturer | None
+        ) = None,
         assigned_object_module: str | Module | pb.Module | None = None,
         assigned_object_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         assigned_object_module_type: str | ModuleType | pb.ModuleType | None = None,
-        assigned_object_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        assigned_object_module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         assigned_object_platform: str | Platform | pb.Platform | None = None,
         assigned_object_power_feed: str | PowerFeed | pb.PowerFeed | None = None,
         assigned_object_power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
@@ -3146,11 +3949,17 @@ class L2VPNTermination:
         assigned_object_power_port: str | PowerPort | pb.PowerPort | None = None,
         assigned_object_prefix: str | Prefix | pb.Prefix | None = None,
         assigned_object_provider: str | Provider | pb.Provider | None = None,
-        assigned_object_provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
-        assigned_object_provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
+        assigned_object_provider_account: (
+            str | ProviderAccount | pb.ProviderAccount | None
+        ) = None,
+        assigned_object_provider_network: (
+            str | ProviderNetwork | pb.ProviderNetwork | None
+        ) = None,
         assigned_object_rir: str | RIR | pb.RIR | None = None,
         assigned_object_rack: str | Rack | pb.Rack | None = None,
-        assigned_object_rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        assigned_object_rack_reservation: (
+            str | RackReservation | pb.RackReservation | None
+        ) = None,
         assigned_object_rack_role: str | RackRole | pb.RackRole | None = None,
         assigned_object_rack_type: str | RackType | pb.RackType | None = None,
         assigned_object_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -3165,123 +3974,303 @@ class L2VPNTermination:
         assigned_object_tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         assigned_object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         assigned_object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        assigned_object_tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        assigned_object_tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         assigned_object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        assigned_object_vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        assigned_object_vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        assigned_object_vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        assigned_object_vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         assigned_object_vrf: str | VRF | pb.VRF | None = None,
-        assigned_object_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
-        assigned_object_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        assigned_object_virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        assigned_object_virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        assigned_object_virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        assigned_object_virtual_chassis: (
+            str | VirtualChassis | pb.VirtualChassis | None
+        ) = None,
+        assigned_object_virtual_circuit: (
+            str | VirtualCircuit | pb.VirtualCircuit | None
+        ) = None,
+        assigned_object_virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        assigned_object_virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        assigned_object_virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         assigned_object_virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
-        assigned_object_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
+        assigned_object_virtual_machine: (
+            str | VirtualMachine | pb.VirtualMachine | None
+        ) = None,
         assigned_object_wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
-        assigned_object_wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
-        assigned_object_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        assigned_object_wireless_lan_group: (
+            str | WirelessLANGroup | pb.WirelessLANGroup | None
+        ) = None,
+        assigned_object_wireless_link: (
+            str | WirelessLink | pb.WirelessLink | None
+        ) = None,
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.L2VPNTermination:
         """Create a new L2VPNTermination."""
         l2vpn = convert_to_protobuf(l2vpn, pb.L2VPN)
-        assigned_object_interface = convert_to_protobuf(assigned_object_interface, pb.Interface)
+        assigned_object_interface = convert_to_protobuf(
+            assigned_object_interface, pb.Interface
+        )
         assigned_object_vlan = convert_to_protobuf(assigned_object_vlan, pb.VLAN)
-        assigned_object_vm_interface = convert_to_protobuf(assigned_object_vm_interface, pb.VMInterface)
+        assigned_object_vm_interface = convert_to_protobuf(
+            assigned_object_vm_interface, pb.VMInterface
+        )
         assigned_object_asn = convert_to_protobuf(assigned_object_asn, pb.ASN)
-        assigned_object_asn_range = convert_to_protobuf(assigned_object_asn_range, pb.ASNRange)
-        assigned_object_aggregate = convert_to_protobuf(assigned_object_aggregate, pb.Aggregate)
+        assigned_object_asn_range = convert_to_protobuf(
+            assigned_object_asn_range, pb.ASNRange
+        )
+        assigned_object_aggregate = convert_to_protobuf(
+            assigned_object_aggregate, pb.Aggregate
+        )
         assigned_object_cable = convert_to_protobuf(assigned_object_cable, pb.Cable)
-        assigned_object_cable_path = convert_to_protobuf(assigned_object_cable_path, pb.CablePath)
-        assigned_object_cable_termination = convert_to_protobuf(assigned_object_cable_termination, pb.CableTermination)
-        assigned_object_circuit = convert_to_protobuf(assigned_object_circuit, pb.Circuit)
-        assigned_object_circuit_group = convert_to_protobuf(assigned_object_circuit_group, pb.CircuitGroup)
-        assigned_object_circuit_group_assignment = convert_to_protobuf(assigned_object_circuit_group_assignment, pb.CircuitGroupAssignment)
-        assigned_object_circuit_termination = convert_to_protobuf(assigned_object_circuit_termination, pb.CircuitTermination)
-        assigned_object_circuit_type = convert_to_protobuf(assigned_object_circuit_type, pb.CircuitType)
-        assigned_object_cluster = convert_to_protobuf(assigned_object_cluster, pb.Cluster)
-        assigned_object_cluster_group = convert_to_protobuf(assigned_object_cluster_group, pb.ClusterGroup)
-        assigned_object_cluster_type = convert_to_protobuf(assigned_object_cluster_type, pb.ClusterType)
-        assigned_object_console_port = convert_to_protobuf(assigned_object_console_port, pb.ConsolePort)
-        assigned_object_console_server_port = convert_to_protobuf(assigned_object_console_server_port, pb.ConsoleServerPort)
-        assigned_object_contact = convert_to_protobuf(assigned_object_contact, pb.Contact)
-        assigned_object_contact_assignment = convert_to_protobuf(assigned_object_contact_assignment, pb.ContactAssignment)
-        assigned_object_contact_group = convert_to_protobuf(assigned_object_contact_group, pb.ContactGroup)
-        assigned_object_contact_role = convert_to_protobuf(assigned_object_contact_role, pb.ContactRole)
-        assigned_object_custom_field = convert_to_protobuf(assigned_object_custom_field, pb.CustomField)
-        assigned_object_custom_field_choice_set = convert_to_protobuf(assigned_object_custom_field_choice_set, pb.CustomFieldChoiceSet)
+        assigned_object_cable_path = convert_to_protobuf(
+            assigned_object_cable_path, pb.CablePath
+        )
+        assigned_object_cable_termination = convert_to_protobuf(
+            assigned_object_cable_termination, pb.CableTermination
+        )
+        assigned_object_circuit = convert_to_protobuf(
+            assigned_object_circuit, pb.Circuit
+        )
+        assigned_object_circuit_group = convert_to_protobuf(
+            assigned_object_circuit_group, pb.CircuitGroup
+        )
+        assigned_object_circuit_group_assignment = convert_to_protobuf(
+            assigned_object_circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        assigned_object_circuit_termination = convert_to_protobuf(
+            assigned_object_circuit_termination, pb.CircuitTermination
+        )
+        assigned_object_circuit_type = convert_to_protobuf(
+            assigned_object_circuit_type, pb.CircuitType
+        )
+        assigned_object_cluster = convert_to_protobuf(
+            assigned_object_cluster, pb.Cluster
+        )
+        assigned_object_cluster_group = convert_to_protobuf(
+            assigned_object_cluster_group, pb.ClusterGroup
+        )
+        assigned_object_cluster_type = convert_to_protobuf(
+            assigned_object_cluster_type, pb.ClusterType
+        )
+        assigned_object_console_port = convert_to_protobuf(
+            assigned_object_console_port, pb.ConsolePort
+        )
+        assigned_object_console_server_port = convert_to_protobuf(
+            assigned_object_console_server_port, pb.ConsoleServerPort
+        )
+        assigned_object_contact = convert_to_protobuf(
+            assigned_object_contact, pb.Contact
+        )
+        assigned_object_contact_assignment = convert_to_protobuf(
+            assigned_object_contact_assignment, pb.ContactAssignment
+        )
+        assigned_object_contact_group = convert_to_protobuf(
+            assigned_object_contact_group, pb.ContactGroup
+        )
+        assigned_object_contact_role = convert_to_protobuf(
+            assigned_object_contact_role, pb.ContactRole
+        )
+        assigned_object_custom_field = convert_to_protobuf(
+            assigned_object_custom_field, pb.CustomField
+        )
+        assigned_object_custom_field_choice_set = convert_to_protobuf(
+            assigned_object_custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
         assigned_object_device = convert_to_protobuf(assigned_object_device, pb.Device)
-        assigned_object_device_bay = convert_to_protobuf(assigned_object_device_bay, pb.DeviceBay)
-        assigned_object_device_role = convert_to_protobuf(assigned_object_device_role, pb.DeviceRole)
-        assigned_object_device_type = convert_to_protobuf(assigned_object_device_type, pb.DeviceType)
-        assigned_object_fhrp_group = convert_to_protobuf(assigned_object_fhrp_group, pb.FHRPGroup)
-        assigned_object_fhrp_group_assignment = convert_to_protobuf(assigned_object_fhrp_group_assignment, pb.FHRPGroupAssignment)
-        assigned_object_front_port = convert_to_protobuf(assigned_object_front_port, pb.FrontPort)
-        assigned_object_ike_policy = convert_to_protobuf(assigned_object_ike_policy, pb.IKEPolicy)
-        assigned_object_ike_proposal = convert_to_protobuf(assigned_object_ike_proposal, pb.IKEProposal)
-        assigned_object_ip_address = convert_to_protobuf(assigned_object_ip_address, pb.IPAddress)
-        assigned_object_ip_range = convert_to_protobuf(assigned_object_ip_range, pb.IPRange)
-        assigned_object_ip_sec_policy = convert_to_protobuf(assigned_object_ip_sec_policy, pb.IPSecPolicy)
-        assigned_object_ip_sec_profile = convert_to_protobuf(assigned_object_ip_sec_profile, pb.IPSecProfile)
-        assigned_object_ip_sec_proposal = convert_to_protobuf(assigned_object_ip_sec_proposal, pb.IPSecProposal)
-        assigned_object_inventory_item = convert_to_protobuf(assigned_object_inventory_item, pb.InventoryItem)
-        assigned_object_inventory_item_role = convert_to_protobuf(assigned_object_inventory_item_role, pb.InventoryItemRole)
-        assigned_object_journal_entry = convert_to_protobuf(assigned_object_journal_entry, pb.JournalEntry)
+        assigned_object_device_bay = convert_to_protobuf(
+            assigned_object_device_bay, pb.DeviceBay
+        )
+        assigned_object_device_role = convert_to_protobuf(
+            assigned_object_device_role, pb.DeviceRole
+        )
+        assigned_object_device_type = convert_to_protobuf(
+            assigned_object_device_type, pb.DeviceType
+        )
+        assigned_object_fhrp_group = convert_to_protobuf(
+            assigned_object_fhrp_group, pb.FHRPGroup
+        )
+        assigned_object_fhrp_group_assignment = convert_to_protobuf(
+            assigned_object_fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
+        assigned_object_front_port = convert_to_protobuf(
+            assigned_object_front_port, pb.FrontPort
+        )
+        assigned_object_ike_policy = convert_to_protobuf(
+            assigned_object_ike_policy, pb.IKEPolicy
+        )
+        assigned_object_ike_proposal = convert_to_protobuf(
+            assigned_object_ike_proposal, pb.IKEProposal
+        )
+        assigned_object_ip_address = convert_to_protobuf(
+            assigned_object_ip_address, pb.IPAddress
+        )
+        assigned_object_ip_range = convert_to_protobuf(
+            assigned_object_ip_range, pb.IPRange
+        )
+        assigned_object_ip_sec_policy = convert_to_protobuf(
+            assigned_object_ip_sec_policy, pb.IPSecPolicy
+        )
+        assigned_object_ip_sec_profile = convert_to_protobuf(
+            assigned_object_ip_sec_profile, pb.IPSecProfile
+        )
+        assigned_object_ip_sec_proposal = convert_to_protobuf(
+            assigned_object_ip_sec_proposal, pb.IPSecProposal
+        )
+        assigned_object_inventory_item = convert_to_protobuf(
+            assigned_object_inventory_item, pb.InventoryItem
+        )
+        assigned_object_inventory_item_role = convert_to_protobuf(
+            assigned_object_inventory_item_role, pb.InventoryItemRole
+        )
+        assigned_object_journal_entry = convert_to_protobuf(
+            assigned_object_journal_entry, pb.JournalEntry
+        )
         assigned_object_l2vpn = convert_to_protobuf(assigned_object_l2vpn, pb.L2VPN)
-        assigned_object_l2vpn_termination = convert_to_protobuf(assigned_object_l2vpn_termination, pb.L2VPNTermination)
-        assigned_object_location = convert_to_protobuf(assigned_object_location, pb.Location)
-        assigned_object_mac_address = convert_to_protobuf(assigned_object_mac_address, pb.MACAddress)
-        assigned_object_manufacturer = convert_to_protobuf(assigned_object_manufacturer, pb.Manufacturer)
+        assigned_object_l2vpn_termination = convert_to_protobuf(
+            assigned_object_l2vpn_termination, pb.L2VPNTermination
+        )
+        assigned_object_location = convert_to_protobuf(
+            assigned_object_location, pb.Location
+        )
+        assigned_object_mac_address = convert_to_protobuf(
+            assigned_object_mac_address, pb.MACAddress
+        )
+        assigned_object_manufacturer = convert_to_protobuf(
+            assigned_object_manufacturer, pb.Manufacturer
+        )
         assigned_object_module = convert_to_protobuf(assigned_object_module, pb.Module)
-        assigned_object_module_bay = convert_to_protobuf(assigned_object_module_bay, pb.ModuleBay)
-        assigned_object_module_type = convert_to_protobuf(assigned_object_module_type, pb.ModuleType)
-        assigned_object_module_type_profile = convert_to_protobuf(assigned_object_module_type_profile, pb.ModuleTypeProfile)
-        assigned_object_platform = convert_to_protobuf(assigned_object_platform, pb.Platform)
-        assigned_object_power_feed = convert_to_protobuf(assigned_object_power_feed, pb.PowerFeed)
-        assigned_object_power_outlet = convert_to_protobuf(assigned_object_power_outlet, pb.PowerOutlet)
-        assigned_object_power_panel = convert_to_protobuf(assigned_object_power_panel, pb.PowerPanel)
-        assigned_object_power_port = convert_to_protobuf(assigned_object_power_port, pb.PowerPort)
+        assigned_object_module_bay = convert_to_protobuf(
+            assigned_object_module_bay, pb.ModuleBay
+        )
+        assigned_object_module_type = convert_to_protobuf(
+            assigned_object_module_type, pb.ModuleType
+        )
+        assigned_object_module_type_profile = convert_to_protobuf(
+            assigned_object_module_type_profile, pb.ModuleTypeProfile
+        )
+        assigned_object_platform = convert_to_protobuf(
+            assigned_object_platform, pb.Platform
+        )
+        assigned_object_power_feed = convert_to_protobuf(
+            assigned_object_power_feed, pb.PowerFeed
+        )
+        assigned_object_power_outlet = convert_to_protobuf(
+            assigned_object_power_outlet, pb.PowerOutlet
+        )
+        assigned_object_power_panel = convert_to_protobuf(
+            assigned_object_power_panel, pb.PowerPanel
+        )
+        assigned_object_power_port = convert_to_protobuf(
+            assigned_object_power_port, pb.PowerPort
+        )
         assigned_object_prefix = convert_to_protobuf(assigned_object_prefix, pb.Prefix)
-        assigned_object_provider = convert_to_protobuf(assigned_object_provider, pb.Provider)
-        assigned_object_provider_account = convert_to_protobuf(assigned_object_provider_account, pb.ProviderAccount)
-        assigned_object_provider_network = convert_to_protobuf(assigned_object_provider_network, pb.ProviderNetwork)
+        assigned_object_provider = convert_to_protobuf(
+            assigned_object_provider, pb.Provider
+        )
+        assigned_object_provider_account = convert_to_protobuf(
+            assigned_object_provider_account, pb.ProviderAccount
+        )
+        assigned_object_provider_network = convert_to_protobuf(
+            assigned_object_provider_network, pb.ProviderNetwork
+        )
         assigned_object_rir = convert_to_protobuf(assigned_object_rir, pb.RIR)
         assigned_object_rack = convert_to_protobuf(assigned_object_rack, pb.Rack)
-        assigned_object_rack_reservation = convert_to_protobuf(assigned_object_rack_reservation, pb.RackReservation)
-        assigned_object_rack_role = convert_to_protobuf(assigned_object_rack_role, pb.RackRole)
-        assigned_object_rack_type = convert_to_protobuf(assigned_object_rack_type, pb.RackType)
-        assigned_object_rear_port = convert_to_protobuf(assigned_object_rear_port, pb.RearPort)
+        assigned_object_rack_reservation = convert_to_protobuf(
+            assigned_object_rack_reservation, pb.RackReservation
+        )
+        assigned_object_rack_role = convert_to_protobuf(
+            assigned_object_rack_role, pb.RackRole
+        )
+        assigned_object_rack_type = convert_to_protobuf(
+            assigned_object_rack_type, pb.RackType
+        )
+        assigned_object_rear_port = convert_to_protobuf(
+            assigned_object_rear_port, pb.RearPort
+        )
         assigned_object_region = convert_to_protobuf(assigned_object_region, pb.Region)
         assigned_object_role = convert_to_protobuf(assigned_object_role, pb.Role)
-        assigned_object_route_target = convert_to_protobuf(assigned_object_route_target, pb.RouteTarget)
-        assigned_object_service = convert_to_protobuf(assigned_object_service, pb.Service)
+        assigned_object_route_target = convert_to_protobuf(
+            assigned_object_route_target, pb.RouteTarget
+        )
+        assigned_object_service = convert_to_protobuf(
+            assigned_object_service, pb.Service
+        )
         assigned_object_site = convert_to_protobuf(assigned_object_site, pb.Site)
-        assigned_object_site_group = convert_to_protobuf(assigned_object_site_group, pb.SiteGroup)
+        assigned_object_site_group = convert_to_protobuf(
+            assigned_object_site_group, pb.SiteGroup
+        )
         assigned_object_tag = convert_to_protobuf(assigned_object_tag, pb.Tag)
         assigned_object_tenant = convert_to_protobuf(assigned_object_tenant, pb.Tenant)
-        assigned_object_tenant_group = convert_to_protobuf(assigned_object_tenant_group, pb.TenantGroup)
+        assigned_object_tenant_group = convert_to_protobuf(
+            assigned_object_tenant_group, pb.TenantGroup
+        )
         assigned_object_tunnel = convert_to_protobuf(assigned_object_tunnel, pb.Tunnel)
-        assigned_object_tunnel_group = convert_to_protobuf(assigned_object_tunnel_group, pb.TunnelGroup)
-        assigned_object_tunnel_termination = convert_to_protobuf(assigned_object_tunnel_termination, pb.TunnelTermination)
-        assigned_object_vlan_group = convert_to_protobuf(assigned_object_vlan_group, pb.VLANGroup)
-        assigned_object_vlan_translation_policy = convert_to_protobuf(assigned_object_vlan_translation_policy, pb.VLANTranslationPolicy)
-        assigned_object_vlan_translation_rule = convert_to_protobuf(assigned_object_vlan_translation_rule, pb.VLANTranslationRule)
+        assigned_object_tunnel_group = convert_to_protobuf(
+            assigned_object_tunnel_group, pb.TunnelGroup
+        )
+        assigned_object_tunnel_termination = convert_to_protobuf(
+            assigned_object_tunnel_termination, pb.TunnelTermination
+        )
+        assigned_object_vlan_group = convert_to_protobuf(
+            assigned_object_vlan_group, pb.VLANGroup
+        )
+        assigned_object_vlan_translation_policy = convert_to_protobuf(
+            assigned_object_vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        assigned_object_vlan_translation_rule = convert_to_protobuf(
+            assigned_object_vlan_translation_rule, pb.VLANTranslationRule
+        )
         assigned_object_vrf = convert_to_protobuf(assigned_object_vrf, pb.VRF)
-        assigned_object_virtual_chassis = convert_to_protobuf(assigned_object_virtual_chassis, pb.VirtualChassis)
-        assigned_object_virtual_circuit = convert_to_protobuf(assigned_object_virtual_circuit, pb.VirtualCircuit)
-        assigned_object_virtual_circuit_termination = convert_to_protobuf(assigned_object_virtual_circuit_termination, pb.VirtualCircuitTermination)
-        assigned_object_virtual_circuit_type = convert_to_protobuf(assigned_object_virtual_circuit_type, pb.VirtualCircuitType)
-        assigned_object_virtual_device_context = convert_to_protobuf(assigned_object_virtual_device_context, pb.VirtualDeviceContext)
-        assigned_object_virtual_disk = convert_to_protobuf(assigned_object_virtual_disk, pb.VirtualDisk)
-        assigned_object_virtual_machine = convert_to_protobuf(assigned_object_virtual_machine, pb.VirtualMachine)
-        assigned_object_wireless_lan = convert_to_protobuf(assigned_object_wireless_lan, pb.WirelessLAN)
-        assigned_object_wireless_lan_group = convert_to_protobuf(assigned_object_wireless_lan_group, pb.WirelessLANGroup)
-        assigned_object_wireless_link = convert_to_protobuf(assigned_object_wireless_link, pb.WirelessLink)
-        assigned_object_custom_link = convert_to_protobuf(assigned_object_custom_link, pb.CustomLink)
+        assigned_object_virtual_chassis = convert_to_protobuf(
+            assigned_object_virtual_chassis, pb.VirtualChassis
+        )
+        assigned_object_virtual_circuit = convert_to_protobuf(
+            assigned_object_virtual_circuit, pb.VirtualCircuit
+        )
+        assigned_object_virtual_circuit_termination = convert_to_protobuf(
+            assigned_object_virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        assigned_object_virtual_circuit_type = convert_to_protobuf(
+            assigned_object_virtual_circuit_type, pb.VirtualCircuitType
+        )
+        assigned_object_virtual_device_context = convert_to_protobuf(
+            assigned_object_virtual_device_context, pb.VirtualDeviceContext
+        )
+        assigned_object_virtual_disk = convert_to_protobuf(
+            assigned_object_virtual_disk, pb.VirtualDisk
+        )
+        assigned_object_virtual_machine = convert_to_protobuf(
+            assigned_object_virtual_machine, pb.VirtualMachine
+        )
+        assigned_object_wireless_lan = convert_to_protobuf(
+            assigned_object_wireless_lan, pb.WirelessLAN
+        )
+        assigned_object_wireless_lan_group = convert_to_protobuf(
+            assigned_object_wireless_lan_group, pb.WirelessLANGroup
+        )
+        assigned_object_wireless_link = convert_to_protobuf(
+            assigned_object_wireless_link, pb.WirelessLink
+        )
+        assigned_object_custom_link = convert_to_protobuf(
+            assigned_object_custom_link, pb.CustomLink
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.L2VPNTermination(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.L2VPNTermination(
             l2vpn=l2vpn,
             assigned_object_interface=assigned_object_interface,
             assigned_object_vlan=assigned_object_vlan,
@@ -3378,7 +4367,9 @@ class L2VPNTermination:
             assigned_object_custom_link=assigned_object_custom_link,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Location:
@@ -3395,8 +4386,11 @@ class Location:
         facility: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Location:
         """Create a new Location."""
         site = convert_to_protobuf(site, pb.Site)
@@ -3404,7 +4398,8 @@ class Location:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Location(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Location(
             name=name,
             slug=slug,
             site=site,
@@ -3416,7 +4411,9 @@ class Location:
             tags=tags,
             custom_fields=custom_fields,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class MACAddress:
@@ -3430,14 +4427,22 @@ class MACAddress:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.MACAddress:
         """Create a new MACAddress."""
-        assigned_object_interface = convert_to_protobuf(assigned_object_interface, pb.Interface)
-        assigned_object_vm_interface = convert_to_protobuf(assigned_object_vm_interface, pb.VMInterface)
+        assigned_object_interface = convert_to_protobuf(
+            assigned_object_interface, pb.Interface
+        )
+        assigned_object_vm_interface = convert_to_protobuf(
+            assigned_object_vm_interface, pb.VMInterface
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.MACAddress(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.MACAddress(
             mac_address=mac_address,
             assigned_object_interface=assigned_object_interface,
             assigned_object_vm_interface=assigned_object_vm_interface,
@@ -3445,7 +4450,9 @@ class MACAddress:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Manufacturer:
@@ -3457,18 +4464,24 @@ class Manufacturer:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Manufacturer:
         """Create a new Manufacturer."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Manufacturer(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Manufacturer(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Module:
@@ -3485,7 +4498,10 @@ class Module:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Module:
         """Create a new Module."""
         device = convert_to_protobuf(device, pb.Device)
@@ -3493,7 +4509,8 @@ class Module:
         module_type = convert_to_protobuf(module_type, pb.ModuleType)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Module(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Module(
             device=device,
             module_bay=module_bay,
             module_type=module_type,
@@ -3504,7 +4521,9 @@ class Module:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ModuleBay:
@@ -3520,7 +4539,10 @@ class ModuleBay:
         position: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ModuleBay:
         """Create a new ModuleBay."""
         device = convert_to_protobuf(device, pb.Device)
@@ -3528,7 +4550,8 @@ class ModuleBay:
         installed_module = convert_to_protobuf(installed_module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ModuleBay(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ModuleBay(
             device=device,
             module=module,
             name=name,
@@ -3538,7 +4561,9 @@ class ModuleBay:
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ModuleType:
@@ -3555,16 +4580,20 @@ class ModuleType:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         attributes: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ModuleType:
         """Create a new ModuleType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         profile = convert_to_protobuf(profile, pb.ModuleTypeProfile)
-        return pb.ModuleType(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ModuleType(
             manufacturer=manufacturer,
             model=model,
             part_number=part_number,
@@ -3577,7 +4606,9 @@ class ModuleType:
             custom_fields=custom_fields,
             profile=profile,
             attributes=attributes,
+            metadata=metadata,
         )
+        return result
 
 
 class Platform:
@@ -3590,16 +4621,20 @@ class Platform:
         manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         parent: str | Platform | pb.Platform | None = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Platform:
         """Create a new Platform."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         parent = convert_to_protobuf(parent, pb.Platform)
-        return pb.Platform(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Platform(
             name=name,
             slug=slug,
             manufacturer=manufacturer,
@@ -3608,7 +4643,9 @@ class Platform:
             custom_fields=custom_fields,
             parent=parent,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class PowerFeed:
@@ -3631,7 +4668,10 @@ class PowerFeed:
         tenant: str | Tenant | pb.Tenant | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerFeed:
         """Create a new PowerFeed."""
         power_panel = convert_to_protobuf(power_panel, pb.PowerPanel)
@@ -3639,7 +4679,8 @@ class PowerFeed:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerFeed(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.PowerFeed(
             power_panel=power_panel,
             rack=rack,
             name=name,
@@ -3656,7 +4697,9 @@ class PowerFeed:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class PowerOutlet:
@@ -3675,8 +4718,11 @@ class PowerOutlet:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         status: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerOutlet:
         """Create a new PowerOutlet."""
         device = convert_to_protobuf(device, pb.Device)
@@ -3684,7 +4730,8 @@ class PowerOutlet:
         power_port = convert_to_protobuf(power_port, pb.PowerPort)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerOutlet(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.PowerOutlet(
             device=device,
             module=module,
             name=name,
@@ -3698,7 +4745,9 @@ class PowerOutlet:
             tags=tags,
             custom_fields=custom_fields,
             status=status,
+            metadata=metadata,
         )
+        return result
 
 
 class PowerPanel:
@@ -3712,14 +4761,18 @@ class PowerPanel:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerPanel:
         """Create a new PowerPanel."""
         site = convert_to_protobuf(site, pb.Site)
         location = convert_to_protobuf(location, pb.Location)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerPanel(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.PowerPanel(
             site=site,
             location=location,
             name=name,
@@ -3727,7 +4780,9 @@ class PowerPanel:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class PowerPort:
@@ -3745,14 +4800,18 @@ class PowerPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.PowerPort:
         """Create a new PowerPort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.PowerPort(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.PowerPort(
             device=device,
             module=module,
             name=name,
@@ -3764,7 +4823,9 @@ class PowerPort:
             mark_connected=mark_connected,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Prefix:
@@ -3787,7 +4848,10 @@ class Prefix:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Prefix:
         """Create a new Prefix."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
@@ -3800,7 +4864,8 @@ class Prefix:
         role = convert_to_protobuf(role, pb.Role)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Prefix(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Prefix(
             prefix=prefix,
             vrf=vrf,
             scope_location=scope_location,
@@ -3817,7 +4882,9 @@ class Prefix:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Provider:
@@ -3830,16 +4897,20 @@ class Provider:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         accounts: list[str | ProviderAccount | pb.ProviderAccount] | None = None,
         asns: list[str | ASN | pb.ASN] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Provider:
         """Create a new Provider."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         accounts = convert_to_protobuf_list(accounts, pb.ProviderAccount)
         asns = convert_to_protobuf_list(asns, pb.ASN)
-        return pb.Provider(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Provider(
             name=name,
             slug=slug,
             description=description,
@@ -3848,7 +4919,9 @@ class Provider:
             custom_fields=custom_fields,
             accounts=accounts,
             asns=asns,
+            metadata=metadata,
         )
+        return result
 
 
 class ProviderAccount:
@@ -3862,13 +4935,17 @@ class ProviderAccount:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ProviderAccount:
         """Create a new ProviderAccount."""
         provider = convert_to_protobuf(provider, pb.Provider)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ProviderAccount(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ProviderAccount(
             provider=provider,
             name=name,
             account=account,
@@ -3876,7 +4953,9 @@ class ProviderAccount:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ProviderNetwork:
@@ -3890,13 +4969,17 @@ class ProviderNetwork:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ProviderNetwork:
         """Create a new ProviderNetwork."""
         provider = convert_to_protobuf(provider, pb.Provider)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ProviderNetwork(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ProviderNetwork(
             provider=provider,
             name=name,
             service_id=service_id,
@@ -3904,7 +4987,9 @@ class ProviderNetwork:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class RIR:
@@ -3917,19 +5002,25 @@ class RIR:
         is_private: bool | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RIR:
         """Create a new RIR."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RIR(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.RIR(
             name=name,
             slug=slug,
             is_private=is_private,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Rack:
@@ -3963,8 +5054,11 @@ class Rack:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         outer_height: int | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Rack:
         """Create a new Rack."""
         site = convert_to_protobuf(site, pb.Site)
@@ -3974,7 +5068,8 @@ class Rack:
         rack_type = convert_to_protobuf(rack_type, pb.RackType)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Rack(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Rack(
             name=name,
             facility_id=facility_id,
             site=site,
@@ -4003,7 +5098,9 @@ class Rack:
             tags=tags,
             custom_fields=custom_fields,
             outer_height=outer_height,
+            metadata=metadata,
         )
+        return result
 
 
 class RackReservation:
@@ -4017,15 +5114,19 @@ class RackReservation:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         status: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RackReservation:
         """Create a new RackReservation."""
         rack = convert_to_protobuf(rack, pb.Rack)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RackReservation(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.RackReservation(
             rack=rack,
             units=units,
             tenant=tenant,
@@ -4034,7 +5135,9 @@ class RackReservation:
             tags=tags,
             custom_fields=custom_fields,
             status=status,
+            metadata=metadata,
         )
+        return result
 
 
 class RackRole:
@@ -4047,19 +5150,25 @@ class RackRole:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RackRole:
         """Create a new RackRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RackRole(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.RackRole(
             name=name,
             slug=slug,
             color=color,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class RackType:
@@ -4085,14 +5194,18 @@ class RackType:
         mounting_depth: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         outer_height: int | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RackType:
         """Create a new RackType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RackType(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.RackType(
             manufacturer=manufacturer,
             model=model,
             slug=slug,
@@ -4113,7 +5226,9 @@ class RackType:
             tags=tags,
             custom_fields=custom_fields,
             outer_height=outer_height,
+            metadata=metadata,
         )
+        return result
 
 
 class RearPort:
@@ -4131,14 +5246,18 @@ class RearPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RearPort:
         """Create a new RearPort."""
         device = convert_to_protobuf(device, pb.Device)
         module = convert_to_protobuf(module, pb.Module)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RearPort(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.RearPort(
             device=device,
             module=module,
             name=name,
@@ -4150,7 +5269,9 @@ class RearPort:
             mark_connected=mark_connected,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Region:
@@ -4163,14 +5284,18 @@ class Region:
         parent: str | Region | pb.Region | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Region:
         """Create a new Region."""
         parent = convert_to_protobuf(parent, pb.Region)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Region(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Region(
             name=name,
             slug=slug,
             parent=parent,
@@ -4178,7 +5303,9 @@ class Region:
             tags=tags,
             custom_fields=custom_fields,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class Role:
@@ -4191,19 +5318,25 @@ class Role:
         weight: int | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Role:
         """Create a new Role."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Role(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Role(
             name=name,
             slug=slug,
             weight=weight,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class RouteTarget:
@@ -4216,20 +5349,26 @@ class RouteTarget:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.RouteTarget:
         """Create a new RouteTarget."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.RouteTarget(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.RouteTarget(
             name=name,
             tenant=tenant,
             description=description,
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class Service:
@@ -4245,11 +5384,16 @@ class Service:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         ipaddresses: list[str | IPAddress | pb.IPAddress] | None = None,
         parent_object_device: str | Device | pb.Device | None = None,
         parent_object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        parent_object_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
+        parent_object_virtual_machine: (
+            str | VirtualMachine | pb.VirtualMachine | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Service:
         """Create a new Service."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4258,9 +5402,14 @@ class Service:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         ipaddresses = convert_to_protobuf_list(ipaddresses, pb.IPAddress)
         parent_object_device = convert_to_protobuf(parent_object_device, pb.Device)
-        parent_object_fhrp_group = convert_to_protobuf(parent_object_fhrp_group, pb.FHRPGroup)
-        parent_object_virtual_machine = convert_to_protobuf(parent_object_virtual_machine, pb.VirtualMachine)
-        return pb.Service(
+        parent_object_fhrp_group = convert_to_protobuf(
+            parent_object_fhrp_group, pb.FHRPGroup
+        )
+        parent_object_virtual_machine = convert_to_protobuf(
+            parent_object_virtual_machine, pb.VirtualMachine
+        )
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Service(
             device=device,
             virtual_machine=virtual_machine,
             name=name,
@@ -4274,7 +5423,9 @@ class Service:
             parent_object_device=parent_object_device,
             parent_object_fhrp_group=parent_object_fhrp_group,
             parent_object_virtual_machine=parent_object_virtual_machine,
+            metadata=metadata,
         )
+        return result
 
 
 class Site:
@@ -4297,8 +5448,11 @@ class Site:
         longitude: float | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         asns: list[str | ASN | pb.ASN] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Site:
         """Create a new Site."""
         region = convert_to_protobuf(region, pb.Region)
@@ -4307,7 +5461,8 @@ class Site:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         asns = convert_to_protobuf_list(asns, pb.ASN)
-        return pb.Site(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Site(
             name=name,
             slug=slug,
             status=status,
@@ -4325,7 +5480,9 @@ class Site:
             tags=tags,
             custom_fields=custom_fields,
             asns=asns,
+            metadata=metadata,
         )
+        return result
 
 
 class SiteGroup:
@@ -4338,14 +5495,18 @@ class SiteGroup:
         parent: str | SiteGroup | pb.SiteGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.SiteGroup:
         """Create a new SiteGroup."""
         parent = convert_to_protobuf(parent, pb.SiteGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.SiteGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.SiteGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -4353,7 +5514,9 @@ class SiteGroup:
             tags=tags,
             custom_fields=custom_fields,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class Tag:
@@ -4367,16 +5530,20 @@ class Tag:
         description: str | None = None,
         weight: int | None = None,
         object_types: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Tag:
         """Create a new Tag."""
-        return pb.Tag(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Tag(
             name=name,
             slug=slug,
             color=color,
             description=description,
             weight=weight,
             object_types=object_types,
+            metadata=metadata,
         )
+        return result
 
 
 class Tenant:
@@ -4390,13 +5557,17 @@ class Tenant:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Tenant:
         """Create a new Tenant."""
         group = convert_to_protobuf(group, pb.TenantGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Tenant(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Tenant(
             name=name,
             slug=slug,
             group=group,
@@ -4404,7 +5575,9 @@ class Tenant:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class TenantGroup:
@@ -4417,14 +5590,18 @@ class TenantGroup:
         parent: str | TenantGroup | pb.TenantGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.TenantGroup:
         """Create a new TenantGroup."""
         parent = convert_to_protobuf(parent, pb.TenantGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.TenantGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.TenantGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -4432,7 +5609,9 @@ class TenantGroup:
             tags=tags,
             custom_fields=custom_fields,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class Tunnel:
@@ -4450,7 +5629,10 @@ class Tunnel:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.Tunnel:
         """Create a new Tunnel."""
         group = convert_to_protobuf(group, pb.TunnelGroup)
@@ -4458,7 +5640,8 @@ class Tunnel:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.Tunnel(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Tunnel(
             name=name,
             status=status,
             group=group,
@@ -4470,7 +5653,9 @@ class Tunnel:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class TunnelGroup:
@@ -4482,18 +5667,24 @@ class TunnelGroup:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.TunnelGroup:
         """Create a new TunnelGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.TunnelGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.TunnelGroup(
             name=name,
             slug=slug,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class TunnelTermination:
@@ -4508,19 +5699,29 @@ class TunnelTermination:
         termination_aggregate: str | Aggregate | pb.Aggregate | None = None,
         termination_cable: str | Cable | pb.Cable | None = None,
         termination_cable_path: str | CablePath | pb.CablePath | None = None,
-        termination_cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        termination_cable_termination: (
+            str | CableTermination | pb.CableTermination | None
+        ) = None,
         termination_circuit: str | Circuit | pb.Circuit | None = None,
         termination_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        termination_circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        termination_circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        termination_circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        termination_circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         termination_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         termination_cluster: str | Cluster | pb.Cluster | None = None,
         termination_cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
         termination_cluster_type: str | ClusterType | pb.ClusterType | None = None,
         termination_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        termination_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        termination_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         termination_contact: str | Contact | pb.Contact | None = None,
-        termination_contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
+        termination_contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
         termination_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         termination_contact_role: str | ContactRole | pb.ContactRole | None = None,
         termination_device: str | Device | pb.Device | None = None,
@@ -4528,7 +5729,9 @@ class TunnelTermination:
         termination_device_role: str | DeviceRole | pb.DeviceRole | None = None,
         termination_device_type: str | DeviceType | pb.DeviceType | None = None,
         termination_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        termination_fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        termination_fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         termination_front_port: str | FrontPort | pb.FrontPort | None = None,
         termination_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         termination_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
@@ -4536,12 +5739,20 @@ class TunnelTermination:
         termination_ip_range: str | IPRange | pb.IPRange | None = None,
         termination_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         termination_ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
-        termination_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
+        termination_ip_sec_proposal: (
+            str | IPSecProposal | pb.IPSecProposal | None
+        ) = None,
         termination_interface: str | Interface | pb.Interface | None = None,
-        termination_inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        termination_inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
+        termination_inventory_item: (
+            str | InventoryItem | pb.InventoryItem | None
+        ) = None,
+        termination_inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
         termination_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        termination_l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        termination_l2vpn_termination: (
+            str | L2VPNTermination | pb.L2VPNTermination | None
+        ) = None,
         termination_location: str | Location | pb.Location | None = None,
         termination_mac_address: str | MACAddress | pb.MACAddress | None = None,
         termination_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
@@ -4555,11 +5766,17 @@ class TunnelTermination:
         termination_power_port: str | PowerPort | pb.PowerPort | None = None,
         termination_prefix: str | Prefix | pb.Prefix | None = None,
         termination_provider: str | Provider | pb.Provider | None = None,
-        termination_provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
-        termination_provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
+        termination_provider_account: (
+            str | ProviderAccount | pb.ProviderAccount | None
+        ) = None,
+        termination_provider_network: (
+            str | ProviderNetwork | pb.ProviderNetwork | None
+        ) = None,
         termination_rir: str | RIR | pb.RIR | None = None,
         termination_rack: str | Rack | pb.Rack | None = None,
-        termination_rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        termination_rack_reservation: (
+            str | RackReservation | pb.RackReservation | None
+        ) = None,
         termination_rack_role: str | RackRole | pb.RackRole | None = None,
         termination_rack_type: str | RackType | pb.RackType | None = None,
         termination_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -4574,31 +5791,58 @@ class TunnelTermination:
         termination_tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         termination_tunnel: str | Tunnel | pb.Tunnel | None = None,
         termination_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        termination_tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        termination_tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         termination_vlan: str | VLAN | pb.VLAN | None = None,
         termination_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        termination_vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        termination_vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        termination_vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        termination_vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         termination_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         termination_vrf: str | VRF | pb.VRF | None = None,
-        termination_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
-        termination_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        termination_virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        termination_virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        termination_virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        termination_virtual_chassis: (
+            str | VirtualChassis | pb.VirtualChassis | None
+        ) = None,
+        termination_virtual_circuit: (
+            str | VirtualCircuit | pb.VirtualCircuit | None
+        ) = None,
+        termination_virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        termination_virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        termination_virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         termination_virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
-        termination_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
+        termination_virtual_machine: (
+            str | VirtualMachine | pb.VirtualMachine | None
+        ) = None,
         termination_wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
-        termination_wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
+        termination_wireless_lan_group: (
+            str | WirelessLANGroup | pb.WirelessLANGroup | None
+        ) = None,
         termination_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
         termination_custom_field: str | CustomField | pb.CustomField | None = None,
-        termination_custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        termination_custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         termination_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
-        termination_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        termination_module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         termination_custom_link: str | CustomLink | pb.CustomLink | None = None,
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.TunnelTermination:
         """Create a new TunnelTermination."""
         tunnel = convert_to_protobuf(tunnel, pb.Tunnel)
@@ -4606,99 +5850,226 @@ class TunnelTermination:
         termination_asn_range = convert_to_protobuf(termination_asn_range, pb.ASNRange)
         termination_aggregate = convert_to_protobuf(termination_aggregate, pb.Aggregate)
         termination_cable = convert_to_protobuf(termination_cable, pb.Cable)
-        termination_cable_path = convert_to_protobuf(termination_cable_path, pb.CablePath)
-        termination_cable_termination = convert_to_protobuf(termination_cable_termination, pb.CableTermination)
+        termination_cable_path = convert_to_protobuf(
+            termination_cable_path, pb.CablePath
+        )
+        termination_cable_termination = convert_to_protobuf(
+            termination_cable_termination, pb.CableTermination
+        )
         termination_circuit = convert_to_protobuf(termination_circuit, pb.Circuit)
-        termination_circuit_group = convert_to_protobuf(termination_circuit_group, pb.CircuitGroup)
-        termination_circuit_group_assignment = convert_to_protobuf(termination_circuit_group_assignment, pb.CircuitGroupAssignment)
-        termination_circuit_termination = convert_to_protobuf(termination_circuit_termination, pb.CircuitTermination)
-        termination_circuit_type = convert_to_protobuf(termination_circuit_type, pb.CircuitType)
+        termination_circuit_group = convert_to_protobuf(
+            termination_circuit_group, pb.CircuitGroup
+        )
+        termination_circuit_group_assignment = convert_to_protobuf(
+            termination_circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        termination_circuit_termination = convert_to_protobuf(
+            termination_circuit_termination, pb.CircuitTermination
+        )
+        termination_circuit_type = convert_to_protobuf(
+            termination_circuit_type, pb.CircuitType
+        )
         termination_cluster = convert_to_protobuf(termination_cluster, pb.Cluster)
-        termination_cluster_group = convert_to_protobuf(termination_cluster_group, pb.ClusterGroup)
-        termination_cluster_type = convert_to_protobuf(termination_cluster_type, pb.ClusterType)
-        termination_console_port = convert_to_protobuf(termination_console_port, pb.ConsolePort)
-        termination_console_server_port = convert_to_protobuf(termination_console_server_port, pb.ConsoleServerPort)
+        termination_cluster_group = convert_to_protobuf(
+            termination_cluster_group, pb.ClusterGroup
+        )
+        termination_cluster_type = convert_to_protobuf(
+            termination_cluster_type, pb.ClusterType
+        )
+        termination_console_port = convert_to_protobuf(
+            termination_console_port, pb.ConsolePort
+        )
+        termination_console_server_port = convert_to_protobuf(
+            termination_console_server_port, pb.ConsoleServerPort
+        )
         termination_contact = convert_to_protobuf(termination_contact, pb.Contact)
-        termination_contact_assignment = convert_to_protobuf(termination_contact_assignment, pb.ContactAssignment)
-        termination_contact_group = convert_to_protobuf(termination_contact_group, pb.ContactGroup)
-        termination_contact_role = convert_to_protobuf(termination_contact_role, pb.ContactRole)
+        termination_contact_assignment = convert_to_protobuf(
+            termination_contact_assignment, pb.ContactAssignment
+        )
+        termination_contact_group = convert_to_protobuf(
+            termination_contact_group, pb.ContactGroup
+        )
+        termination_contact_role = convert_to_protobuf(
+            termination_contact_role, pb.ContactRole
+        )
         termination_device = convert_to_protobuf(termination_device, pb.Device)
-        termination_device_bay = convert_to_protobuf(termination_device_bay, pb.DeviceBay)
-        termination_device_role = convert_to_protobuf(termination_device_role, pb.DeviceRole)
-        termination_device_type = convert_to_protobuf(termination_device_type, pb.DeviceType)
-        termination_fhrp_group = convert_to_protobuf(termination_fhrp_group, pb.FHRPGroup)
-        termination_fhrp_group_assignment = convert_to_protobuf(termination_fhrp_group_assignment, pb.FHRPGroupAssignment)
-        termination_front_port = convert_to_protobuf(termination_front_port, pb.FrontPort)
-        termination_ike_policy = convert_to_protobuf(termination_ike_policy, pb.IKEPolicy)
-        termination_ike_proposal = convert_to_protobuf(termination_ike_proposal, pb.IKEProposal)
-        termination_ip_address = convert_to_protobuf(termination_ip_address, pb.IPAddress)
+        termination_device_bay = convert_to_protobuf(
+            termination_device_bay, pb.DeviceBay
+        )
+        termination_device_role = convert_to_protobuf(
+            termination_device_role, pb.DeviceRole
+        )
+        termination_device_type = convert_to_protobuf(
+            termination_device_type, pb.DeviceType
+        )
+        termination_fhrp_group = convert_to_protobuf(
+            termination_fhrp_group, pb.FHRPGroup
+        )
+        termination_fhrp_group_assignment = convert_to_protobuf(
+            termination_fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
+        termination_front_port = convert_to_protobuf(
+            termination_front_port, pb.FrontPort
+        )
+        termination_ike_policy = convert_to_protobuf(
+            termination_ike_policy, pb.IKEPolicy
+        )
+        termination_ike_proposal = convert_to_protobuf(
+            termination_ike_proposal, pb.IKEProposal
+        )
+        termination_ip_address = convert_to_protobuf(
+            termination_ip_address, pb.IPAddress
+        )
         termination_ip_range = convert_to_protobuf(termination_ip_range, pb.IPRange)
-        termination_ip_sec_policy = convert_to_protobuf(termination_ip_sec_policy, pb.IPSecPolicy)
-        termination_ip_sec_profile = convert_to_protobuf(termination_ip_sec_profile, pb.IPSecProfile)
-        termination_ip_sec_proposal = convert_to_protobuf(termination_ip_sec_proposal, pb.IPSecProposal)
+        termination_ip_sec_policy = convert_to_protobuf(
+            termination_ip_sec_policy, pb.IPSecPolicy
+        )
+        termination_ip_sec_profile = convert_to_protobuf(
+            termination_ip_sec_profile, pb.IPSecProfile
+        )
+        termination_ip_sec_proposal = convert_to_protobuf(
+            termination_ip_sec_proposal, pb.IPSecProposal
+        )
         termination_interface = convert_to_protobuf(termination_interface, pb.Interface)
-        termination_inventory_item = convert_to_protobuf(termination_inventory_item, pb.InventoryItem)
-        termination_inventory_item_role = convert_to_protobuf(termination_inventory_item_role, pb.InventoryItemRole)
+        termination_inventory_item = convert_to_protobuf(
+            termination_inventory_item, pb.InventoryItem
+        )
+        termination_inventory_item_role = convert_to_protobuf(
+            termination_inventory_item_role, pb.InventoryItemRole
+        )
         termination_l2vpn = convert_to_protobuf(termination_l2vpn, pb.L2VPN)
-        termination_l2vpn_termination = convert_to_protobuf(termination_l2vpn_termination, pb.L2VPNTermination)
+        termination_l2vpn_termination = convert_to_protobuf(
+            termination_l2vpn_termination, pb.L2VPNTermination
+        )
         termination_location = convert_to_protobuf(termination_location, pb.Location)
-        termination_mac_address = convert_to_protobuf(termination_mac_address, pb.MACAddress)
-        termination_manufacturer = convert_to_protobuf(termination_manufacturer, pb.Manufacturer)
+        termination_mac_address = convert_to_protobuf(
+            termination_mac_address, pb.MACAddress
+        )
+        termination_manufacturer = convert_to_protobuf(
+            termination_manufacturer, pb.Manufacturer
+        )
         termination_module = convert_to_protobuf(termination_module, pb.Module)
-        termination_module_bay = convert_to_protobuf(termination_module_bay, pb.ModuleBay)
-        termination_module_type = convert_to_protobuf(termination_module_type, pb.ModuleType)
+        termination_module_bay = convert_to_protobuf(
+            termination_module_bay, pb.ModuleBay
+        )
+        termination_module_type = convert_to_protobuf(
+            termination_module_type, pb.ModuleType
+        )
         termination_platform = convert_to_protobuf(termination_platform, pb.Platform)
-        termination_power_feed = convert_to_protobuf(termination_power_feed, pb.PowerFeed)
-        termination_power_outlet = convert_to_protobuf(termination_power_outlet, pb.PowerOutlet)
-        termination_power_panel = convert_to_protobuf(termination_power_panel, pb.PowerPanel)
-        termination_power_port = convert_to_protobuf(termination_power_port, pb.PowerPort)
+        termination_power_feed = convert_to_protobuf(
+            termination_power_feed, pb.PowerFeed
+        )
+        termination_power_outlet = convert_to_protobuf(
+            termination_power_outlet, pb.PowerOutlet
+        )
+        termination_power_panel = convert_to_protobuf(
+            termination_power_panel, pb.PowerPanel
+        )
+        termination_power_port = convert_to_protobuf(
+            termination_power_port, pb.PowerPort
+        )
         termination_prefix = convert_to_protobuf(termination_prefix, pb.Prefix)
         termination_provider = convert_to_protobuf(termination_provider, pb.Provider)
-        termination_provider_account = convert_to_protobuf(termination_provider_account, pb.ProviderAccount)
-        termination_provider_network = convert_to_protobuf(termination_provider_network, pb.ProviderNetwork)
+        termination_provider_account = convert_to_protobuf(
+            termination_provider_account, pb.ProviderAccount
+        )
+        termination_provider_network = convert_to_protobuf(
+            termination_provider_network, pb.ProviderNetwork
+        )
         termination_rir = convert_to_protobuf(termination_rir, pb.RIR)
         termination_rack = convert_to_protobuf(termination_rack, pb.Rack)
-        termination_rack_reservation = convert_to_protobuf(termination_rack_reservation, pb.RackReservation)
+        termination_rack_reservation = convert_to_protobuf(
+            termination_rack_reservation, pb.RackReservation
+        )
         termination_rack_role = convert_to_protobuf(termination_rack_role, pb.RackRole)
         termination_rack_type = convert_to_protobuf(termination_rack_type, pb.RackType)
         termination_rear_port = convert_to_protobuf(termination_rear_port, pb.RearPort)
         termination_region = convert_to_protobuf(termination_region, pb.Region)
         termination_role = convert_to_protobuf(termination_role, pb.Role)
-        termination_route_target = convert_to_protobuf(termination_route_target, pb.RouteTarget)
+        termination_route_target = convert_to_protobuf(
+            termination_route_target, pb.RouteTarget
+        )
         termination_service = convert_to_protobuf(termination_service, pb.Service)
         termination_site = convert_to_protobuf(termination_site, pb.Site)
-        termination_site_group = convert_to_protobuf(termination_site_group, pb.SiteGroup)
+        termination_site_group = convert_to_protobuf(
+            termination_site_group, pb.SiteGroup
+        )
         termination_tag = convert_to_protobuf(termination_tag, pb.Tag)
         termination_tenant = convert_to_protobuf(termination_tenant, pb.Tenant)
-        termination_tenant_group = convert_to_protobuf(termination_tenant_group, pb.TenantGroup)
+        termination_tenant_group = convert_to_protobuf(
+            termination_tenant_group, pb.TenantGroup
+        )
         termination_tunnel = convert_to_protobuf(termination_tunnel, pb.Tunnel)
-        termination_tunnel_group = convert_to_protobuf(termination_tunnel_group, pb.TunnelGroup)
-        termination_tunnel_termination = convert_to_protobuf(termination_tunnel_termination, pb.TunnelTermination)
+        termination_tunnel_group = convert_to_protobuf(
+            termination_tunnel_group, pb.TunnelGroup
+        )
+        termination_tunnel_termination = convert_to_protobuf(
+            termination_tunnel_termination, pb.TunnelTermination
+        )
         termination_vlan = convert_to_protobuf(termination_vlan, pb.VLAN)
-        termination_vlan_group = convert_to_protobuf(termination_vlan_group, pb.VLANGroup)
-        termination_vlan_translation_policy = convert_to_protobuf(termination_vlan_translation_policy, pb.VLANTranslationPolicy)
-        termination_vlan_translation_rule = convert_to_protobuf(termination_vlan_translation_rule, pb.VLANTranslationRule)
-        termination_vm_interface = convert_to_protobuf(termination_vm_interface, pb.VMInterface)
+        termination_vlan_group = convert_to_protobuf(
+            termination_vlan_group, pb.VLANGroup
+        )
+        termination_vlan_translation_policy = convert_to_protobuf(
+            termination_vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        termination_vlan_translation_rule = convert_to_protobuf(
+            termination_vlan_translation_rule, pb.VLANTranslationRule
+        )
+        termination_vm_interface = convert_to_protobuf(
+            termination_vm_interface, pb.VMInterface
+        )
         termination_vrf = convert_to_protobuf(termination_vrf, pb.VRF)
-        termination_virtual_chassis = convert_to_protobuf(termination_virtual_chassis, pb.VirtualChassis)
-        termination_virtual_circuit = convert_to_protobuf(termination_virtual_circuit, pb.VirtualCircuit)
-        termination_virtual_circuit_termination = convert_to_protobuf(termination_virtual_circuit_termination, pb.VirtualCircuitTermination)
-        termination_virtual_circuit_type = convert_to_protobuf(termination_virtual_circuit_type, pb.VirtualCircuitType)
-        termination_virtual_device_context = convert_to_protobuf(termination_virtual_device_context, pb.VirtualDeviceContext)
-        termination_virtual_disk = convert_to_protobuf(termination_virtual_disk, pb.VirtualDisk)
-        termination_virtual_machine = convert_to_protobuf(termination_virtual_machine, pb.VirtualMachine)
-        termination_wireless_lan = convert_to_protobuf(termination_wireless_lan, pb.WirelessLAN)
-        termination_wireless_lan_group = convert_to_protobuf(termination_wireless_lan_group, pb.WirelessLANGroup)
-        termination_wireless_link = convert_to_protobuf(termination_wireless_link, pb.WirelessLink)
-        termination_custom_field = convert_to_protobuf(termination_custom_field, pb.CustomField)
-        termination_custom_field_choice_set = convert_to_protobuf(termination_custom_field_choice_set, pb.CustomFieldChoiceSet)
-        termination_journal_entry = convert_to_protobuf(termination_journal_entry, pb.JournalEntry)
-        termination_module_type_profile = convert_to_protobuf(termination_module_type_profile, pb.ModuleTypeProfile)
-        termination_custom_link = convert_to_protobuf(termination_custom_link, pb.CustomLink)
+        termination_virtual_chassis = convert_to_protobuf(
+            termination_virtual_chassis, pb.VirtualChassis
+        )
+        termination_virtual_circuit = convert_to_protobuf(
+            termination_virtual_circuit, pb.VirtualCircuit
+        )
+        termination_virtual_circuit_termination = convert_to_protobuf(
+            termination_virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        termination_virtual_circuit_type = convert_to_protobuf(
+            termination_virtual_circuit_type, pb.VirtualCircuitType
+        )
+        termination_virtual_device_context = convert_to_protobuf(
+            termination_virtual_device_context, pb.VirtualDeviceContext
+        )
+        termination_virtual_disk = convert_to_protobuf(
+            termination_virtual_disk, pb.VirtualDisk
+        )
+        termination_virtual_machine = convert_to_protobuf(
+            termination_virtual_machine, pb.VirtualMachine
+        )
+        termination_wireless_lan = convert_to_protobuf(
+            termination_wireless_lan, pb.WirelessLAN
+        )
+        termination_wireless_lan_group = convert_to_protobuf(
+            termination_wireless_lan_group, pb.WirelessLANGroup
+        )
+        termination_wireless_link = convert_to_protobuf(
+            termination_wireless_link, pb.WirelessLink
+        )
+        termination_custom_field = convert_to_protobuf(
+            termination_custom_field, pb.CustomField
+        )
+        termination_custom_field_choice_set = convert_to_protobuf(
+            termination_custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
+        termination_journal_entry = convert_to_protobuf(
+            termination_journal_entry, pb.JournalEntry
+        )
+        termination_module_type_profile = convert_to_protobuf(
+            termination_module_type_profile, pb.ModuleTypeProfile
+        )
+        termination_custom_link = convert_to_protobuf(
+            termination_custom_link, pb.CustomLink
+        )
         outside_ip = convert_to_protobuf(outside_ip, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.TunnelTermination(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.TunnelTermination(
             tunnel=tunnel,
             role=role,
             termination_asn=termination_asn,
@@ -4797,7 +6168,9 @@ class TunnelTermination:
             outside_ip=outside_ip,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VLAN:
@@ -4817,7 +6190,10 @@ class VLAN:
         qinq_svlan: str | VLAN | pb.VLAN | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLAN:
         """Create a new VLAN."""
         site = convert_to_protobuf(site, pb.Site)
@@ -4827,7 +6203,8 @@ class VLAN:
         qinq_svlan = convert_to_protobuf(qinq_svlan, pb.VLAN)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VLAN(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VLAN(
             site=site,
             group=group,
             vid=vid,
@@ -4841,7 +6218,9 @@ class VLAN:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VLANGroup:
@@ -4861,8 +6240,11 @@ class VLANGroup:
         vid_ranges: list[int] | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         tenant: str | Tenant | pb.Tenant | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLANGroup:
         """Create a new VLANGroup."""
         scope_cluster = convert_to_protobuf(scope_cluster, pb.Cluster)
@@ -4875,7 +6257,8 @@ class VLANGroup:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
-        return pb.VLANGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VLANGroup(
             name=name,
             slug=slug,
             scope_cluster=scope_cluster,
@@ -4890,7 +6273,9 @@ class VLANGroup:
             tags=tags,
             custom_fields=custom_fields,
             tenant=tenant,
+            metadata=metadata,
         )
+        return result
 
 
 class VLANTranslationPolicy:
@@ -4900,12 +6285,16 @@ class VLANTranslationPolicy:
         cls,
         name: str | None = None,
         description: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLANTranslationPolicy:
         """Create a new VLANTranslationPolicy."""
-        return pb.VLANTranslationPolicy(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VLANTranslationPolicy(
             name=name,
             description=description,
+            metadata=metadata,
         )
+        return result
 
 
 class VLANTranslationRule:
@@ -4917,15 +6306,19 @@ class VLANTranslationRule:
         local_vid: int | None = None,
         remote_vid: int | None = None,
         description: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VLANTranslationRule:
         """Create a new VLANTranslationRule."""
         policy = convert_to_protobuf(policy, pb.VLANTranslationPolicy)
-        return pb.VLANTranslationRule(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VLANTranslationRule(
             policy=policy,
             local_vid=local_vid,
             remote_vid=remote_vid,
             description=description,
+            metadata=metadata,
         )
+        return result
 
 
 class VMInterface:
@@ -4944,11 +6337,16 @@ class VMInterface:
         mode: str | None = None,
         untagged_vlan: str | VLAN | pb.VLAN | None = None,
         qinq_svlan: str | VLAN | pb.VLAN | None = None,
-        vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
+        vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
         vrf: str | VRF | pb.VRF | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VMInterface:
         """Create a new VMInterface."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
@@ -4957,12 +6355,15 @@ class VMInterface:
         primary_mac_address = convert_to_protobuf(primary_mac_address, pb.MACAddress)
         untagged_vlan = convert_to_protobuf(untagged_vlan, pb.VLAN)
         qinq_svlan = convert_to_protobuf(qinq_svlan, pb.VLAN)
-        vlan_translation_policy = convert_to_protobuf(vlan_translation_policy, pb.VLANTranslationPolicy)
+        vlan_translation_policy = convert_to_protobuf(
+            vlan_translation_policy, pb.VLANTranslationPolicy
+        )
         vrf = convert_to_protobuf(vrf, pb.VRF)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         tagged_vlans = convert_to_protobuf_list(tagged_vlans, pb.VLAN)
-        return pb.VMInterface(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VMInterface(
             virtual_machine=virtual_machine,
             name=name,
             enabled=enabled,
@@ -4979,7 +6380,9 @@ class VMInterface:
             tags=tags,
             custom_fields=custom_fields,
             tagged_vlans=tagged_vlans,
+            metadata=metadata,
         )
+        return result
 
 
 class VRF:
@@ -4994,9 +6397,12 @@ class VRF:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VRF:
         """Create a new VRF."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
@@ -5004,7 +6410,8 @@ class VRF:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
         export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
-        return pb.VRF(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VRF(
             name=name,
             rd=rd,
             tenant=tenant,
@@ -5015,7 +6422,9 @@ class VRF:
             custom_fields=custom_fields,
             import_targets=import_targets,
             export_targets=export_targets,
+            metadata=metadata,
         )
+        return result
 
 
 class VirtualChassis:
@@ -5029,13 +6438,17 @@ class VirtualChassis:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualChassis:
         """Create a new VirtualChassis."""
         master = convert_to_protobuf(master, pb.Device)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualChassis(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VirtualChassis(
             name=name,
             domain=domain,
             master=master,
@@ -5043,7 +6456,9 @@ class VirtualChassis:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VirtualCircuit:
@@ -5060,7 +6475,10 @@ class VirtualCircuit:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualCircuit:
         """Create a new VirtualCircuit."""
         provider_network = convert_to_protobuf(provider_network, pb.ProviderNetwork)
@@ -5069,7 +6487,8 @@ class VirtualCircuit:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualCircuit(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VirtualCircuit(
             cid=cid,
             provider_network=provider_network,
             provider_account=provider_account,
@@ -5080,7 +6499,9 @@ class VirtualCircuit:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VirtualCircuitTermination:
@@ -5093,21 +6514,27 @@ class VirtualCircuitTermination:
         interface: str | Interface | pb.Interface | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualCircuitTermination:
         """Create a new VirtualCircuitTermination."""
         virtual_circuit = convert_to_protobuf(virtual_circuit, pb.VirtualCircuit)
         interface = convert_to_protobuf(interface, pb.Interface)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualCircuitTermination(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VirtualCircuitTermination(
             virtual_circuit=virtual_circuit,
             role=role,
             interface=interface,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VirtualCircuitType:
@@ -5120,19 +6547,25 @@ class VirtualCircuitType:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualCircuitType:
         """Create a new VirtualCircuitType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualCircuitType(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VirtualCircuitType(
             name=name,
             slug=slug,
             color=color,
             description=description,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VirtualDeviceContext:
@@ -5150,7 +6583,10 @@ class VirtualDeviceContext:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualDeviceContext:
         """Create a new VirtualDeviceContext."""
         device = convert_to_protobuf(device, pb.Device)
@@ -5159,7 +6595,8 @@ class VirtualDeviceContext:
         primary_ip6 = convert_to_protobuf(primary_ip6, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualDeviceContext(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VirtualDeviceContext(
             name=name,
             device=device,
             identifier=identifier,
@@ -5171,7 +6608,9 @@ class VirtualDeviceContext:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VirtualDisk:
@@ -5184,20 +6623,26 @@ class VirtualDisk:
         description: str | None = None,
         size: int | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualDisk:
         """Create a new VirtualDisk."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.VirtualDisk(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VirtualDisk(
             virtual_machine=virtual_machine,
             name=name,
             description=description,
             size=size,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class VirtualMachine:
@@ -5222,7 +6667,10 @@ class VirtualMachine:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualMachine:
         """Create a new VirtualMachine."""
         site = convert_to_protobuf(site, pb.Site)
@@ -5235,20 +6683,21 @@ class VirtualMachine:
         primary_ip6 = convert_to_protobuf(primary_ip6, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
 
         # apply shortcuts
         if platform is not None:
-            if device is not None and not device.HasField('platform'):
+            if device is not None and not device.HasField("platform"):
                 device.platform.CopyFrom(platform)
         if site is not None:
-            if device is not None and not device.HasField('site'):
+            if device is not None and not device.HasField("site"):
                 device.site.CopyFrom(site)
-            if cluster is not None and not cluster.HasField('scope_site'):
+            if cluster is not None and not cluster.HasField("scope_site"):
                 cluster.scope_site.CopyFrom(site)
         if role is not None:
-            if device is not None and not device.HasField('role'):
+            if device is not None and not device.HasField("role"):
                 device.role.CopyFrom(role)
-        return pb.VirtualMachine(
+        result = pb.VirtualMachine(
             name=name,
             status=status,
             site=site,
@@ -5267,7 +6716,9 @@ class VirtualMachine:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class WirelessLAN:
@@ -5290,7 +6741,10 @@ class WirelessLAN:
         auth_psk: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.WirelessLAN:
         """Create a new WirelessLAN."""
         group = convert_to_protobuf(group, pb.WirelessLANGroup)
@@ -5302,7 +6756,8 @@ class WirelessLAN:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.WirelessLAN(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.WirelessLAN(
             ssid=ssid,
             description=description,
             group=group,
@@ -5319,7 +6774,9 @@ class WirelessLAN:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class WirelessLANGroup:
@@ -5332,14 +6789,18 @@ class WirelessLANGroup:
         parent: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
         comments: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.WirelessLANGroup:
         """Create a new WirelessLANGroup."""
         parent = convert_to_protobuf(parent, pb.WirelessLANGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.WirelessLANGroup(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.WirelessLANGroup(
             name=name,
             slug=slug,
             parent=parent,
@@ -5347,7 +6808,9 @@ class WirelessLANGroup:
             tags=tags,
             custom_fields=custom_fields,
             comments=comments,
+            metadata=metadata,
         )
+        return result
 
 
 class WirelessLink:
@@ -5368,7 +6831,10 @@ class WirelessLink:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.WirelessLink:
         """Create a new WirelessLink."""
         interface_a = convert_to_protobuf(interface_a, pb.Interface)
@@ -5376,7 +6842,8 @@ class WirelessLink:
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.WirelessLink(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.WirelessLink(
             interface_a=interface_a,
             interface_b=interface_b,
             ssid=ssid,
@@ -5391,7 +6858,9 @@ class WirelessLink:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class CustomField:
@@ -5421,10 +6890,12 @@ class CustomField:
         choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
         comments: str | None = None,
         object_types: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomField:
         """Create a new CustomField."""
         choice_set = convert_to_protobuf(choice_set, pb.CustomFieldChoiceSet)
-        return pb.CustomField(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CustomField(
             type=type,
             related_object_type=related_object_type,
             name=name,
@@ -5447,7 +6918,9 @@ class CustomField:
             choice_set=choice_set,
             comments=comments,
             object_types=object_types,
+            metadata=metadata,
         )
+        return result
 
 
 class CustomFieldChoiceSet:
@@ -5460,15 +6933,19 @@ class CustomFieldChoiceSet:
         base_choices: str | None = None,
         order_alphabetically: bool | None = None,
         extra_choices: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomFieldChoiceSet:
         """Create a new CustomFieldChoiceSet."""
-        return pb.CustomFieldChoiceSet(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CustomFieldChoiceSet(
             name=name,
             description=description,
             base_choices=base_choices,
             order_alphabetically=order_alphabetically,
             extra_choices=extra_choices,
+            metadata=metadata,
         )
+        return result
 
 
 class JournalEntry:
@@ -5481,50 +6958,86 @@ class JournalEntry:
         assigned_object_aggregate: str | Aggregate | pb.Aggregate | None = None,
         assigned_object_cable: str | Cable | pb.Cable | None = None,
         assigned_object_cable_path: str | CablePath | pb.CablePath | None = None,
-        assigned_object_cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        assigned_object_cable_termination: (
+            str | CableTermination | pb.CableTermination | None
+        ) = None,
         assigned_object_circuit: str | Circuit | pb.Circuit | None = None,
-        assigned_object_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
-        assigned_object_circuit_group_assignment: str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None = None,
-        assigned_object_circuit_termination: str | CircuitTermination | pb.CircuitTermination | None = None,
+        assigned_object_circuit_group: (
+            str | CircuitGroup | pb.CircuitGroup | None
+        ) = None,
+        assigned_object_circuit_group_assignment: (
+            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+        ) = None,
+        assigned_object_circuit_termination: (
+            str | CircuitTermination | pb.CircuitTermination | None
+        ) = None,
         assigned_object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         assigned_object_cluster: str | Cluster | pb.Cluster | None = None,
-        assigned_object_cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
+        assigned_object_cluster_group: (
+            str | ClusterGroup | pb.ClusterGroup | None
+        ) = None,
         assigned_object_cluster_type: str | ClusterType | pb.ClusterType | None = None,
         assigned_object_console_port: str | ConsolePort | pb.ConsolePort | None = None,
-        assigned_object_console_server_port: str | ConsoleServerPort | pb.ConsoleServerPort | None = None,
+        assigned_object_console_server_port: (
+            str | ConsoleServerPort | pb.ConsoleServerPort | None
+        ) = None,
         assigned_object_contact: str | Contact | pb.Contact | None = None,
-        assigned_object_contact_assignment: str | ContactAssignment | pb.ContactAssignment | None = None,
-        assigned_object_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
+        assigned_object_contact_assignment: (
+            str | ContactAssignment | pb.ContactAssignment | None
+        ) = None,
+        assigned_object_contact_group: (
+            str | ContactGroup | pb.ContactGroup | None
+        ) = None,
         assigned_object_contact_role: str | ContactRole | pb.ContactRole | None = None,
         assigned_object_custom_field: str | CustomField | pb.CustomField | None = None,
-        assigned_object_custom_field_choice_set: str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None = None,
+        assigned_object_custom_field_choice_set: (
+            str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
+        ) = None,
         assigned_object_device: str | Device | pb.Device | None = None,
         assigned_object_device_bay: str | DeviceBay | pb.DeviceBay | None = None,
         assigned_object_device_role: str | DeviceRole | pb.DeviceRole | None = None,
         assigned_object_device_type: str | DeviceType | pb.DeviceType | None = None,
         assigned_object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
-        assigned_object_fhrp_group_assignment: str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None = None,
+        assigned_object_fhrp_group_assignment: (
+            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+        ) = None,
         assigned_object_front_port: str | FrontPort | pb.FrontPort | None = None,
         assigned_object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         assigned_object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         assigned_object_ip_address: str | IPAddress | pb.IPAddress | None = None,
         assigned_object_ip_range: str | IPRange | pb.IPRange | None = None,
         assigned_object_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
-        assigned_object_ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
-        assigned_object_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
+        assigned_object_ip_sec_profile: (
+            str | IPSecProfile | pb.IPSecProfile | None
+        ) = None,
+        assigned_object_ip_sec_proposal: (
+            str | IPSecProposal | pb.IPSecProposal | None
+        ) = None,
         assigned_object_interface: str | Interface | pb.Interface | None = None,
-        assigned_object_inventory_item: str | InventoryItem | pb.InventoryItem | None = None,
-        assigned_object_inventory_item_role: str | InventoryItemRole | pb.InventoryItemRole | None = None,
-        assigned_object_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        assigned_object_inventory_item: (
+            str | InventoryItem | pb.InventoryItem | None
+        ) = None,
+        assigned_object_inventory_item_role: (
+            str | InventoryItemRole | pb.InventoryItemRole | None
+        ) = None,
+        assigned_object_journal_entry: (
+            str | JournalEntry | pb.JournalEntry | None
+        ) = None,
         assigned_object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        assigned_object_l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        assigned_object_l2vpn_termination: (
+            str | L2VPNTermination | pb.L2VPNTermination | None
+        ) = None,
         assigned_object_location: str | Location | pb.Location | None = None,
         assigned_object_mac_address: str | MACAddress | pb.MACAddress | None = None,
-        assigned_object_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
+        assigned_object_manufacturer: (
+            str | Manufacturer | pb.Manufacturer | None
+        ) = None,
         assigned_object_module: str | Module | pb.Module | None = None,
         assigned_object_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         assigned_object_module_type: str | ModuleType | pb.ModuleType | None = None,
-        assigned_object_module_type_profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
+        assigned_object_module_type_profile: (
+            str | ModuleTypeProfile | pb.ModuleTypeProfile | None
+        ) = None,
         assigned_object_platform: str | Platform | pb.Platform | None = None,
         assigned_object_power_feed: str | PowerFeed | pb.PowerFeed | None = None,
         assigned_object_power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
@@ -5532,11 +7045,17 @@ class JournalEntry:
         assigned_object_power_port: str | PowerPort | pb.PowerPort | None = None,
         assigned_object_prefix: str | Prefix | pb.Prefix | None = None,
         assigned_object_provider: str | Provider | pb.Provider | None = None,
-        assigned_object_provider_account: str | ProviderAccount | pb.ProviderAccount | None = None,
-        assigned_object_provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
+        assigned_object_provider_account: (
+            str | ProviderAccount | pb.ProviderAccount | None
+        ) = None,
+        assigned_object_provider_network: (
+            str | ProviderNetwork | pb.ProviderNetwork | None
+        ) = None,
         assigned_object_rir: str | RIR | pb.RIR | None = None,
         assigned_object_rack: str | Rack | pb.Rack | None = None,
-        assigned_object_rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        assigned_object_rack_reservation: (
+            str | RackReservation | pb.RackReservation | None
+        ) = None,
         assigned_object_rack_role: str | RackRole | pb.RackRole | None = None,
         assigned_object_rack_type: str | RackType | pb.RackType | None = None,
         assigned_object_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -5551,126 +7070,306 @@ class JournalEntry:
         assigned_object_tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         assigned_object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         assigned_object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        assigned_object_tunnel_termination: str | TunnelTermination | pb.TunnelTermination | None = None,
+        assigned_object_tunnel_termination: (
+            str | TunnelTermination | pb.TunnelTermination | None
+        ) = None,
         assigned_object_vlan: str | VLAN | pb.VLAN | None = None,
         assigned_object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
-        assigned_object_vlan_translation_policy: str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None = None,
-        assigned_object_vlan_translation_rule: str | VLANTranslationRule | pb.VLANTranslationRule | None = None,
+        assigned_object_vlan_translation_policy: (
+            str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
+        ) = None,
+        assigned_object_vlan_translation_rule: (
+            str | VLANTranslationRule | pb.VLANTranslationRule | None
+        ) = None,
         assigned_object_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         assigned_object_vrf: str | VRF | pb.VRF | None = None,
-        assigned_object_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
-        assigned_object_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
-        assigned_object_virtual_circuit_termination: str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None = None,
-        assigned_object_virtual_circuit_type: str | VirtualCircuitType | pb.VirtualCircuitType | None = None,
-        assigned_object_virtual_device_context: str | VirtualDeviceContext | pb.VirtualDeviceContext | None = None,
+        assigned_object_virtual_chassis: (
+            str | VirtualChassis | pb.VirtualChassis | None
+        ) = None,
+        assigned_object_virtual_circuit: (
+            str | VirtualCircuit | pb.VirtualCircuit | None
+        ) = None,
+        assigned_object_virtual_circuit_termination: (
+            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+        ) = None,
+        assigned_object_virtual_circuit_type: (
+            str | VirtualCircuitType | pb.VirtualCircuitType | None
+        ) = None,
+        assigned_object_virtual_device_context: (
+            str | VirtualDeviceContext | pb.VirtualDeviceContext | None
+        ) = None,
         assigned_object_virtual_disk: str | VirtualDisk | pb.VirtualDisk | None = None,
-        assigned_object_virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
+        assigned_object_virtual_machine: (
+            str | VirtualMachine | pb.VirtualMachine | None
+        ) = None,
         assigned_object_wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
-        assigned_object_wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
-        assigned_object_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        assigned_object_wireless_lan_group: (
+            str | WirelessLANGroup | pb.WirelessLANGroup | None
+        ) = None,
+        assigned_object_wireless_link: (
+            str | WirelessLink | pb.WirelessLink | None
+        ) = None,
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         kind: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.JournalEntry:
         """Create a new JournalEntry."""
         assigned_object_asn = convert_to_protobuf(assigned_object_asn, pb.ASN)
-        assigned_object_asn_range = convert_to_protobuf(assigned_object_asn_range, pb.ASNRange)
-        assigned_object_aggregate = convert_to_protobuf(assigned_object_aggregate, pb.Aggregate)
+        assigned_object_asn_range = convert_to_protobuf(
+            assigned_object_asn_range, pb.ASNRange
+        )
+        assigned_object_aggregate = convert_to_protobuf(
+            assigned_object_aggregate, pb.Aggregate
+        )
         assigned_object_cable = convert_to_protobuf(assigned_object_cable, pb.Cable)
-        assigned_object_cable_path = convert_to_protobuf(assigned_object_cable_path, pb.CablePath)
-        assigned_object_cable_termination = convert_to_protobuf(assigned_object_cable_termination, pb.CableTermination)
-        assigned_object_circuit = convert_to_protobuf(assigned_object_circuit, pb.Circuit)
-        assigned_object_circuit_group = convert_to_protobuf(assigned_object_circuit_group, pb.CircuitGroup)
-        assigned_object_circuit_group_assignment = convert_to_protobuf(assigned_object_circuit_group_assignment, pb.CircuitGroupAssignment)
-        assigned_object_circuit_termination = convert_to_protobuf(assigned_object_circuit_termination, pb.CircuitTermination)
-        assigned_object_circuit_type = convert_to_protobuf(assigned_object_circuit_type, pb.CircuitType)
-        assigned_object_cluster = convert_to_protobuf(assigned_object_cluster, pb.Cluster)
-        assigned_object_cluster_group = convert_to_protobuf(assigned_object_cluster_group, pb.ClusterGroup)
-        assigned_object_cluster_type = convert_to_protobuf(assigned_object_cluster_type, pb.ClusterType)
-        assigned_object_console_port = convert_to_protobuf(assigned_object_console_port, pb.ConsolePort)
-        assigned_object_console_server_port = convert_to_protobuf(assigned_object_console_server_port, pb.ConsoleServerPort)
-        assigned_object_contact = convert_to_protobuf(assigned_object_contact, pb.Contact)
-        assigned_object_contact_assignment = convert_to_protobuf(assigned_object_contact_assignment, pb.ContactAssignment)
-        assigned_object_contact_group = convert_to_protobuf(assigned_object_contact_group, pb.ContactGroup)
-        assigned_object_contact_role = convert_to_protobuf(assigned_object_contact_role, pb.ContactRole)
-        assigned_object_custom_field = convert_to_protobuf(assigned_object_custom_field, pb.CustomField)
-        assigned_object_custom_field_choice_set = convert_to_protobuf(assigned_object_custom_field_choice_set, pb.CustomFieldChoiceSet)
+        assigned_object_cable_path = convert_to_protobuf(
+            assigned_object_cable_path, pb.CablePath
+        )
+        assigned_object_cable_termination = convert_to_protobuf(
+            assigned_object_cable_termination, pb.CableTermination
+        )
+        assigned_object_circuit = convert_to_protobuf(
+            assigned_object_circuit, pb.Circuit
+        )
+        assigned_object_circuit_group = convert_to_protobuf(
+            assigned_object_circuit_group, pb.CircuitGroup
+        )
+        assigned_object_circuit_group_assignment = convert_to_protobuf(
+            assigned_object_circuit_group_assignment, pb.CircuitGroupAssignment
+        )
+        assigned_object_circuit_termination = convert_to_protobuf(
+            assigned_object_circuit_termination, pb.CircuitTermination
+        )
+        assigned_object_circuit_type = convert_to_protobuf(
+            assigned_object_circuit_type, pb.CircuitType
+        )
+        assigned_object_cluster = convert_to_protobuf(
+            assigned_object_cluster, pb.Cluster
+        )
+        assigned_object_cluster_group = convert_to_protobuf(
+            assigned_object_cluster_group, pb.ClusterGroup
+        )
+        assigned_object_cluster_type = convert_to_protobuf(
+            assigned_object_cluster_type, pb.ClusterType
+        )
+        assigned_object_console_port = convert_to_protobuf(
+            assigned_object_console_port, pb.ConsolePort
+        )
+        assigned_object_console_server_port = convert_to_protobuf(
+            assigned_object_console_server_port, pb.ConsoleServerPort
+        )
+        assigned_object_contact = convert_to_protobuf(
+            assigned_object_contact, pb.Contact
+        )
+        assigned_object_contact_assignment = convert_to_protobuf(
+            assigned_object_contact_assignment, pb.ContactAssignment
+        )
+        assigned_object_contact_group = convert_to_protobuf(
+            assigned_object_contact_group, pb.ContactGroup
+        )
+        assigned_object_contact_role = convert_to_protobuf(
+            assigned_object_contact_role, pb.ContactRole
+        )
+        assigned_object_custom_field = convert_to_protobuf(
+            assigned_object_custom_field, pb.CustomField
+        )
+        assigned_object_custom_field_choice_set = convert_to_protobuf(
+            assigned_object_custom_field_choice_set, pb.CustomFieldChoiceSet
+        )
         assigned_object_device = convert_to_protobuf(assigned_object_device, pb.Device)
-        assigned_object_device_bay = convert_to_protobuf(assigned_object_device_bay, pb.DeviceBay)
-        assigned_object_device_role = convert_to_protobuf(assigned_object_device_role, pb.DeviceRole)
-        assigned_object_device_type = convert_to_protobuf(assigned_object_device_type, pb.DeviceType)
-        assigned_object_fhrp_group = convert_to_protobuf(assigned_object_fhrp_group, pb.FHRPGroup)
-        assigned_object_fhrp_group_assignment = convert_to_protobuf(assigned_object_fhrp_group_assignment, pb.FHRPGroupAssignment)
-        assigned_object_front_port = convert_to_protobuf(assigned_object_front_port, pb.FrontPort)
-        assigned_object_ike_policy = convert_to_protobuf(assigned_object_ike_policy, pb.IKEPolicy)
-        assigned_object_ike_proposal = convert_to_protobuf(assigned_object_ike_proposal, pb.IKEProposal)
-        assigned_object_ip_address = convert_to_protobuf(assigned_object_ip_address, pb.IPAddress)
-        assigned_object_ip_range = convert_to_protobuf(assigned_object_ip_range, pb.IPRange)
-        assigned_object_ip_sec_policy = convert_to_protobuf(assigned_object_ip_sec_policy, pb.IPSecPolicy)
-        assigned_object_ip_sec_profile = convert_to_protobuf(assigned_object_ip_sec_profile, pb.IPSecProfile)
-        assigned_object_ip_sec_proposal = convert_to_protobuf(assigned_object_ip_sec_proposal, pb.IPSecProposal)
-        assigned_object_interface = convert_to_protobuf(assigned_object_interface, pb.Interface)
-        assigned_object_inventory_item = convert_to_protobuf(assigned_object_inventory_item, pb.InventoryItem)
-        assigned_object_inventory_item_role = convert_to_protobuf(assigned_object_inventory_item_role, pb.InventoryItemRole)
-        assigned_object_journal_entry = convert_to_protobuf(assigned_object_journal_entry, pb.JournalEntry)
+        assigned_object_device_bay = convert_to_protobuf(
+            assigned_object_device_bay, pb.DeviceBay
+        )
+        assigned_object_device_role = convert_to_protobuf(
+            assigned_object_device_role, pb.DeviceRole
+        )
+        assigned_object_device_type = convert_to_protobuf(
+            assigned_object_device_type, pb.DeviceType
+        )
+        assigned_object_fhrp_group = convert_to_protobuf(
+            assigned_object_fhrp_group, pb.FHRPGroup
+        )
+        assigned_object_fhrp_group_assignment = convert_to_protobuf(
+            assigned_object_fhrp_group_assignment, pb.FHRPGroupAssignment
+        )
+        assigned_object_front_port = convert_to_protobuf(
+            assigned_object_front_port, pb.FrontPort
+        )
+        assigned_object_ike_policy = convert_to_protobuf(
+            assigned_object_ike_policy, pb.IKEPolicy
+        )
+        assigned_object_ike_proposal = convert_to_protobuf(
+            assigned_object_ike_proposal, pb.IKEProposal
+        )
+        assigned_object_ip_address = convert_to_protobuf(
+            assigned_object_ip_address, pb.IPAddress
+        )
+        assigned_object_ip_range = convert_to_protobuf(
+            assigned_object_ip_range, pb.IPRange
+        )
+        assigned_object_ip_sec_policy = convert_to_protobuf(
+            assigned_object_ip_sec_policy, pb.IPSecPolicy
+        )
+        assigned_object_ip_sec_profile = convert_to_protobuf(
+            assigned_object_ip_sec_profile, pb.IPSecProfile
+        )
+        assigned_object_ip_sec_proposal = convert_to_protobuf(
+            assigned_object_ip_sec_proposal, pb.IPSecProposal
+        )
+        assigned_object_interface = convert_to_protobuf(
+            assigned_object_interface, pb.Interface
+        )
+        assigned_object_inventory_item = convert_to_protobuf(
+            assigned_object_inventory_item, pb.InventoryItem
+        )
+        assigned_object_inventory_item_role = convert_to_protobuf(
+            assigned_object_inventory_item_role, pb.InventoryItemRole
+        )
+        assigned_object_journal_entry = convert_to_protobuf(
+            assigned_object_journal_entry, pb.JournalEntry
+        )
         assigned_object_l2vpn = convert_to_protobuf(assigned_object_l2vpn, pb.L2VPN)
-        assigned_object_l2vpn_termination = convert_to_protobuf(assigned_object_l2vpn_termination, pb.L2VPNTermination)
-        assigned_object_location = convert_to_protobuf(assigned_object_location, pb.Location)
-        assigned_object_mac_address = convert_to_protobuf(assigned_object_mac_address, pb.MACAddress)
-        assigned_object_manufacturer = convert_to_protobuf(assigned_object_manufacturer, pb.Manufacturer)
+        assigned_object_l2vpn_termination = convert_to_protobuf(
+            assigned_object_l2vpn_termination, pb.L2VPNTermination
+        )
+        assigned_object_location = convert_to_protobuf(
+            assigned_object_location, pb.Location
+        )
+        assigned_object_mac_address = convert_to_protobuf(
+            assigned_object_mac_address, pb.MACAddress
+        )
+        assigned_object_manufacturer = convert_to_protobuf(
+            assigned_object_manufacturer, pb.Manufacturer
+        )
         assigned_object_module = convert_to_protobuf(assigned_object_module, pb.Module)
-        assigned_object_module_bay = convert_to_protobuf(assigned_object_module_bay, pb.ModuleBay)
-        assigned_object_module_type = convert_to_protobuf(assigned_object_module_type, pb.ModuleType)
-        assigned_object_module_type_profile = convert_to_protobuf(assigned_object_module_type_profile, pb.ModuleTypeProfile)
-        assigned_object_platform = convert_to_protobuf(assigned_object_platform, pb.Platform)
-        assigned_object_power_feed = convert_to_protobuf(assigned_object_power_feed, pb.PowerFeed)
-        assigned_object_power_outlet = convert_to_protobuf(assigned_object_power_outlet, pb.PowerOutlet)
-        assigned_object_power_panel = convert_to_protobuf(assigned_object_power_panel, pb.PowerPanel)
-        assigned_object_power_port = convert_to_protobuf(assigned_object_power_port, pb.PowerPort)
+        assigned_object_module_bay = convert_to_protobuf(
+            assigned_object_module_bay, pb.ModuleBay
+        )
+        assigned_object_module_type = convert_to_protobuf(
+            assigned_object_module_type, pb.ModuleType
+        )
+        assigned_object_module_type_profile = convert_to_protobuf(
+            assigned_object_module_type_profile, pb.ModuleTypeProfile
+        )
+        assigned_object_platform = convert_to_protobuf(
+            assigned_object_platform, pb.Platform
+        )
+        assigned_object_power_feed = convert_to_protobuf(
+            assigned_object_power_feed, pb.PowerFeed
+        )
+        assigned_object_power_outlet = convert_to_protobuf(
+            assigned_object_power_outlet, pb.PowerOutlet
+        )
+        assigned_object_power_panel = convert_to_protobuf(
+            assigned_object_power_panel, pb.PowerPanel
+        )
+        assigned_object_power_port = convert_to_protobuf(
+            assigned_object_power_port, pb.PowerPort
+        )
         assigned_object_prefix = convert_to_protobuf(assigned_object_prefix, pb.Prefix)
-        assigned_object_provider = convert_to_protobuf(assigned_object_provider, pb.Provider)
-        assigned_object_provider_account = convert_to_protobuf(assigned_object_provider_account, pb.ProviderAccount)
-        assigned_object_provider_network = convert_to_protobuf(assigned_object_provider_network, pb.ProviderNetwork)
+        assigned_object_provider = convert_to_protobuf(
+            assigned_object_provider, pb.Provider
+        )
+        assigned_object_provider_account = convert_to_protobuf(
+            assigned_object_provider_account, pb.ProviderAccount
+        )
+        assigned_object_provider_network = convert_to_protobuf(
+            assigned_object_provider_network, pb.ProviderNetwork
+        )
         assigned_object_rir = convert_to_protobuf(assigned_object_rir, pb.RIR)
         assigned_object_rack = convert_to_protobuf(assigned_object_rack, pb.Rack)
-        assigned_object_rack_reservation = convert_to_protobuf(assigned_object_rack_reservation, pb.RackReservation)
-        assigned_object_rack_role = convert_to_protobuf(assigned_object_rack_role, pb.RackRole)
-        assigned_object_rack_type = convert_to_protobuf(assigned_object_rack_type, pb.RackType)
-        assigned_object_rear_port = convert_to_protobuf(assigned_object_rear_port, pb.RearPort)
+        assigned_object_rack_reservation = convert_to_protobuf(
+            assigned_object_rack_reservation, pb.RackReservation
+        )
+        assigned_object_rack_role = convert_to_protobuf(
+            assigned_object_rack_role, pb.RackRole
+        )
+        assigned_object_rack_type = convert_to_protobuf(
+            assigned_object_rack_type, pb.RackType
+        )
+        assigned_object_rear_port = convert_to_protobuf(
+            assigned_object_rear_port, pb.RearPort
+        )
         assigned_object_region = convert_to_protobuf(assigned_object_region, pb.Region)
         assigned_object_role = convert_to_protobuf(assigned_object_role, pb.Role)
-        assigned_object_route_target = convert_to_protobuf(assigned_object_route_target, pb.RouteTarget)
-        assigned_object_service = convert_to_protobuf(assigned_object_service, pb.Service)
+        assigned_object_route_target = convert_to_protobuf(
+            assigned_object_route_target, pb.RouteTarget
+        )
+        assigned_object_service = convert_to_protobuf(
+            assigned_object_service, pb.Service
+        )
         assigned_object_site = convert_to_protobuf(assigned_object_site, pb.Site)
-        assigned_object_site_group = convert_to_protobuf(assigned_object_site_group, pb.SiteGroup)
+        assigned_object_site_group = convert_to_protobuf(
+            assigned_object_site_group, pb.SiteGroup
+        )
         assigned_object_tag = convert_to_protobuf(assigned_object_tag, pb.Tag)
         assigned_object_tenant = convert_to_protobuf(assigned_object_tenant, pb.Tenant)
-        assigned_object_tenant_group = convert_to_protobuf(assigned_object_tenant_group, pb.TenantGroup)
+        assigned_object_tenant_group = convert_to_protobuf(
+            assigned_object_tenant_group, pb.TenantGroup
+        )
         assigned_object_tunnel = convert_to_protobuf(assigned_object_tunnel, pb.Tunnel)
-        assigned_object_tunnel_group = convert_to_protobuf(assigned_object_tunnel_group, pb.TunnelGroup)
-        assigned_object_tunnel_termination = convert_to_protobuf(assigned_object_tunnel_termination, pb.TunnelTermination)
+        assigned_object_tunnel_group = convert_to_protobuf(
+            assigned_object_tunnel_group, pb.TunnelGroup
+        )
+        assigned_object_tunnel_termination = convert_to_protobuf(
+            assigned_object_tunnel_termination, pb.TunnelTermination
+        )
         assigned_object_vlan = convert_to_protobuf(assigned_object_vlan, pb.VLAN)
-        assigned_object_vlan_group = convert_to_protobuf(assigned_object_vlan_group, pb.VLANGroup)
-        assigned_object_vlan_translation_policy = convert_to_protobuf(assigned_object_vlan_translation_policy, pb.VLANTranslationPolicy)
-        assigned_object_vlan_translation_rule = convert_to_protobuf(assigned_object_vlan_translation_rule, pb.VLANTranslationRule)
-        assigned_object_vm_interface = convert_to_protobuf(assigned_object_vm_interface, pb.VMInterface)
+        assigned_object_vlan_group = convert_to_protobuf(
+            assigned_object_vlan_group, pb.VLANGroup
+        )
+        assigned_object_vlan_translation_policy = convert_to_protobuf(
+            assigned_object_vlan_translation_policy, pb.VLANTranslationPolicy
+        )
+        assigned_object_vlan_translation_rule = convert_to_protobuf(
+            assigned_object_vlan_translation_rule, pb.VLANTranslationRule
+        )
+        assigned_object_vm_interface = convert_to_protobuf(
+            assigned_object_vm_interface, pb.VMInterface
+        )
         assigned_object_vrf = convert_to_protobuf(assigned_object_vrf, pb.VRF)
-        assigned_object_virtual_chassis = convert_to_protobuf(assigned_object_virtual_chassis, pb.VirtualChassis)
-        assigned_object_virtual_circuit = convert_to_protobuf(assigned_object_virtual_circuit, pb.VirtualCircuit)
-        assigned_object_virtual_circuit_termination = convert_to_protobuf(assigned_object_virtual_circuit_termination, pb.VirtualCircuitTermination)
-        assigned_object_virtual_circuit_type = convert_to_protobuf(assigned_object_virtual_circuit_type, pb.VirtualCircuitType)
-        assigned_object_virtual_device_context = convert_to_protobuf(assigned_object_virtual_device_context, pb.VirtualDeviceContext)
-        assigned_object_virtual_disk = convert_to_protobuf(assigned_object_virtual_disk, pb.VirtualDisk)
-        assigned_object_virtual_machine = convert_to_protobuf(assigned_object_virtual_machine, pb.VirtualMachine)
-        assigned_object_wireless_lan = convert_to_protobuf(assigned_object_wireless_lan, pb.WirelessLAN)
-        assigned_object_wireless_lan_group = convert_to_protobuf(assigned_object_wireless_lan_group, pb.WirelessLANGroup)
-        assigned_object_wireless_link = convert_to_protobuf(assigned_object_wireless_link, pb.WirelessLink)
-        assigned_object_custom_link = convert_to_protobuf(assigned_object_custom_link, pb.CustomLink)
+        assigned_object_virtual_chassis = convert_to_protobuf(
+            assigned_object_virtual_chassis, pb.VirtualChassis
+        )
+        assigned_object_virtual_circuit = convert_to_protobuf(
+            assigned_object_virtual_circuit, pb.VirtualCircuit
+        )
+        assigned_object_virtual_circuit_termination = convert_to_protobuf(
+            assigned_object_virtual_circuit_termination, pb.VirtualCircuitTermination
+        )
+        assigned_object_virtual_circuit_type = convert_to_protobuf(
+            assigned_object_virtual_circuit_type, pb.VirtualCircuitType
+        )
+        assigned_object_virtual_device_context = convert_to_protobuf(
+            assigned_object_virtual_device_context, pb.VirtualDeviceContext
+        )
+        assigned_object_virtual_disk = convert_to_protobuf(
+            assigned_object_virtual_disk, pb.VirtualDisk
+        )
+        assigned_object_virtual_machine = convert_to_protobuf(
+            assigned_object_virtual_machine, pb.VirtualMachine
+        )
+        assigned_object_wireless_lan = convert_to_protobuf(
+            assigned_object_wireless_lan, pb.WirelessLAN
+        )
+        assigned_object_wireless_lan_group = convert_to_protobuf(
+            assigned_object_wireless_lan_group, pb.WirelessLANGroup
+        )
+        assigned_object_wireless_link = convert_to_protobuf(
+            assigned_object_wireless_link, pb.WirelessLink
+        )
+        assigned_object_custom_link = convert_to_protobuf(
+            assigned_object_custom_link, pb.CustomLink
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.JournalEntry(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.JournalEntry(
             assigned_object_asn=assigned_object_asn,
             assigned_object_asn_range=assigned_object_asn_range,
             assigned_object_aggregate=assigned_object_aggregate,
@@ -5768,7 +7467,9 @@ class JournalEntry:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class ModuleTypeProfile:
@@ -5781,19 +7482,25 @@ class ModuleTypeProfile:
         schema: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None = None,
+        custom_fields: (
+            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
+        ) = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.ModuleTypeProfile:
         """Create a new ModuleTypeProfile."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
-        return pb.ModuleTypeProfile(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ModuleTypeProfile(
             name=name,
             description=description,
             schema=schema,
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
         )
+        return result
 
 
 class CustomLink:
@@ -5810,9 +7517,11 @@ class CustomLink:
         button_class: str | None = None,
         new_window: bool | None = None,
         object_types: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> pb.CustomLink:
         """Create a new CustomLink."""
-        return pb.CustomLink(
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CustomLink(
             name=name,
             enabled=enabled,
             link_text=link_text,
@@ -5822,4 +7531,6 @@ class CustomLink:
             button_class=button_class,
             new_window=new_window,
             object_types=object_types,
+            metadata=metadata,
         )
+        return result

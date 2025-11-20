@@ -10,6 +10,9 @@ pipelines.
 More information about Diode can be found
 at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/](https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/).
 
+## Prerequisites
+- Python 3.10 or later installed
+
 ## Installation
 
 ```bash
@@ -79,6 +82,123 @@ if __name__ == "__main__":
 
 ```
 
+See all [examples](./examples) for reference.
+
+### Using Metadata
+
+Entities support attaching custom metadata as key-value pairs. Metadata can be used to store additional context, tracking information, or custom attributes that don't fit into the standard NetBox fields.
+
+```python
+from netboxlabs.diode.sdk import DiodeClient, Entity
+from netboxlabs.diode.sdk.ingester import Device, Site, IPAddress
+
+with DiodeClient(
+    target="grpc://localhost:8080/diode",
+    app_name="my-app",
+    app_version="1.0.0",
+) as client:
+    # Create a device with metadata
+    # Note: Both the device and its nested site can have its own metadata
+    device = Device(
+        name="Device A",
+        device_type="Device Type A",
+        site=Site(
+            name="Site ABC",
+            metadata={
+                "site_region": "us-west",
+                "site_cost_center": "CC-001",
+            },
+        ),
+        role="Role ABC",
+        metadata={
+            "source": "network_discovery",
+            "discovered_at": "2024-01-15T10:30:00Z",
+            "import_batch": "batch-123",
+            "priority": 1,
+            "verified": True,
+        },
+    )
+
+    # Create an IP address with metadata
+    ip_address = IPAddress(
+        address="192.168.1.10/24",
+        status="active",
+        metadata={
+            "last_scan": "2024-01-15T12:00:00Z",
+            "scan_id": "scan-456",
+            "response_time": 23.5,
+            "reachable": True,
+            "owner_team": "network-ops",
+        },
+    )
+
+    # Create a site with metadata
+    site = Site(
+        name="Data Center 1",
+        status="active",
+        metadata={
+            "region": "us-west",
+            "cost_center": "CC-001",
+            "capacity": 500,
+            "is_primary": True,
+            "contact_email": "dc1-ops@example.com",
+        },
+    )
+
+    entities = [Entity(device=device), Entity(ip_address=ip_address), Entity(site=site)]
+    response = client.ingest(entities=entities)
+    if response.errors:
+        print(f"Errors: {response.errors}")
+```
+
+#### Adding request-level metadata
+
+In addition to entity-level metadata, you can attach metadata to the entire ingestion request using the `metadata` keyword argument. This is useful for tracking information about the ingestion batch itself, such as the data source, batch ID, or processing context.
+
+```python
+from netboxlabs.diode.sdk import DiodeClient, Entity
+from netboxlabs.diode.sdk.ingester import Device, Site
+
+with DiodeClient(
+    target="grpc://localhost:8080/diode",
+    app_name="my-app",
+    app_version="1.0.0",
+) as client:
+    # Create device A
+    device_a = Device(
+        name="Device A",
+        site=Site(name="Site ABC"),
+    )
+
+    # Create device B
+    device_b = Device(
+        name="Device B",
+        site=Site(name="Site XYZ"),
+    )
+
+    entities = [Entity(device=device_a), Entity(device=device_b)]
+
+    # Add request-level metadata to track the ingestion batch
+    response = client.ingest(
+        entities=entities,
+        metadata={
+            "batch_id": "import-2024-01-15",
+            "source_system": "network_scanner",
+            "import_type": "automated",
+            "record_count": len(entities),
+            "validated": True,
+        },
+    )
+    if response.errors:
+        print(f"Errors: {response.errors}")
+```
+
+Request-level metadata is included in the `IngestRequest` and can be useful for:
+- Tracking data sources and ingestion pipelines
+- Correlating entities within a batch
+- Debugging and auditing data imports
+- Adding contextual information for downstream processing
+
 ### TLS verification and certificates
 
 TLS verification is controlled by the target URL scheme:
@@ -107,6 +227,18 @@ export DIODE_CERT_FILE=/path/to/cert.pem
 
 ```bash
 export DIODE_SKIP_TLS_VERIFY=true
+```
+
+#### For legacy certificates (CN-only, no SANs)
+
+```python
+client = DiodeClient(
+    target="grpcs://example.com",
+    app_name="my-app",
+    app_version="1.0.0",
+    cert_file="/path/to/cert.pem",
+    skip_tls_verify=True,
+)
 ```
 
 ### Dry run mode
@@ -148,6 +280,108 @@ diode-replay-dryrun \
   --app-version 0.0.1 \
   my_app_92722156890707.json
 ```
+
+#### Adding request-level metadata to dry run output
+
+You can include request-level metadata in the dry run output using the `metadata` keyword argument. This metadata will be included in the JSON output file as part of the `IngestRequest`:
+
+```python
+from netboxlabs.diode.sdk import DiodeDryRunClient, Entity
+from netboxlabs.diode.sdk.ingester import Device
+
+with DiodeDryRunClient(app_name="my_app", output_dir="/tmp") as client:
+    # Add request-level metadata
+    client.ingest(
+        [Entity(device=Device(name="Device A"))],
+        metadata={
+            "batch_id": "import-2024-01",
+            "source": "csv_import",
+            "validated": True,
+            "record_count": 150,
+        }
+    )
+```
+
+The resulting JSON file will include the metadata in the `IngestRequest`, making it visible when reviewing the dry run output.
+
+### CLI to replay dry-run files
+
+A small helper command is included to ingest JSON files created by the
+`DiodeDryRunClient` and send them to a running Diode service.
+
+Install the helper using `pip`:
+
+```bash
+pip install netboxlabs-diode-sdk
+```
+
+Run it by providing one or more JSON files and connection details. The command supports replaying multiple dry-run files in a single request:
+
+```bash
+diode-replay-dryrun \
+  --file /tmp/my_app_92722156890707.json \
+  --file /tmp/other.json \
+  --target grpc://localhost:8080/diode \
+  --app-name my-test-app \
+  --app-version 0.0.1 \
+  --client-id YOUR_CLIENT_ID \
+  --client-secret YOUR_CLIENT_SECRET
+```
+
+The `--file`, `--target`, `--app-name`, and `--app-version` arguments are required. You may
+repeat `--file` to specify multiple files. OAuth2
+credentials can be supplied using `--client-id` and `--client-secret` or the
+`DIODE_CLIENT_ID` and `DIODE_CLIENT_SECRET` environment variables.
+
+### OTLP client
+
+`DiodeOTLPClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP endpoint (gRPC). This is useful when a collector ingests log data and forwards it to Diode.
+
+```python
+from netboxlabs.diode.sdk import Entity, DiodeOTLPClient
+
+with DiodeOTLPClient(
+    target="grpc://localhost:4317",
+    app_name="my-producer",
+    app_version="0.0.1",
+) as client:
+    client.ingest([Entity(site="Site1")])
+```
+
+Each entity is serialised to JSON and sent as a log record with producer metadata so downstream collectors can enrich and forward the payload. The client raises `OTLPClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables.
+
+#### Adding request-level metadata as OTLP resource attributes
+
+You can add request-level metadata to OTLP exports using the `metadata` keyword argument. This metadata is automatically mapped to OTLP resource attributes with a `diode.metadata.` prefix:
+
+```python
+from netboxlabs.diode.sdk import DiodeOTLPClient, Entity
+from netboxlabs.diode.sdk.ingester import Site
+
+with DiodeOTLPClient(
+    target="grpc://localhost:4317",
+    app_name="otlp-producer",
+    app_version="1.0.0",
+) as client:
+    # Add request-level metadata
+    client.ingest(
+        [Entity(site=Site(name="Site 1"))],
+        metadata={
+            "environment": "production",
+            "deployment": "us-west-2",
+            "version": "1.2.3",
+            "priority": 5,
+        },
+    )
+```
+
+The resulting OTLP log records will include resource attributes like:
+- `diode.metadata.environment="production"`
+- `diode.metadata.deployment="us-west-2"`
+- `diode.metadata.version="1.2.3"`
+- `diode.metadata.priority=5` (as integer)
+
+These attributes are added alongside standard OTLP resource attributes (`service.name`, `service.version`, `diode.stream`, etc.), allowing downstream collectors and observability platforms to filter, route, and enrich the data based on this metadata.
 
 ## Supported entities (object types)
 
