@@ -218,10 +218,10 @@ client = DiodeClient(target="grpc://example.com", ...)
 The SDK automatically detects and uses HTTP/HTTPS proxies configured via standard environment variables:
 
 ```bash
-# For insecure connections (grpc://, http://)
+# For insecure connections (http://)
 export HTTP_PROXY=http://proxy.example.com:8080
 
-# For secure connections (grpcs://, https://)
+# For secure connections (https://)
 export HTTPS_PROXY=http://proxy.example.com:8080
 # Falls back to HTTP_PROXY if HTTPS_PROXY is not set
 

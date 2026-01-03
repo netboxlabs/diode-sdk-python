@@ -1909,3 +1909,209 @@ def test_diode_client_with_proxy_and_custom_cert(mock_diode_authentication, tmp_
             assert proxy_option[1] == "http://proxy.example.com:8080"
     finally:
         del os.environ["HTTPS_PROXY"]
+
+
+def test_validate_proxy_url_valid_http():
+    """Test _validate_proxy_url with valid HTTP URL."""
+    from netboxlabs.diode.sdk.client import _validate_proxy_url
+
+    assert _validate_proxy_url("http://proxy.example.com:8080") is True
+
+
+def test_validate_proxy_url_valid_https():
+    """Test _validate_proxy_url with valid HTTPS URL."""
+    from netboxlabs.diode.sdk.client import _validate_proxy_url
+
+    assert _validate_proxy_url("https://proxy.example.com:8443") is True
+
+
+def test_validate_proxy_url_invalid_scheme():
+    """Test _validate_proxy_url with invalid scheme."""
+    from netboxlabs.diode.sdk.client import _validate_proxy_url
+
+    assert _validate_proxy_url("ftp://proxy.example.com:8080") is False
+    assert _validate_proxy_url("socks5://proxy.example.com:1080") is False
+
+
+def test_validate_proxy_url_missing_netloc():
+    """Test _validate_proxy_url with missing netloc."""
+    from netboxlabs.diode.sdk.client import _validate_proxy_url
+
+    assert _validate_proxy_url("http://") is False
+    assert _validate_proxy_url("https://") is False
+
+
+def test_validate_proxy_url_empty_string():
+    """Test _validate_proxy_url with empty string."""
+    from netboxlabs.diode.sdk.client import _validate_proxy_url
+
+    assert _validate_proxy_url("") is False
+
+
+def test_validate_proxy_url_malformed():
+    """Test _validate_proxy_url with malformed URLs."""
+    from netboxlabs.diode.sdk.client import _validate_proxy_url
+
+    assert _validate_proxy_url("not_a_url") is False
+    assert _validate_proxy_url("://missing-scheme") is False
+
+
+def test_get_grpc_proxy_url_invalid_proxy_url():
+    """Test _get_grpc_proxy_url with invalid proxy URL format."""
+    from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
+
+    os.environ["HTTP_PROXY"] = "not_a_valid_url"
+    try:
+        with mock.patch("logging.Logger.warning") as mock_warning:
+            result = _get_grpc_proxy_url("example.com:443", use_tls=False)
+
+            # Should return None for invalid proxy URL
+            assert result is None
+
+            # Should log warning
+            mock_warning.assert_called_once()
+            warning_message = mock_warning.call_args[0][0]
+            assert "Invalid proxy URL format" in warning_message
+            assert "not_a_valid_url" in warning_message
+    finally:
+        del os.environ["HTTP_PROXY"]
+
+
+def test_get_grpc_proxy_url_ftp_scheme_rejected():
+    """Test _get_grpc_proxy_url rejects non-HTTP/HTTPS schemes."""
+    from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
+
+    os.environ["HTTP_PROXY"] = "ftp://proxy.example.com:21"
+    try:
+        with mock.patch("logging.Logger.warning") as mock_warning:
+            result = _get_grpc_proxy_url("example.com:443", use_tls=False)
+
+            # Should return None
+            assert result is None
+
+            # Should log warning
+            mock_warning.assert_called_once()
+    finally:
+        del os.environ["HTTP_PROXY"]
+
+
+def test_should_bypass_proxy_with_long_no_proxy_entries():
+    """Test _should_bypass_proxy filters out entries exceeding max length."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    # Create a NO_PROXY with one valid and one excessively long entry
+    valid_entry = "example.com"
+    long_entry = "a" * 300  # 300 characters, exceeds 256 limit
+
+    os.environ["NO_PROXY"] = f"{valid_entry},{long_entry}"
+    try:
+        with mock.patch("logging.Logger.warning") as mock_warning:
+            # Should match valid entry
+            result = _should_bypass_proxy("example.com:443")
+            assert result is True
+
+            # Should warn about filtered entries
+            mock_warning.assert_called_once()
+            warning_message = mock_warning.call_args[0][0]
+            assert "Ignored 1 NO_PROXY entries exceeding 256 characters" in warning_message
+    finally:
+        del os.environ["NO_PROXY"]
+
+
+def test_should_bypass_proxy_with_multiple_long_entries():
+    """Test _should_bypass_proxy warns about multiple long entries."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    # Create multiple excessively long entries
+    long_entry1 = "a" * 300
+    long_entry2 = "b" * 400
+    long_entry3 = "c" * 500
+    valid_entry = "valid.example.com"
+
+    os.environ["NO_PROXY"] = f"{long_entry1},{valid_entry},{long_entry2},{long_entry3}"
+    try:
+        with mock.patch("logging.Logger.warning") as mock_warning:
+            # Should match valid entry
+            result = _should_bypass_proxy("valid.example.com:443")
+            assert result is True
+
+            # Should warn about 3 filtered entries
+            mock_warning.assert_called_once()
+            warning_message = mock_warning.call_args[0][0]
+            assert "Ignored 3 NO_PROXY entries exceeding 256 characters" in warning_message
+    finally:
+        del os.environ["NO_PROXY"]
+
+
+def test_should_bypass_proxy_max_length_entry_accepted():
+    """Test _should_bypass_proxy accepts entries at max length (256 chars)."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    # Create an entry exactly 256 characters long
+    max_length_entry = "a" * 256
+
+    os.environ["NO_PROXY"] = max_length_entry
+    try:
+        with mock.patch("logging.Logger.warning") as mock_warning:
+            # Should not match (hostname doesn't match)
+            result = _should_bypass_proxy("example.com:443")
+            assert result is False
+
+            # Should NOT warn (entry is within limit)
+            mock_warning.assert_not_called()
+    finally:
+        del os.environ["NO_PROXY"]
+
+
+def test_should_bypass_proxy_over_max_length_filtered():
+    """Test _should_bypass_proxy filters entries over max length (257+ chars)."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    # Create an entry just over max length
+    over_max_entry = "a" * 257
+
+    os.environ["NO_PROXY"] = over_max_entry
+    try:
+        with mock.patch("logging.Logger.warning") as mock_warning:
+            result = _should_bypass_proxy("example.com:443")
+            assert result is False
+
+            # Should warn about filtered entry
+            mock_warning.assert_called_once()
+    finally:
+        del os.environ["NO_PROXY"]
+
+
+def test_diode_client_with_invalid_proxy_url_falls_back_to_no_proxy(
+    mock_diode_authentication,
+):
+    """Test DiodeClient falls back to no proxy when proxy URL is invalid."""
+    os.environ["HTTP_PROXY"] = "invalid_url_format"
+    try:
+        with (
+            mock.patch("grpc.insecure_channel") as mock_insecure_channel,
+            mock.patch("logging.Logger.warning") as mock_warning,
+        ):
+            DiodeClient(
+                target="grpc://example.com:8081",
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+            )
+
+            # Should use insecure channel without proxy
+            mock_insecure_channel.assert_called_once()
+
+            # Verify no proxy option is set (invalid proxy was rejected)
+            _, kwargs = mock_insecure_channel.call_args
+            options = kwargs["options"]
+            proxy_option = next(
+                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
+            )
+            assert proxy_option is None
+
+            # Should log warning about invalid proxy
+            assert any("Invalid proxy URL format" in str(call) for call in mock_warning.call_args_list)
+    finally:
+        del os.environ["HTTP_PROXY"]

@@ -146,6 +146,27 @@ def _get_proxy_env_var(var_name: str) -> str | None:
     return os.getenv(var_name.lower())
 
 
+def _validate_proxy_url(url: str) -> bool:
+    """
+    Validate proxy URL format.
+
+    Args:
+        url: Proxy URL to validate
+
+    Returns:
+        True if URL is valid, False otherwise
+
+    """
+    if not url:
+        return False
+    try:
+        parsed = urlparse(url)
+        # Proxy URLs must have http or https scheme and a netloc (host:port)
+        return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+    except Exception:
+        return False
+
+
 def _matches_no_proxy_entry(host: str, entry: str) -> bool:
     """Check if host matches a single NO_PROXY entry."""
     # "*" means bypass all
@@ -191,6 +212,7 @@ def _should_bypass_proxy(target_host: str) -> bool:
     - Port numbers are stripped before matching
     - Matching is case-insensitive
     - localhost and 127.0.0.1 always bypass proxy
+    - NO_PROXY entries longer than 256 characters are ignored (security limit)
     """
     # Strip port from target
     host = target_host.split(":")[0].lower()
@@ -203,7 +225,21 @@ def _should_bypass_proxy(target_host: str) -> bool:
     if not no_proxy:
         return False
 
-    no_proxy_list = [entry.strip().lower() for entry in no_proxy.split(",")]
+    # Maximum reasonable length for hostname/domain (RFC 1035: 253 chars, we allow 256)
+    MAX_NO_PROXY_ENTRY_LENGTH = 256
+
+    no_proxy_list = [
+        entry.strip().lower()
+        for entry in no_proxy.split(",")
+        if len(entry.strip()) <= MAX_NO_PROXY_ENTRY_LENGTH
+    ]
+
+    # Warn if any entries were filtered out
+    filtered_count = len([e for e in no_proxy.split(",") if len(e.strip()) > MAX_NO_PROXY_ENTRY_LENGTH])
+    if filtered_count > 0:
+        _LOGGER.warning(
+            f"Ignored {filtered_count} NO_PROXY entries exceeding {MAX_NO_PROXY_ENTRY_LENGTH} characters"
+        )
 
     for entry in no_proxy_list:
         if entry and _matches_no_proxy_entry(host, entry):
@@ -237,6 +273,13 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
         proxy_url = _get_proxy_env_var("HTTP_PROXY")
 
     if proxy_url:
+        # Validate proxy URL format
+        if not _validate_proxy_url(proxy_url):
+            _LOGGER.warning(
+                f"Invalid proxy URL format: {proxy_url}. "
+                f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
+            )
+            return None
         _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")
 
     return proxy_url
