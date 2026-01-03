@@ -213,6 +213,48 @@ client = DiodeClient(target="grpcs://example.com", ...)
 client = DiodeClient(target="grpc://example.com", ...)
 ```
 
+### Proxy support
+
+The SDK automatically detects and uses HTTP/HTTPS proxies configured via standard environment variables:
+
+```bash
+# For insecure connections (grpc://, http://)
+export HTTP_PROXY=http://proxy.example.com:8080
+
+# For secure connections (grpcs://, https://)
+export HTTPS_PROXY=http://proxy.example.com:8080
+# Falls back to HTTP_PROXY if HTTPS_PROXY is not set
+
+# Bypass proxy for specific hosts
+export NO_PROXY=localhost,127.0.0.1,.example.com
+```
+
+**Important notes for proxy usage:**
+
+1. **Proxy with SKIP_TLS_VERIFY**: When using HTTP(S) proxies, the SDK **always uses secure channels** because proxies require TLS for the CONNECT tunnel. Setting `DIODE_SKIP_TLS_VERIFY=true` with a proxy will log a warning and use a secure channel anyway.
+
+2. **MITM proxies (like mitmproxy)**: To use an intercepting proxy, you must provide the proxy's CA certificate:
+   ```bash
+   export HTTPS_PROXY=http://127.0.0.1:8080
+   export DIODE_CERT_FILE=~/.mitmproxy/mitmproxy-ca-cert.pem
+   ```
+
+3. **Non-intercepting proxies**: Regular forwarding proxies work without additional configuration if the target server has a valid certificate trusted by system CAs.
+
+Example with proxy:
+```python
+import os
+
+# Configure proxy
+os.environ["HTTPS_PROXY"] = "http://proxy.example.com:8080"
+
+client = DiodeClient(
+    target="grpcs://diode.example.com:443",
+    app_name="my-app",
+    app_version="1.0.0",
+)
+```
+
 #### Using custom certificates
 
 ```python

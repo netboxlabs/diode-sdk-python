@@ -220,7 +220,9 @@ def test_client_sets_up_secure_channel_when_grpcs_scheme_is_found_in_target(
             client_secret="123456",
         )
 
-        mock_debug.assert_called_once_with("Setting up gRPC secure channel")
+        # Check that debug was called with the secure channel message
+        debug_calls = [call[0][0] for call in mock_debug.call_args_list]
+        assert any("Setting up gRPC secure channel with" in call for call in debug_calls)
         mock_secure_channel.assert_called_once()
 
 
@@ -602,12 +604,12 @@ def test_diode_authentication_success(mock_diode_authentication):
         client_secret="test_client_secret",
         scope="diode:ingest",
     )
-    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
-        mock_conn_instance = mock_http_conn.return_value
-        mock_conn_instance.getresponse.return_value.status = 200
-        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps(
-            {"access_token": "mocked_token"}
-        ).encode()
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"access_token": "mocked_token"}
+        mock_session.post.return_value = mock_response
 
         token = auth.authenticate()
         assert token == "mocked_token"
@@ -623,10 +625,12 @@ def test_diode_authentication_failure(mock_diode_authentication):
         client_secret="test_client_secret",
         scope="diode:ingest",
     )
-    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
-        mock_conn_instance = mock_http_conn.return_value
-        mock_conn_instance.getresponse.return_value.status = 401
-        mock_conn_instance.getresponse.return_value.reason = "Unauthorized"
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_response = mock.Mock()
+        mock_response.status_code = 401
+        mock_response.reason = "Unauthorized"
+        mock_session.post.return_value = mock_response
 
         with pytest.raises(DiodeConfigError) as excinfo:
             auth.authenticate()
@@ -654,16 +658,21 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         client_secret="test_client_secret",
         scope="diode:ingest",
     )
-    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
-        mock_conn_instance = mock_http_conn.return_value
-        mock_conn_instance.getresponse.return_value.status = 200
-        mock_conn_instance.getresponse.return_value.read.return_value = json.dumps(
-            {"access_token": "mocked_token"}
-        ).encode()
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"access_token": "mocked_token"}
+        mock_session.post.return_value = mock_response
+
         auth.authenticate()
-        mock_conn_instance.request.assert_called_once_with(
-            "POST", f"{(path or '').rstrip('/')}/auth/token", mock.ANY, mock.ANY
-        )
+
+        # Verify the URL in the post call
+        mock_session.post.assert_called_once()
+        call_args = mock_session.post.call_args
+        url = call_args[0][0]
+        expected_url = f"http://localhost:8081{(path or '').rstrip('/')}/auth/token"
+        assert url == expected_url
 
 
 def test_diode_authentication_request_exception(mock_diode_authentication):
@@ -676,9 +685,11 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
         client_secret="test_client_secret",
         scope="diode:ingest",
     )
-    with mock.patch("http.client.HTTPConnection") as mock_http_conn:
-        mock_conn_instance = mock_http_conn.return_value
-        mock_conn_instance.request.side_effect = Exception("Connection error")
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        # Import requests.RequestException for the side effect
+        import requests
+        mock_session.post.side_effect = requests.RequestException("Connection error")
 
         with pytest.raises(DiodeConfigError) as excinfo:
             auth.authenticate()
@@ -875,35 +886,52 @@ def test_diode_authentication_with_custom_certificates():
     )
 
     with (
-        mock.patch("http.client.HTTPSConnection") as mock_https_conn,
-        mock.patch("ssl.create_default_context") as mock_ssl_context,
+        mock.patch("requests.Session") as mock_session_class,
+        mock.patch("tempfile.NamedTemporaryFile") as mock_tempfile,
+        mock.patch("os.path.exists") as mock_exists,
+        mock.patch("os.unlink") as mock_unlink,
     ):
-        # Setup mocks
-        mock_context_instance = mock.Mock()
-        mock_ssl_context.return_value = mock_context_instance
+        # Setup temp file mock
+        mock_temp_file = mock.Mock()
+        mock_temp_file.name = "/tmp/test_cert.pem"
+        mock_temp_file.__enter__ = mock.Mock(return_value=mock_temp_file)
+        mock_temp_file.__exit__ = mock.Mock(return_value=False)
+        mock_tempfile.return_value = mock_temp_file
 
-        mock_conn_instance = mock.Mock()
-        mock_https_conn.return_value = mock_conn_instance
+        # Mock os.path.exists to return True so cleanup happens
+        mock_exists.return_value = True
 
+        # Setup session mock
+        mock_session = mock_session_class.return_value
         mock_response = mock.Mock()
-        mock_response.status = 200
-        mock_response.read.return_value = b'{"access_token": "test_token"}'
-        mock_conn_instance.getresponse.return_value = mock_response
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"access_token": "test_token"}
+        mock_session.post.return_value = mock_response
 
-        # Call authenticate to trigger SSL context creation
+        # Call authenticate
         token = auth.authenticate()
 
-        # Verify SSL context was created and configured with custom certs
-        mock_ssl_context.assert_called_once()
-        mock_context_instance.load_verify_locations.assert_called_once_with(
-            cadata=cert_content.decode("utf-8")
-        )
+        # Verify tempfile was created for the certificate
+        mock_tempfile.assert_called_once()
+        call_kwargs = mock_tempfile.call_args[1]
+        assert call_kwargs["mode"] == "wb"
+        assert call_kwargs["delete"] is False
+        assert call_kwargs["suffix"] == ".pem"
 
-        # Verify HTTPS connection was created with custom context
-        mock_https_conn.assert_called_once_with(
-            "example.com:443",
-            context=mock_context_instance,
-        )
+        # Verify certificate was written
+        mock_temp_file.write.assert_called_once_with(cert_content)
+
+        # Verify session.verify was set to the temp file path
+        assert mock_session.verify == "/tmp/test_cert.pem"
+
+        # Verify the post request was made
+        mock_session.post.assert_called_once()
+
+        # Verify os.path.exists was checked
+        mock_exists.assert_called_once_with("/tmp/test_cert.pem")
+
+        # Verify temp file was cleaned up
+        mock_unlink.assert_called_once_with("/tmp/test_cert.pem")
 
         # Verify token was returned
         assert token == "test_token"
@@ -1282,12 +1310,14 @@ def test_certificate_loading_efficiency(tmp_path):
         # Verify certificates are stored and reused
         assert client._certificates == cert_content
 
-        # Verify that the authentication class was created with the certificate bytes
+        # Verify that the authentication class was created with the certificate bytes and cert_file
         mock_auth_class.assert_called_once()
         auth_call_args = mock_auth_class.call_args
 
-        # The last argument should be the certificate bytes
-        assert auth_call_args[0][-1] == cert_content  # certificates parameter
+        # The second-to-last argument should be the certificate bytes
+        assert auth_call_args[0][-2] == cert_content  # certificates parameter
+        # The last argument should be the cert_file path
+        assert auth_call_args[0][-1] == str(cert_file)  # cert_file parameter
 
         # Reset the mock to verify no additional calls during authentication
         mock_load_certs.reset_mock()
@@ -1613,3 +1643,269 @@ def test_otlp_client_without_metadata():
         # Verify no diode.metadata.* attributes are present
         metadata_attrs = [k for k in attributes if k.startswith("diode.metadata.")]
         assert len(metadata_attrs) == 0
+
+
+def test_get_proxy_env_var_uppercase():
+    """Test _get_proxy_env_var returns uppercase environment variable."""
+    from netboxlabs.diode.sdk.client import _get_proxy_env_var
+
+    os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
+    try:
+        assert _get_proxy_env_var("HTTP_PROXY") == "http://proxy.example.com:8080"
+    finally:
+        del os.environ["HTTP_PROXY"]
+
+
+def test_get_proxy_env_var_lowercase():
+    """Test _get_proxy_env_var returns lowercase environment variable."""
+    from netboxlabs.diode.sdk.client import _get_proxy_env_var
+
+    os.environ["http_proxy"] = "http://proxy.example.com:8080"
+    try:
+        assert _get_proxy_env_var("http_proxy") == "http://proxy.example.com:8080"
+    finally:
+        del os.environ["http_proxy"]
+
+
+def test_get_proxy_env_var_prefers_uppercase():
+    """Test _get_proxy_env_var prefers uppercase over lowercase."""
+    from netboxlabs.diode.sdk.client import _get_proxy_env_var
+
+    os.environ["HTTP_PROXY"] = "http://upper.example.com:8080"
+    os.environ["http_proxy"] = "http://lower.example.com:8080"
+    try:
+        assert _get_proxy_env_var("http_proxy") == "http://upper.example.com:8080"
+    finally:
+        del os.environ["HTTP_PROXY"]
+        del os.environ["http_proxy"]
+
+
+def test_should_bypass_proxy_localhost():
+    """Test _should_bypass_proxy returns True for localhost."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    assert _should_bypass_proxy("localhost") is True
+    assert _should_bypass_proxy("localhost:8080") is True
+
+
+def test_should_bypass_proxy_127_0_0_1():
+    """Test _should_bypass_proxy returns True for 127.0.0.1."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    assert _should_bypass_proxy("127.0.0.1") is True
+    assert _should_bypass_proxy("127.0.0.1:8080") is True
+
+
+def test_should_bypass_proxy_with_no_proxy_asterisk():
+    """Test _should_bypass_proxy returns True when NO_PROXY is '*'."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    os.environ["NO_PROXY"] = "*"
+    try:
+        assert _should_bypass_proxy("example.com") is True
+        assert _should_bypass_proxy("any.host.com") is True
+    finally:
+        del os.environ["NO_PROXY"]
+
+
+def test_should_bypass_proxy_exact_match():
+    """Test _should_bypass_proxy matches exact hostname."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    os.environ["NO_PROXY"] = "example.com"
+    try:
+        assert _should_bypass_proxy("example.com") is True
+        assert _should_bypass_proxy("example.com:443") is True
+    finally:
+        del os.environ["NO_PROXY"]
+
+
+def test_should_bypass_proxy_subdomain_match():
+    """Test _should_bypass_proxy matches subdomains."""
+    from netboxlabs.diode.sdk.client import _should_bypass_proxy
+
+    os.environ["NO_PROXY"] = "example.com"
+    try:
+        assert _should_bypass_proxy("api.example.com") is True
+        assert _should_bypass_proxy("www.example.com") is True
+    finally:
+        del os.environ["NO_PROXY"]
+
+
+def test_get_grpc_proxy_url_https_proxy_for_tls():
+    """Test _get_grpc_proxy_url uses HTTPS_PROXY for TLS connections."""
+    from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
+
+    os.environ["HTTPS_PROXY"] = "http://https-proxy.example.com:8080"
+    try:
+        proxy_url = _get_grpc_proxy_url("example.com:443", use_tls=True)
+        assert proxy_url == "http://https-proxy.example.com:8080"
+    finally:
+        del os.environ["HTTPS_PROXY"]
+
+
+def test_get_grpc_proxy_url_http_proxy_fallback_for_tls():
+    """Test _get_grpc_proxy_url falls back to HTTP_PROXY for TLS connections."""
+    from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
+
+    os.environ["HTTP_PROXY"] = "http://http-proxy.example.com:8080"
+    try:
+        proxy_url = _get_grpc_proxy_url("example.com:443", use_tls=True)
+        assert proxy_url == "http://http-proxy.example.com:8080"
+    finally:
+        del os.environ["HTTP_PROXY"]
+
+
+def test_get_grpc_proxy_url_respects_no_proxy():
+    """Test _get_grpc_proxy_url respects NO_PROXY."""
+    from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
+
+    os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
+    os.environ["NO_PROXY"] = "example.com"
+    try:
+        proxy_url = _get_grpc_proxy_url("example.com:443", use_tls=True)
+        assert proxy_url is None
+    finally:
+        del os.environ["HTTP_PROXY"]
+        del os.environ["NO_PROXY"]
+
+
+def test_diode_client_configures_proxy_option(mock_diode_authentication):
+    """Test DiodeClient adds grpc.http_proxy option when proxy is detected."""
+    os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
+    try:
+        with (
+            mock.patch("grpc.secure_channel") as mock_secure_channel,
+            mock.patch("logging.Logger.warning") as mock_warning,
+        ):
+            DiodeClient(
+                target="grpc://example.com:8081",
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+            )
+
+            # Should use secure channel because proxy is detected
+            mock_secure_channel.assert_called_once()
+            _, kwargs = mock_secure_channel.call_args
+            options = kwargs["options"]
+
+            # Check that grpc.http_proxy option is present
+            proxy_option = next(
+                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
+            )
+            assert proxy_option is not None
+            assert proxy_option[1] == "http://proxy.example.com:8080"
+
+            # Should warn about using secure channel despite insecure target
+            mock_warning.assert_called()
+    finally:
+        del os.environ["HTTP_PROXY"]
+
+
+def test_diode_client_uses_secure_channel_with_proxy_despite_skip_tls(
+    mock_diode_authentication,
+):
+    """Test DiodeClient uses secure channel when proxy is detected even with SKIP_TLS_VERIFY."""
+    os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
+    os.environ["DIODE_SKIP_TLS_VERIFY"] = "true"
+    try:
+        with (
+            mock.patch("grpc.secure_channel") as mock_secure_channel,
+            mock.patch("logging.Logger.warning") as mock_warning,
+        ):
+            DiodeClient(
+                target="grpcs://example.com:443",
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+            )
+
+            # Should use secure channel despite SKIP_TLS_VERIFY
+            mock_secure_channel.assert_called_once()
+
+            # Should log a warning
+            mock_warning.assert_called_once()
+            warning_message = mock_warning.call_args[0][0]
+            assert (
+                "Using secure channel with proxy despite DIODE_SKIP_TLS_VERIFY"
+                in warning_message
+            )
+    finally:
+        del os.environ["HTTP_PROXY"]
+        del os.environ["DIODE_SKIP_TLS_VERIFY"]
+
+
+def test_diode_client_respects_no_proxy_for_target(mock_diode_authentication):
+    """Test DiodeClient respects NO_PROXY environment variable."""
+    os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
+    os.environ["NO_PROXY"] = "example.com"
+    try:
+        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+            DiodeClient(
+                target="grpc://example.com:8081",
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+            )
+
+            mock_insecure_channel.assert_called_once()
+            _, kwargs = mock_insecure_channel.call_args
+            options = kwargs["options"]
+
+            # Check that grpc.http_proxy option is NOT present
+            proxy_option = next(
+                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
+            )
+            assert proxy_option is None
+    finally:
+        del os.environ["HTTP_PROXY"]
+        del os.environ["NO_PROXY"]
+
+
+def test_diode_client_with_proxy_and_custom_cert(mock_diode_authentication, tmp_path):
+    """Test DiodeClient with proxy and custom certificate (for MITM proxies)."""
+    cert_content = (
+        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
+    )
+    cert_file = tmp_path / "custom.pem"
+    cert_file.write_bytes(cert_content)
+
+    os.environ["HTTPS_PROXY"] = "http://proxy.example.com:8080"
+    try:
+        with (
+            mock.patch("grpc.secure_channel") as mock_secure_channel,
+            mock.patch("grpc.ssl_channel_credentials") as mock_ssl_creds,
+        ):
+            mock_ssl_creds.return_value = mock.Mock()
+
+            DiodeClient(
+                target="grpcs://example.com:443",
+                app_name="my-producer",
+                app_version="0.0.1",
+                client_id="abcde",
+                client_secret="123456",
+                cert_file=str(cert_file),
+            )
+
+            # Should use secure channel
+            mock_secure_channel.assert_called_once()
+
+            # Should use custom certificate
+            mock_ssl_creds.assert_called_once()
+            ssl_call_args = mock_ssl_creds.call_args
+            assert ssl_call_args[1]["root_certificates"] == cert_content
+
+            # Verify proxy option is set
+            _, kwargs = mock_secure_channel.call_args
+            options = kwargs["options"]
+            proxy_option = next(
+                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
+            )
+            assert proxy_option is not None
+            assert proxy_option[1] == "http://proxy.example.com:8080"
+    finally:
+        del os.environ["HTTPS_PROXY"]
