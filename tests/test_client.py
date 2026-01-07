@@ -1794,10 +1794,7 @@ def test_diode_client_configures_proxy_option(mock_diode_authentication):
     """Test DiodeClient adds grpc.http_proxy option when proxy is detected."""
     os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
     try:
-        with (
-            mock.patch("grpc.secure_channel") as mock_secure_channel,
-            mock.patch("logging.Logger.warning") as mock_warning,
-        ):
+        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
             DiodeClient(
                 target="grpc://example.com:8081",
                 app_name="my-producer",
@@ -1806,9 +1803,9 @@ def test_diode_client_configures_proxy_option(mock_diode_authentication):
                 client_secret="123456",
             )
 
-            # Should use secure channel because proxy is detected
-            mock_secure_channel.assert_called_once()
-            _, kwargs = mock_secure_channel.call_args
+            # Should use insecure channel for grpc:// target, even with proxy
+            mock_insecure_channel.assert_called_once()
+            _, kwargs = mock_insecure_channel.call_args
             options = kwargs["options"]
 
             # Check that grpc.http_proxy option is present
@@ -1817,24 +1814,18 @@ def test_diode_client_configures_proxy_option(mock_diode_authentication):
             )
             assert proxy_option is not None
             assert proxy_option[1] == "http://proxy.example.com:8080"
-
-            # Should warn about using secure channel despite insecure target
-            mock_warning.assert_called()
     finally:
         del os.environ["HTTP_PROXY"]
 
 
-def test_diode_client_uses_secure_channel_with_proxy_despite_skip_tls(
+def test_diode_client_uses_insecure_channel_with_proxy_when_skip_tls(
     mock_diode_authentication,
 ):
-    """Test DiodeClient uses secure channel when proxy is detected even with SKIP_TLS_VERIFY."""
+    """Test DiodeClient uses insecure channel with proxy when SKIP_TLS_VERIFY is set."""
     os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
     os.environ["DIODE_SKIP_TLS_VERIFY"] = "true"
     try:
-        with (
-            mock.patch("grpc.secure_channel") as mock_secure_channel,
-            mock.patch("logging.Logger.warning") as mock_warning,
-        ):
+        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
             DiodeClient(
                 target="grpcs://example.com:443",
                 app_name="my-producer",
@@ -1843,16 +1834,17 @@ def test_diode_client_uses_secure_channel_with_proxy_despite_skip_tls(
                 client_secret="123456",
             )
 
-            # Should use secure channel despite SKIP_TLS_VERIFY
-            mock_secure_channel.assert_called_once()
+            # Should use insecure channel when SKIP_TLS_VERIFY is set, even with proxy
+            mock_insecure_channel.assert_called_once()
+            _, kwargs = mock_insecure_channel.call_args
+            options = kwargs["options"]
 
-            # Should log a warning
-            mock_warning.assert_called_once()
-            warning_message = mock_warning.call_args[0][0]
-            assert (
-                "Using secure channel with proxy despite DIODE_SKIP_TLS_VERIFY"
-                in warning_message
+            # Verify proxy option is set
+            proxy_option = next(
+                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
             )
+            assert proxy_option is not None
+            assert proxy_option[1] == "http://proxy.example.com:8080"
     finally:
         del os.environ["HTTP_PROXY"]
         del os.environ["DIODE_SKIP_TLS_VERIFY"]
