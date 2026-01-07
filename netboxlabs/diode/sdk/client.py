@@ -1,24 +1,24 @@
 #!/usr/bin/env python
-# Copyright 2024 NetBox Labs Inc
+# Copyright 2026 NetBox Labs Inc
 """NetBox Labs, Diode - SDK - Client."""
 
 import collections
-import http.client
 import json
 import logging
 import os
 import platform
-import ssl
 import sys
+import tempfile
 import time
 import uuid
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlparse
 
 import certifi
 import grpc
+import requests
 import sentry_sdk
 from google.protobuf.json_format import MessageToJson, ParseDict
 from opentelemetry.proto.collector.logs.v1 import (
@@ -138,6 +138,143 @@ def _get_optional_config_value(
     return value
 
 
+def _get_proxy_env_var(var_name: str) -> str | None:
+    """Get proxy environment variable (case-insensitive)."""
+    value = os.getenv(var_name.upper())
+    if value:
+        return value
+    return os.getenv(var_name.lower())
+
+
+def _validate_proxy_url(url: str) -> bool:
+    """
+    Validate proxy URL format.
+
+    Args:
+        url: Proxy URL to validate
+
+    Returns:
+        True if URL is valid, False otherwise
+
+    """
+    if not url:
+        return False
+    try:
+        parsed = urlparse(url)
+        return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+    except Exception:
+        return False
+
+
+def _matches_no_proxy_entry(host: str, entry: str) -> bool:
+    """Check if host matches a single NO_PROXY entry."""
+    if entry == "*":
+        _LOGGER.debug("NO_PROXY='*' - bypassing proxy for all hosts")
+        return True
+
+    if entry == host:
+        _LOGGER.debug(f"NO_PROXY exact match: {host}")
+        return True
+
+    if not entry.startswith(".") and not entry.startswith("*"):
+        if host.endswith(f".{entry}"):
+            _LOGGER.debug(f"NO_PROXY subdomain match: {host} ends with .{entry}")
+            return True
+
+    if entry.startswith("."):
+        if host.endswith(entry):
+            _LOGGER.debug(f"NO_PROXY suffix match: {host} ends with {entry}")
+            return True
+
+    if entry.startswith("*."):
+        suffix = entry[1:]
+        if host.endswith(suffix):
+            _LOGGER.debug(f"NO_PROXY wildcard match: {host} ends with {suffix}")
+            return True
+
+    return False
+
+
+def _should_bypass_proxy(target_host: str) -> bool:
+    """
+    Check if target should bypass proxy based on NO_PROXY.
+
+    Implements Go net/http compatible NO_PROXY matching:
+    - "*" disables proxy for all hosts
+    - "example.com" matches example.com AND all subdomains
+    - ".example.com" matches only subdomains, NOT example.com itself
+    - Port numbers are stripped before matching
+    - Matching is case-insensitive
+    - localhost and 127.0.0.1 always bypass proxy
+    - NO_PROXY entries longer than 256 characters are ignored (security limit)
+    """
+    host = target_host.split(":")[0].lower()
+
+    if host in ("localhost", "127.0.0.1", "::1"):
+        return True
+
+    no_proxy = _get_proxy_env_var("NO_PROXY")
+    if not no_proxy:
+        return False
+
+    # Maximum reasonable length for hostname/domain (RFC 1035: 253 chars, we allow 256)
+    MAX_NO_PROXY_ENTRY_LENGTH = 256
+
+    no_proxy_list = [
+        entry.strip().lower()
+        for entry in no_proxy.split(",")
+        if len(entry.strip()) <= MAX_NO_PROXY_ENTRY_LENGTH
+    ]
+
+    filtered_count = len([e for e in no_proxy.split(",") if len(e.strip()) > MAX_NO_PROXY_ENTRY_LENGTH])
+    if filtered_count > 0:
+        _LOGGER.warning(
+            f"Ignored {filtered_count} NO_PROXY entries exceeding {MAX_NO_PROXY_ENTRY_LENGTH} characters"
+        )
+
+    for entry in no_proxy_list:
+        if entry and _matches_no_proxy_entry(host, entry):
+            return True
+
+    return False
+
+
+def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
+    """
+    Get proxy URL for gRPC target, respecting environment variables.
+
+    Args:
+        target_host: gRPC target (may include port)
+        use_tls: Whether connection uses TLS
+
+    Returns:
+        Proxy URL if proxy should be used, None otherwise
+
+    """
+    if _should_bypass_proxy(target_host):
+        return None
+
+    # For HTTPS: check HTTPS_PROXY first, fall back to HTTP_PROXY
+    if use_tls:
+        proxy_url = _get_proxy_env_var("HTTPS_PROXY")
+        if not proxy_url:
+            proxy_url = _get_proxy_env_var("HTTP_PROXY")
+    else:
+        # For HTTP: only check HTTP_PROXY
+        proxy_url = _get_proxy_env_var("HTTP_PROXY")
+
+    if proxy_url:
+        if not _validate_proxy_url(proxy_url):
+            _LOGGER.warning(
+                f"Invalid proxy URL format: {proxy_url}. "
+                f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
+            )
+            return None
+        _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")
+
+    return proxy_url
+
+
 class DiodeClient(DiodeClientInterface):
     """Diode Client."""
 
@@ -198,20 +335,36 @@ class DiodeClient(DiodeClientInterface):
 
         self._authenticate(_INGEST_SCOPE)
 
-        channel_opts = (
+        channel_opts = [
             (
                 "grpc.primary_user_agent",
                 f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
             ),
-        )
+        ]
 
-        if self._tls_verify and self._certificates:
-            _LOGGER.debug("Setting up gRPC secure channel")
+        proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
+        if proxy_url:
+            channel_opts.append(("grpc.http_proxy", proxy_url))
+            _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
+
+        channel_opts = tuple(channel_opts)
+
+        # Channel creation logic
+        if self._tls_verify:
+            credentials = (
+                grpc.ssl_channel_credentials(root_certificates=self._certificates)
+                if self._certificates
+                else grpc.ssl_channel_credentials()
+            )
+
+            _LOGGER.debug(
+                f"Setting up gRPC secure channel with "
+                f"{'custom certificates' if self._certificates else 'system certificates'}"
+                f"{' via proxy' if proxy_url else ''}"
+            )
             self._channel = grpc.secure_channel(
                 self._target,
-                grpc.ssl_channel_credentials(
-                    root_certificates=self._certificates,
-                ),
+                credentials,
                 options=channel_opts,
             )
         else:
@@ -353,7 +506,12 @@ class DiodeClient(DiodeClientInterface):
             self._client_id,
             self._client_secret,
             scope,
+            self._name,
+            self._version,
+            self._app_name,
+            self._app_version,
             self._certificates,
+            self._cert_file,
         )
         access_token = authentication_client.authenticate()
         self._metadata = list(
@@ -473,18 +631,36 @@ class DiodeOTLPClient(DiodeClientInterface):
             else None
         )
 
-        channel_opts = (
+        channel_opts = [
             (
                 "grpc.primary_user_agent",
                 f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
             ),
-        )
+        ]
 
+        proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
+        if proxy_url:
+            channel_opts.append(("grpc.http_proxy", proxy_url))
+            # Extract hostname for SSL target name override
+            target_host = self._target.split(":")[0]
+            channel_opts.append(("grpc.ssl_target_name_override", target_host))
+            _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
+            _LOGGER.debug(f"SSL target name override: {target_host}")
+
+        channel_opts = tuple(channel_opts)
+
+        # Channel creation logic
         if self._tls_verify:
             credentials = (
                 grpc.ssl_channel_credentials(root_certificates=self._certificates)
                 if self._certificates
                 else grpc.ssl_channel_credentials()
+            )
+
+            _LOGGER.debug(
+                f"Setting up gRPC secure channel with "
+                f"{'custom certificates' if self._certificates else 'system certificates'}"
+                f"{' via proxy' if proxy_url else ''}"
             )
             base_channel = grpc.secure_channel(
                 self._target,
@@ -492,6 +668,7 @@ class DiodeOTLPClient(DiodeClientInterface):
                 options=channel_opts,
             )
         else:
+            _LOGGER.debug(f"Setting up gRPC insecure channel")
             base_channel = grpc.insecure_channel(
                 target=self._target,
                 options=channel_opts,
@@ -723,7 +900,12 @@ class _DiodeAuthentication:
         client_id: str,
         client_secret: str,
         scope: str,
+        sdk_name: str,
+        sdk_version: str,
+        app_name: str,
+        app_version: str,
         certificates: bytes | None = None,
+        cert_file: str | None = None,
     ):
         self._target = target
         self._tls_verify = tls_verify
@@ -731,53 +913,101 @@ class _DiodeAuthentication:
         self._client_secret = client_secret
         self._path = path
         self._scope = scope
+        self._sdk_name = sdk_name
+        self._sdk_version = sdk_version
+        self._app_name = app_name
+        self._app_version = app_version
         self._certificates = certificates
+        self._cert_file = cert_file
 
     def authenticate(self) -> str:
         """Request an OAuth2 token using client credentials and return it."""
-        if self._tls_verify and self._certificates:
-            context = ssl.create_default_context()
-            context.load_verify_locations(cadata=self._certificates.decode("utf-8"))
-            conn = http.client.HTTPSConnection(
-                self._target,
-                context=context,
-            )
-        else:
-            conn = http.client.HTTPConnection(
-                self._target,
-            )
-        headers = {"Content-type": "application/x-www-form-urlencoded"}
-        data = urlencode(
-            {
+        session = requests.Session()
+        temp_cert_file = None
+
+        try:
+            # Configure SSL verification
+            if self._tls_verify and self._certificates:
+                # Use cert_file path directly if available, otherwise write to temp file
+                if self._cert_file:
+                    session.verify = self._cert_file
+                else:
+                    # Write certificates to temp file for requests
+                    with tempfile.NamedTemporaryFile(
+                        mode="wb", delete=False, suffix=".pem"
+                    ) as f:
+                        f.write(self._certificates)
+                        temp_cert_file = f.name
+                    session.verify = temp_cert_file
+            elif not self._tls_verify:
+                session.verify = False
+
+            # Prepare auth request
+            url = self._get_full_auth_url()
+            data = {
                 "grant_type": "client_credentials",
                 "client_id": self._client_id,
                 "client_secret": self._client_secret,
                 "scope": self._scope,
             }
-        )
-        url = self._get_auth_url()
-        try:
-            conn.request("POST", url, data, headers)
-            response = conn.getresponse()
-        except Exception as e:
-            raise DiodeConfigError(f"Failed to obtain access token: {e}")
-        if response.status != 200:
-            raise DiodeConfigError(f"Failed to obtain access token: {response.reason}")
-        token_info = json.loads(response.read().decode())
-        access_token = token_info.get("access_token")
-        if not access_token:
-            raise DiodeConfigError(
-                f"Failed to obtain access token for client {self._client_id}"
-            )
+            headers = {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent": f"{self._sdk_name}/{self._sdk_version} {self._app_name}/{self._app_version}",
+            }
 
-        _LOGGER.debug(f"Access token obtained for client {self._client_id}")
-        return access_token
+            response = session.post(url, data=data, headers=headers)
+
+            if response.status_code != 200:
+                raise DiodeConfigError(
+                    f"Failed to obtain access token: {response.reason}"
+                )
+
+            token_info = response.json()
+            access_token = token_info.get("access_token")
+
+            if not access_token:
+                raise DiodeConfigError(
+                    f"Failed to obtain access token for client {self._client_id}"
+                )
+
+            _LOGGER.debug(f"Access token obtained for client {self._client_id}")
+            return access_token
+
+        except requests.RequestException as e:
+            raise DiodeConfigError(f"Failed to obtain access token: {e}")
+        finally:
+            # Clean up temp certificate file
+            if temp_cert_file and os.path.exists(temp_cert_file):
+                try:
+                    os.unlink(temp_cert_file)
+                    _LOGGER.debug(f"Cleaned up temp certificate file: {temp_cert_file}")
+                except OSError as e:
+                    _LOGGER.warning(
+                        f"Failed to clean up temp certificate file {temp_cert_file}: {e}"
+                    )
 
     def _get_auth_url(self) -> str:
         """Construct the authentication URL, handling trailing slashes in the path."""
         # Ensure the path does not have trailing slashes
         path = self._path.rstrip("/") if self._path else ""
         return f"{path}/auth/token"
+
+    def _get_full_auth_url(self) -> str:
+        """Construct full authentication URL with scheme and authority."""
+        # Determine the correct scheme
+        # If tls_verify is False, check if SKIP_TLS_VERIFY was set
+        # If it was set, the original scheme was likely HTTPS but verification is disabled
+        skip_tls_env = os.getenv(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME, "").lower()
+        skip_tls_from_env = skip_tls_env in ["true", "1", "yes", "on"]
+
+        # Use HTTPS if:
+        # 1. tls_verify is True, OR
+        # 2. tls_verify is False but SKIP_TLS_VERIFY is set (original was HTTPS)
+        use_https = self._tls_verify or (not self._tls_verify and skip_tls_from_env)
+        scheme = "https" if use_https else "http"
+
+        path = self._path.rstrip("/") if self._path else ""
+        return f"{scheme}://{self._target}{path}/auth/token"
 
 
 class _ClientCallDetails(
