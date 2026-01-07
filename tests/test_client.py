@@ -603,6 +603,10 @@ def test_diode_authentication_success(mock_diode_authentication):
         client_id="test_client_id",
         client_secret="test_client_secret",
         scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
     )
     with mock.patch("requests.Session") as mock_session_class:
         mock_session = mock_session_class.return_value
@@ -624,6 +628,10 @@ def test_diode_authentication_failure(mock_diode_authentication):
         client_id="test_client_id",
         client_secret="test_client_secret",
         scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
     )
     with mock.patch("requests.Session") as mock_session_class:
         mock_session = mock_session_class.return_value
@@ -657,6 +665,10 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         client_id="test_client_id",
         client_secret="test_client_secret",
         scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
     )
     with mock.patch("requests.Session") as mock_session_class:
         mock_session = mock_session_class.return_value
@@ -684,6 +696,10 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
         client_id="test_client_id",
         client_secret="test_client_secret",
         scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
     )
     with mock.patch("requests.Session") as mock_session_class:
         mock_session = mock_session_class.return_value
@@ -882,6 +898,10 @@ def test_diode_authentication_with_custom_certificates():
         client_id="test_client",
         client_secret="test_secret",
         scope="test_scope",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
         certificates=cert_content,
     )
 
