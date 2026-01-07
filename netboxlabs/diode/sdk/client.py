@@ -161,7 +161,6 @@ def _validate_proxy_url(url: str) -> bool:
         return False
     try:
         parsed = urlparse(url)
-        # Proxy URLs must have http or https scheme and a netloc (host:port)
         return parsed.scheme in ("http", "https") and bool(parsed.netloc)
     except Exception:
         return False
@@ -169,31 +168,26 @@ def _validate_proxy_url(url: str) -> bool:
 
 def _matches_no_proxy_entry(host: str, entry: str) -> bool:
     """Check if host matches a single NO_PROXY entry."""
-    # "*" means bypass all
     if entry == "*":
         _LOGGER.debug("NO_PROXY='*' - bypassing proxy for all hosts")
         return True
 
-    # Exact match (also matches all subdomains per Go behavior)
     if entry == host:
         _LOGGER.debug(f"NO_PROXY exact match: {host}")
         return True
 
-    # Domain without leading dot matches itself AND all subdomains
     if not entry.startswith(".") and not entry.startswith("*"):
         if host.endswith(f".{entry}"):
             _LOGGER.debug(f"NO_PROXY subdomain match: {host} ends with .{entry}")
             return True
 
-    # Leading dot means subdomain match only
     if entry.startswith("."):
         if host.endswith(entry):
             _LOGGER.debug(f"NO_PROXY suffix match: {host} ends with {entry}")
             return True
 
-    # Wildcard prefix (*.example.com)
     if entry.startswith("*."):
-        suffix = entry[1:]  # Remove asterisk, keep dot
+        suffix = entry[1:]
         if host.endswith(suffix):
             _LOGGER.debug(f"NO_PROXY wildcard match: {host} ends with {suffix}")
             return True
@@ -214,10 +208,8 @@ def _should_bypass_proxy(target_host: str) -> bool:
     - localhost and 127.0.0.1 always bypass proxy
     - NO_PROXY entries longer than 256 characters are ignored (security limit)
     """
-    # Strip port from target
     host = target_host.split(":")[0].lower()
 
-    # localhost always bypasses
     if host in ("localhost", "127.0.0.1", "::1"):
         return True
 
@@ -234,7 +226,6 @@ def _should_bypass_proxy(target_host: str) -> bool:
         if len(entry.strip()) <= MAX_NO_PROXY_ENTRY_LENGTH
     ]
 
-    # Warn if any entries were filtered out
     filtered_count = len([e for e in no_proxy.split(",") if len(e.strip()) > MAX_NO_PROXY_ENTRY_LENGTH])
     if filtered_count > 0:
         _LOGGER.warning(
@@ -273,7 +264,6 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
         proxy_url = _get_proxy_env_var("HTTP_PROXY")
 
     if proxy_url:
-        # Validate proxy URL format
         if not _validate_proxy_url(proxy_url):
             _LOGGER.warning(
                 f"Invalid proxy URL format: {proxy_url}. "
@@ -352,7 +342,6 @@ class DiodeClient(DiodeClientInterface):
             ),
         ]
 
-        # Check if proxy is configured
         proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
         if proxy_url:
             channel_opts.append(("grpc.http_proxy", proxy_url))
@@ -361,27 +350,17 @@ class DiodeClient(DiodeClientInterface):
         channel_opts = tuple(channel_opts)
 
         # Channel creation logic
-        if self._tls_verify or proxy_url:
-            # Use secure channel if:
-            # 1. TLS verification is enabled, OR
-            # 2. Proxy is configured (proxies require TLS for CONNECT tunnel)
+        if self._tls_verify:
             credentials = (
                 grpc.ssl_channel_credentials(root_certificates=self._certificates)
                 if self._certificates
                 else grpc.ssl_channel_credentials()
             )
 
-            if proxy_url and not self._tls_verify:
-                _LOGGER.warning(
-                    f"Using secure channel with proxy despite DIODE_SKIP_TLS_VERIFY being set. "
-                    f"Python gRPC requires TLS for proxy connections. "
-                    f"Certificate verification will be performed using "
-                    f"{'custom CA from DIODE_CERT_FILE' if self._certificates else 'system CAs'}."
-                )
-
             _LOGGER.debug(
                 f"Setting up gRPC secure channel with "
                 f"{'custom certificates' if self._certificates else 'system certificates'}"
+                f"{' via proxy' if proxy_url else ''}"
             )
             self._channel = grpc.secure_channel(
                 self._target,
@@ -389,7 +368,6 @@ class DiodeClient(DiodeClientInterface):
                 options=channel_opts,
             )
         else:
-            # Insecure channel (no TLS, no proxy)
             _LOGGER.debug("Setting up gRPC insecure channel")
             self._channel = grpc.insecure_channel(
                 target=self._target,
@@ -528,6 +506,10 @@ class DiodeClient(DiodeClientInterface):
             self._client_id,
             self._client_secret,
             scope,
+            self._name,
+            self._version,
+            self._app_name,
+            self._app_version,
             self._certificates,
             self._cert_file,
         )
@@ -656,7 +638,6 @@ class DiodeOTLPClient(DiodeClientInterface):
             ),
         ]
 
-        # Check if proxy is configured
         proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
         if proxy_url:
             channel_opts.append(("grpc.http_proxy", proxy_url))
@@ -669,27 +650,17 @@ class DiodeOTLPClient(DiodeClientInterface):
         channel_opts = tuple(channel_opts)
 
         # Channel creation logic
-        if self._tls_verify or proxy_url:
-            # Use secure channel if:
-            # 1. TLS verification is enabled, OR
-            # 2. Proxy is configured (proxies require TLS for CONNECT tunnel)
+        if self._tls_verify:
             credentials = (
                 grpc.ssl_channel_credentials(root_certificates=self._certificates)
                 if self._certificates
                 else grpc.ssl_channel_credentials()
             )
 
-            if proxy_url and not self._tls_verify:
-                _LOGGER.warning(
-                    f"Using secure channel with proxy despite DIODE_SKIP_TLS_VERIFY being set. "
-                    f"Python gRPC requires TLS for proxy connections. "
-                    f"Certificate verification will be performed using "
-                    f"{'custom CA from DIODE_CERT_FILE' if self._certificates else 'system CAs'}."
-                )
-
             _LOGGER.debug(
                 f"Setting up gRPC secure channel with "
                 f"{'custom certificates' if self._certificates else 'system certificates'}"
+                f"{' via proxy' if proxy_url else ''}"
             )
             base_channel = grpc.secure_channel(
                 self._target,
@@ -697,6 +668,7 @@ class DiodeOTLPClient(DiodeClientInterface):
                 options=channel_opts,
             )
         else:
+            _LOGGER.debug(f"Setting up gRPC insecure channel")
             base_channel = grpc.insecure_channel(
                 target=self._target,
                 options=channel_opts,
@@ -928,6 +900,10 @@ class _DiodeAuthentication:
         client_id: str,
         client_secret: str,
         scope: str,
+        sdk_name: str,
+        sdk_version: str,
+        app_name: str,
+        app_version: str,
         certificates: bytes | None = None,
         cert_file: str | None = None,
     ):
@@ -937,6 +913,10 @@ class _DiodeAuthentication:
         self._client_secret = client_secret
         self._path = path
         self._scope = scope
+        self._sdk_name = sdk_name
+        self._sdk_version = sdk_version
+        self._app_name = app_name
+        self._app_version = app_version
         self._certificates = certificates
         self._cert_file = cert_file
 
@@ -970,7 +950,10 @@ class _DiodeAuthentication:
                 "client_secret": self._client_secret,
                 "scope": self._scope,
             }
-            headers = {"Content-type": "application/x-www-form-urlencoded"}
+            headers = {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent": f"{self._sdk_name}/{self._sdk_version} {self._app_name}/{self._app_version}",
+            }
 
             response = session.post(url, data=data, headers=headers)
 
