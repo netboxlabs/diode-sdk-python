@@ -15,6 +15,8 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     IPAddress as IPAddressPb,
     Interface as InterfacePb,
     Manufacturer as ManufacturerPb,
+    Owner as OwnerPb,
+    OwnerGroup as OwnerGroupPb,
     Platform as PlatformPb,
     Prefix as PrefixPb,
     Role as RolePb,
@@ -35,6 +37,8 @@ from netboxlabs.diode.sdk.ingester import (
     IPAddress,
     Interface,
     Manufacturer,
+    Owner,
+    OwnerGroup,
     Platform,
     Prefix,
     Role,
@@ -1033,3 +1037,238 @@ def test_entity_with_nested_entity_both_with_metadata():
     assert platform_entity.platform.name == "Cisco IOS XE"
     assert platform_entity.platform.HasField("manufacturer")
     assert platform_entity.platform.manufacturer.name == "Cisco Systems"
+
+
+def test_owner_group_instantiation_with_all_fields():
+    """Check OwnerGroup instantiation with all fields."""
+    owner_group = OwnerGroup(
+        name="Network Team",
+        description="Team responsible for network infrastructure",
+        metadata={"department": "IT", "cost_center": "CC001"},
+    )
+    assert isinstance(owner_group, OwnerGroupPb)
+    assert owner_group.name == "Network Team"
+    assert owner_group.description == "Team responsible for network infrastructure"
+    assert owner_group.HasField("metadata")
+    assert owner_group.metadata.fields["department"].string_value == "IT"
+    assert owner_group.metadata.fields["cost_center"].string_value == "CC001"
+
+
+def test_owner_group_instantiation_with_only_name():
+    """Check OwnerGroup instantiation with only name."""
+    owner_group = OwnerGroup(name="Network Team")
+    assert isinstance(owner_group, OwnerGroupPb)
+    assert owner_group.name == "Network Team"
+    assert owner_group.description == ""
+
+
+def test_owner_instantiation_with_all_fields():
+    """Check Owner instantiation with all fields."""
+    owner = Owner(
+        name="John Doe",
+        group="Network Team",
+        description="Primary network administrator",
+        metadata={"email": "john.doe@example.com", "employee_id": "E12345"},
+    )
+    assert isinstance(owner, OwnerPb)
+    assert owner.name == "John Doe"
+    assert isinstance(owner.group, OwnerGroupPb)
+    assert owner.group.name == "Network Team"
+    assert owner.description == "Primary network administrator"
+    assert owner.HasField("metadata")
+    assert owner.metadata.fields["email"].string_value == "john.doe@example.com"
+    assert owner.metadata.fields["employee_id"].string_value == "E12345"
+
+
+def test_owner_instantiation_with_only_name():
+    """Check Owner instantiation with only name."""
+    owner = Owner(name="John Doe")
+    assert isinstance(owner, OwnerPb)
+    assert owner.name == "John Doe"
+    assert owner.description == ""
+
+
+def test_owner_instantiation_with_explicit_owner_group():
+    """Check Owner instantiation with explicit OwnerGroup object."""
+    owner_group = OwnerGroup(
+        name="Network Team", description="Network infrastructure team"
+    )
+    owner = Owner(
+        name="Jane Smith",
+        group=owner_group,
+        description="Backup network administrator",
+    )
+    assert isinstance(owner, OwnerPb)
+    assert owner.name == "Jane Smith"
+    assert isinstance(owner.group, OwnerGroupPb)
+    assert owner.group.name == "Network Team"
+    assert owner.group.description == "Network infrastructure team"
+
+
+def test_owner_instantiation_with_protobuf_owner_group():
+    """Check Owner instantiation with protobuf OwnerGroup."""
+    owner_group_pb = OwnerGroupPb(name="Security Team")
+    owner = Owner(name="Bob Wilson", group=owner_group_pb)
+    assert isinstance(owner, OwnerPb)
+    assert owner.name == "Bob Wilson"
+    assert isinstance(owner.group, OwnerGroupPb)
+    assert owner.group.name == "Security Team"
+
+
+def test_entity_instantiation_with_owner():
+    """Check Entity instantiation with owner as string."""
+    entity = Entity(owner="John Doe")
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.owner, OwnerPb)
+    assert entity.owner.name == "John Doe"
+
+
+def test_entity_instantiation_with_owner_object():
+    """Check Entity instantiation with Owner object."""
+    owner = Owner(name="Jane Smith", group="Network Team")
+    entity = Entity(owner=owner)
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.owner, OwnerPb)
+    assert entity.owner.name == "Jane Smith"
+    assert entity.owner.group.name == "Network Team"
+
+
+def test_entity_instantiation_with_owner_group():
+    """Check Entity instantiation with owner_group as string."""
+    entity = Entity(owner_group="Network Team")
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.owner_group, OwnerGroupPb)
+    assert entity.owner_group.name == "Network Team"
+
+
+def test_entity_instantiation_with_owner_group_object():
+    """Check Entity instantiation with OwnerGroup object."""
+    owner_group = OwnerGroup(name="Security Team", description="Security operations")
+    entity = Entity(owner_group=owner_group)
+    assert isinstance(entity, EntityPb)
+    assert isinstance(entity.owner_group, OwnerGroupPb)
+    assert entity.owner_group.name == "Security Team"
+    assert entity.owner_group.description == "Security operations"
+
+
+def test_site_with_owner():
+    """Check Site instantiation with owner."""
+    site = Site(name="Site1", owner="Site Admin")
+    assert isinstance(site, SitePb)
+    assert site.name == "Site1"
+    assert isinstance(site.owner, OwnerPb)
+    assert site.owner.name == "Site Admin"
+
+
+def test_device_with_owner():
+    """Check Device instantiation with owner."""
+    device = Device(
+        name="Device1",
+        device_type="DeviceType1",
+        site="Site1",
+        owner="Device Admin",
+    )
+    assert isinstance(device, DevicePb)
+    assert device.name == "Device1"
+    assert isinstance(device.owner, OwnerPb)
+    assert device.owner.name == "Device Admin"
+
+
+def test_device_with_owner_object():
+    """Check Device instantiation with Owner object."""
+    owner = Owner(name="Network Admin", group="Network Team")
+    device = Device(name="Switch01", device_type="Catalyst 9300", owner=owner)
+    assert isinstance(device, DevicePb)
+    assert device.name == "Switch01"
+    assert isinstance(device.owner, OwnerPb)
+    assert device.owner.name == "Network Admin"
+    assert device.owner.group.name == "Network Team"
+
+
+def test_interface_with_owner():
+    """Check Interface instantiation with owner."""
+    interface = Interface(
+        name="eth0",
+        device="Device1",
+        owner="Interface Owner",
+    )
+    assert isinstance(interface, InterfacePb)
+    assert interface.name == "eth0"
+    assert isinstance(interface.owner, OwnerPb)
+    assert interface.owner.name == "Interface Owner"
+
+
+def test_prefix_with_owner():
+    """Check Prefix instantiation with owner."""
+    prefix = Prefix(
+        prefix="192.168.0.0/24",
+        owner="Network Team",
+    )
+    assert isinstance(prefix, PrefixPb)
+    assert prefix.prefix == "192.168.0.0/24"
+    assert isinstance(prefix.owner, OwnerPb)
+    assert prefix.owner.name == "Network Team"
+
+
+def test_virtual_machine_with_owner():
+    """Check VirtualMachine instantiation with owner."""
+    vm = VirtualMachine(
+        name="vm1",
+        status="active",
+        owner="VM Admin",
+    )
+    assert isinstance(vm, VirtualMachinePb)
+    assert vm.name == "vm1"
+    assert isinstance(vm.owner, OwnerPb)
+    assert vm.owner.name == "VM Admin"
+
+
+def test_cluster_with_owner():
+    """Check Cluster instantiation with owner."""
+    cluster = Cluster(
+        name="production-cluster",
+        type="Kubernetes",
+        owner="Platform Team",
+    )
+    assert isinstance(cluster, ClusterPb)
+    assert cluster.name == "production-cluster"
+    assert isinstance(cluster.owner, OwnerPb)
+    assert cluster.owner.name == "Platform Team"
+
+
+def test_manufacturer_with_owner():
+    """Check Manufacturer instantiation with owner."""
+    manufacturer = Manufacturer(
+        name="Cisco",
+        owner="Vendor Management",
+    )
+    assert isinstance(manufacturer, ManufacturerPb)
+    assert manufacturer.name == "Cisco"
+    assert isinstance(manufacturer.owner, OwnerPb)
+    assert manufacturer.owner.name == "Vendor Management"
+
+
+def test_platform_with_owner():
+    """Check Platform instantiation with owner."""
+    platform = Platform(
+        name="IOS-XE",
+        owner="Platform Team",
+    )
+    assert isinstance(platform, PlatformPb)
+    assert platform.name == "IOS-XE"
+    assert isinstance(platform.owner, OwnerPb)
+    assert platform.owner.name == "Platform Team"
+
+
+def test_convert_to_protobuf_owner():
+    """Check convert_to_protobuf works with Owner."""
+    result = convert_to_protobuf("Test Owner", OwnerPb)
+    assert isinstance(result, OwnerPb)
+    assert result.name == "Test Owner"
+
+
+def test_convert_to_protobuf_owner_group():
+    """Check convert_to_protobuf works with OwnerGroup."""
+    result = convert_to_protobuf("Test Group", OwnerGroupPb)
+    assert isinstance(result, OwnerGroupPb)
+    assert result.name == "Test Group"

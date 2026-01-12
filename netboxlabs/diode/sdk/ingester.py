@@ -2,7 +2,7 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Timestamp: 2025-11-14 18:10:22Z
+# Timestamp: 2026-01-12 10:39:06Z
 #
 # ruff: noqa: C901
 
@@ -94,6 +94,8 @@ PRIMARY_VALUE_MAP = {
     "CustomFieldChoiceSet": "name",
     "ModuleTypeProfile": "name",
     "CustomLink": "name",
+    "Owner": "name",
+    "OwnerGroup": "name",
 }
 
 
@@ -279,6 +281,8 @@ class Entity:
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
         custom_link: str | CustomLink | pb.CustomLink | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -404,6 +408,8 @@ class Entity:
             module_type_profile, pb.ModuleTypeProfile
         )
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        owner_group = convert_to_protobuf(owner_group, pb.OwnerGroup)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
@@ -503,6 +509,8 @@ class Entity:
             journal_entry=journal_entry,
             module_type_profile=module_type_profile,
             custom_link=custom_link,
+            owner=owner,
+            owner_group=owner_group,
         )
         return result
 
@@ -522,6 +530,8 @@ class ASN:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        sites: list[str | Site | pb.Site] | None = None,
     ) -> pb.ASN:
         """Create a new ASN."""
         rir = convert_to_protobuf(rir, pb.RIR)
@@ -529,6 +539,8 @@ class ASN:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        sites = convert_to_protobuf_list(sites, pb.Site)
         result = pb.ASN(
             asn=asn,
             rir=rir,
@@ -538,6 +550,8 @@ class ASN:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            sites=sites,
         )
         return result
 
@@ -559,6 +573,8 @@ class ASNRange:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.ASNRange:
         """Create a new ASNRange."""
         rir = convert_to_protobuf(rir, pb.RIR)
@@ -566,6 +582,7 @@ class ASNRange:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ASNRange(
             name=name,
             slug=slug,
@@ -577,6 +594,8 @@ class ASNRange:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -597,6 +616,7 @@ class Aggregate:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Aggregate:
         """Create a new Aggregate."""
         rir = convert_to_protobuf(rir, pb.RIR)
@@ -604,6 +624,7 @@ class Aggregate:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Aggregate(
             prefix=prefix,
             rir=rir,
@@ -614,6 +635,7 @@ class Aggregate:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -639,6 +661,8 @@ class Cable:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        profile: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Cable:
         """Create a new Cable."""
         a_terminations = convert_to_protobuf_list(a_terminations, pb.GenericObject)
@@ -647,6 +671,7 @@ class Cable:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Cable(
             type=type,
             a_terminations=a_terminations,
@@ -662,6 +687,8 @@ class Cable:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            profile=profile,
+            owner=owner,
         )
         return result
 
@@ -778,6 +805,7 @@ class Circuit:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Circuit:
         """Create a new Circuit."""
         provider = convert_to_protobuf(provider, pb.Provider)
@@ -788,6 +816,7 @@ class Circuit:
         assignments = convert_to_protobuf_list(assignments, pb.CircuitGroupAssignment)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Circuit(
             cid=cid,
             provider=provider,
@@ -806,6 +835,7 @@ class Circuit:
             assignments=assignments,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -824,12 +854,15 @@ class CircuitGroup:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.CircuitGroup:
         """Create a new CircuitGroup."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.CircuitGroup(
             name=name,
             slug=slug,
@@ -838,6 +871,8 @@ class CircuitGroup:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -948,11 +983,14 @@ class CircuitType:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.CircuitType:
         """Create a new CircuitType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.CircuitType(
             name=name,
             slug=slug,
@@ -961,6 +999,8 @@ class CircuitType:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -986,6 +1026,7 @@ class Cluster:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Cluster:
         """Create a new Cluster."""
         type = convert_to_protobuf(type, pb.ClusterType)
@@ -998,6 +1039,7 @@ class Cluster:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Cluster(
             name=name,
             type=type,
@@ -1013,6 +1055,7 @@ class Cluster:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -1030,11 +1073,14 @@ class ClusterGroup:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.ClusterGroup:
         """Create a new ClusterGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ClusterGroup(
             name=name,
             slug=slug,
@@ -1042,6 +1088,8 @@ class ClusterGroup:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -1059,11 +1107,14 @@ class ClusterType:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.ClusterType:
         """Create a new ClusterType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ClusterType(
             name=name,
             slug=slug,
@@ -1071,6 +1122,8 @@ class ClusterType:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -1093,6 +1146,7 @@ class ConsolePort:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ConsolePort:
         """Create a new ConsolePort."""
         device = convert_to_protobuf(device, pb.Device)
@@ -1100,6 +1154,7 @@ class ConsolePort:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ConsolePort(
             device=device,
             module=module,
@@ -1112,6 +1167,7 @@ class ConsolePort:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -1134,6 +1190,7 @@ class ConsoleServerPort:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ConsoleServerPort:
         """Create a new ConsoleServerPort."""
         device = convert_to_protobuf(device, pb.Device)
@@ -1141,6 +1198,7 @@ class ConsoleServerPort:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ConsoleServerPort(
             device=device,
             module=module,
@@ -1153,6 +1211,7 @@ class ConsoleServerPort:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -1177,6 +1236,7 @@ class Contact:
         ) = None,
         groups: list[str | ContactGroup | pb.ContactGroup] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Contact:
         """Create a new Contact."""
         group = convert_to_protobuf(group, pb.ContactGroup)
@@ -1184,6 +1244,7 @@ class Contact:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         groups = convert_to_protobuf_list(groups, pb.ContactGroup)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Contact(
             group=group,
             name=name,
@@ -1198,6 +1259,7 @@ class Contact:
             custom_fields=custom_fields,
             groups=groups,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -1340,6 +1402,8 @@ class ContactAssignment:
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
         object_custom_link: str | CustomLink | pb.CustomLink | None = None,
+        object_owner: str | Owner | pb.Owner | None = None,
+        object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         contact: str | Contact | pb.Contact | None = None,
         role: str | ContactRole | pb.ContactRole | None = None,
         priority: str | None = None,
@@ -1505,6 +1569,8 @@ class ContactAssignment:
             object_module_type_profile, pb.ModuleTypeProfile
         )
         object_custom_link = convert_to_protobuf(object_custom_link, pb.CustomLink)
+        object_owner = convert_to_protobuf(object_owner, pb.Owner)
+        object_owner_group = convert_to_protobuf(object_owner_group, pb.OwnerGroup)
         contact = convert_to_protobuf(contact, pb.Contact)
         role = convert_to_protobuf(role, pb.ContactRole)
         tags = convert_to_protobuf_list(tags, pb.Tag)
@@ -1604,6 +1670,8 @@ class ContactAssignment:
             object_journal_entry=object_journal_entry,
             object_module_type_profile=object_module_type_profile,
             object_custom_link=object_custom_link,
+            object_owner=object_owner,
+            object_owner_group=object_owner_group,
             contact=contact,
             role=role,
             priority=priority,
@@ -1629,12 +1697,14 @@ class ContactGroup:
         ) = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ContactGroup:
         """Create a new ContactGroup."""
         parent = convert_to_protobuf(parent, pb.ContactGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ContactGroup(
             name=name,
             slug=slug,
@@ -1644,6 +1714,7 @@ class ContactGroup:
             custom_fields=custom_fields,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -1661,11 +1732,14 @@ class ContactRole:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.ContactRole:
         """Create a new ContactRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ContactRole(
             name=name,
             slug=slug,
@@ -1673,6 +1747,8 @@ class ContactRole:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -1803,6 +1879,8 @@ class CustomFieldObjectReference:
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
         custom_link: str | CustomLink | pb.CustomLink | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -1928,6 +2006,8 @@ class CustomFieldObjectReference:
             module_type_profile, pb.ModuleTypeProfile
         )
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        owner_group = convert_to_protobuf(owner_group, pb.OwnerGroup)
         result = pb.CustomFieldObjectReference(
             asn=asn,
             asn_range=asn_range,
@@ -2022,6 +2102,8 @@ class CustomFieldObjectReference:
             journal_entry=journal_entry,
             module_type_profile=module_type_profile,
             custom_link=custom_link,
+            owner=owner,
+            owner_group=owner_group,
         )
         return result
 
@@ -2108,6 +2190,7 @@ class Device:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
     ) -> pb.Device:
@@ -2127,6 +2210,7 @@ class Device:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -2166,6 +2250,7 @@ class Device:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -2185,6 +2270,7 @@ class DeviceBay:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.DeviceBay:
         """Create a new DeviceBay."""
         device = convert_to_protobuf(device, pb.Device)
@@ -2192,6 +2278,7 @@ class DeviceBay:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.DeviceBay(
             device=device,
             name=name,
@@ -2201,6 +2288,7 @@ class DeviceBay:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -2222,12 +2310,14 @@ class DeviceRole:
         parent: str | DeviceRole | pb.DeviceRole | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.DeviceRole:
         """Create a new DeviceRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         parent = convert_to_protobuf(parent, pb.DeviceRole)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.DeviceRole(
             name=name,
             slug=slug,
@@ -2239,6 +2329,7 @@ class DeviceRole:
             parent=parent,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -2267,6 +2358,7 @@ class DeviceType:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.DeviceType:
         """Create a new DeviceType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -2274,6 +2366,7 @@ class DeviceType:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.DeviceType(
             manufacturer=manufacturer,
             default_platform=default_platform,
@@ -2292,6 +2385,7 @@ class DeviceType:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -2313,11 +2407,13 @@ class FHRPGroup:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.FHRPGroup:
         """Create a new FHRPGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.FHRPGroup(
             name=name,
             protocol=protocol,
@@ -2329,6 +2425,7 @@ class FHRPGroup:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -2478,6 +2575,8 @@ class FHRPGroupAssignment:
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
         interface_custom_link: str | CustomLink | pb.CustomLink | None = None,
+        interface_owner: str | Owner | pb.Owner | None = None,
+        interface_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         priority: int | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroupAssignment:
@@ -2680,6 +2779,10 @@ class FHRPGroupAssignment:
         interface_custom_link = convert_to_protobuf(
             interface_custom_link, pb.CustomLink
         )
+        interface_owner = convert_to_protobuf(interface_owner, pb.Owner)
+        interface_owner_group = convert_to_protobuf(
+            interface_owner_group, pb.OwnerGroup
+        )
         metadata = convert_dict_to_struct(metadata)
         result = pb.FHRPGroupAssignment(
             group=group,
@@ -2776,6 +2879,8 @@ class FHRPGroupAssignment:
             interface_journal_entry=interface_journal_entry,
             interface_module_type_profile=interface_module_type_profile,
             interface_custom_link=interface_custom_link,
+            interface_owner=interface_owner,
+            interface_owner_group=interface_owner_group,
             priority=priority,
             metadata=metadata,
         )
@@ -2802,6 +2907,8 @@ class FrontPort:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        positions: int | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.FrontPort:
         """Create a new FrontPort."""
         device = convert_to_protobuf(device, pb.Device)
@@ -2810,6 +2917,7 @@ class FrontPort:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.FrontPort(
             device=device,
             module=module,
@@ -2824,6 +2932,8 @@ class FrontPort:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            positions=positions,
+            owner=owner,
         )
         return result
 
@@ -2966,6 +3076,8 @@ class GenericObject:
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
         object_custom_link: str | CustomLink | pb.CustomLink | None = None,
+        object_owner: str | Owner | pb.Owner | None = None,
+        object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
     ) -> pb.GenericObject:
         """Create a new GenericObject."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -3123,6 +3235,8 @@ class GenericObject:
             object_module_type_profile, pb.ModuleTypeProfile
         )
         object_custom_link = convert_to_protobuf(object_custom_link, pb.CustomLink)
+        object_owner = convert_to_protobuf(object_owner, pb.Owner)
+        object_owner_group = convert_to_protobuf(object_owner_group, pb.OwnerGroup)
         result = pb.GenericObject(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
@@ -3217,6 +3331,8 @@ class GenericObject:
             object_journal_entry=object_journal_entry,
             object_module_type_profile=object_module_type_profile,
             object_custom_link=object_custom_link,
+            object_owner=object_owner,
+            object_owner_group=object_owner_group,
         )
         return result
 
@@ -3238,12 +3354,14 @@ class IKEPolicy:
         ) = None,
         proposals: list[str | IKEProposal | pb.IKEProposal] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IKEPolicy:
         """Create a new IKEPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         proposals = convert_to_protobuf_list(proposals, pb.IKEProposal)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.IKEPolicy(
             name=name,
             description=description,
@@ -3255,6 +3373,7 @@ class IKEPolicy:
             custom_fields=custom_fields,
             proposals=proposals,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3277,11 +3396,13 @@ class IKEProposal:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IKEProposal:
         """Create a new IKEProposal."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.IKEProposal(
             name=name,
             description=description,
@@ -3294,6 +3415,7 @@ class IKEProposal:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3320,6 +3442,7 @@ class IPAddress:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
         device_type: str | DeviceType | pb.DeviceType = None,
@@ -3344,6 +3467,7 @@ class IPAddress:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -3398,6 +3522,7 @@ class IPAddress:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3422,6 +3547,7 @@ class IPRange:
         ) = None,
         mark_populated: bool | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IPRange:
         """Create a new IPRange."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
@@ -3430,6 +3556,7 @@ class IPRange:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.IPRange(
             start_address=start_address,
             end_address=end_address,
@@ -3444,6 +3571,7 @@ class IPRange:
             custom_fields=custom_fields,
             mark_populated=mark_populated,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3463,12 +3591,14 @@ class IPSecPolicy:
         ) = None,
         proposals: list[str | IPSecProposal | pb.IPSecProposal] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IPSecPolicy:
         """Create a new IPSecPolicy."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         proposals = convert_to_protobuf_list(proposals, pb.IPSecProposal)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.IPSecPolicy(
             name=name,
             description=description,
@@ -3478,6 +3608,7 @@ class IPSecPolicy:
             custom_fields=custom_fields,
             proposals=proposals,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3498,6 +3629,7 @@ class IPSecProfile:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IPSecProfile:
         """Create a new IPSecProfile."""
         ike_policy = convert_to_protobuf(ike_policy, pb.IKEPolicy)
@@ -3505,6 +3637,7 @@ class IPSecProfile:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.IPSecProfile(
             name=name,
             description=description,
@@ -3515,6 +3648,7 @@ class IPSecProfile:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3536,11 +3670,13 @@ class IPSecProposal:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IPSecProposal:
         """Create a new IPSecProposal."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.IPSecProposal(
             name=name,
             description=description,
@@ -3552,6 +3688,7 @@ class IPSecProposal:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3600,6 +3737,7 @@ class Interface:
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
         wireless_lans: list[str | WirelessLAN | pb.WirelessLAN] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
         device_type: str | DeviceType | pb.DeviceType = None,
@@ -3626,6 +3764,7 @@ class Interface:
         tagged_vlans = convert_to_protobuf_list(tagged_vlans, pb.VLAN)
         wireless_lans = convert_to_protobuf_list(wireless_lans, pb.WirelessLAN)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -3688,6 +3827,7 @@ class Interface:
             tagged_vlans=tagged_vlans,
             wireless_lans=wireless_lans,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3723,6 +3863,7 @@ class InventoryItem:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.InventoryItem:
         """Create a new InventoryItem."""
         device = convert_to_protobuf(device, pb.Device)
@@ -3745,6 +3886,7 @@ class InventoryItem:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.InventoryItem(
             device=device,
             parent=parent,
@@ -3768,6 +3910,7 @@ class InventoryItem:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -3786,11 +3929,14 @@ class InventoryItemRole:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.InventoryItemRole:
         """Create a new InventoryItemRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.InventoryItemRole(
             name=name,
             slug=slug,
@@ -3799,6 +3945,8 @@ class InventoryItemRole:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -3823,6 +3971,7 @@ class L2VPN:
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         status: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.L2VPN:
         """Create a new L2VPN."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
@@ -3831,6 +3980,7 @@ class L2VPN:
         import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
         export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.L2VPN(
             identifier=identifier,
             name=name,
@@ -3845,6 +3995,7 @@ class L2VPN:
             export_targets=export_targets,
             status=status,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4012,6 +4163,8 @@ class L2VPNTermination:
             str | WirelessLink | pb.WirelessLink | None
         ) = None,
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
+        assigned_object_owner: str | Owner | pb.Owner | None = None,
+        assigned_object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: (
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
@@ -4267,6 +4420,10 @@ class L2VPNTermination:
         assigned_object_custom_link = convert_to_protobuf(
             assigned_object_custom_link, pb.CustomLink
         )
+        assigned_object_owner = convert_to_protobuf(assigned_object_owner, pb.Owner)
+        assigned_object_owner_group = convert_to_protobuf(
+            assigned_object_owner_group, pb.OwnerGroup
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -4365,6 +4522,8 @@ class L2VPNTermination:
             assigned_object_wireless_lan_group=assigned_object_wireless_lan_group,
             assigned_object_wireless_link=assigned_object_wireless_link,
             assigned_object_custom_link=assigned_object_custom_link,
+            assigned_object_owner=assigned_object_owner,
+            assigned_object_owner_group=assigned_object_owner_group,
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
@@ -4391,6 +4550,7 @@ class Location:
         ) = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Location:
         """Create a new Location."""
         site = convert_to_protobuf(site, pb.Site)
@@ -4399,6 +4559,7 @@ class Location:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Location(
             name=name,
             slug=slug,
@@ -4412,6 +4573,7 @@ class Location:
             custom_fields=custom_fields,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4431,6 +4593,7 @@ class MACAddress:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.MACAddress:
         """Create a new MACAddress."""
         assigned_object_interface = convert_to_protobuf(
@@ -4442,6 +4605,7 @@ class MACAddress:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.MACAddress(
             mac_address=mac_address,
             assigned_object_interface=assigned_object_interface,
@@ -4451,6 +4615,7 @@ class MACAddress:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4468,11 +4633,14 @@ class Manufacturer:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.Manufacturer:
         """Create a new Manufacturer."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Manufacturer(
             name=name,
             slug=slug,
@@ -4480,6 +4648,8 @@ class Manufacturer:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -4502,6 +4672,7 @@ class Module:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Module:
         """Create a new Module."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4510,6 +4681,7 @@ class Module:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Module(
             device=device,
             module_bay=module_bay,
@@ -4522,6 +4694,7 @@ class Module:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4543,6 +4716,7 @@ class ModuleBay:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ModuleBay:
         """Create a new ModuleBay."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4551,6 +4725,7 @@ class ModuleBay:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ModuleBay(
             device=device,
             module=module,
@@ -4562,6 +4737,7 @@ class ModuleBay:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4586,6 +4762,7 @@ class ModuleType:
         profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         attributes: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ModuleType:
         """Create a new ModuleType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -4593,6 +4770,7 @@ class ModuleType:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         profile = convert_to_protobuf(profile, pb.ModuleTypeProfile)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ModuleType(
             manufacturer=manufacturer,
             model=model,
@@ -4607,6 +4785,7 @@ class ModuleType:
             profile=profile,
             attributes=attributes,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4627,6 +4806,7 @@ class Platform:
         parent: str | Platform | pb.Platform | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Platform:
         """Create a new Platform."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -4634,6 +4814,7 @@ class Platform:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         parent = convert_to_protobuf(parent, pb.Platform)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Platform(
             name=name,
             slug=slug,
@@ -4644,6 +4825,7 @@ class Platform:
             parent=parent,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4672,6 +4854,7 @@ class PowerFeed:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.PowerFeed:
         """Create a new PowerFeed."""
         power_panel = convert_to_protobuf(power_panel, pb.PowerPanel)
@@ -4680,6 +4863,7 @@ class PowerFeed:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.PowerFeed(
             power_panel=power_panel,
             rack=rack,
@@ -4698,6 +4882,7 @@ class PowerFeed:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4723,6 +4908,7 @@ class PowerOutlet:
         ) = None,
         status: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.PowerOutlet:
         """Create a new PowerOutlet."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4731,6 +4917,7 @@ class PowerOutlet:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.PowerOutlet(
             device=device,
             module=module,
@@ -4746,6 +4933,7 @@ class PowerOutlet:
             custom_fields=custom_fields,
             status=status,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4765,6 +4953,7 @@ class PowerPanel:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.PowerPanel:
         """Create a new PowerPanel."""
         site = convert_to_protobuf(site, pb.Site)
@@ -4772,6 +4961,7 @@ class PowerPanel:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.PowerPanel(
             site=site,
             location=location,
@@ -4781,6 +4971,7 @@ class PowerPanel:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4804,6 +4995,7 @@ class PowerPort:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.PowerPort:
         """Create a new PowerPort."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4811,6 +5003,7 @@ class PowerPort:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.PowerPort(
             device=device,
             module=module,
@@ -4824,6 +5017,7 @@ class PowerPort:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4852,6 +5046,7 @@ class Prefix:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Prefix:
         """Create a new Prefix."""
         vrf = convert_to_protobuf(vrf, pb.VRF)
@@ -4865,6 +5060,7 @@ class Prefix:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Prefix(
             prefix=prefix,
             vrf=vrf,
@@ -4883,6 +5079,7 @@ class Prefix:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4903,6 +5100,7 @@ class Provider:
         accounts: list[str | ProviderAccount | pb.ProviderAccount] | None = None,
         asns: list[str | ASN | pb.ASN] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Provider:
         """Create a new Provider."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
@@ -4910,6 +5108,7 @@ class Provider:
         accounts = convert_to_protobuf_list(accounts, pb.ProviderAccount)
         asns = convert_to_protobuf_list(asns, pb.ASN)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Provider(
             name=name,
             slug=slug,
@@ -4920,6 +5119,7 @@ class Provider:
             accounts=accounts,
             asns=asns,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4939,12 +5139,14 @@ class ProviderAccount:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ProviderAccount:
         """Create a new ProviderAccount."""
         provider = convert_to_protobuf(provider, pb.Provider)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ProviderAccount(
             provider=provider,
             name=name,
@@ -4954,6 +5156,7 @@ class ProviderAccount:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -4973,12 +5176,14 @@ class ProviderNetwork:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ProviderNetwork:
         """Create a new ProviderNetwork."""
         provider = convert_to_protobuf(provider, pb.Provider)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ProviderNetwork(
             provider=provider,
             name=name,
@@ -4988,6 +5193,7 @@ class ProviderNetwork:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5006,11 +5212,14 @@ class RIR:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.RIR:
         """Create a new RIR."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.RIR(
             name=name,
             slug=slug,
@@ -5019,6 +5228,8 @@ class RIR:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -5059,6 +5270,7 @@ class Rack:
         ) = None,
         outer_height: int | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Rack:
         """Create a new Rack."""
         site = convert_to_protobuf(site, pb.Site)
@@ -5069,6 +5281,7 @@ class Rack:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Rack(
             name=name,
             facility_id=facility_id,
@@ -5099,6 +5312,7 @@ class Rack:
             custom_fields=custom_fields,
             outer_height=outer_height,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5119,6 +5333,7 @@ class RackReservation:
         ) = None,
         status: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.RackReservation:
         """Create a new RackReservation."""
         rack = convert_to_protobuf(rack, pb.Rack)
@@ -5126,6 +5341,7 @@ class RackReservation:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.RackReservation(
             rack=rack,
             units=units,
@@ -5136,6 +5352,7 @@ class RackReservation:
             custom_fields=custom_fields,
             status=status,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5154,11 +5371,14 @@ class RackRole:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.RackRole:
         """Create a new RackRole."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.RackRole(
             name=name,
             slug=slug,
@@ -5167,6 +5387,8 @@ class RackRole:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -5199,12 +5421,14 @@ class RackType:
         ) = None,
         outer_height: int | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.RackType:
         """Create a new RackType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.RackType(
             manufacturer=manufacturer,
             model=model,
@@ -5227,6 +5451,7 @@ class RackType:
             custom_fields=custom_fields,
             outer_height=outer_height,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5250,6 +5475,7 @@ class RearPort:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.RearPort:
         """Create a new RearPort."""
         device = convert_to_protobuf(device, pb.Device)
@@ -5257,6 +5483,7 @@ class RearPort:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.RearPort(
             device=device,
             module=module,
@@ -5270,6 +5497,7 @@ class RearPort:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5289,12 +5517,14 @@ class Region:
         ) = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Region:
         """Create a new Region."""
         parent = convert_to_protobuf(parent, pb.Region)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Region(
             name=name,
             slug=slug,
@@ -5304,6 +5534,7 @@ class Region:
             custom_fields=custom_fields,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5322,11 +5553,14 @@ class Role:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.Role:
         """Create a new Role."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Role(
             name=name,
             slug=slug,
@@ -5335,6 +5569,8 @@ class Role:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -5353,12 +5589,14 @@ class RouteTarget:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.RouteTarget:
         """Create a new RouteTarget."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.RouteTarget(
             name=name,
             tenant=tenant,
@@ -5367,6 +5605,7 @@ class RouteTarget:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5394,6 +5633,7 @@ class Service:
             str | VirtualMachine | pb.VirtualMachine | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Service:
         """Create a new Service."""
         device = convert_to_protobuf(device, pb.Device)
@@ -5409,6 +5649,7 @@ class Service:
             parent_object_virtual_machine, pb.VirtualMachine
         )
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Service(
             device=device,
             virtual_machine=virtual_machine,
@@ -5424,6 +5665,7 @@ class Service:
             parent_object_fhrp_group=parent_object_fhrp_group,
             parent_object_virtual_machine=parent_object_virtual_machine,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5453,6 +5695,7 @@ class Site:
         ) = None,
         asns: list[str | ASN | pb.ASN] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Site:
         """Create a new Site."""
         region = convert_to_protobuf(region, pb.Region)
@@ -5462,6 +5705,7 @@ class Site:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         asns = convert_to_protobuf_list(asns, pb.ASN)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Site(
             name=name,
             slug=slug,
@@ -5481,6 +5725,7 @@ class Site:
             custom_fields=custom_fields,
             asns=asns,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5500,12 +5745,14 @@ class SiteGroup:
         ) = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.SiteGroup:
         """Create a new SiteGroup."""
         parent = convert_to_protobuf(parent, pb.SiteGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.SiteGroup(
             name=name,
             slug=slug,
@@ -5515,6 +5762,7 @@ class SiteGroup:
             custom_fields=custom_fields,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5561,12 +5809,14 @@ class Tenant:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Tenant:
         """Create a new Tenant."""
         group = convert_to_protobuf(group, pb.TenantGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Tenant(
             name=name,
             slug=slug,
@@ -5576,6 +5826,7 @@ class Tenant:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5595,12 +5846,14 @@ class TenantGroup:
         ) = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.TenantGroup:
         """Create a new TenantGroup."""
         parent = convert_to_protobuf(parent, pb.TenantGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.TenantGroup(
             name=name,
             slug=slug,
@@ -5610,6 +5863,7 @@ class TenantGroup:
             custom_fields=custom_fields,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5633,6 +5887,7 @@ class Tunnel:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Tunnel:
         """Create a new Tunnel."""
         group = convert_to_protobuf(group, pb.TunnelGroup)
@@ -5641,6 +5896,7 @@ class Tunnel:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.Tunnel(
             name=name,
             status=status,
@@ -5654,6 +5910,7 @@ class Tunnel:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -5671,11 +5928,14 @@ class TunnelGroup:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.TunnelGroup:
         """Create a new TunnelGroup."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.TunnelGroup(
             name=name,
             slug=slug,
@@ -5683,6 +5943,8 @@ class TunnelGroup:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -5837,6 +6099,8 @@ class TunnelTermination:
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
         termination_custom_link: str | CustomLink | pb.CustomLink | None = None,
+        termination_owner: str | Owner | pb.Owner | None = None,
+        termination_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: (
@@ -6065,6 +6329,10 @@ class TunnelTermination:
         termination_custom_link = convert_to_protobuf(
             termination_custom_link, pb.CustomLink
         )
+        termination_owner = convert_to_protobuf(termination_owner, pb.Owner)
+        termination_owner_group = convert_to_protobuf(
+            termination_owner_group, pb.OwnerGroup
+        )
         outside_ip = convert_to_protobuf(outside_ip, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
@@ -6165,6 +6433,8 @@ class TunnelTermination:
             termination_journal_entry=termination_journal_entry,
             termination_module_type_profile=termination_module_type_profile,
             termination_custom_link=termination_custom_link,
+            termination_owner=termination_owner,
+            termination_owner_group=termination_owner_group,
             outside_ip=outside_ip,
             tags=tags,
             custom_fields=custom_fields,
@@ -6194,6 +6464,7 @@ class VLAN:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VLAN:
         """Create a new VLAN."""
         site = convert_to_protobuf(site, pb.Site)
@@ -6204,6 +6475,7 @@ class VLAN:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VLAN(
             site=site,
             group=group,
@@ -6219,6 +6491,7 @@ class VLAN:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6245,6 +6518,8 @@ class VLANGroup:
         ) = None,
         tenant: str | Tenant | pb.Tenant | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.VLANGroup:
         """Create a new VLANGroup."""
         scope_cluster = convert_to_protobuf(scope_cluster, pb.Cluster)
@@ -6258,6 +6533,7 @@ class VLANGroup:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VLANGroup(
             name=name,
             slug=slug,
@@ -6274,6 +6550,8 @@ class VLANGroup:
             custom_fields=custom_fields,
             tenant=tenant,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -6286,13 +6564,18 @@ class VLANTranslationPolicy:
         name: str | None = None,
         description: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.VLANTranslationPolicy:
         """Create a new VLANTranslationPolicy."""
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VLANTranslationPolicy(
             name=name,
             description=description,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -6347,6 +6630,7 @@ class VMInterface:
         ) = None,
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VMInterface:
         """Create a new VMInterface."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
@@ -6363,6 +6647,7 @@ class VMInterface:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         tagged_vlans = convert_to_protobuf_list(tagged_vlans, pb.VLAN)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VMInterface(
             virtual_machine=virtual_machine,
             name=name,
@@ -6381,6 +6666,7 @@ class VMInterface:
             custom_fields=custom_fields,
             tagged_vlans=tagged_vlans,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6403,6 +6689,7 @@ class VRF:
         import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VRF:
         """Create a new VRF."""
         tenant = convert_to_protobuf(tenant, pb.Tenant)
@@ -6411,6 +6698,7 @@ class VRF:
         import_targets = convert_to_protobuf_list(import_targets, pb.RouteTarget)
         export_targets = convert_to_protobuf_list(export_targets, pb.RouteTarget)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VRF(
             name=name,
             rd=rd,
@@ -6423,6 +6711,7 @@ class VRF:
             import_targets=import_targets,
             export_targets=export_targets,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6442,12 +6731,14 @@ class VirtualChassis:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualChassis:
         """Create a new VirtualChassis."""
         master = convert_to_protobuf(master, pb.Device)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VirtualChassis(
             name=name,
             domain=domain,
@@ -6457,6 +6748,7 @@ class VirtualChassis:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6479,6 +6771,7 @@ class VirtualCircuit:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualCircuit:
         """Create a new VirtualCircuit."""
         provider_network = convert_to_protobuf(provider_network, pb.ProviderNetwork)
@@ -6488,6 +6781,7 @@ class VirtualCircuit:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VirtualCircuit(
             cid=cid,
             provider_network=provider_network,
@@ -6500,6 +6794,7 @@ class VirtualCircuit:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6551,11 +6846,14 @@ class VirtualCircuitType:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
     ) -> pb.VirtualCircuitType:
         """Create a new VirtualCircuitType."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VirtualCircuitType(
             name=name,
             slug=slug,
@@ -6564,6 +6862,8 @@ class VirtualCircuitType:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
+            comments=comments,
         )
         return result
 
@@ -6587,6 +6887,7 @@ class VirtualDeviceContext:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualDeviceContext:
         """Create a new VirtualDeviceContext."""
         device = convert_to_protobuf(device, pb.Device)
@@ -6596,6 +6897,7 @@ class VirtualDeviceContext:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VirtualDeviceContext(
             name=name,
             device=device,
@@ -6609,6 +6911,7 @@ class VirtualDeviceContext:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6627,12 +6930,14 @@ class VirtualDisk:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualDisk:
         """Create a new VirtualDisk."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.VirtualDisk(
             virtual_machine=virtual_machine,
             name=name,
@@ -6641,6 +6946,7 @@ class VirtualDisk:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6671,6 +6977,8 @@ class VirtualMachine:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        start_on_boot: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualMachine:
         """Create a new VirtualMachine."""
         site = convert_to_protobuf(site, pb.Site)
@@ -6684,6 +6992,7 @@ class VirtualMachine:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
 
         # apply shortcuts
         if platform is not None:
@@ -6717,6 +7026,8 @@ class VirtualMachine:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            start_on_boot=start_on_boot,
+            owner=owner,
         )
         return result
 
@@ -6745,6 +7056,7 @@ class WirelessLAN:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.WirelessLAN:
         """Create a new WirelessLAN."""
         group = convert_to_protobuf(group, pb.WirelessLANGroup)
@@ -6757,6 +7069,7 @@ class WirelessLAN:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.WirelessLAN(
             ssid=ssid,
             description=description,
@@ -6775,6 +7088,7 @@ class WirelessLAN:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6794,12 +7108,14 @@ class WirelessLANGroup:
         ) = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.WirelessLANGroup:
         """Create a new WirelessLANGroup."""
         parent = convert_to_protobuf(parent, pb.WirelessLANGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.WirelessLANGroup(
             name=name,
             slug=slug,
@@ -6809,6 +7125,7 @@ class WirelessLANGroup:
             custom_fields=custom_fields,
             comments=comments,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6835,6 +7152,7 @@ class WirelessLink:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.WirelessLink:
         """Create a new WirelessLink."""
         interface_a = convert_to_protobuf(interface_a, pb.Interface)
@@ -6843,6 +7161,7 @@ class WirelessLink:
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.WirelessLink(
             interface_a=interface_a,
             interface_b=interface_b,
@@ -6859,6 +7178,7 @@ class WirelessLink:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6891,10 +7211,12 @@ class CustomField:
         comments: str | None = None,
         object_types: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.CustomField:
         """Create a new CustomField."""
         choice_set = convert_to_protobuf(choice_set, pb.CustomFieldChoiceSet)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.CustomField(
             type=type,
             related_object_type=related_object_type,
@@ -6919,6 +7241,7 @@ class CustomField:
             comments=comments,
             object_types=object_types,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -6934,9 +7257,11 @@ class CustomFieldChoiceSet:
         order_alphabetically: bool | None = None,
         extra_choices: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.CustomFieldChoiceSet:
         """Create a new CustomFieldChoiceSet."""
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.CustomFieldChoiceSet(
             name=name,
             description=description,
@@ -6944,6 +7269,7 @@ class CustomFieldChoiceSet:
             order_alphabetically=order_alphabetically,
             extra_choices=extra_choices,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -7110,6 +7436,8 @@ class JournalEntry:
             str | WirelessLink | pb.WirelessLink | None
         ) = None,
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
+        assigned_object_owner: str | Owner | pb.Owner | None = None,
+        assigned_object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         kind: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
@@ -7366,6 +7694,10 @@ class JournalEntry:
         assigned_object_custom_link = convert_to_protobuf(
             assigned_object_custom_link, pb.CustomLink
         )
+        assigned_object_owner = convert_to_protobuf(assigned_object_owner, pb.Owner)
+        assigned_object_owner_group = convert_to_protobuf(
+            assigned_object_owner_group, pb.OwnerGroup
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -7463,6 +7795,8 @@ class JournalEntry:
             assigned_object_wireless_lan_group=assigned_object_wireless_lan_group,
             assigned_object_wireless_link=assigned_object_wireless_link,
             assigned_object_custom_link=assigned_object_custom_link,
+            assigned_object_owner=assigned_object_owner,
+            assigned_object_owner_group=assigned_object_owner_group,
             kind=kind,
             comments=comments,
             tags=tags,
@@ -7486,11 +7820,13 @@ class ModuleTypeProfile:
             dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
         ) = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ModuleTypeProfile:
         """Create a new ModuleTypeProfile."""
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.ModuleTypeProfile(
             name=name,
             description=description,
@@ -7499,6 +7835,7 @@ class ModuleTypeProfile:
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            owner=owner,
         )
         return result
 
@@ -7518,9 +7855,11 @@ class CustomLink:
         new_window: bool | None = None,
         object_types: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
     ) -> pb.CustomLink:
         """Create a new CustomLink."""
         metadata = convert_dict_to_struct(metadata)
+        owner = convert_to_protobuf(owner, pb.Owner)
         result = pb.CustomLink(
             name=name,
             enabled=enabled,
@@ -7531,6 +7870,48 @@ class CustomLink:
             button_class=button_class,
             new_window=new_window,
             object_types=object_types,
+            metadata=metadata,
+            owner=owner,
+        )
+        return result
+
+
+class Owner:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.Owner."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        description: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.Owner:
+        """Create a new Owner."""
+        group = convert_to_protobuf(group, pb.OwnerGroup)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.Owner(
+            name=name,
+            group=group,
+            description=description,
+            metadata=metadata,
+        )
+        return result
+
+
+class OwnerGroup:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.OwnerGroup."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        description: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.OwnerGroup:
+        """Create a new OwnerGroup."""
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.OwnerGroup(
+            name=name,
+            description=description,
             metadata=metadata,
         )
         return result
