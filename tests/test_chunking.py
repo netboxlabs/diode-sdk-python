@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2024 NetBox Labs Inc
+# Copyright 2026 NetBox Labs Inc
 """Tests for message chunking utilities."""
 
 from unittest.mock import patch

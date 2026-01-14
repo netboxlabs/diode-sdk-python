@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2024 NetBox Labs Inc
+# Copyright 2026 NetBox Labs Inc
 """Message chunking utilities for Diode SDK.
 
 This module provides utilities for chunking large lists of entities into

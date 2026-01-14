@@ -281,6 +281,78 @@ client = DiodeClient(
 )
 ```
 
+### Message chunking
+
+When ingesting large numbers of entities, you may need to split them into smaller chunks to avoid exceeding the gRPC message size limit for a single `ingest()` call. The SDK provides chunking utilities that automatically split entity lists into appropriately sized chunks.
+
+#### How it works
+
+The SDK uses a **greedy bin-packing algorithm** that:
+1. Accumulates entities until adding the next entity would exceed the size limit
+2. Starts a new chunk when the limit would be exceeded
+3. Ensures each chunk stays safely under the configured limit (default: 3 MB)
+
+#### Basic usage
+
+```python
+from netboxlabs.diode.sdk import DiodeClient, create_message_chunks
+from netboxlabs.diode.sdk.ingester import Device, Entity
+
+with DiodeClient(
+    target="grpc://localhost:8080/diode",
+    app_name="my-app",
+    app_version="1.0.0",
+) as client:
+    # Create a large list of entities
+    entities = []
+    for i in range(10000):
+        device = Device(
+            name=f"Device {i}",
+            device_type="Device Type A",
+            site="Site ABC",
+            role="Role ABC",
+        )
+        entities.append(Entity(device=device))
+
+    # Split into chunks (default 3 MB per chunk), then ingest each chunk separately.
+    for chunk in create_message_chunks(entities):
+        client.ingest(entities=chunk)
+```
+
+#### Custom chunk size
+
+You can customize the chunk size if needed:
+
+```python
+from netboxlabs.diode.sdk import create_message_chunks
+
+# Use a larger chunk size (3.5 MB)
+chunks = create_message_chunks(entities, max_chunk_size_mb=3.5)
+
+# Use a smaller chunk size for conservative chunking (2 MB)
+chunks = create_message_chunks(entities, max_chunk_size_mb=2.0)
+```
+
+#### Estimating message size
+
+You can estimate the serialized size of entities before chunking:
+
+```python
+from netboxlabs.diode.sdk import estimate_message_size
+
+size_bytes = estimate_message_size(entities)
+size_mb = size_bytes / (1024 * 1024)
+print(f"Total size: {size_mb:.2f} MB")
+
+# Decide whether chunking is needed
+if size_mb > 3.0:
+    chunks = create_message_chunks(entities)
+else:
+    # Small enough to send in one request
+    client.ingest(entities=entities)
+```
+
+
 ### Dry run mode
 
 `DiodeDryRunClient` generates ingestion requests without contacting a Diode server. Requests are printed to stdout by default, or written to JSON files when `output_dir` (or the `DIODE_DRY_RUN_OUTPUT_DIR` environment variable) is specified. The `app_name` parameter serves as the filename prefix; if not provided, `dryrun` is used as the default prefix. The file name is suffixed with a nanosecond-precision timestamp, resulting in the format `<app_name>_<timestamp_ns>.json`.
