@@ -179,7 +179,8 @@ def test_create_message_chunks_with_iterable():
 
 
 def test_create_message_chunks_single_large_entity():
-    """Test create_message_chunks with a single entity that exceeds chunk size.
+    """
+    Test create_message_chunks with a single entity that exceeds chunk size.
 
     This edge case verifies the function doesn't fail when a single entity
     is larger than the chunk size limit.

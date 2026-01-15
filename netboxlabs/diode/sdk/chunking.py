@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # Copyright 2026 NetBox Labs Inc
-"""Message chunking utilities for Diode SDK.
+"""
+Message chunking utilities for Diode SDK.
 
 This module provides utilities for chunking large lists of entities into
 size-appropriate chunks for gRPC ingestion, ensuring no chunk exceeds
 the gRPC message size limit.
 """
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from .diode.v1 import ingester_pb2
 
@@ -15,7 +16,8 @@ from .diode.v1 import ingester_pb2
 def create_message_chunks(
     entities: Iterable[ingester_pb2.Entity], max_chunk_size_mb: float = 3.0
 ) -> list[list[ingester_pb2.Entity]]:
-    """Create size-aware chunks from entities using greedy bin-packing.
+    """
+    Create size-aware chunks from entities using greedy bin-packing.
 
     This function chunks entities to ensure each chunk stays under the specified
     size limit. It uses a greedy bin-packing algorithm that accumulates entities
@@ -40,6 +42,7 @@ def create_message_chunks(
 
         >>> # Use a custom chunk size
         >>> chunks = create_message_chunks(entities, max_chunk_size_mb=3.5)
+
     """
     # Convert iterable to list if necessary for size estimation
     if not isinstance(entities, list):
@@ -85,7 +88,8 @@ def create_message_chunks(
 
 
 def estimate_message_size(entities: Iterable[ingester_pb2.Entity]) -> int:
-    """Estimate the serialized size of entities in bytes.
+    """
+    Estimate the serialized size of entities in bytes.
 
     Calculates the total size by summing individual entity sizes plus the
     IngestRequest protobuf overhead.
@@ -101,6 +105,7 @@ def estimate_message_size(entities: Iterable[ingester_pb2.Entity]) -> int:
         >>> size_bytes = estimate_message_size(entities)
         >>> size_mb = size_bytes / (1024 * 1024)
         >>> print(f"Estimated size: {size_mb:.2f} MB")
+
     """
     # Convert iterable to list if necessary
     if not isinstance(entities, list):
