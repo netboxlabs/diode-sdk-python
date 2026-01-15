@@ -346,7 +346,8 @@ print(f"Total size: {size_mb:.2f} MB")
 
 # Decide whether chunking is needed
 if size_mb > 3.0:
-    chunks = create_message_chunks(entities)
+    for chunk in create_message_chunks(entities):
+        client.ingest(entities=chunk)
 else:
     # Small enough to send in one request
     client.ingest(entities=entities)
