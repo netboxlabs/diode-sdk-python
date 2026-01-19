@@ -668,7 +668,7 @@ class DiodeOTLPClient(DiodeClientInterface):
                 options=channel_opts,
             )
         else:
-            _LOGGER.debug(f"Setting up gRPC insecure channel")
+            _LOGGER.debug("Setting up gRPC insecure channel")
             base_channel = grpc.insecure_channel(
                 target=self._target,
                 options=channel_opts,
