@@ -2,7 +2,7 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Timestamp: 2026-01-12 10:39:06Z
+# Timestamp: 2026-02-02 16:58:59Z
 #
 # ruff: noqa: C901
 
@@ -162,18 +162,16 @@ class Entity:
         timestamp: datetime.datetime | None = None,
         asn: str | ASN | pb.ASN | None = None,
         asn_range: str | ASNRange | pb.ASNRange | None = None,
-        aggregate: str | Aggregate | pb.Aggregate | None = None,
-        cable: str | Cable | pb.Cable | None = None,
-        cable_path: str | CablePath | pb.CablePath | None = None,
-        cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        aggregate: Aggregate | pb.Aggregate | None = None,
+        cable: Cable | pb.Cable | None = None,
+        cable_path: CablePath | pb.CablePath | None = None,
+        cable_termination: CableTermination | pb.CableTermination | None = None,
         circuit: str | Circuit | pb.Circuit | None = None,
         circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
-        circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
-        ) = None,
+        circuit_termination: CircuitTermination | pb.CircuitTermination | None = None,
         circuit_type: str | CircuitType | pb.CircuitType | None = None,
         cluster: str | Cluster | pb.Cluster | None = None,
         cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
@@ -183,9 +181,7 @@ class Entity:
             str | ConsoleServerPort | pb.ConsoleServerPort | None
         ) = None,
         contact: str | Contact | pb.Contact | None = None,
-        contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
-        ) = None,
+        contact_assignment: ContactAssignment | pb.ContactAssignment | None = None,
         contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         contact_role: str | ContactRole | pb.ContactRole | None = None,
         device: str | Device | pb.Device | None = None,
@@ -194,13 +190,13 @@ class Entity:
         device_type: str | DeviceType | pb.DeviceType | None = None,
         fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         front_port: str | FrontPort | pb.FrontPort | None = None,
         ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         ip_address: str | IPAddress | pb.IPAddress | None = None,
-        ip_range: str | IPRange | pb.IPRange | None = None,
+        ip_range: IPRange | pb.IPRange | None = None,
         ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
@@ -210,11 +206,11 @@ class Entity:
             str | InventoryItemRole | pb.InventoryItemRole | None
         ) = None,
         l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        l2vpn_termination: L2VPNTermination | pb.L2VPNTermination | None = None,
         location: str | Location | pb.Location | None = None,
         mac_address: str | MACAddress | pb.MACAddress | None = None,
         manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         module_type: str | ModuleType | pb.ModuleType | None = None,
         platform: str | Platform | pb.Platform | None = None,
@@ -228,7 +224,7 @@ class Entity:
         provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
         rir: str | RIR | pb.RIR | None = None,
         rack: str | Rack | pb.Rack | None = None,
-        rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        rack_reservation: RackReservation | pb.RackReservation | None = None,
         rack_role: str | RackRole | pb.RackRole | None = None,
         rack_type: str | RackType | pb.RackType | None = None,
         rear_port: str | RearPort | pb.RearPort | None = None,
@@ -243,23 +239,21 @@ class Entity:
         tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         tunnel: str | Tunnel | pb.Tunnel | None = None,
         tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
-        ) = None,
+        tunnel_termination: TunnelTermination | pb.TunnelTermination | None = None,
         vlan: str | VLAN | pb.VLAN | None = None,
         vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
         vlan_translation_policy: (
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         vm_interface: str | VMInterface | pb.VMInterface | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
         virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -271,18 +265,19 @@ class Entity:
         virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
         wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
-        wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        wireless_link: WirelessLink | pb.WirelessLink | None = None,
         custom_field: str | CustomField | pb.CustomField | None = None,
         custom_field_choice_set: (
             str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
         ) = None,
-        journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        journal_entry: JournalEntry | pb.JournalEntry | None = None,
         module_type_profile: (
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
         custom_link: str | CustomLink | pb.CustomLink | None = None,
         owner: str | Owner | pb.Owner | None = None,
         owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        device_config: DeviceConfig | pb.DeviceConfig | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -410,6 +405,7 @@ class Entity:
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
         owner = convert_to_protobuf(owner, pb.Owner)
         owner_group = convert_to_protobuf(owner_group, pb.OwnerGroup)
+        device_config = convert_to_protobuf(device_config, pb.DeviceConfig)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
@@ -511,6 +507,7 @@ class Entity:
             custom_link=custom_link,
             owner=owner,
             owner_group=owner_group,
+            device_config=device_config,
         )
         return result
 
@@ -526,9 +523,7 @@ class ASN:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         sites: list[str | Site | pb.Site] | None = None,
@@ -569,9 +564,7 @@ class ASNRange:
         tenant: str | Tenant | pb.Tenant | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -612,9 +605,7 @@ class Aggregate:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Aggregate:
@@ -646,8 +637,8 @@ class Cable:
     def __new__(
         cls,
         type: str | None = None,
-        a_terminations: list[str | GenericObject | pb.GenericObject] | None = None,
-        b_terminations: list[str | GenericObject | pb.GenericObject] | None = None,
+        a_terminations: list[GenericObject | pb.GenericObject] | None = None,
+        b_terminations: list[GenericObject | pb.GenericObject] | None = None,
         status: str | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
         label: str | None = None,
@@ -657,9 +648,7 @@ class Cable:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         profile: str | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -719,10 +708,10 @@ class CableTermination:
 
     def __new__(
         cls,
-        cable: str | Cable | pb.Cable | None = None,
+        cable: Cable | pb.Cable | None = None,
         cable_end: str | None = None,
         termination_circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
+            CircuitTermination | pb.CircuitTermination | None
         ) = None,
         termination_console_port: str | ConsolePort | pb.ConsolePort | None = None,
         termination_console_server_port: (
@@ -799,11 +788,9 @@ class Circuit:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         assignments: (
-            list[str | CircuitGroupAssignment | pb.CircuitGroupAssignment] | None
+            list[CircuitGroupAssignment | pb.CircuitGroupAssignment] | None
         ) = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Circuit:
@@ -850,9 +837,7 @@ class CircuitGroup:
         description: str | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -929,9 +914,7 @@ class CircuitTermination:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.CircuitTermination:
         """Create a new CircuitTermination."""
@@ -979,9 +962,7 @@ class CircuitType:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -1022,9 +1003,7 @@ class Cluster:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Cluster:
@@ -1069,9 +1048,7 @@ class ClusterGroup:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -1103,9 +1080,7 @@ class ClusterType:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -1134,7 +1109,7 @@ class ConsolePort:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
         label: str | None = None,
         type: str | None = None,
@@ -1142,9 +1117,7 @@ class ConsolePort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ConsolePort:
@@ -1178,7 +1151,7 @@ class ConsoleServerPort:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
         label: str | None = None,
         type: str | None = None,
@@ -1186,9 +1159,7 @@ class ConsoleServerPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ConsoleServerPort:
@@ -1231,9 +1202,7 @@ class Contact:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         groups: list[str | ContactGroup | pb.ContactGroup] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -1271,19 +1240,17 @@ class ContactAssignment:
         cls,
         object_asn: str | ASN | pb.ASN | None = None,
         object_asn_range: str | ASNRange | pb.ASNRange | None = None,
-        object_aggregate: str | Aggregate | pb.Aggregate | None = None,
-        object_cable: str | Cable | pb.Cable | None = None,
-        object_cable_path: str | CablePath | pb.CablePath | None = None,
-        object_cable_termination: (
-            str | CableTermination | pb.CableTermination | None
-        ) = None,
+        object_aggregate: Aggregate | pb.Aggregate | None = None,
+        object_cable: Cable | pb.Cable | None = None,
+        object_cable_path: CablePath | pb.CablePath | None = None,
+        object_cable_termination: CableTermination | pb.CableTermination | None = None,
         object_circuit: str | Circuit | pb.Circuit | None = None,
         object_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         object_circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
         object_circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
+            CircuitTermination | pb.CircuitTermination | None
         ) = None,
         object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         object_cluster: str | Cluster | pb.Cluster | None = None,
@@ -1295,7 +1262,7 @@ class ContactAssignment:
         ) = None,
         object_contact: str | Contact | pb.Contact | None = None,
         object_contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
+            ContactAssignment | pb.ContactAssignment | None
         ) = None,
         object_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         object_contact_role: str | ContactRole | pb.ContactRole | None = None,
@@ -1305,13 +1272,13 @@ class ContactAssignment:
         object_device_type: str | DeviceType | pb.DeviceType | None = None,
         object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         object_fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         object_front_port: str | FrontPort | pb.FrontPort | None = None,
         object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         object_ip_address: str | IPAddress | pb.IPAddress | None = None,
-        object_ip_range: str | IPRange | pb.IPRange | None = None,
+        object_ip_range: IPRange | pb.IPRange | None = None,
         object_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         object_ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         object_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
@@ -1321,13 +1288,11 @@ class ContactAssignment:
             str | InventoryItemRole | pb.InventoryItemRole | None
         ) = None,
         object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        object_l2vpn_termination: (
-            str | L2VPNTermination | pb.L2VPNTermination | None
-        ) = None,
+        object_l2vpn_termination: L2VPNTermination | pb.L2VPNTermination | None = None,
         object_location: str | Location | pb.Location | None = None,
         object_mac_address: str | MACAddress | pb.MACAddress | None = None,
         object_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        object_module: str | Module | pb.Module | None = None,
+        object_module: Module | pb.Module | None = None,
         object_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         object_module_type: str | ModuleType | pb.ModuleType | None = None,
         object_platform: str | Platform | pb.Platform | None = None,
@@ -1345,9 +1310,7 @@ class ContactAssignment:
         ) = None,
         object_rir: str | RIR | pb.RIR | None = None,
         object_rack: str | Rack | pb.Rack | None = None,
-        object_rack_reservation: (
-            str | RackReservation | pb.RackReservation | None
-        ) = None,
+        object_rack_reservation: RackReservation | pb.RackReservation | None = None,
         object_rack_role: str | RackRole | pb.RackRole | None = None,
         object_rack_type: str | RackType | pb.RackType | None = None,
         object_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -1363,7 +1326,7 @@ class ContactAssignment:
         object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         object_tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
+            TunnelTermination | pb.TunnelTermination | None
         ) = None,
         object_vlan: str | VLAN | pb.VLAN | None = None,
         object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
@@ -1371,14 +1334,14 @@ class ContactAssignment:
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         object_vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         object_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         object_vrf: str | VRF | pb.VRF | None = None,
         object_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         object_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
         object_virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         object_virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -1392,12 +1355,12 @@ class ContactAssignment:
         object_wireless_lan_group: (
             str | WirelessLANGroup | pb.WirelessLANGroup | None
         ) = None,
-        object_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        object_wireless_link: WirelessLink | pb.WirelessLink | None = None,
         object_custom_field: str | CustomField | pb.CustomField | None = None,
         object_custom_field_choice_set: (
             str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
         ) = None,
-        object_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        object_journal_entry: JournalEntry | pb.JournalEntry | None = None,
         object_module_type_profile: (
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
@@ -1408,9 +1371,7 @@ class ContactAssignment:
         role: str | ContactRole | pb.ContactRole | None = None,
         priority: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.ContactAssignment:
         """Create a new ContactAssignment."""
@@ -1692,9 +1653,7 @@ class ContactGroup:
         parent: str | ContactGroup | pb.ContactGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -1728,9 +1687,7 @@ class ContactRole:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -1760,18 +1717,16 @@ class CustomFieldObjectReference:
         cls,
         asn: str | ASN | pb.ASN | None = None,
         asn_range: str | ASNRange | pb.ASNRange | None = None,
-        aggregate: str | Aggregate | pb.Aggregate | None = None,
-        cable: str | Cable | pb.Cable | None = None,
-        cable_path: str | CablePath | pb.CablePath | None = None,
-        cable_termination: str | CableTermination | pb.CableTermination | None = None,
+        aggregate: Aggregate | pb.Aggregate | None = None,
+        cable: Cable | pb.Cable | None = None,
+        cable_path: CablePath | pb.CablePath | None = None,
+        cable_termination: CableTermination | pb.CableTermination | None = None,
         circuit: str | Circuit | pb.Circuit | None = None,
         circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
-        circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
-        ) = None,
+        circuit_termination: CircuitTermination | pb.CircuitTermination | None = None,
         circuit_type: str | CircuitType | pb.CircuitType | None = None,
         cluster: str | Cluster | pb.Cluster | None = None,
         cluster_group: str | ClusterGroup | pb.ClusterGroup | None = None,
@@ -1781,9 +1736,7 @@ class CustomFieldObjectReference:
             str | ConsoleServerPort | pb.ConsoleServerPort | None
         ) = None,
         contact: str | Contact | pb.Contact | None = None,
-        contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
-        ) = None,
+        contact_assignment: ContactAssignment | pb.ContactAssignment | None = None,
         contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         contact_role: str | ContactRole | pb.ContactRole | None = None,
         device: str | Device | pb.Device | None = None,
@@ -1792,13 +1745,13 @@ class CustomFieldObjectReference:
         device_type: str | DeviceType | pb.DeviceType | None = None,
         fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         front_port: str | FrontPort | pb.FrontPort | None = None,
         ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         ip_address: str | IPAddress | pb.IPAddress | None = None,
-        ip_range: str | IPRange | pb.IPRange | None = None,
+        ip_range: IPRange | pb.IPRange | None = None,
         ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
@@ -1808,11 +1761,11 @@ class CustomFieldObjectReference:
             str | InventoryItemRole | pb.InventoryItemRole | None
         ) = None,
         l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        l2vpn_termination: str | L2VPNTermination | pb.L2VPNTermination | None = None,
+        l2vpn_termination: L2VPNTermination | pb.L2VPNTermination | None = None,
         location: str | Location | pb.Location | None = None,
         mac_address: str | MACAddress | pb.MACAddress | None = None,
         manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         module_type: str | ModuleType | pb.ModuleType | None = None,
         platform: str | Platform | pb.Platform | None = None,
@@ -1826,7 +1779,7 @@ class CustomFieldObjectReference:
         provider_network: str | ProviderNetwork | pb.ProviderNetwork | None = None,
         rir: str | RIR | pb.RIR | None = None,
         rack: str | Rack | pb.Rack | None = None,
-        rack_reservation: str | RackReservation | pb.RackReservation | None = None,
+        rack_reservation: RackReservation | pb.RackReservation | None = None,
         rack_role: str | RackRole | pb.RackRole | None = None,
         rack_type: str | RackType | pb.RackType | None = None,
         rear_port: str | RearPort | pb.RearPort | None = None,
@@ -1841,23 +1794,21 @@ class CustomFieldObjectReference:
         tenant_group: str | TenantGroup | pb.TenantGroup | None = None,
         tunnel: str | Tunnel | pb.Tunnel | None = None,
         tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
-        tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
-        ) = None,
+        tunnel_termination: TunnelTermination | pb.TunnelTermination | None = None,
         vlan: str | VLAN | pb.VLAN | None = None,
         vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
         vlan_translation_policy: (
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         vm_interface: str | VMInterface | pb.VMInterface | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
         virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -1869,12 +1820,12 @@ class CustomFieldObjectReference:
         virtual_machine: str | VirtualMachine | pb.VirtualMachine | None = None,
         wireless_lan: str | WirelessLAN | pb.WirelessLAN | None = None,
         wireless_lan_group: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
-        wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        wireless_link: WirelessLink | pb.WirelessLink | None = None,
         custom_field: str | CustomField | pb.CustomField | None = None,
         custom_field_choice_set: (
             str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
         ) = None,
-        journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        journal_entry: JournalEntry | pb.JournalEntry | None = None,
         module_type_profile: (
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
@@ -2115,8 +2066,7 @@ class CustomFieldValue:
         cls,
         multiple_selection: list[str] | None = None,
         multiple_objects: (
-            list[str | CustomFieldObjectReference | pb.CustomFieldObjectReference]
-            | None
+            list[CustomFieldObjectReference | pb.CustomFieldObjectReference] | None
         ) = None,
         text: str | None = None,
         long_text: str | None = None,
@@ -2129,7 +2079,7 @@ class CustomFieldValue:
         json: str | None = None,
         selection: str | None = None,
         object: (
-            str | CustomFieldObjectReference | pb.CustomFieldObjectReference | None
+            CustomFieldObjectReference | pb.CustomFieldObjectReference | None
         ) = None,
     ) -> pb.CustomFieldValue:
         """Create a new CustomFieldValue."""
@@ -2186,11 +2136,10 @@ class Device:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        config: DeviceConfig | pb.DeviceConfig | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
     ) -> pb.Device:
@@ -2211,6 +2160,7 @@ class Device:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
+        config = convert_to_protobuf(config, pb.DeviceConfig)
 
         # shortcut types (not directly used)
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -2251,6 +2201,7 @@ class Device:
             custom_fields=custom_fields,
             metadata=metadata,
             owner=owner,
+            config=config,
         )
         return result
 
@@ -2266,9 +2217,7 @@ class DeviceBay:
         description: str | None = None,
         installed_device: str | Device | pb.Device | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.DeviceBay:
@@ -2304,9 +2253,7 @@ class DeviceRole:
         vm_role: bool | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         parent: str | DeviceRole | pb.DeviceRole | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
@@ -2354,9 +2301,7 @@ class DeviceType:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.DeviceType:
@@ -2403,9 +2348,7 @@ class FHRPGroup:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.FHRPGroup:
@@ -2438,19 +2381,19 @@ class FHRPGroupAssignment:
         group: str | FHRPGroup | pb.FHRPGroup | None = None,
         interface_asn: str | ASN | pb.ASN | None = None,
         interface_asn_range: str | ASNRange | pb.ASNRange | None = None,
-        interface_aggregate: str | Aggregate | pb.Aggregate | None = None,
-        interface_cable: str | Cable | pb.Cable | None = None,
-        interface_cable_path: str | CablePath | pb.CablePath | None = None,
+        interface_aggregate: Aggregate | pb.Aggregate | None = None,
+        interface_cable: Cable | pb.Cable | None = None,
+        interface_cable_path: CablePath | pb.CablePath | None = None,
         interface_cable_termination: (
-            str | CableTermination | pb.CableTermination | None
+            CableTermination | pb.CableTermination | None
         ) = None,
         interface_circuit: str | Circuit | pb.Circuit | None = None,
         interface_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         interface_circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
         interface_circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
+            CircuitTermination | pb.CircuitTermination | None
         ) = None,
         interface_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         interface_cluster: str | Cluster | pb.Cluster | None = None,
@@ -2462,7 +2405,7 @@ class FHRPGroupAssignment:
         ) = None,
         interface_contact: str | Contact | pb.Contact | None = None,
         interface_contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
+            ContactAssignment | pb.ContactAssignment | None
         ) = None,
         interface_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         interface_contact_role: str | ContactRole | pb.ContactRole | None = None,
@@ -2472,13 +2415,13 @@ class FHRPGroupAssignment:
         interface_device_type: str | DeviceType | pb.DeviceType | None = None,
         interface_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         interface_fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         interface_front_port: str | FrontPort | pb.FrontPort | None = None,
         interface_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         interface_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         interface_ip_address: str | IPAddress | pb.IPAddress | None = None,
-        interface_ip_range: str | IPRange | pb.IPRange | None = None,
+        interface_ip_range: IPRange | pb.IPRange | None = None,
         interface_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         interface_ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         interface_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
@@ -2489,12 +2432,12 @@ class FHRPGroupAssignment:
         ) = None,
         interface_l2vpn: str | L2VPN | pb.L2VPN | None = None,
         interface_l2vpn_termination: (
-            str | L2VPNTermination | pb.L2VPNTermination | None
+            L2VPNTermination | pb.L2VPNTermination | None
         ) = None,
         interface_location: str | Location | pb.Location | None = None,
         interface_mac_address: str | MACAddress | pb.MACAddress | None = None,
         interface_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        interface_module: str | Module | pb.Module | None = None,
+        interface_module: Module | pb.Module | None = None,
         interface_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         interface_module_type: str | ModuleType | pb.ModuleType | None = None,
         interface_platform: str | Platform | pb.Platform | None = None,
@@ -2512,9 +2455,7 @@ class FHRPGroupAssignment:
         ) = None,
         interface_rir: str | RIR | pb.RIR | None = None,
         interface_rack: str | Rack | pb.Rack | None = None,
-        interface_rack_reservation: (
-            str | RackReservation | pb.RackReservation | None
-        ) = None,
+        interface_rack_reservation: RackReservation | pb.RackReservation | None = None,
         interface_rack_role: str | RackRole | pb.RackRole | None = None,
         interface_rack_type: str | RackType | pb.RackType | None = None,
         interface_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -2530,7 +2471,7 @@ class FHRPGroupAssignment:
         interface_tunnel: str | Tunnel | pb.Tunnel | None = None,
         interface_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         interface_tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
+            TunnelTermination | pb.TunnelTermination | None
         ) = None,
         interface_vlan: str | VLAN | pb.VLAN | None = None,
         interface_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
@@ -2538,7 +2479,7 @@ class FHRPGroupAssignment:
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         interface_vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         interface_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         interface_vrf: str | VRF | pb.VRF | None = None,
@@ -2549,7 +2490,7 @@ class FHRPGroupAssignment:
             str | VirtualCircuit | pb.VirtualCircuit | None
         ) = None,
         interface_virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         interface_virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -2565,12 +2506,12 @@ class FHRPGroupAssignment:
         interface_wireless_lan_group: (
             str | WirelessLANGroup | pb.WirelessLANGroup | None
         ) = None,
-        interface_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        interface_wireless_link: WirelessLink | pb.WirelessLink | None = None,
         interface_custom_field: str | CustomField | pb.CustomField | None = None,
         interface_custom_field_choice_set: (
             str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
         ) = None,
-        interface_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        interface_journal_entry: JournalEntry | pb.JournalEntry | None = None,
         interface_module_type_profile: (
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
@@ -2893,7 +2834,7 @@ class FrontPort:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
         label: str | None = None,
         type: str | None = None,
@@ -2903,9 +2844,7 @@ class FrontPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         positions: int | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -2945,19 +2884,17 @@ class GenericObject:
         cls,
         object_asn: str | ASN | pb.ASN | None = None,
         object_asn_range: str | ASNRange | pb.ASNRange | None = None,
-        object_aggregate: str | Aggregate | pb.Aggregate | None = None,
-        object_cable: str | Cable | pb.Cable | None = None,
-        object_cable_path: str | CablePath | pb.CablePath | None = None,
-        object_cable_termination: (
-            str | CableTermination | pb.CableTermination | None
-        ) = None,
+        object_aggregate: Aggregate | pb.Aggregate | None = None,
+        object_cable: Cable | pb.Cable | None = None,
+        object_cable_path: CablePath | pb.CablePath | None = None,
+        object_cable_termination: CableTermination | pb.CableTermination | None = None,
         object_circuit: str | Circuit | pb.Circuit | None = None,
         object_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         object_circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
         object_circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
+            CircuitTermination | pb.CircuitTermination | None
         ) = None,
         object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         object_cluster: str | Cluster | pb.Cluster | None = None,
@@ -2969,7 +2906,7 @@ class GenericObject:
         ) = None,
         object_contact: str | Contact | pb.Contact | None = None,
         object_contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
+            ContactAssignment | pb.ContactAssignment | None
         ) = None,
         object_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         object_contact_role: str | ContactRole | pb.ContactRole | None = None,
@@ -2979,13 +2916,13 @@ class GenericObject:
         object_device_type: str | DeviceType | pb.DeviceType | None = None,
         object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         object_fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         object_front_port: str | FrontPort | pb.FrontPort | None = None,
         object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         object_ip_address: str | IPAddress | pb.IPAddress | None = None,
-        object_ip_range: str | IPRange | pb.IPRange | None = None,
+        object_ip_range: IPRange | pb.IPRange | None = None,
         object_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         object_ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         object_ip_sec_proposal: str | IPSecProposal | pb.IPSecProposal | None = None,
@@ -2995,13 +2932,11 @@ class GenericObject:
             str | InventoryItemRole | pb.InventoryItemRole | None
         ) = None,
         object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
-        object_l2vpn_termination: (
-            str | L2VPNTermination | pb.L2VPNTermination | None
-        ) = None,
+        object_l2vpn_termination: L2VPNTermination | pb.L2VPNTermination | None = None,
         object_location: str | Location | pb.Location | None = None,
         object_mac_address: str | MACAddress | pb.MACAddress | None = None,
         object_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        object_module: str | Module | pb.Module | None = None,
+        object_module: Module | pb.Module | None = None,
         object_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         object_module_type: str | ModuleType | pb.ModuleType | None = None,
         object_platform: str | Platform | pb.Platform | None = None,
@@ -3019,9 +2954,7 @@ class GenericObject:
         ) = None,
         object_rir: str | RIR | pb.RIR | None = None,
         object_rack: str | Rack | pb.Rack | None = None,
-        object_rack_reservation: (
-            str | RackReservation | pb.RackReservation | None
-        ) = None,
+        object_rack_reservation: RackReservation | pb.RackReservation | None = None,
         object_rack_role: str | RackRole | pb.RackRole | None = None,
         object_rack_type: str | RackType | pb.RackType | None = None,
         object_rear_port: str | RearPort | pb.RearPort | None = None,
@@ -3037,7 +2970,7 @@ class GenericObject:
         object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         object_tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
+            TunnelTermination | pb.TunnelTermination | None
         ) = None,
         object_vlan: str | VLAN | pb.VLAN | None = None,
         object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
@@ -3045,14 +2978,14 @@ class GenericObject:
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         object_vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         object_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         object_vrf: str | VRF | pb.VRF | None = None,
         object_virtual_chassis: str | VirtualChassis | pb.VirtualChassis | None = None,
         object_virtual_circuit: str | VirtualCircuit | pb.VirtualCircuit | None = None,
         object_virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         object_virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -3066,12 +2999,12 @@ class GenericObject:
         object_wireless_lan_group: (
             str | WirelessLANGroup | pb.WirelessLANGroup | None
         ) = None,
-        object_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        object_wireless_link: WirelessLink | pb.WirelessLink | None = None,
         object_custom_field: str | CustomField | pb.CustomField | None = None,
         object_custom_field_choice_set: (
             str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
         ) = None,
-        object_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        object_journal_entry: JournalEntry | pb.JournalEntry | None = None,
         object_module_type_profile: (
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
@@ -3349,9 +3282,7 @@ class IKEPolicy:
         preshared_key: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         proposals: list[str | IKEProposal | pb.IKEProposal] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -3392,9 +3323,7 @@ class IKEProposal:
         sa_lifetime: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IKEProposal:
@@ -3438,9 +3367,7 @@ class IPAddress:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         # shortcuts
@@ -3542,9 +3469,7 @@ class IPRange:
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         mark_utilized: bool | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         mark_populated: bool | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -3586,9 +3511,7 @@ class IPSecPolicy:
         pfs_group: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         proposals: list[str | IPSecProposal | pb.IPSecProposal] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -3625,9 +3548,7 @@ class IPSecProfile:
         ipsec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IPSecProfile:
@@ -3666,9 +3587,7 @@ class IPSecProposal:
         sa_lifetime_data: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.IPSecProposal:
@@ -3699,7 +3618,7 @@ class Interface:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
         label: str | None = None,
         type: str | None = None,
@@ -3730,9 +3649,7 @@ class Interface:
         mark_connected: bool | None = None,
         vrf: str | VRF | pb.VRF | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         vdcs: list[str | VirtualDeviceContext | pb.VirtualDeviceContext] | None = None,
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
         wireless_lans: list[str | WirelessLAN | pb.WirelessLAN] | None = None,
@@ -3859,9 +3776,7 @@ class InventoryItem:
         component_power_port: str | PowerPort | pb.PowerPort | None = None,
         component_rear_port: str | RearPort | pb.RearPort | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.InventoryItem:
@@ -3925,9 +3840,7 @@ class InventoryItemRole:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -3964,9 +3877,7 @@ class L2VPN:
         comments: str | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         status: str | None = None,
@@ -4011,21 +3922,21 @@ class L2VPNTermination:
         assigned_object_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         assigned_object_asn: str | ASN | pb.ASN | None = None,
         assigned_object_asn_range: str | ASNRange | pb.ASNRange | None = None,
-        assigned_object_aggregate: str | Aggregate | pb.Aggregate | None = None,
-        assigned_object_cable: str | Cable | pb.Cable | None = None,
-        assigned_object_cable_path: str | CablePath | pb.CablePath | None = None,
+        assigned_object_aggregate: Aggregate | pb.Aggregate | None = None,
+        assigned_object_cable: Cable | pb.Cable | None = None,
+        assigned_object_cable_path: CablePath | pb.CablePath | None = None,
         assigned_object_cable_termination: (
-            str | CableTermination | pb.CableTermination | None
+            CableTermination | pb.CableTermination | None
         ) = None,
         assigned_object_circuit: str | Circuit | pb.Circuit | None = None,
         assigned_object_circuit_group: (
             str | CircuitGroup | pb.CircuitGroup | None
         ) = None,
         assigned_object_circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
         assigned_object_circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
+            CircuitTermination | pb.CircuitTermination | None
         ) = None,
         assigned_object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         assigned_object_cluster: str | Cluster | pb.Cluster | None = None,
@@ -4039,7 +3950,7 @@ class L2VPNTermination:
         ) = None,
         assigned_object_contact: str | Contact | pb.Contact | None = None,
         assigned_object_contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
+            ContactAssignment | pb.ContactAssignment | None
         ) = None,
         assigned_object_contact_group: (
             str | ContactGroup | pb.ContactGroup | None
@@ -4055,13 +3966,13 @@ class L2VPNTermination:
         assigned_object_device_type: str | DeviceType | pb.DeviceType | None = None,
         assigned_object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         assigned_object_fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         assigned_object_front_port: str | FrontPort | pb.FrontPort | None = None,
         assigned_object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         assigned_object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         assigned_object_ip_address: str | IPAddress | pb.IPAddress | None = None,
-        assigned_object_ip_range: str | IPRange | pb.IPRange | None = None,
+        assigned_object_ip_range: IPRange | pb.IPRange | None = None,
         assigned_object_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         assigned_object_ip_sec_profile: (
             str | IPSecProfile | pb.IPSecProfile | None
@@ -4075,19 +3986,17 @@ class L2VPNTermination:
         assigned_object_inventory_item_role: (
             str | InventoryItemRole | pb.InventoryItemRole | None
         ) = None,
-        assigned_object_journal_entry: (
-            str | JournalEntry | pb.JournalEntry | None
-        ) = None,
+        assigned_object_journal_entry: JournalEntry | pb.JournalEntry | None = None,
         assigned_object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
         assigned_object_l2vpn_termination: (
-            str | L2VPNTermination | pb.L2VPNTermination | None
+            L2VPNTermination | pb.L2VPNTermination | None
         ) = None,
         assigned_object_location: str | Location | pb.Location | None = None,
         assigned_object_mac_address: str | MACAddress | pb.MACAddress | None = None,
         assigned_object_manufacturer: (
             str | Manufacturer | pb.Manufacturer | None
         ) = None,
-        assigned_object_module: str | Module | pb.Module | None = None,
+        assigned_object_module: Module | pb.Module | None = None,
         assigned_object_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         assigned_object_module_type: str | ModuleType | pb.ModuleType | None = None,
         assigned_object_module_type_profile: (
@@ -4109,7 +4018,7 @@ class L2VPNTermination:
         assigned_object_rir: str | RIR | pb.RIR | None = None,
         assigned_object_rack: str | Rack | pb.Rack | None = None,
         assigned_object_rack_reservation: (
-            str | RackReservation | pb.RackReservation | None
+            RackReservation | pb.RackReservation | None
         ) = None,
         assigned_object_rack_role: str | RackRole | pb.RackRole | None = None,
         assigned_object_rack_type: str | RackType | pb.RackType | None = None,
@@ -4126,14 +4035,14 @@ class L2VPNTermination:
         assigned_object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         assigned_object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         assigned_object_tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
+            TunnelTermination | pb.TunnelTermination | None
         ) = None,
         assigned_object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
         assigned_object_vlan_translation_policy: (
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         assigned_object_vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         assigned_object_vrf: str | VRF | pb.VRF | None = None,
         assigned_object_virtual_chassis: (
@@ -4143,7 +4052,7 @@ class L2VPNTermination:
             str | VirtualCircuit | pb.VirtualCircuit | None
         ) = None,
         assigned_object_virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         assigned_object_virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -4159,16 +4068,12 @@ class L2VPNTermination:
         assigned_object_wireless_lan_group: (
             str | WirelessLANGroup | pb.WirelessLANGroup | None
         ) = None,
-        assigned_object_wireless_link: (
-            str | WirelessLink | pb.WirelessLink | None
-        ) = None,
+        assigned_object_wireless_link: WirelessLink | pb.WirelessLink | None = None,
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         assigned_object_owner: str | Owner | pb.Owner | None = None,
         assigned_object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.L2VPNTermination:
         """Create a new L2VPNTermination."""
@@ -4545,9 +4450,7 @@ class Location:
         facility: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -4589,9 +4492,7 @@ class MACAddress:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.MACAddress:
@@ -4629,9 +4530,7 @@ class Manufacturer:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -4668,9 +4567,7 @@ class Module:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Module:
@@ -4705,16 +4602,14 @@ class ModuleBay:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
-        installed_module: str | Module | pb.Module | None = None,
+        installed_module: Module | pb.Module | None = None,
         label: str | None = None,
         position: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ModuleBay:
@@ -4756,9 +4651,7 @@ class ModuleType:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         profile: str | ModuleTypeProfile | pb.ModuleTypeProfile | None = None,
         attributes: str | None = None,
         metadata: dict[str, Any] | None = None,
@@ -4800,9 +4693,7 @@ class Platform:
         manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         parent: str | Platform | pb.Platform | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
@@ -4850,9 +4741,7 @@ class PowerFeed:
         tenant: str | Tenant | pb.Tenant | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.PowerFeed:
@@ -4893,7 +4782,7 @@ class PowerOutlet:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
         label: str | None = None,
         type: str | None = None,
@@ -4903,9 +4792,7 @@ class PowerOutlet:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         status: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -4949,9 +4836,7 @@ class PowerPanel:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.PowerPanel:
@@ -4982,7 +4867,7 @@ class PowerPort:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
         label: str | None = None,
         type: str | None = None,
@@ -4991,9 +4876,7 @@ class PowerPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.PowerPort:
@@ -5042,9 +4925,7 @@ class Prefix:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Prefix:
@@ -5094,9 +4975,7 @@ class Provider:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         accounts: list[str | ProviderAccount | pb.ProviderAccount] | None = None,
         asns: list[str | ASN | pb.ASN] | None = None,
         metadata: dict[str, Any] | None = None,
@@ -5135,9 +5014,7 @@ class ProviderAccount:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ProviderAccount:
@@ -5172,9 +5049,7 @@ class ProviderNetwork:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ProviderNetwork:
@@ -5208,9 +5083,7 @@ class RIR:
         is_private: bool | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -5265,9 +5138,7 @@ class Rack:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         outer_height: int | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -5328,9 +5199,7 @@ class RackReservation:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         status: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -5367,9 +5236,7 @@ class RackRole:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -5416,9 +5283,7 @@ class RackType:
         mounting_depth: int | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         outer_height: int | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -5462,7 +5327,7 @@ class RearPort:
     def __new__(
         cls,
         device: str | Device | pb.Device | None = None,
-        module: str | Module | pb.Module | None = None,
+        module: Module | pb.Module | None = None,
         name: str | None = None,
         label: str | None = None,
         type: str | None = None,
@@ -5471,9 +5336,7 @@ class RearPort:
         description: str | None = None,
         mark_connected: bool | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.RearPort:
@@ -5512,9 +5375,7 @@ class Region:
         parent: str | Region | pb.Region | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -5549,9 +5410,7 @@ class Role:
         weight: int | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -5585,9 +5444,7 @@ class RouteTarget:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.RouteTarget:
@@ -5623,9 +5480,7 @@ class Service:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         ipaddresses: list[str | IPAddress | pb.IPAddress] | None = None,
         parent_object_device: str | Device | pb.Device | None = None,
         parent_object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
@@ -5690,9 +5545,7 @@ class Site:
         longitude: float | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         asns: list[str | ASN | pb.ASN] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -5740,9 +5593,7 @@ class SiteGroup:
         parent: str | SiteGroup | pb.SiteGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -5805,9 +5656,7 @@ class Tenant:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Tenant:
@@ -5841,9 +5690,7 @@ class TenantGroup:
         parent: str | TenantGroup | pb.TenantGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -5883,9 +5730,7 @@ class Tunnel:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.Tunnel:
@@ -5924,9 +5769,7 @@ class TunnelGroup:
         slug: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -5958,19 +5801,19 @@ class TunnelTermination:
         role: str | None = None,
         termination_asn: str | ASN | pb.ASN | None = None,
         termination_asn_range: str | ASNRange | pb.ASNRange | None = None,
-        termination_aggregate: str | Aggregate | pb.Aggregate | None = None,
-        termination_cable: str | Cable | pb.Cable | None = None,
-        termination_cable_path: str | CablePath | pb.CablePath | None = None,
+        termination_aggregate: Aggregate | pb.Aggregate | None = None,
+        termination_cable: Cable | pb.Cable | None = None,
+        termination_cable_path: CablePath | pb.CablePath | None = None,
         termination_cable_termination: (
-            str | CableTermination | pb.CableTermination | None
+            CableTermination | pb.CableTermination | None
         ) = None,
         termination_circuit: str | Circuit | pb.Circuit | None = None,
         termination_circuit_group: str | CircuitGroup | pb.CircuitGroup | None = None,
         termination_circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
         termination_circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
+            CircuitTermination | pb.CircuitTermination | None
         ) = None,
         termination_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         termination_cluster: str | Cluster | pb.Cluster | None = None,
@@ -5982,7 +5825,7 @@ class TunnelTermination:
         ) = None,
         termination_contact: str | Contact | pb.Contact | None = None,
         termination_contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
+            ContactAssignment | pb.ContactAssignment | None
         ) = None,
         termination_contact_group: str | ContactGroup | pb.ContactGroup | None = None,
         termination_contact_role: str | ContactRole | pb.ContactRole | None = None,
@@ -5992,13 +5835,13 @@ class TunnelTermination:
         termination_device_type: str | DeviceType | pb.DeviceType | None = None,
         termination_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         termination_fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         termination_front_port: str | FrontPort | pb.FrontPort | None = None,
         termination_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         termination_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         termination_ip_address: str | IPAddress | pb.IPAddress | None = None,
-        termination_ip_range: str | IPRange | pb.IPRange | None = None,
+        termination_ip_range: IPRange | pb.IPRange | None = None,
         termination_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         termination_ip_sec_profile: str | IPSecProfile | pb.IPSecProfile | None = None,
         termination_ip_sec_proposal: (
@@ -6013,12 +5856,12 @@ class TunnelTermination:
         ) = None,
         termination_l2vpn: str | L2VPN | pb.L2VPN | None = None,
         termination_l2vpn_termination: (
-            str | L2VPNTermination | pb.L2VPNTermination | None
+            L2VPNTermination | pb.L2VPNTermination | None
         ) = None,
         termination_location: str | Location | pb.Location | None = None,
         termination_mac_address: str | MACAddress | pb.MACAddress | None = None,
         termination_manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
-        termination_module: str | Module | pb.Module | None = None,
+        termination_module: Module | pb.Module | None = None,
         termination_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         termination_module_type: str | ModuleType | pb.ModuleType | None = None,
         termination_platform: str | Platform | pb.Platform | None = None,
@@ -6037,7 +5880,7 @@ class TunnelTermination:
         termination_rir: str | RIR | pb.RIR | None = None,
         termination_rack: str | Rack | pb.Rack | None = None,
         termination_rack_reservation: (
-            str | RackReservation | pb.RackReservation | None
+            RackReservation | pb.RackReservation | None
         ) = None,
         termination_rack_role: str | RackRole | pb.RackRole | None = None,
         termination_rack_type: str | RackType | pb.RackType | None = None,
@@ -6054,7 +5897,7 @@ class TunnelTermination:
         termination_tunnel: str | Tunnel | pb.Tunnel | None = None,
         termination_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         termination_tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
+            TunnelTermination | pb.TunnelTermination | None
         ) = None,
         termination_vlan: str | VLAN | pb.VLAN | None = None,
         termination_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
@@ -6062,7 +5905,7 @@ class TunnelTermination:
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         termination_vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         termination_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         termination_vrf: str | VRF | pb.VRF | None = None,
@@ -6073,7 +5916,7 @@ class TunnelTermination:
             str | VirtualCircuit | pb.VirtualCircuit | None
         ) = None,
         termination_virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         termination_virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -6089,12 +5932,12 @@ class TunnelTermination:
         termination_wireless_lan_group: (
             str | WirelessLANGroup | pb.WirelessLANGroup | None
         ) = None,
-        termination_wireless_link: str | WirelessLink | pb.WirelessLink | None = None,
+        termination_wireless_link: WirelessLink | pb.WirelessLink | None = None,
         termination_custom_field: str | CustomField | pb.CustomField | None = None,
         termination_custom_field_choice_set: (
             str | CustomFieldChoiceSet | pb.CustomFieldChoiceSet | None
         ) = None,
-        termination_journal_entry: str | JournalEntry | pb.JournalEntry | None = None,
+        termination_journal_entry: JournalEntry | pb.JournalEntry | None = None,
         termination_module_type_profile: (
             str | ModuleTypeProfile | pb.ModuleTypeProfile | None
         ) = None,
@@ -6103,9 +5946,7 @@ class TunnelTermination:
         termination_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.TunnelTermination:
         """Create a new TunnelTermination."""
@@ -6460,9 +6301,7 @@ class VLAN:
         qinq_svlan: str | VLAN | pb.VLAN | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VLAN:
@@ -6513,9 +6352,7 @@ class VLANGroup:
         vid_ranges: list[int] | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         tenant: str | Tenant | pb.Tenant | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -6625,9 +6462,7 @@ class VMInterface:
         ) = None,
         vrf: str | VRF | pb.VRF | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -6683,9 +6518,7 @@ class VRF:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         import_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         export_targets: list[str | RouteTarget | pb.RouteTarget] | None = None,
         metadata: dict[str, Any] | None = None,
@@ -6727,9 +6560,7 @@ class VirtualChassis:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualChassis:
@@ -6767,9 +6598,7 @@ class VirtualCircuit:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualCircuit:
@@ -6809,9 +6638,7 @@ class VirtualCircuitTermination:
         interface: str | Interface | pb.Interface | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.VirtualCircuitTermination:
         """Create a new VirtualCircuitTermination."""
@@ -6842,9 +6669,7 @@ class VirtualCircuitType:
         color: str | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         comments: str | None = None,
@@ -6883,9 +6708,7 @@ class VirtualDeviceContext:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualDeviceContext:
@@ -6926,9 +6749,7 @@ class VirtualDisk:
         description: str | None = None,
         size: int | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.VirtualDisk:
@@ -6973,9 +6794,7 @@ class VirtualMachine:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         start_on_boot: str | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -7052,9 +6871,7 @@ class WirelessLAN:
         auth_psk: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.WirelessLAN:
@@ -7103,9 +6920,7 @@ class WirelessLANGroup:
         parent: str | WirelessLANGroup | pb.WirelessLANGroup | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         comments: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
@@ -7148,9 +6963,7 @@ class WirelessLink:
         description: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.WirelessLink:
@@ -7281,21 +7094,21 @@ class JournalEntry:
         cls,
         assigned_object_asn: str | ASN | pb.ASN | None = None,
         assigned_object_asn_range: str | ASNRange | pb.ASNRange | None = None,
-        assigned_object_aggregate: str | Aggregate | pb.Aggregate | None = None,
-        assigned_object_cable: str | Cable | pb.Cable | None = None,
-        assigned_object_cable_path: str | CablePath | pb.CablePath | None = None,
+        assigned_object_aggregate: Aggregate | pb.Aggregate | None = None,
+        assigned_object_cable: Cable | pb.Cable | None = None,
+        assigned_object_cable_path: CablePath | pb.CablePath | None = None,
         assigned_object_cable_termination: (
-            str | CableTermination | pb.CableTermination | None
+            CableTermination | pb.CableTermination | None
         ) = None,
         assigned_object_circuit: str | Circuit | pb.Circuit | None = None,
         assigned_object_circuit_group: (
             str | CircuitGroup | pb.CircuitGroup | None
         ) = None,
         assigned_object_circuit_group_assignment: (
-            str | CircuitGroupAssignment | pb.CircuitGroupAssignment | None
+            CircuitGroupAssignment | pb.CircuitGroupAssignment | None
         ) = None,
         assigned_object_circuit_termination: (
-            str | CircuitTermination | pb.CircuitTermination | None
+            CircuitTermination | pb.CircuitTermination | None
         ) = None,
         assigned_object_circuit_type: str | CircuitType | pb.CircuitType | None = None,
         assigned_object_cluster: str | Cluster | pb.Cluster | None = None,
@@ -7309,7 +7122,7 @@ class JournalEntry:
         ) = None,
         assigned_object_contact: str | Contact | pb.Contact | None = None,
         assigned_object_contact_assignment: (
-            str | ContactAssignment | pb.ContactAssignment | None
+            ContactAssignment | pb.ContactAssignment | None
         ) = None,
         assigned_object_contact_group: (
             str | ContactGroup | pb.ContactGroup | None
@@ -7325,13 +7138,13 @@ class JournalEntry:
         assigned_object_device_type: str | DeviceType | pb.DeviceType | None = None,
         assigned_object_fhrp_group: str | FHRPGroup | pb.FHRPGroup | None = None,
         assigned_object_fhrp_group_assignment: (
-            str | FHRPGroupAssignment | pb.FHRPGroupAssignment | None
+            FHRPGroupAssignment | pb.FHRPGroupAssignment | None
         ) = None,
         assigned_object_front_port: str | FrontPort | pb.FrontPort | None = None,
         assigned_object_ike_policy: str | IKEPolicy | pb.IKEPolicy | None = None,
         assigned_object_ike_proposal: str | IKEProposal | pb.IKEProposal | None = None,
         assigned_object_ip_address: str | IPAddress | pb.IPAddress | None = None,
-        assigned_object_ip_range: str | IPRange | pb.IPRange | None = None,
+        assigned_object_ip_range: IPRange | pb.IPRange | None = None,
         assigned_object_ip_sec_policy: str | IPSecPolicy | pb.IPSecPolicy | None = None,
         assigned_object_ip_sec_profile: (
             str | IPSecProfile | pb.IPSecProfile | None
@@ -7346,19 +7159,17 @@ class JournalEntry:
         assigned_object_inventory_item_role: (
             str | InventoryItemRole | pb.InventoryItemRole | None
         ) = None,
-        assigned_object_journal_entry: (
-            str | JournalEntry | pb.JournalEntry | None
-        ) = None,
+        assigned_object_journal_entry: JournalEntry | pb.JournalEntry | None = None,
         assigned_object_l2vpn: str | L2VPN | pb.L2VPN | None = None,
         assigned_object_l2vpn_termination: (
-            str | L2VPNTermination | pb.L2VPNTermination | None
+            L2VPNTermination | pb.L2VPNTermination | None
         ) = None,
         assigned_object_location: str | Location | pb.Location | None = None,
         assigned_object_mac_address: str | MACAddress | pb.MACAddress | None = None,
         assigned_object_manufacturer: (
             str | Manufacturer | pb.Manufacturer | None
         ) = None,
-        assigned_object_module: str | Module | pb.Module | None = None,
+        assigned_object_module: Module | pb.Module | None = None,
         assigned_object_module_bay: str | ModuleBay | pb.ModuleBay | None = None,
         assigned_object_module_type: str | ModuleType | pb.ModuleType | None = None,
         assigned_object_module_type_profile: (
@@ -7380,7 +7191,7 @@ class JournalEntry:
         assigned_object_rir: str | RIR | pb.RIR | None = None,
         assigned_object_rack: str | Rack | pb.Rack | None = None,
         assigned_object_rack_reservation: (
-            str | RackReservation | pb.RackReservation | None
+            RackReservation | pb.RackReservation | None
         ) = None,
         assigned_object_rack_role: str | RackRole | pb.RackRole | None = None,
         assigned_object_rack_type: str | RackType | pb.RackType | None = None,
@@ -7397,7 +7208,7 @@ class JournalEntry:
         assigned_object_tunnel: str | Tunnel | pb.Tunnel | None = None,
         assigned_object_tunnel_group: str | TunnelGroup | pb.TunnelGroup | None = None,
         assigned_object_tunnel_termination: (
-            str | TunnelTermination | pb.TunnelTermination | None
+            TunnelTermination | pb.TunnelTermination | None
         ) = None,
         assigned_object_vlan: str | VLAN | pb.VLAN | None = None,
         assigned_object_vlan_group: str | VLANGroup | pb.VLANGroup | None = None,
@@ -7405,7 +7216,7 @@ class JournalEntry:
             str | VLANTranslationPolicy | pb.VLANTranslationPolicy | None
         ) = None,
         assigned_object_vlan_translation_rule: (
-            str | VLANTranslationRule | pb.VLANTranslationRule | None
+            VLANTranslationRule | pb.VLANTranslationRule | None
         ) = None,
         assigned_object_vm_interface: str | VMInterface | pb.VMInterface | None = None,
         assigned_object_vrf: str | VRF | pb.VRF | None = None,
@@ -7416,7 +7227,7 @@ class JournalEntry:
             str | VirtualCircuit | pb.VirtualCircuit | None
         ) = None,
         assigned_object_virtual_circuit_termination: (
-            str | VirtualCircuitTermination | pb.VirtualCircuitTermination | None
+            VirtualCircuitTermination | pb.VirtualCircuitTermination | None
         ) = None,
         assigned_object_virtual_circuit_type: (
             str | VirtualCircuitType | pb.VirtualCircuitType | None
@@ -7432,18 +7243,14 @@ class JournalEntry:
         assigned_object_wireless_lan_group: (
             str | WirelessLANGroup | pb.WirelessLANGroup | None
         ) = None,
-        assigned_object_wireless_link: (
-            str | WirelessLink | pb.WirelessLink | None
-        ) = None,
+        assigned_object_wireless_link: WirelessLink | pb.WirelessLink | None = None,
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         assigned_object_owner: str | Owner | pb.Owner | None = None,
         assigned_object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         kind: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.JournalEntry:
         """Create a new JournalEntry."""
@@ -7816,9 +7623,7 @@ class ModuleTypeProfile:
         schema: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
-        custom_fields: (
-            dict[str, str | CustomFieldValue | pb.CustomFieldValue] | None
-        ) = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
     ) -> pb.ModuleTypeProfile:
@@ -7912,6 +7717,27 @@ class OwnerGroup:
         result = pb.OwnerGroup(
             name=name,
             description=description,
+            metadata=metadata,
+        )
+        return result
+
+
+class DeviceConfig:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.DeviceConfig."""
+
+    def __new__(
+        cls,
+        startup: bytes | None = None,
+        running: bytes | None = None,
+        candidate: bytes | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.DeviceConfig:
+        """Create a new DeviceConfig."""
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.DeviceConfig(
+            startup=startup,
+            running=running,
+            candidate=candidate,
             metadata=metadata,
         )
         return result
