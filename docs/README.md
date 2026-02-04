@@ -1,11 +1,11 @@
 # Diode Python SDK - Entity Examples
 
-// Source: NetBox v4.5.0
-Generated: 2026-02-02 21:20:55Z
+Source: NetBox v4.5.0
+Generated: 2026-02-04 16:45:30Z
 
 ## Prerequisites
 
-- Python 3.9 or later
+- Python 3.10 or later
 - Diode SDK for Python
 
 ## Installation
