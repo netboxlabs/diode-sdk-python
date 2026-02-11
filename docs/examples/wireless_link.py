@@ -7,12 +7,14 @@ This module demonstrates three patterns for ingesting WirelessLink entities:
 - wireless_link_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Entity,
     Device,
     DeviceRole,
     DeviceType,
-    Entity,
     Interface,
     Manufacturer,
     Site,
@@ -21,11 +23,11 @@ from netboxlabs.diode.sdk.ingester import (
     WirelessLink,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "wireless_link-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -38,11 +40,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        wireless_link = wireless_link_minimal()
-        # wireless_link = wireless_link_extended()
-        # wireless_link = wireless_link_explicit()
+        entity = wireless_link_minimal()
+        # entity = wireless_link_extended()
+        # entity = wireless_link_explicit()
 
-        response = client.ingest(entities=[Entity(wireless_link=wireless_link)])
+        response = client.ingest(entities=[Entity(wireless_link=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -52,8 +54,8 @@ def main():
 def wireless_link_minimal() -> WirelessLink:
     """Create a WirelessLink with only required fields using flat strings."""
     return WirelessLink(
-        interface_a="Example Interface A",  # flat string -> Interface
-        interface_b="Example Interface B",  # flat string -> Interface
+        interface_a="example-interface-a",  # flat string -> Interface
+        interface_b="example-interface-b",  # flat string -> Interface
         metadata={"source": "example"},
     )
 
@@ -61,11 +63,12 @@ def wireless_link_minimal() -> WirelessLink:
 def wireless_link_extended() -> WirelessLink:
     """Create a WirelessLink with common optional fields."""
     return WirelessLink(
-        interface_a="Example Interface A",
-        interface_b="Example Interface B",
-        metadata={"source": "example"},
+        interface_a="example-interface-a",
+        interface_b="example-interface-b",
         status="connected",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -78,29 +81,43 @@ def wireless_link_explicit() -> WirelessLink:
                     manufacturer=Manufacturer(
                         name="Example Name",
                         slug="example-slug",
+                        description="Example description",
+                        comments="Example comments",
                         metadata={"source": "example"},
                     ),
                     model="Model X",
                     slug="example-slug",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 role=DeviceRole(
                     name="Example Name",
                     slug="example-slug",
                     color="0000ff",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
+                serial="SN-001234",
+                asset_tag="ASSET-001",
                 site=Site(
                     name="Example Name",
                     slug="example-slug",
                     status="active",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 status="active",
+                description="Example description",
+                comments="Example comments",
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="Example Type",
+            label="Example label",
+            type="1000base-bx10-d",
+            description="Example description",
             metadata={"source": "example"},
         ),
         interface_b=Interface(
@@ -109,39 +126,55 @@ def wireless_link_explicit() -> WirelessLink:
                     manufacturer=Manufacturer(
                         name="Example Name",
                         slug="example-slug",
+                        description="Example description",
+                        comments="Example comments",
                         metadata={"source": "example"},
                     ),
                     model="Model X",
                     slug="example-slug",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 role=DeviceRole(
                     name="Example Name",
                     slug="example-slug",
                     color="0000ff",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
+                serial="SN-001234",
+                asset_tag="ASSET-001",
                 site=Site(
                     name="Example Name",
                     slug="example-slug",
                     status="active",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 status="active",
+                description="Example description",
+                comments="Example comments",
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="Example Type",
+            label="Example label",
+            type="1000base-bx10-d",
+            description="Example description",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
         status="connected",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

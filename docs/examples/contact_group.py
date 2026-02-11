@@ -7,18 +7,20 @@ This module demonstrates three patterns for ingesting ContactGroup entities:
 - contact_group_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    ContactGroup,
     Entity,
+    ContactGroup,
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "contact_group-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -31,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        contact_group = contact_group_minimal()
-        # contact_group = contact_group_extended()
-        # contact_group = contact_group_explicit()
+        entity = contact_group_minimal()
+        # entity = contact_group_extended()
+        # entity = contact_group_explicit()
 
-        response = client.ingest(entities=[Entity(contact_group=contact_group)])
+        response = client.ingest(entities=[Entity(contact_group=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -56,8 +58,9 @@ def contact_group_extended() -> ContactGroup:
     return ContactGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -66,10 +69,10 @@ def contact_group_explicit() -> ContactGroup:
     return ContactGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

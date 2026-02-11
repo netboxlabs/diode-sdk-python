@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting Tenant entities:
 - tenant_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -14,11 +16,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tenant,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "tenant-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -31,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        tenant = tenant_minimal()
-        # tenant = tenant_extended()
-        # tenant = tenant_explicit()
+        entity = tenant_minimal()
+        # entity = tenant_extended()
+        # entity = tenant_explicit()
 
-        response = client.ingest(entities=[Entity(tenant=tenant)])
+        response = client.ingest(entities=[Entity(tenant=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -56,8 +58,9 @@ def tenant_extended() -> Tenant:
     return Tenant(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -66,10 +69,10 @@ def tenant_explicit() -> Tenant:
     return Tenant(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

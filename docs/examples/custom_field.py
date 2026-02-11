@@ -7,13 +7,19 @@ This module demonstrates three patterns for ingesting CustomField entities:
 - custom_field_explicit: Fully nested objects with all fields
 """
 
-from netboxlabs.diode.sdk import DiodeClient
+import os
 
-TARGET = "grpc://localhost:8080/diode"
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    CustomField,
+)
+
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "custom_field-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -26,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        custom_field = custom_field_minimal()
-        # custom_field = custom_field_extended()
-        # custom_field = custom_field_explicit()
+        entity = custom_field_minimal()
+        # entity = custom_field_extended()
+        # entity = custom_field_explicit()
 
-        response = client.ingest(entities=[Entity(custom_field=custom_field)])
+        response = client.ingest(entities=[Entity(custom_field=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -51,8 +57,10 @@ def custom_field_extended() -> CustomField:
     return CustomField(
         type="boolean",
         name="Example Name",
-        metadata={"source": "example"},
+        label="Example label",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -61,9 +69,10 @@ def custom_field_explicit() -> CustomField:
     return CustomField(
         type="boolean",
         name="Example Name",
-        metadata={"source": "example"},
+        label="Example label",
         description="Example description",
         comments="Example comments",
+        metadata={"source": "example"},
     )
 
 

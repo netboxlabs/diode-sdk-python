@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting ProviderAccount entities:
 - provider_account_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -15,11 +17,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "provider_account-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,11 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        provider_account = provider_account_minimal()
-        # provider_account = provider_account_extended()
-        # provider_account = provider_account_explicit()
+        entity = provider_account_minimal()
+        # entity = provider_account_extended()
+        # entity = provider_account_explicit()
 
-        response = client.ingest(entities=[Entity(provider_account=provider_account)])
+        response = client.ingest(entities=[Entity(provider_account=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -46,8 +48,8 @@ def main():
 def provider_account_minimal() -> ProviderAccount:
     """Create a ProviderAccount with only required fields using flat strings."""
     return ProviderAccount(
-        provider="Example Provider",  # flat string -> Provider
-        account="Example Account",
+        provider="example-provider",  # flat string -> Provider
+        account="example-account",
         metadata={"source": "example"},
     )
 
@@ -55,10 +57,11 @@ def provider_account_minimal() -> ProviderAccount:
 def provider_account_extended() -> ProviderAccount:
     """Create a ProviderAccount with common optional fields."""
     return ProviderAccount(
-        provider="Example Provider",
-        account="Example Account",
-        metadata={"source": "example"},
+        provider="example-provider",
+        account="example-account",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -66,13 +69,17 @@ def provider_account_explicit() -> ProviderAccount:
     """Create a ProviderAccount with fully nested objects and all common fields."""
     return ProviderAccount(
         provider=Provider(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            description="Example description",
+            comments="Example comments",
+            metadata={"source": "example"},
         ),
-        account="Example Account",
-        metadata={"source": "example"},
+        account="example-account",
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

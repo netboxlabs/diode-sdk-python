@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting TunnelTermination entities
 - tunnel_termination_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -15,11 +17,11 @@ from netboxlabs.diode.sdk.ingester import (
     TunnelTermination,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "tunnel_termination-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,13 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        tunnel_termination = tunnel_termination_minimal()
-        # tunnel_termination = tunnel_termination_extended()
-        # tunnel_termination = tunnel_termination_explicit()
+        entity = tunnel_termination_minimal()
+        # entity = tunnel_termination_extended()
+        # entity = tunnel_termination_explicit()
 
-        response = client.ingest(
-            entities=[Entity(tunnel_termination=tunnel_termination)]
-        )
+        response = client.ingest(entities=[Entity(tunnel_termination=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -48,7 +48,7 @@ def main():
 def tunnel_termination_minimal() -> TunnelTermination:
     """Create a TunnelTermination with only required fields using flat strings."""
     return TunnelTermination(
-        tunnel="Example Tunnel",  # flat string -> Tunnel
+        tunnel="example-tunnel",  # flat string -> Tunnel
         role="hub",
         metadata={"source": "example"},
     )
@@ -57,7 +57,7 @@ def tunnel_termination_minimal() -> TunnelTermination:
 def tunnel_termination_extended() -> TunnelTermination:
     """Create a TunnelTermination with common optional fields."""
     return TunnelTermination(
-        tunnel="Example Tunnel",
+        tunnel="example-tunnel",
         role="hub",
         metadata={"source": "example"},
     )
@@ -69,12 +69,14 @@ def tunnel_termination_explicit() -> TunnelTermination:
         tunnel=Tunnel(
             name="Example Name",
             status="active",
-            encapsulation="Example Encapsulation",
+            encapsulation="gre",
+            description="Example description",
+            comments="Example comments",
             metadata={"source": "example"},
         ),
         role="hub",
-        metadata={"source": "example"},
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

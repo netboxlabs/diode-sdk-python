@@ -7,21 +7,23 @@ This module demonstrates three patterns for ingesting Circuit entities:
 - circuit_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Entity,
     Circuit,
     CircuitType,
-    Entity,
     Provider,
     Tag,
     Tenant,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "circuit-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -34,11 +36,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        circuit = circuit_minimal()
-        # circuit = circuit_extended()
-        # circuit = circuit_explicit()
+        entity = circuit_minimal()
+        # entity = circuit_extended()
+        # entity = circuit_explicit()
 
-        response = client.ingest(entities=[Entity(circuit=circuit)])
+        response = client.ingest(entities=[Entity(circuit=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -49,8 +51,8 @@ def circuit_minimal() -> Circuit:
     """Create a Circuit with only required fields using flat strings."""
     return Circuit(
         cid="CID-001",
-        provider="Example Provider",  # flat string -> Provider
-        type="Example Type",  # flat string -> CircuitType
+        provider="example-provider",  # flat string -> Provider
+        type="example-type",  # flat string -> CircuitType
         metadata={"source": "example"},
     )
 
@@ -59,11 +61,12 @@ def circuit_extended() -> Circuit:
     """Create a Circuit with common optional fields."""
     return Circuit(
         cid="CID-001",
-        provider="Example Provider",
-        type="Example Type",
-        metadata={"source": "example"},
+        provider="example-provider",
+        type="example-type",
         status="active",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -72,22 +75,30 @@ def circuit_explicit() -> Circuit:
     return Circuit(
         cid="CID-001",
         provider=Provider(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            description="Example description",
+            comments="Example comments",
+            metadata={"source": "example"},
         ),
         type=CircuitType(
             name="Example Name",
             slug="example-slug",
             color="0000ff",
+            description="Example description",
+            comments="Example comments",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
         status="active",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

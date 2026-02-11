@@ -7,19 +7,21 @@ This module demonstrates three patterns for ingesting CircuitGroup entities:
 - circuit_group_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    CircuitGroup,
     Entity,
+    CircuitGroup,
     Tag,
     Tenant,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "circuit_group-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,11 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        circuit_group = circuit_group_minimal()
-        # circuit_group = circuit_group_extended()
-        # circuit_group = circuit_group_explicit()
+        entity = circuit_group_minimal()
+        # entity = circuit_group_extended()
+        # entity = circuit_group_explicit()
 
-        response = client.ingest(entities=[Entity(circuit_group=circuit_group)])
+        response = client.ingest(entities=[Entity(circuit_group=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -57,8 +59,9 @@ def circuit_group_extended() -> CircuitGroup:
     return CircuitGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -67,13 +70,15 @@ def circuit_group_explicit() -> CircuitGroup:
     return CircuitGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

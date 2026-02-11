@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting Location entities:
 - location_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,11 +18,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tenant,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "location-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -33,11 +35,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        location = location_minimal()
-        # location = location_extended()
-        # location = location_explicit()
+        entity = location_minimal()
+        # entity = location_extended()
+        # entity = location_explicit()
 
-        response = client.ingest(entities=[Entity(location=location)])
+        response = client.ingest(entities=[Entity(location=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -49,7 +51,7 @@ def location_minimal() -> Location:
     return Location(
         name="Example Name",
         slug="example-slug",
-        site="Example Site",  # flat string -> Site
+        site="example-site",  # flat string -> Site
         metadata={"source": "example"},
     )
 
@@ -59,10 +61,11 @@ def location_extended() -> Location:
     return Location(
         name="Example Name",
         slug="example-slug",
-        site="Example Site",
-        metadata={"source": "example"},
+        site="example-site",
         status="active",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -75,16 +78,20 @@ def location_explicit() -> Location:
             name="Example Name",
             slug="example-slug",
             status="active",
+            description="Example description",
+            comments="Example comments",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
         status="active",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting IKEPolicy entities:
 - ike_policy_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -14,15 +16,15 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "ike_policy-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
-    """Main execution - demonstrates ingesting a IKEPolicy entity."""
+    """Main execution - demonstrates ingesting an IKEPolicy entity."""
     with DiodeClient(
         target=TARGET,
         app_name=APP_NAME,
@@ -31,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        ike_policy = ike_policy_minimal()
-        # ike_policy = ike_policy_extended()
-        # ike_policy = ike_policy_explicit()
+        entity = ike_policy_minimal()
+        # entity = ike_policy_extended()
+        # entity = ike_policy_explicit()
 
-        response = client.ingest(entities=[Entity(ike_policy=ike_policy)])
+        response = client.ingest(entities=[Entity(ike_policy=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -43,7 +45,7 @@ def main():
 
 
 def ike_policy_minimal() -> IKEPolicy:
-    """Create a IKEPolicy with only required fields using flat strings."""
+    """Create an IKEPolicy with only required fields using flat strings."""
     return IKEPolicy(
         name="Example Name",
         version=1,
@@ -52,24 +54,25 @@ def ike_policy_minimal() -> IKEPolicy:
 
 
 def ike_policy_extended() -> IKEPolicy:
-    """Create a IKEPolicy with common optional fields."""
+    """Create an IKEPolicy with common optional fields."""
     return IKEPolicy(
         name="Example Name",
         version=1,
-        metadata={"source": "example"},
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
 def ike_policy_explicit() -> IKEPolicy:
-    """Create a IKEPolicy with fully nested objects and all common fields."""
+    """Create an IKEPolicy with fully nested objects and all common fields."""
     return IKEPolicy(
         name="Example Name",
         version=1,
-        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

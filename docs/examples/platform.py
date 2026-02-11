@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting Platform entities:
 - platform_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -14,11 +16,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "platform-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -31,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        platform = platform_minimal()
-        # platform = platform_extended()
-        # platform = platform_explicit()
+        entity = platform_minimal()
+        # entity = platform_extended()
+        # entity = platform_explicit()
 
-        response = client.ingest(entities=[Entity(platform=platform)])
+        response = client.ingest(entities=[Entity(platform=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -56,8 +58,9 @@ def platform_extended() -> Platform:
     return Platform(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -66,10 +69,10 @@ def platform_explicit() -> Platform:
     return Platform(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

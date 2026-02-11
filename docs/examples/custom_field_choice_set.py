@@ -7,13 +7,19 @@ This module demonstrates three patterns for ingesting CustomFieldChoiceSet entit
 - custom_field_choice_set_explicit: Fully nested objects with all fields
 """
 
-from netboxlabs.diode.sdk import DiodeClient
+import os
 
-TARGET = "grpc://localhost:8080/diode"
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    CustomFieldChoiceSet,
+)
+
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "custom_field_choice_set-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -26,13 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        custom_field_choice_set = custom_field_choice_set_minimal()
-        # custom_field_choice_set = custom_field_choice_set_extended()
-        # custom_field_choice_set = custom_field_choice_set_explicit()
+        entity = custom_field_choice_set_minimal()
+        # entity = custom_field_choice_set_extended()
+        # entity = custom_field_choice_set_explicit()
 
-        response = client.ingest(
-            entities=[Entity(custom_field_choice_set=custom_field_choice_set)]
-        )
+        response = client.ingest(entities=[Entity(custom_field_choice_set=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -51,8 +55,8 @@ def custom_field_choice_set_extended() -> CustomFieldChoiceSet:
     """Create a CustomFieldChoiceSet with common optional fields."""
     return CustomFieldChoiceSet(
         name="Example Name",
-        metadata={"source": "example"},
         description="Example description",
+        metadata={"source": "example"},
     )
 
 
@@ -60,8 +64,8 @@ def custom_field_choice_set_explicit() -> CustomFieldChoiceSet:
     """Create a CustomFieldChoiceSet with fully nested objects and all common fields."""
     return CustomFieldChoiceSet(
         name="Example Name",
-        metadata={"source": "example"},
         description="Example description",
+        metadata={"source": "example"},
     )
 
 

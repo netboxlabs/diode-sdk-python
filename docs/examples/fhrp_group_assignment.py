@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting FHRPGroupAssignment entiti
 - fhrp_group_assignment_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -14,11 +16,11 @@ from netboxlabs.diode.sdk.ingester import (
     FHRPGroupAssignment,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "fhrp_group_assignment-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -31,13 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        fhrp_group_assignment = fhrp_group_assignment_minimal()
-        # fhrp_group_assignment = fhrp_group_assignment_extended()
-        # fhrp_group_assignment = fhrp_group_assignment_explicit()
+        entity = fhrp_group_assignment_minimal()
+        # entity = fhrp_group_assignment_extended()
+        # entity = fhrp_group_assignment_explicit()
 
-        response = client.ingest(
-            entities=[Entity(fhrp_group_assignment=fhrp_group_assignment)]
-        )
+        response = client.ingest(entities=[Entity(fhrp_group_assignment=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -47,7 +47,7 @@ def main():
 def fhrp_group_assignment_minimal() -> FHRPGroupAssignment:
     """Create a FHRPGroupAssignment with only required fields using flat strings."""
     return FHRPGroupAssignment(
-        group="Example Group",  # flat string -> FHRPGroup
+        group="example-group",  # flat string -> FHRPGroup
         priority=1,
         metadata={"source": "example"},
     )
@@ -56,7 +56,7 @@ def fhrp_group_assignment_minimal() -> FHRPGroupAssignment:
 def fhrp_group_assignment_extended() -> FHRPGroupAssignment:
     """Create a FHRPGroupAssignment with common optional fields."""
     return FHRPGroupAssignment(
-        group="Example Group",
+        group="example-group",
         priority=1,
         metadata={"source": "example"},
     )
@@ -66,7 +66,11 @@ def fhrp_group_assignment_explicit() -> FHRPGroupAssignment:
     """Create a FHRPGroupAssignment with fully nested objects and all common fields."""
     return FHRPGroupAssignment(
         group=FHRPGroup(
-            protocol="Example Protocol", group_id=1, metadata={"source": "example"}
+            protocol="carp",
+            group_id=1,
+            description="Example description",
+            comments="Example comments",
+            metadata={"source": "example"},
         ),
         priority=1,
         metadata={"source": "example"},

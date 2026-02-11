@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting VRF entities:
 - vrf_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -15,11 +17,11 @@ from netboxlabs.diode.sdk.ingester import (
     VRF,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "vrf-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,11 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        vrf = vrf_minimal()
-        # vrf = vrf_extended()
-        # vrf = vrf_explicit()
+        entity = vrf_minimal()
+        # entity = vrf_extended()
+        # entity = vrf_explicit()
 
-        response = client.ingest(entities=[Entity(vrf=vrf)])
+        response = client.ingest(entities=[Entity(vrf=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -55,8 +57,9 @@ def vrf_extended() -> VRF:
     """Create a VRF with common optional fields."""
     return VRF(
         name="Example Name",
-        metadata={"source": "example"},
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -64,13 +67,15 @@ def vrf_explicit() -> VRF:
     """Create a VRF with fully nested objects and all common fields."""
     return VRF(
         name="Example Name",
-        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

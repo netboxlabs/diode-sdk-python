@@ -7,18 +7,20 @@ This module demonstrates three patterns for ingesting DeviceRole entities:
 - device_role_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    DeviceRole,
     Entity,
+    DeviceRole,
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "device_role-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -31,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        device_role = device_role_minimal()
-        # device_role = device_role_extended()
-        # device_role = device_role_explicit()
+        entity = device_role_minimal()
+        # entity = device_role_extended()
+        # entity = device_role_explicit()
 
-        response = client.ingest(entities=[Entity(device_role=device_role)])
+        response = client.ingest(entities=[Entity(device_role=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -56,9 +58,10 @@ def device_role_extended() -> DeviceRole:
     return DeviceRole(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -67,11 +70,11 @@ def device_role_explicit() -> DeviceRole:
     return DeviceRole(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

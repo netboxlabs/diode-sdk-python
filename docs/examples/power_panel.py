@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting PowerPanel entities:
 - power_panel_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -15,11 +17,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "power_panel-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,11 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        power_panel = power_panel_minimal()
-        # power_panel = power_panel_extended()
-        # power_panel = power_panel_explicit()
+        entity = power_panel_minimal()
+        # entity = power_panel_extended()
+        # entity = power_panel_explicit()
 
-        response = client.ingest(entities=[Entity(power_panel=power_panel)])
+        response = client.ingest(entities=[Entity(power_panel=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -46,7 +48,7 @@ def main():
 def power_panel_minimal() -> PowerPanel:
     """Create a PowerPanel with only required fields using flat strings."""
     return PowerPanel(
-        site="Example Site",  # flat string -> Site
+        site="example-site",  # flat string -> Site
         name="Example Name",
         metadata={"source": "example"},
     )
@@ -55,10 +57,11 @@ def power_panel_minimal() -> PowerPanel:
 def power_panel_extended() -> PowerPanel:
     """Create a PowerPanel with common optional fields."""
     return PowerPanel(
-        site="Example Site",
+        site="example-site",
         name="Example Name",
-        metadata={"source": "example"},
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -69,13 +72,15 @@ def power_panel_explicit() -> PowerPanel:
             name="Example Name",
             slug="example-slug",
             status="active",
+            description="Example description",
+            comments="Example comments",
             metadata={"source": "example"},
         ),
         name="Example Name",
-        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

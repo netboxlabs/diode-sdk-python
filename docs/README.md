@@ -1,7 +1,7 @@
 # Diode Python SDK - Entity Examples
 
 Source: NetBox v4.5.0
-Generated: 2026-02-10 03:24:52Z
+Generated: 2026-02-11 02:15:59Z
 
 ## Prerequisites
 
@@ -16,12 +16,12 @@ pip install netboxlabs-diode-sdk
 
 ## Configuration
 
-Each example uses constants for configuration. You can modify these in the example code:
+Each example reads configuration from environment variables with sensible defaults:
 
-```python
-TARGET = "grpc://localhost:8080/diode"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+```bash
+export DIODE_TARGET="grpc://localhost:8080/diode"  # optional, this is the default
+export DIODE_CLIENT_ID="diode"                     # optional
+export DIODE_CLIENT_SECRET="changeme"              # optional
 ```
 
 ## Quick Start
@@ -66,6 +66,7 @@ Switch between patterns by uncommenting the desired function call in `main()`.
 - [ConsoleServerPort](examples/console_server_port.py)
 - [Device](examples/device.py)
 - [DeviceBay](examples/device_bay.py)
+- [DeviceConfig](examples/device_config.py)
 - [DeviceRole](examples/device_role.py)
 - [DeviceType](examples/device_type.py)
 - [FrontPort](examples/front_port.py)

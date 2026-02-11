@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting L2VPNTermination entities:
 - l2vpn_termination_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -15,11 +17,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "l2vpn_termination-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,11 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        l2vpn_termination = l2vpn_termination_minimal()
-        # l2vpn_termination = l2vpn_termination_extended()
-        # l2vpn_termination = l2vpn_termination_explicit()
+        entity = l2vpn_termination_minimal()
+        # entity = l2vpn_termination_extended()
+        # entity = l2vpn_termination_explicit()
 
-        response = client.ingest(entities=[Entity(l2vpn_termination=l2vpn_termination)])
+        response = client.ingest(entities=[Entity(l2vpn_termination=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -46,7 +48,7 @@ def main():
 def l2vpn_termination_minimal() -> L2VPNTermination:
     """Create a L2VPNTermination with only required fields using flat strings."""
     return L2VPNTermination(
-        l2vpn="Example L2Vpn",  # flat string -> L2VPN
+        l2vpn="example-l2vpn",  # flat string -> L2VPN
         metadata={"source": "example"},
     )
 
@@ -54,7 +56,7 @@ def l2vpn_termination_minimal() -> L2VPNTermination:
 def l2vpn_termination_extended() -> L2VPNTermination:
     """Create a L2VPNTermination with common optional fields."""
     return L2VPNTermination(
-        l2vpn="Example L2Vpn",
+        l2vpn="example-l2vpn",
         metadata={"source": "example"},
     )
 
@@ -65,11 +67,13 @@ def l2vpn_termination_explicit() -> L2VPNTermination:
         l2vpn=L2VPN(
             name="Example Name",
             slug="example-slug",
+            description="Example description",
+            comments="Example comments",
             status="active",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

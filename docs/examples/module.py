@@ -7,12 +7,14 @@ This module demonstrates three patterns for ingesting Module entities:
 - module_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Entity,
     Device,
     DeviceRole,
     DeviceType,
-    Entity,
     Manufacturer,
     Module,
     ModuleBay,
@@ -21,11 +23,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "module-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -38,11 +40,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        module = module_minimal()
-        # module = module_extended()
-        # module = module_explicit()
+        entity = module_minimal()
+        # entity = module_extended()
+        # entity = module_explicit()
 
-        response = client.ingest(entities=[Entity(module=module)])
+        response = client.ingest(entities=[Entity(module=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -52,9 +54,9 @@ def main():
 def module_minimal() -> Module:
     """Create a Module with only required fields using flat strings."""
     return Module(
-        device="Example Device",  # flat string -> Device
-        module_bay="Example Module Bay",  # flat string -> ModuleBay
-        module_type="Example Module Type",  # flat string -> ModuleType
+        device="example-device",  # flat string -> Device
+        module_bay="example-module-bay",  # flat string -> ModuleBay
+        module_type="example-module-type",  # flat string -> ModuleType
         metadata={"source": "example"},
     )
 
@@ -62,13 +64,15 @@ def module_minimal() -> Module:
 def module_extended() -> Module:
     """Create a Module with common optional fields."""
     return Module(
-        device="Example Device",
-        module_bay="Example Module Bay",
-        module_type="Example Module Type",
-        metadata={"source": "example"},
+        device="example-device",
+        module_bay="example-module-bay",
+        module_type="example-module-type",
         status="active",
         serial="SN-001234",
+        asset_tag="ASSET-001",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -80,25 +84,37 @@ def module_explicit() -> Module:
                 manufacturer=Manufacturer(
                     name="Example Name",
                     slug="example-slug",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 model="Model X",
                 slug="example-slug",
+                description="Example description",
+                comments="Example comments",
                 metadata={"source": "example"},
             ),
             role=DeviceRole(
                 name="Example Name",
                 slug="example-slug",
                 color="0000ff",
+                description="Example description",
+                comments="Example comments",
                 metadata={"source": "example"},
             ),
+            serial="SN-001234",
+            asset_tag="ASSET-001",
             site=Site(
                 name="Example Name",
                 slug="example-slug",
                 status="active",
+                description="Example description",
+                comments="Example comments",
                 metadata={"source": "example"},
             ),
             status="active",
+            description="Example description",
+            comments="Example comments",
             metadata={"source": "example"},
         ),
         module_bay=ModuleBay(
@@ -107,44 +123,64 @@ def module_explicit() -> Module:
                     manufacturer=Manufacturer(
                         name="Example Name",
                         slug="example-slug",
+                        description="Example description",
+                        comments="Example comments",
                         metadata={"source": "example"},
                     ),
                     model="Model X",
                     slug="example-slug",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 role=DeviceRole(
                     name="Example Name",
                     slug="example-slug",
                     color="0000ff",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
+                serial="SN-001234",
+                asset_tag="ASSET-001",
                 site=Site(
                     name="Example Name",
                     slug="example-slug",
                     status="active",
+                    description="Example description",
+                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 status="active",
+                description="Example description",
+                comments="Example comments",
                 metadata={"source": "example"},
             ),
             name="Example Name",
+            label="Example label",
+            description="Example description",
             metadata={"source": "example"},
         ),
         module_type=ModuleType(
             manufacturer=Manufacturer(
-                name="Example Name", slug="example-slug", metadata={"source": "example"}
+                name="Example Name",
+                slug="example-slug",
+                description="Example description",
+                comments="Example comments",
+                metadata={"source": "example"},
             ),
             model="Model X",
+            description="Example description",
+            comments="Example comments",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
         status="active",
         serial="SN-001234",
         asset_tag="ASSET-001",
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

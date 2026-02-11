@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting JournalEntry entities:
 - journal_entry_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -14,11 +16,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "journal_entry-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -31,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        journal_entry = journal_entry_minimal()
-        # journal_entry = journal_entry_extended()
-        # journal_entry = journal_entry_explicit()
+        entity = journal_entry_minimal()
+        # entity = journal_entry_extended()
+        # entity = journal_entry_explicit()
 
-        response = client.ingest(entities=[Entity(journal_entry=journal_entry)])
+        response = client.ingest(entities=[Entity(journal_entry=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -62,8 +64,8 @@ def journal_entry_explicit() -> JournalEntry:
     """Create a JournalEntry with fully nested objects and all common fields."""
     return JournalEntry(
         comments="Example comments",
-        metadata={"source": "example"},
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

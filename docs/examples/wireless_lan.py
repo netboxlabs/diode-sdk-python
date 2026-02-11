@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting WirelessLAN entities:
 - wireless_lan_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -15,11 +17,11 @@ from netboxlabs.diode.sdk.ingester import (
     WirelessLAN,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "wireless_lan-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,11 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        wireless_lan = wireless_lan_minimal()
-        # wireless_lan = wireless_lan_extended()
-        # wireless_lan = wireless_lan_explicit()
+        entity = wireless_lan_minimal()
+        # entity = wireless_lan_extended()
+        # entity = wireless_lan_explicit()
 
-        response = client.ingest(entities=[Entity(wireless_lan=wireless_lan)])
+        response = client.ingest(entities=[Entity(wireless_lan=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -46,7 +48,7 @@ def main():
 def wireless_lan_minimal() -> WirelessLAN:
     """Create a WirelessLAN with only required fields using flat strings."""
     return WirelessLAN(
-        ssid="ExampleSSID",
+        ssid="Example-SSID",
         metadata={"source": "example"},
     )
 
@@ -54,25 +56,28 @@ def wireless_lan_minimal() -> WirelessLAN:
 def wireless_lan_extended() -> WirelessLAN:
     """Create a WirelessLAN with common optional fields."""
     return WirelessLAN(
-        ssid="ExampleSSID",
-        metadata={"source": "example"},
+        ssid="Example-SSID",
         description="Example description",
         status="active",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
 def wireless_lan_explicit() -> WirelessLAN:
     """Create a WirelessLAN with fully nested objects and all common fields."""
     return WirelessLAN(
-        ssid="ExampleSSID",
-        metadata={"source": "example"},
+        ssid="Example-SSID",
         description="Example description",
         status="active",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

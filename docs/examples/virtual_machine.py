@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting VirtualMachine entities:
 - virtual_machine_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,11 +18,11 @@ from netboxlabs.diode.sdk.ingester import (
     VirtualMachine,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "virtual_machine-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -33,11 +35,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        virtual_machine = virtual_machine_minimal()
-        # virtual_machine = virtual_machine_extended()
-        # virtual_machine = virtual_machine_explicit()
+        entity = virtual_machine_minimal()
+        # entity = virtual_machine_extended()
+        # entity = virtual_machine_explicit()
 
-        response = client.ingest(entities=[Entity(virtual_machine=virtual_machine)])
+        response = client.ingest(entities=[Entity(virtual_machine=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -56,10 +58,11 @@ def virtual_machine_extended() -> VirtualMachine:
     """Create a VirtualMachine with common optional fields."""
     return VirtualMachine(
         name="Example Name",
-        metadata={"source": "example"},
         status="active",
         serial="SN-001234",
         description="Example description",
+        comments="Example comments",
+        metadata={"source": "example"},
     )
 
 
@@ -67,18 +70,22 @@ def virtual_machine_explicit() -> VirtualMachine:
     """Create a VirtualMachine with fully nested objects and all common fields."""
     return VirtualMachine(
         name="Example Name",
-        metadata={"source": "example"},
         status="active",
         serial="SN-001234",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         platform=Platform(
-            name="Example Name", slug="example-slug", metadata={"source": "example"}
+            name="Example Name",
+            slug="example-slug",
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 

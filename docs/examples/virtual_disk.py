@@ -7,6 +7,8 @@ This module demonstrates three patterns for ingesting VirtualDisk entities:
 - virtual_disk_explicit: Fully nested objects with all fields
 """
 
+import os
+
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -15,11 +17,11 @@ from netboxlabs.diode.sdk.ingester import (
     VirtualMachine,
 )
 
-TARGET = "grpc://localhost:8080/diode"
+TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
 APP_NAME = "virtual_disk-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = "diode"
-CLIENT_SECRET = "changeme"
+CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
+CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
 
 
 def main():
@@ -32,11 +34,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        virtual_disk = virtual_disk_minimal()
-        # virtual_disk = virtual_disk_extended()
-        # virtual_disk = virtual_disk_explicit()
+        entity = virtual_disk_minimal()
+        # entity = virtual_disk_extended()
+        # entity = virtual_disk_explicit()
 
-        response = client.ingest(entities=[Entity(virtual_disk=virtual_disk)])
+        response = client.ingest(entities=[Entity(virtual_disk=entity)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -46,7 +48,7 @@ def main():
 def virtual_disk_minimal() -> VirtualDisk:
     """Create a VirtualDisk with only required fields using flat strings."""
     return VirtualDisk(
-        virtual_machine="Example Virtual Machine",  # flat string -> VirtualMachine
+        virtual_machine="example-virtual-machine",  # flat string -> VirtualMachine
         name="Example Name",
         size=1,
         metadata={"source": "example"},
@@ -56,11 +58,11 @@ def virtual_disk_minimal() -> VirtualDisk:
 def virtual_disk_extended() -> VirtualDisk:
     """Create a VirtualDisk with common optional fields."""
     return VirtualDisk(
-        virtual_machine="Example Virtual Machine",
+        virtual_machine="example-virtual-machine",
         name="Example Name",
         size=1,
-        metadata={"source": "example"},
         description="Example description",
+        metadata={"source": "example"},
     )
 
 
@@ -68,13 +70,18 @@ def virtual_disk_explicit() -> VirtualDisk:
     """Create a VirtualDisk with fully nested objects and all common fields."""
     return VirtualDisk(
         virtual_machine=VirtualMachine(
-            name="Example Name", status="active", metadata={"source": "example"}
+            name="Example Name",
+            status="active",
+            serial="SN-001234",
+            description="Example description",
+            comments="Example comments",
+            metadata={"source": "example"},
         ),
         name="Example Name",
         size=1,
-        metadata={"source": "example"},
         description="Example description",
         tags=[Tag(name="production")],
+        metadata={"source": "example"},
     )
 
 
