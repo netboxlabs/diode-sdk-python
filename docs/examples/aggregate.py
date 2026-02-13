@@ -7,26 +7,24 @@ This module demonstrates three patterns for ingesting Aggregate entities:
 - aggregate_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     Aggregate,
+    Entity,
     RIR,
     Tag,
     Tenant,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "aggregate-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
-    """Main execution - demonstrates ingesting an Aggregate entity."""
+    """Main execution - demonstrates ingesting a Aggregate entity."""
     with DiodeClient(
         target=TARGET,
         app_name=APP_NAME,
@@ -35,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = aggregate_minimal()
-        # entity = aggregate_extended()
-        # entity = aggregate_explicit()
+        aggregate = aggregate_minimal()
+        # aggregate = aggregate_extended()
+        # aggregate = aggregate_explicit()
 
-        response = client.ingest(entities=[Entity(aggregate=entity)])
+        response = client.ingest(entities=[Entity(aggregate=aggregate)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -47,45 +45,38 @@ def main():
 
 
 def aggregate_minimal() -> Aggregate:
-    """Create an Aggregate with only required fields using flat strings."""
+    """Create a Aggregate with only required fields using flat strings."""
     return Aggregate(
         prefix="192.0.2.0/24",
-        rir="example-rir",  # flat string -> RIR
+        rir="Example RIR",  # flat string -> RIR
         metadata={"source": "example"},
     )
 
 
 def aggregate_extended() -> Aggregate:
-    """Create an Aggregate with common optional fields."""
+    """Create a Aggregate with common optional fields."""
     return Aggregate(
         prefix="192.0.2.0/24",
-        rir="example-rir",
-        description="Example description",
-        comments="Example comments",
+        rir="Example RIR",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
 def aggregate_explicit() -> Aggregate:
-    """Create an Aggregate with fully nested objects and all common fields."""
+    """Create a Aggregate with fully nested objects and all common fields."""
     return Aggregate(
         prefix="192.0.2.0/24",
         rir=RIR(
-            name="Example Name",
-            slug="example-slug",
-            description="Example description",
-            comments="Example comments",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

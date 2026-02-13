@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting Tunnel entities:
 - tunnel_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -17,11 +15,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tunnel,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "tunnel-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = tunnel_minimal()
-        # entity = tunnel_extended()
-        # entity = tunnel_explicit()
+        tunnel = tunnel_minimal()
+        # tunnel = tunnel_extended()
+        # tunnel = tunnel_explicit()
 
-        response = client.ingest(entities=[Entity(tunnel=entity)])
+        response = client.ingest(entities=[Entity(tunnel=tunnel)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -61,9 +59,8 @@ def tunnel_extended() -> Tunnel:
         name="Example Name",
         status="active",
         encapsulation="gre",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -73,15 +70,13 @@ def tunnel_explicit() -> Tunnel:
         name="Example Name",
         status="active",
         encapsulation="gre",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

@@ -7,19 +7,13 @@ This module demonstrates three patterns for ingesting CustomLink entities:
 - custom_link_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
-from netboxlabs.diode.sdk.ingester import (
-    Entity,
-    CustomLink,
-)
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "custom_link-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -32,11 +26,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = custom_link_minimal()
-        # entity = custom_link_extended()
-        # entity = custom_link_explicit()
+        custom_link = custom_link_minimal()
+        # custom_link = custom_link_extended()
+        # custom_link = custom_link_explicit()
 
-        response = client.ingest(entities=[Entity(custom_link=entity)])
+        response = client.ingest(entities=[Entity(custom_link=custom_link)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -47,8 +41,8 @@ def custom_link_minimal() -> CustomLink:
     """Create a CustomLink with only required fields using flat strings."""
     return CustomLink(
         name="Example Name",
-        link_text="example-link-text",
-        link_url="example-link-url",
+        link_text="Example Link Text",
+        link_url="Example Link Url",
         metadata={"source": "example"},
     )
 
@@ -57,8 +51,8 @@ def custom_link_extended() -> CustomLink:
     """Create a CustomLink with common optional fields."""
     return CustomLink(
         name="Example Name",
-        link_text="example-link-text",
-        link_url="example-link-url",
+        link_text="Example Link Text",
+        link_url="Example Link Url",
         metadata={"source": "example"},
     )
 
@@ -67,8 +61,8 @@ def custom_link_explicit() -> CustomLink:
     """Create a CustomLink with fully nested objects and all common fields."""
     return CustomLink(
         name="Example Name",
-        link_text="example-link-text",
-        link_url="example-link-url",
+        link_text="Example Link Text",
+        link_url="Example Link Url",
         metadata={"source": "example"},
     )
 

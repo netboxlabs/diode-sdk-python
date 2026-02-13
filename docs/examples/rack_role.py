@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting RackRole entities:
 - rack_role_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,11 +14,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "rack_role-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = rack_role_minimal()
-        # entity = rack_role_extended()
-        # entity = rack_role_explicit()
+        rack_role = rack_role_minimal()
+        # rack_role = rack_role_extended()
+        # rack_role = rack_role_explicit()
 
-        response = client.ingest(entities=[Entity(rack_role=entity)])
+        response = client.ingest(entities=[Entity(rack_role=rack_role)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -58,10 +56,9 @@ def rack_role_extended() -> RackRole:
     return RackRole(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
@@ -70,11 +67,11 @@ def rack_role_explicit() -> RackRole:
     return RackRole(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

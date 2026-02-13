@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting VirtualCircuit entities:
 - virtual_circuit_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -20,11 +18,11 @@ from netboxlabs.diode.sdk.ingester import (
     VirtualCircuitType,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "virtual_circuit-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -37,11 +35,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = virtual_circuit_minimal()
-        # entity = virtual_circuit_extended()
-        # entity = virtual_circuit_explicit()
+        virtual_circuit = virtual_circuit_minimal()
+        # virtual_circuit = virtual_circuit_extended()
+        # virtual_circuit = virtual_circuit_explicit()
 
-        response = client.ingest(entities=[Entity(virtual_circuit=entity)])
+        response = client.ingest(entities=[Entity(virtual_circuit=virtual_circuit)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -52,8 +50,8 @@ def virtual_circuit_minimal() -> VirtualCircuit:
     """Create a VirtualCircuit with only required fields using flat strings."""
     return VirtualCircuit(
         cid="CID-001",
-        provider_network="example-provider-network",  # flat string -> ProviderNetwork
-        type="example-type",  # flat string -> VirtualCircuitType
+        provider_network="Example Provider Network",  # flat string -> ProviderNetwork
+        type="Example Type",  # flat string -> VirtualCircuitType
         metadata={"source": "example"},
     )
 
@@ -62,12 +60,11 @@ def virtual_circuit_extended() -> VirtualCircuit:
     """Create a VirtualCircuit with common optional fields."""
     return VirtualCircuit(
         cid="CID-001",
-        provider_network="example-provider-network",
-        type="example-type",
+        provider_network="Example Provider Network",
+        type="Example Type",
+        metadata={"source": "example"},
         status="active",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
@@ -77,35 +74,25 @@ def virtual_circuit_explicit() -> VirtualCircuit:
         cid="CID-001",
         provider_network=ProviderNetwork(
             provider=Provider(
-                name="Example Name",
-                slug="example-slug",
-                description="Example description",
-                comments="Example comments",
-                metadata={"source": "example"},
+                name="Example Name", slug="example-slug", metadata={"source": "example"}
             ),
             name="Example Name",
-            description="Example description",
-            comments="Example comments",
             metadata={"source": "example"},
         ),
         type=VirtualCircuitType(
             name="Example Name",
             slug="example-slug",
             color="0000ff",
-            description="Example description",
-            comments="Example comments",
             metadata={"source": "example"},
         ),
+        metadata={"source": "example"},
         status="active",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

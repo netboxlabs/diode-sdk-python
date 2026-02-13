@@ -7,19 +7,13 @@ This module demonstrates three patterns for ingesting VLANTranslationPolicy enti
 - vlan_translation_policy_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
-from netboxlabs.diode.sdk.ingester import (
-    Entity,
-    VLANTranslationPolicy,
-)
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "vlan_translation_policy-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -32,11 +26,13 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = vlan_translation_policy_minimal()
-        # entity = vlan_translation_policy_extended()
-        # entity = vlan_translation_policy_explicit()
+        vlan_translation_policy = vlan_translation_policy_minimal()
+        # vlan_translation_policy = vlan_translation_policy_extended()
+        # vlan_translation_policy = vlan_translation_policy_explicit()
 
-        response = client.ingest(entities=[Entity(vlan_translation_policy=entity)])
+        response = client.ingest(
+            entities=[Entity(vlan_translation_policy=vlan_translation_policy)]
+        )
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -55,9 +51,8 @@ def vlan_translation_policy_extended() -> VLANTranslationPolicy:
     """Create a VLANTranslationPolicy with common optional fields."""
     return VLANTranslationPolicy(
         name="Example Name",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -65,9 +60,9 @@ def vlan_translation_policy_explicit() -> VLANTranslationPolicy:
     """Create a VLANTranslationPolicy with fully nested objects and all common fields."""
     return VLANTranslationPolicy(
         name="Example Name",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
-        metadata={"source": "example"},
     )
 
 

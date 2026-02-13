@@ -1,7 +1,7 @@
 # Diode Python SDK - Entity Examples
 
 Source: NetBox v4.5.0
-Generated: 2026-02-11 02:15:59Z
+Generated: 2026-02-13 21:40:42Z
 
 ## Prerequisites
 
@@ -16,12 +16,12 @@ pip install netboxlabs-diode-sdk
 
 ## Configuration
 
-Each example reads configuration from environment variables with sensible defaults:
+Each example uses constants for configuration. You can modify these in the example code:
 
-```bash
-export DIODE_TARGET="grpc://localhost:8080/diode"  # optional, this is the default
-export DIODE_CLIENT_ID="diode"                     # optional
-export DIODE_CLIENT_SECRET="changeme"              # optional
+```python
+TARGET = "grpc://localhost:8080/diode"
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 ```
 
 ## Quick Start
@@ -62,11 +62,11 @@ Switch between patterns by uncommenting the desired function call in `main()`.
 
 - [Cable](examples/cable.py)
 - [CablePath](examples/cable_path.py)
+- [CableTermination](examples/cable_termination.py)
 - [ConsolePort](examples/console_port.py)
 - [ConsoleServerPort](examples/console_server_port.py)
 - [Device](examples/device.py)
 - [DeviceBay](examples/device_bay.py)
-- [DeviceConfig](examples/device_config.py)
 - [DeviceRole](examples/device_role.py)
 - [DeviceType](examples/device_type.py)
 - [FrontPort](examples/front_port.py)
@@ -123,6 +123,10 @@ Switch between patterns by uncommenting the desired function call in `main()`.
 - [VLANTranslationPolicy](examples/vlan_translation_policy.py)
 - [VLANTranslationRule](examples/vlan_translation_rule.py)
 - [VRF](examples/vrf.py)
+
+### Other
+
+- [DeviceConfig](examples/device_config.py)
 
 ### Tenancy
 

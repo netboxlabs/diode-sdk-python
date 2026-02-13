@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting RackType entities:
 - rack_type_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -17,11 +15,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "rack_type-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = rack_type_minimal()
-        # entity = rack_type_extended()
-        # entity = rack_type_explicit()
+        rack_type = rack_type_minimal()
+        # rack_type = rack_type_extended()
+        # rack_type = rack_type_explicit()
 
-        response = client.ingest(entities=[Entity(rack_type=entity)])
+        response = client.ingest(entities=[Entity(rack_type=rack_type)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -48,7 +46,7 @@ def main():
 def rack_type_minimal() -> RackType:
     """Create a RackType with only required fields using flat strings."""
     return RackType(
-        manufacturer="example-manufacturer",  # flat string -> Manufacturer
+        manufacturer="Example Manufacturer",  # flat string -> Manufacturer
         model="Model X",
         slug="example-slug",
         metadata={"source": "example"},
@@ -58,12 +56,11 @@ def rack_type_minimal() -> RackType:
 def rack_type_extended() -> RackType:
     """Create a RackType with common optional fields."""
     return RackType(
-        manufacturer="example-manufacturer",
+        manufacturer="Example Manufacturer",
         model="Model X",
         slug="example-slug",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -71,18 +68,14 @@ def rack_type_explicit() -> RackType:
     """Create a RackType with fully nested objects and all common fields."""
     return RackType(
         manufacturer=Manufacturer(
-            name="Example Name",
-            slug="example-slug",
-            description="Example description",
-            comments="Example comments",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         model="Model X",
         slug="example-slug",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

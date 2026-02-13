@@ -7,20 +7,18 @@ This module demonstrates three patterns for ingesting ClusterGroup entities:
 - cluster_group_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     ClusterGroup,
+    Entity,
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "cluster_group-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = cluster_group_minimal()
-        # entity = cluster_group_extended()
-        # entity = cluster_group_explicit()
+        cluster_group = cluster_group_minimal()
+        # cluster_group = cluster_group_extended()
+        # cluster_group = cluster_group_explicit()
 
-        response = client.ingest(entities=[Entity(cluster_group=entity)])
+        response = client.ingest(entities=[Entity(cluster_group=cluster_group)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -58,9 +56,8 @@ def cluster_group_extended() -> ClusterGroup:
     return ClusterGroup(
         name="Example Name",
         slug="example-slug",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -69,10 +66,10 @@ def cluster_group_explicit() -> ClusterGroup:
     return ClusterGroup(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

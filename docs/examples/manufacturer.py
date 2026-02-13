@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting Manufacturer entities:
 - manufacturer_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,11 +14,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "manufacturer-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = manufacturer_minimal()
-        # entity = manufacturer_extended()
-        # entity = manufacturer_explicit()
+        manufacturer = manufacturer_minimal()
+        # manufacturer = manufacturer_extended()
+        # manufacturer = manufacturer_explicit()
 
-        response = client.ingest(entities=[Entity(manufacturer=entity)])
+        response = client.ingest(entities=[Entity(manufacturer=manufacturer)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -58,9 +56,8 @@ def manufacturer_extended() -> Manufacturer:
     return Manufacturer(
         name="Example Name",
         slug="example-slug",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -69,10 +66,10 @@ def manufacturer_explicit() -> Manufacturer:
     return Manufacturer(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

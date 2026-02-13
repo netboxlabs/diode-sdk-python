@@ -7,20 +7,18 @@ This module demonstrates three patterns for ingesting Contact entities:
 - contact_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     Contact,
+    Entity,
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "contact-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = contact_minimal()
-        # entity = contact_extended()
-        # entity = contact_explicit()
+        contact = contact_minimal()
+        # contact = contact_extended()
+        # contact = contact_explicit()
 
-        response = client.ingest(entities=[Entity(contact=entity)])
+        response = client.ingest(entities=[Entity(contact=contact)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -56,9 +54,8 @@ def contact_extended() -> Contact:
     """Create a Contact with common optional fields."""
     return Contact(
         name="Example Name",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -66,10 +63,10 @@ def contact_explicit() -> Contact:
     """Create a Contact with fully nested objects and all common fields."""
     return Contact(
         name="Example Name",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

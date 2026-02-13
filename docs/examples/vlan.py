@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting VLAN entities:
 - vlan_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -17,11 +15,11 @@ from netboxlabs.diode.sdk.ingester import (
     VLAN,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "vlan-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = vlan_minimal()
-        # entity = vlan_extended()
-        # entity = vlan_explicit()
+        vlan = vlan_minimal()
+        # vlan = vlan_extended()
+        # vlan = vlan_explicit()
 
-        response = client.ingest(entities=[Entity(vlan=entity)])
+        response = client.ingest(entities=[Entity(vlan=vlan)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -48,7 +46,7 @@ def main():
 def vlan_minimal() -> VLAN:
     """Create a VLAN with only required fields using flat strings."""
     return VLAN(
-        vid=100,
+        vid=1,
         name="Example Name",
         metadata={"source": "example"},
     )
@@ -57,30 +55,27 @@ def vlan_minimal() -> VLAN:
 def vlan_extended() -> VLAN:
     """Create a VLAN with common optional fields."""
     return VLAN(
-        vid=100,
+        vid=1,
         name="Example Name",
+        metadata={"source": "example"},
         status="active",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
 def vlan_explicit() -> VLAN:
     """Create a VLAN with fully nested objects and all common fields."""
     return VLAN(
-        vid=100,
+        vid=1,
         name="Example Name",
+        metadata={"source": "example"},
         status="active",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

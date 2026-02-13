@@ -7,21 +7,19 @@ This module demonstrates three patterns for ingesting ContactAssignment entities
 - contact_assignment_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     Contact,
     ContactAssignment,
+    Entity,
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "contact_assignment-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -34,11 +32,13 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = contact_assignment_minimal()
-        # entity = contact_assignment_extended()
-        # entity = contact_assignment_explicit()
+        contact_assignment = contact_assignment_minimal()
+        # contact_assignment = contact_assignment_extended()
+        # contact_assignment = contact_assignment_explicit()
 
-        response = client.ingest(entities=[Entity(contact_assignment=entity)])
+        response = client.ingest(
+            entities=[Entity(contact_assignment=contact_assignment)]
+        )
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -48,7 +48,7 @@ def main():
 def contact_assignment_minimal() -> ContactAssignment:
     """Create a ContactAssignment with only required fields using flat strings."""
     return ContactAssignment(
-        contact="example-contact",  # flat string -> Contact
+        contact="Example Contact",  # flat string -> Contact
         metadata={"source": "example"},
     )
 
@@ -56,7 +56,7 @@ def contact_assignment_minimal() -> ContactAssignment:
 def contact_assignment_extended() -> ContactAssignment:
     """Create a ContactAssignment with common optional fields."""
     return ContactAssignment(
-        contact="example-contact",
+        contact="Example Contact",
         metadata={"source": "example"},
     )
 
@@ -64,14 +64,9 @@ def contact_assignment_extended() -> ContactAssignment:
 def contact_assignment_explicit() -> ContactAssignment:
     """Create a ContactAssignment with fully nested objects and all common fields."""
     return ContactAssignment(
-        contact=Contact(
-            name="Example Name",
-            description="Example description",
-            comments="Example comments",
-            metadata={"source": "example"},
-        ),
-        tags=[Tag(name="production")],
+        contact=Contact(name="Example Name", metadata={"source": "example"}),
         metadata={"source": "example"},
+        tags=[Tag(name="production")],
     )
 
 

@@ -7,21 +7,19 @@ This module demonstrates three patterns for ingesting Cable entities:
 - cable_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     Cable,
+    Entity,
     Tag,
     Tenant,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "cable-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = cable_minimal()
-        # entity = cable_extended()
-        # entity = cable_explicit()
+        cable = cable_minimal()
+        # cable = cable_extended()
+        # cable = cable_explicit()
 
-        response = client.ingest(entities=[Entity(cable=entity)])
+        response = client.ingest(entities=[Entity(cable=cable)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -55,30 +53,25 @@ def cable_minimal() -> Cable:
 def cable_extended() -> Cable:
     """Create a Cable with common optional fields."""
     return Cable(
+        metadata={"source": "example"},
         status="connected",
-        label="Example label",
         color="0000ff",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
 def cable_explicit() -> Cable:
     """Create a Cable with fully nested objects and all common fields."""
     return Cable(
+        metadata={"source": "example"},
         status="connected",
-        label="Example label",
         color="0000ff",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

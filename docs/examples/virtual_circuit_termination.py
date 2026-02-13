@@ -7,14 +7,12 @@ This module demonstrates three patterns for ingesting VirtualCircuitTermination 
 - virtual_circuit_termination_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     Device,
     DeviceRole,
     DeviceType,
+    Entity,
     Interface,
     Manufacturer,
     Provider,
@@ -26,11 +24,11 @@ from netboxlabs.diode.sdk.ingester import (
     VirtualCircuitType,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "virtual_circuit_termination-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -43,11 +41,13 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = virtual_circuit_termination_minimal()
-        # entity = virtual_circuit_termination_extended()
-        # entity = virtual_circuit_termination_explicit()
+        virtual_circuit_termination = virtual_circuit_termination_minimal()
+        # virtual_circuit_termination = virtual_circuit_termination_extended()
+        # virtual_circuit_termination = virtual_circuit_termination_explicit()
 
-        response = client.ingest(entities=[Entity(virtual_circuit_termination=entity)])
+        response = client.ingest(
+            entities=[Entity(virtual_circuit_termination=virtual_circuit_termination)]
+        )
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -57,8 +57,8 @@ def main():
 def virtual_circuit_termination_minimal() -> VirtualCircuitTermination:
     """Create a VirtualCircuitTermination with only required fields using flat strings."""
     return VirtualCircuitTermination(
-        virtual_circuit="example-virtual-circuit",  # flat string -> VirtualCircuit
-        interface="example-interface",  # flat string -> Interface
+        virtual_circuit="Example Virtual Circuit",  # flat string -> VirtualCircuit
+        interface="Example Interface",  # flat string -> Interface
         metadata={"source": "example"},
     )
 
@@ -66,10 +66,10 @@ def virtual_circuit_termination_minimal() -> VirtualCircuitTermination:
 def virtual_circuit_termination_extended() -> VirtualCircuitTermination:
     """Create a VirtualCircuitTermination with common optional fields."""
     return VirtualCircuitTermination(
-        virtual_circuit="example-virtual-circuit",
-        interface="example-interface",
-        description="Example description",
+        virtual_circuit="Example Virtual Circuit",
+        interface="Example Interface",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -82,26 +82,18 @@ def virtual_circuit_termination_explicit() -> VirtualCircuitTermination:
                 provider=Provider(
                     name="Example Name",
                     slug="example-slug",
-                    description="Example description",
-                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 name="Example Name",
-                description="Example description",
-                comments="Example comments",
                 metadata={"source": "example"},
             ),
             type=VirtualCircuitType(
                 name="Example Name",
                 slug="example-slug",
                 color="0000ff",
-                description="Example description",
-                comments="Example comments",
                 metadata={"source": "example"},
             ),
             status="active",
-            description="Example description",
-            comments="Example comments",
             metadata={"source": "example"},
         ),
         interface=Interface(
@@ -110,48 +102,34 @@ def virtual_circuit_termination_explicit() -> VirtualCircuitTermination:
                     manufacturer=Manufacturer(
                         name="Example Name",
                         slug="example-slug",
-                        description="Example description",
-                        comments="Example comments",
                         metadata={"source": "example"},
                     ),
                     model="Model X",
                     slug="example-slug",
-                    description="Example description",
-                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 role=DeviceRole(
                     name="Example Name",
                     slug="example-slug",
                     color="0000ff",
-                    description="Example description",
-                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
-                serial="SN-001234",
-                asset_tag="ASSET-001",
                 site=Site(
                     name="Example Name",
                     slug="example-slug",
                     status="active",
-                    description="Example description",
-                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 status="active",
-                description="Example description",
-                comments="Example comments",
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            label="Example label",
-            type="1000base-bx10-d",
-            description="Example description",
+            type="Example Type",
             metadata={"source": "example"},
         ),
+        metadata={"source": "example"},
         description="Example description",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

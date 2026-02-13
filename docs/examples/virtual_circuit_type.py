@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting VirtualCircuitType entitie
 - virtual_circuit_type_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,11 +14,11 @@ from netboxlabs.diode.sdk.ingester import (
     VirtualCircuitType,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "virtual_circuit_type-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,13 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = virtual_circuit_type_minimal()
-        # entity = virtual_circuit_type_extended()
-        # entity = virtual_circuit_type_explicit()
+        virtual_circuit_type = virtual_circuit_type_minimal()
+        # virtual_circuit_type = virtual_circuit_type_extended()
+        # virtual_circuit_type = virtual_circuit_type_explicit()
 
-        response = client.ingest(entities=[Entity(virtual_circuit_type=entity)])
+        response = client.ingest(
+            entities=[Entity(virtual_circuit_type=virtual_circuit_type)]
+        )
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -58,10 +58,9 @@ def virtual_circuit_type_extended() -> VirtualCircuitType:
     return VirtualCircuitType(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
@@ -70,11 +69,11 @@ def virtual_circuit_type_explicit() -> VirtualCircuitType:
     return VirtualCircuitType(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

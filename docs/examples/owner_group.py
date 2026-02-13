@@ -7,23 +7,17 @@ This module demonstrates three patterns for ingesting OwnerGroup entities:
 - owner_group_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
-from netboxlabs.diode.sdk.ingester import (
-    Entity,
-    OwnerGroup,
-)
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "owner_group-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
-    """Main execution - demonstrates ingesting an OwnerGroup entity."""
+    """Main execution - demonstrates ingesting a OwnerGroup entity."""
     with DiodeClient(
         target=TARGET,
         app_name=APP_NAME,
@@ -32,11 +26,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = owner_group_minimal()
-        # entity = owner_group_extended()
-        # entity = owner_group_explicit()
+        owner_group = owner_group_minimal()
+        # owner_group = owner_group_extended()
+        # owner_group = owner_group_explicit()
 
-        response = client.ingest(entities=[Entity(owner_group=entity)])
+        response = client.ingest(entities=[Entity(owner_group=owner_group)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -44,7 +38,7 @@ def main():
 
 
 def owner_group_minimal() -> OwnerGroup:
-    """Create an OwnerGroup with only required fields using flat strings."""
+    """Create a OwnerGroup with only required fields using flat strings."""
     return OwnerGroup(
         name="Example Name",
         metadata={"source": "example"},
@@ -52,20 +46,20 @@ def owner_group_minimal() -> OwnerGroup:
 
 
 def owner_group_extended() -> OwnerGroup:
-    """Create an OwnerGroup with common optional fields."""
+    """Create a OwnerGroup with common optional fields."""
     return OwnerGroup(
         name="Example Name",
-        description="Example description",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
 def owner_group_explicit() -> OwnerGroup:
-    """Create an OwnerGroup with fully nested objects and all common fields."""
+    """Create a OwnerGroup with fully nested objects and all common fields."""
     return OwnerGroup(
         name="Example Name",
-        description="Example description",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 

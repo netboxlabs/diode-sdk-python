@@ -7,22 +7,20 @@ This module demonstrates three patterns for ingesting Cluster entities:
 - cluster_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     Cluster,
     ClusterType,
+    Entity,
     Tag,
     Tenant,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "cluster-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -35,11 +33,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = cluster_minimal()
-        # entity = cluster_extended()
-        # entity = cluster_explicit()
+        cluster = cluster_minimal()
+        # cluster = cluster_extended()
+        # cluster = cluster_explicit()
 
-        response = client.ingest(entities=[Entity(cluster=entity)])
+        response = client.ingest(entities=[Entity(cluster=cluster)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -50,7 +48,7 @@ def cluster_minimal() -> Cluster:
     """Create a Cluster with only required fields using flat strings."""
     return Cluster(
         name="Example Name",
-        type="example-type",  # flat string -> ClusterType
+        type="Example Type",  # flat string -> ClusterType
         metadata={"source": "example"},
     )
 
@@ -59,11 +57,10 @@ def cluster_extended() -> Cluster:
     """Create a Cluster with common optional fields."""
     return Cluster(
         name="Example Name",
-        type="example-type",
+        type="Example Type",
+        metadata={"source": "example"},
         status="active",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
@@ -72,22 +69,16 @@ def cluster_explicit() -> Cluster:
     return Cluster(
         name="Example Name",
         type=ClusterType(
-            name="Example Name",
-            slug="example-slug",
-            description="Example description",
-            comments="Example comments",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
+        metadata={"source": "example"},
         status="active",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

@@ -7,21 +7,19 @@ This module demonstrates three patterns for ingesting DeviceType entities:
 - device_type_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     DeviceType,
+    Entity,
     Manufacturer,
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "device_type-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = device_type_minimal()
-        # entity = device_type_extended()
-        # entity = device_type_explicit()
+        device_type = device_type_minimal()
+        # device_type = device_type_extended()
+        # device_type = device_type_explicit()
 
-        response = client.ingest(entities=[Entity(device_type=entity)])
+        response = client.ingest(entities=[Entity(device_type=device_type)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -48,7 +46,7 @@ def main():
 def device_type_minimal() -> DeviceType:
     """Create a DeviceType with only required fields using flat strings."""
     return DeviceType(
-        manufacturer="example-manufacturer",  # flat string -> Manufacturer
+        manufacturer="Example Manufacturer",  # flat string -> Manufacturer
         model="Model X",
         slug="example-slug",
         metadata={"source": "example"},
@@ -58,12 +56,11 @@ def device_type_minimal() -> DeviceType:
 def device_type_extended() -> DeviceType:
     """Create a DeviceType with common optional fields."""
     return DeviceType(
-        manufacturer="example-manufacturer",
+        manufacturer="Example Manufacturer",
         model="Model X",
         slug="example-slug",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -71,18 +68,14 @@ def device_type_explicit() -> DeviceType:
     """Create a DeviceType with fully nested objects and all common fields."""
     return DeviceType(
         manufacturer=Manufacturer(
-            name="Example Name",
-            slug="example-slug",
-            description="Example description",
-            comments="Example comments",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         model="Model X",
         slug="example-slug",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

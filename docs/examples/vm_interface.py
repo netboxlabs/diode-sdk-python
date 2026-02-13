@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting VMInterface entities:
 - vm_interface_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -17,11 +15,11 @@ from netboxlabs.diode.sdk.ingester import (
     VirtualMachine,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "vm_interface-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = vm_interface_minimal()
-        # entity = vm_interface_extended()
-        # entity = vm_interface_explicit()
+        vm_interface = vm_interface_minimal()
+        # vm_interface = vm_interface_extended()
+        # vm_interface = vm_interface_explicit()
 
-        response = client.ingest(entities=[Entity(vm_interface=entity)])
+        response = client.ingest(entities=[Entity(vm_interface=vm_interface)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -48,7 +46,7 @@ def main():
 def vm_interface_minimal() -> VMInterface:
     """Create a VMInterface with only required fields using flat strings."""
     return VMInterface(
-        virtual_machine="example-virtual-machine",  # flat string -> VirtualMachine
+        virtual_machine="Example Virtual Machine",  # flat string -> VirtualMachine
         name="Example Name",
         metadata={"source": "example"},
     )
@@ -57,10 +55,10 @@ def vm_interface_minimal() -> VMInterface:
 def vm_interface_extended() -> VMInterface:
     """Create a VMInterface with common optional fields."""
     return VMInterface(
-        virtual_machine="example-virtual-machine",
+        virtual_machine="Example Virtual Machine",
         name="Example Name",
-        description="Example description",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -68,17 +66,12 @@ def vm_interface_explicit() -> VMInterface:
     """Create a VMInterface with fully nested objects and all common fields."""
     return VMInterface(
         virtual_machine=VirtualMachine(
-            name="Example Name",
-            status="active",
-            serial="SN-001234",
-            description="Example description",
-            comments="Example comments",
-            metadata={"source": "example"},
+            name="Example Name", status="active", metadata={"source": "example"}
         ),
         name="Example Name",
+        metadata={"source": "example"},
         description="Example description",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

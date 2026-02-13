@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting IPSecProposal entities:
 - ip_sec_proposal_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,15 +14,15 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "ip_sec_proposal-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
-    """Main execution - demonstrates ingesting an IPSecProposal entity."""
+    """Main execution - demonstrates ingesting a IPSecProposal entity."""
     with DiodeClient(
         target=TARGET,
         app_name=APP_NAME,
@@ -33,11 +31,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = ip_sec_proposal_minimal()
-        # entity = ip_sec_proposal_extended()
-        # entity = ip_sec_proposal_explicit()
+        ip_sec_proposal = ip_sec_proposal_minimal()
+        # ip_sec_proposal = ip_sec_proposal_extended()
+        # ip_sec_proposal = ip_sec_proposal_explicit()
 
-        response = client.ingest(entities=[Entity(ip_sec_proposal=entity)])
+        response = client.ingest(entities=[Entity(ip_sec_proposal=ip_sec_proposal)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -45,7 +43,7 @@ def main():
 
 
 def ip_sec_proposal_minimal() -> IPSecProposal:
-    """Create an IPSecProposal with only required fields using flat strings."""
+    """Create a IPSecProposal with only required fields using flat strings."""
     return IPSecProposal(
         name="Example Name",
         metadata={"source": "example"},
@@ -53,23 +51,22 @@ def ip_sec_proposal_minimal() -> IPSecProposal:
 
 
 def ip_sec_proposal_extended() -> IPSecProposal:
-    """Create an IPSecProposal with common optional fields."""
+    """Create a IPSecProposal with common optional fields."""
     return IPSecProposal(
         name="Example Name",
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
 def ip_sec_proposal_explicit() -> IPSecProposal:
-    """Create an IPSecProposal with fully nested objects and all common fields."""
+    """Create a IPSecProposal with fully nested objects and all common fields."""
     return IPSecProposal(
         name="Example Name",
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

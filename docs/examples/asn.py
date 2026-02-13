@@ -7,25 +7,23 @@ This module demonstrates three patterns for ingesting ASN entities:
 - asn_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     ASN,
+    Entity,
     Tag,
     Tenant,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "asn-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
-    """Main execution - demonstrates ingesting an ASN entity."""
+    """Main execution - demonstrates ingesting a ASN entity."""
     with DiodeClient(
         target=TARGET,
         app_name=APP_NAME,
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = asn_minimal()
-        # entity = asn_extended()
-        # entity = asn_explicit()
+        asn = asn_minimal()
+        # asn = asn_extended()
+        # asn = asn_explicit()
 
-        response = client.ingest(entities=[Entity(asn=entity)])
+        response = client.ingest(entities=[Entity(asn=asn)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -46,36 +44,33 @@ def main():
 
 
 def asn_minimal() -> ASN:
-    """Create an ASN with only required fields using flat strings."""
+    """Create a ASN with only required fields using flat strings."""
     return ASN(
-        asn=65001,
+        asn=64512,
         metadata={"source": "example"},
     )
 
 
 def asn_extended() -> ASN:
-    """Create an ASN with common optional fields."""
+    """Create a ASN with common optional fields."""
     return ASN(
-        asn=65001,
-        description="Example description",
-        comments="Example comments",
+        asn=64512,
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
 def asn_explicit() -> ASN:
-    """Create an ASN with fully nested objects and all common fields."""
+    """Create a ASN with fully nested objects and all common fields."""
     return ASN(
-        asn=65001,
+        asn=64512,
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

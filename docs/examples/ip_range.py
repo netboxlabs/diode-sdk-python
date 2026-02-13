@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting IPRange entities:
 - ip_range_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -17,15 +15,15 @@ from netboxlabs.diode.sdk.ingester import (
     Tenant,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "ip_range-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
-    """Main execution - demonstrates ingesting an IPRange entity."""
+    """Main execution - demonstrates ingesting a IPRange entity."""
     with DiodeClient(
         target=TARGET,
         app_name=APP_NAME,
@@ -34,11 +32,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = ip_range_minimal()
-        # entity = ip_range_extended()
-        # entity = ip_range_explicit()
+        ip_range = ip_range_minimal()
+        # ip_range = ip_range_extended()
+        # ip_range = ip_range_explicit()
 
-        response = client.ingest(entities=[Entity(ip_range=entity)])
+        response = client.ingest(entities=[Entity(ip_range=ip_range)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -46,41 +44,38 @@ def main():
 
 
 def ip_range_minimal() -> IPRange:
-    """Create an IPRange with only required fields using flat strings."""
+    """Create a IPRange with only required fields using flat strings."""
     return IPRange(
-        start_address="example-start-address",
-        end_address="example-end-address",
+        start_address="Example Start Address",
+        end_address="Example End Address",
         metadata={"source": "example"},
     )
 
 
 def ip_range_extended() -> IPRange:
-    """Create an IPRange with common optional fields."""
+    """Create a IPRange with common optional fields."""
     return IPRange(
-        start_address="example-start-address",
-        end_address="example-end-address",
+        start_address="Example Start Address",
+        end_address="Example End Address",
+        metadata={"source": "example"},
         status="active",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
 def ip_range_explicit() -> IPRange:
-    """Create an IPRange with fully nested objects and all common fields."""
+    """Create a IPRange with fully nested objects and all common fields."""
     return IPRange(
-        start_address="example-start-address",
-        end_address="example-end-address",
+        start_address="Example Start Address",
+        end_address="Example End Address",
+        metadata={"source": "example"},
         status="active",
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
-            name="Example Name",
-            slug="example-slug",
-            metadata={"source": "example"},
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

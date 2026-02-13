@@ -7,20 +7,18 @@ This module demonstrates three patterns for ingesting CircuitType entities:
 - circuit_type_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     CircuitType,
+    Entity,
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "circuit_type-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = circuit_type_minimal()
-        # entity = circuit_type_extended()
-        # entity = circuit_type_explicit()
+        circuit_type = circuit_type_minimal()
+        # circuit_type = circuit_type_extended()
+        # circuit_type = circuit_type_explicit()
 
-        response = client.ingest(entities=[Entity(circuit_type=entity)])
+        response = client.ingest(entities=[Entity(circuit_type=circuit_type)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -58,10 +56,9 @@ def circuit_type_extended() -> CircuitType:
     return CircuitType(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
-        comments="Example comments",
-        metadata={"source": "example"},
     )
 
 
@@ -70,11 +67,11 @@ def circuit_type_explicit() -> CircuitType:
     return CircuitType(
         name="Example Name",
         slug="example-slug",
+        metadata={"source": "example"},
         color="0000ff",
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

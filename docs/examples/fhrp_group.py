@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting FHRPGroup entities:
 - fhrp_group_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,11 +14,11 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "fhrp_group-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = fhrp_group_minimal()
-        # entity = fhrp_group_extended()
-        # entity = fhrp_group_explicit()
+        fhrp_group = fhrp_group_minimal()
+        # fhrp_group = fhrp_group_extended()
+        # fhrp_group = fhrp_group_explicit()
 
-        response = client.ingest(entities=[Entity(fhrp_group=entity)])
+        response = client.ingest(entities=[Entity(fhrp_group=fhrp_group)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -58,9 +56,8 @@ def fhrp_group_extended() -> FHRPGroup:
     return FHRPGroup(
         protocol="carp",
         group_id=1,
-        description="Example description",
-        comments="Example comments",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -69,10 +66,10 @@ def fhrp_group_explicit() -> FHRPGroup:
     return FHRPGroup(
         protocol="carp",
         group_id=1,
+        metadata={"source": "example"},
         description="Example description",
         comments="Example comments",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 

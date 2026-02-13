@@ -7,8 +7,6 @@ This module demonstrates three patterns for ingesting VLANTranslationRule entiti
 - vlan_translation_rule_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
@@ -16,11 +14,11 @@ from netboxlabs.diode.sdk.ingester import (
     VLANTranslationRule,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "vlan_translation_rule-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -33,11 +31,13 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = vlan_translation_rule_minimal()
-        # entity = vlan_translation_rule_extended()
-        # entity = vlan_translation_rule_explicit()
+        vlan_translation_rule = vlan_translation_rule_minimal()
+        # vlan_translation_rule = vlan_translation_rule_extended()
+        # vlan_translation_rule = vlan_translation_rule_explicit()
 
-        response = client.ingest(entities=[Entity(vlan_translation_rule=entity)])
+        response = client.ingest(
+            entities=[Entity(vlan_translation_rule=vlan_translation_rule)]
+        )
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -47,7 +47,7 @@ def main():
 def vlan_translation_rule_minimal() -> VLANTranslationRule:
     """Create a VLANTranslationRule with only required fields using flat strings."""
     return VLANTranslationRule(
-        policy="example-policy",  # flat string -> VLANTranslationPolicy
+        policy="Example Policy",  # flat string -> VLANTranslationPolicy
         local_vid=1,
         remote_vid=1,
         metadata={"source": "example"},
@@ -57,11 +57,11 @@ def vlan_translation_rule_minimal() -> VLANTranslationRule:
 def vlan_translation_rule_extended() -> VLANTranslationRule:
     """Create a VLANTranslationRule with common optional fields."""
     return VLANTranslationRule(
-        policy="example-policy",
+        policy="Example Policy",
         local_vid=1,
         remote_vid=1,
-        description="Example description",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -69,15 +69,12 @@ def vlan_translation_rule_explicit() -> VLANTranslationRule:
     """Create a VLANTranslationRule with fully nested objects and all common fields."""
     return VLANTranslationRule(
         policy=VLANTranslationPolicy(
-            name="Example Name",
-            description="Example description",
-            comments="Example comments",
-            metadata={"source": "example"},
+            name="Example Name", metadata={"source": "example"}
         ),
         local_vid=1,
         remote_vid=1,
-        description="Example description",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 

@@ -7,25 +7,23 @@ This module demonstrates three patterns for ingesting ModuleBay entities:
 - module_bay_explicit: Fully nested objects with all fields
 """
 
-import os
-
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
-    Entity,
     Device,
     DeviceRole,
     DeviceType,
+    Entity,
     Manufacturer,
     ModuleBay,
     Site,
     Tag,
 )
 
-TARGET = os.getenv("DIODE_TARGET", "grpc://localhost:8080/diode")
+TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "module_bay-example"
 APP_VERSION = "1.0.0"
-CLIENT_ID = os.getenv("DIODE_CLIENT_ID", "diode")
-CLIENT_SECRET = os.getenv("DIODE_CLIENT_SECRET", "changeme")
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
 
 
 def main():
@@ -38,11 +36,11 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        entity = module_bay_minimal()
-        # entity = module_bay_extended()
-        # entity = module_bay_explicit()
+        module_bay = module_bay_minimal()
+        # module_bay = module_bay_extended()
+        # module_bay = module_bay_explicit()
 
-        response = client.ingest(entities=[Entity(module_bay=entity)])
+        response = client.ingest(entities=[Entity(module_bay=module_bay)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
@@ -52,7 +50,7 @@ def main():
 def module_bay_minimal() -> ModuleBay:
     """Create a ModuleBay with only required fields using flat strings."""
     return ModuleBay(
-        device="example-device",  # flat string -> Device
+        device="Example Device",  # flat string -> Device
         name="Example Name",
         metadata={"source": "example"},
     )
@@ -61,11 +59,10 @@ def module_bay_minimal() -> ModuleBay:
 def module_bay_extended() -> ModuleBay:
     """Create a ModuleBay with common optional fields."""
     return ModuleBay(
-        device="example-device",
+        device="Example Device",
         name="Example Name",
-        label="Example label",
-        description="Example description",
         metadata={"source": "example"},
+        description="Example description",
     )
 
 
@@ -77,44 +74,31 @@ def module_bay_explicit() -> ModuleBay:
                 manufacturer=Manufacturer(
                     name="Example Name",
                     slug="example-slug",
-                    description="Example description",
-                    comments="Example comments",
                     metadata={"source": "example"},
                 ),
                 model="Model X",
                 slug="example-slug",
-                description="Example description",
-                comments="Example comments",
                 metadata={"source": "example"},
             ),
             role=DeviceRole(
                 name="Example Name",
                 slug="example-slug",
                 color="0000ff",
-                description="Example description",
-                comments="Example comments",
                 metadata={"source": "example"},
             ),
-            serial="SN-001234",
-            asset_tag="ASSET-001",
             site=Site(
                 name="Example Name",
                 slug="example-slug",
                 status="active",
-                description="Example description",
-                comments="Example comments",
                 metadata={"source": "example"},
             ),
             status="active",
-            description="Example description",
-            comments="Example comments",
             metadata={"source": "example"},
         ),
         name="Example Name",
-        label="Example label",
+        metadata={"source": "example"},
         description="Example description",
         tags=[Tag(name="production")],
-        metadata={"source": "example"},
     )
 
 
