@@ -10,7 +10,10 @@ This module demonstrates three patterns for ingesting Contact entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Contact,
+    ContactGroup,
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -54,8 +57,14 @@ def contact_extended() -> Contact:
     """Create a Contact with common optional fields."""
     return Contact(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        title="Example Title",
+        phone="Example Phone",
+        email="Example Email",
+        address="192.0.2.1/32",
+        link="Example Link",
+        comments="Example comments",
     )
 
 
@@ -63,9 +72,26 @@ def contact_explicit() -> Contact:
     """Create a Contact with fully nested objects and all common fields."""
     return Contact(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        title="Example Title",
+        phone="Example Phone",
+        email="Example Email",
+        address="192.0.2.1/32",
+        link="Example Link",
+        group=ContactGroup(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

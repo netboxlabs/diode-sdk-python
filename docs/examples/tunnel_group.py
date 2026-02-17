@@ -10,6 +10,8 @@ This module demonstrates three patterns for ingesting TunnelGroup entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
     TunnelGroup,
 )
@@ -56,8 +58,9 @@ def tunnel_group_extended() -> TunnelGroup:
     return TunnelGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        comments="Example comments",
     )
 
 
@@ -66,9 +69,18 @@ def tunnel_group_explicit() -> TunnelGroup:
     return TunnelGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

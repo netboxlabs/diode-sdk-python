@@ -10,6 +10,9 @@ This module demonstrates three patterns for ingesting PowerPanel entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Location,
+    Owner,
+    OwnerGroup,
     PowerPanel,
     Site,
     Tag,
@@ -57,8 +60,10 @@ def power_panel_extended() -> PowerPanel:
     return PowerPanel(
         site="Example Site",
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        location="Example Location",
+        comments="Example comments",
     )
 
 
@@ -72,9 +77,30 @@ def power_panel_explicit() -> PowerPanel:
             metadata={"source": "example"},
         ),
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        location=Location(
+            name="Example Name",
+            slug="example-slug",
+            site=Site(
+                name="Example Name",
+                slug="example-slug",
+                status="active",
+                metadata={"source": "example"},
+            ),
+            status="active",
+            metadata={"source": "example"},
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

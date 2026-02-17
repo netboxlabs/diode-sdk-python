@@ -13,7 +13,10 @@ from netboxlabs.diode.sdk.ingester import (
     DeviceRole,
     DeviceType,
     Entity,
+    IPAddress,
     Manufacturer,
+    Owner,
+    OwnerGroup,
     Site,
     Tag,
     Tenant,
@@ -66,8 +69,11 @@ def virtual_device_context_extended() -> VirtualDeviceContext:
         name="Example Name",
         device="Example Device",
         status="active",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        identifier=1,
+        tenant="Example Tenant",
+        comments="Example comments",
     )
 
 
@@ -102,11 +108,27 @@ def virtual_device_context_explicit() -> VirtualDeviceContext:
             metadata={"source": "example"},
         ),
         status="active",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        identifier=1,
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        primary_ip4=IPAddress(
+            address="192.0.2.1/32", status="active", metadata={"source": "example"}
+        ),
+        primary_ip6=IPAddress(
+            address="192.0.2.1/32", status="active", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

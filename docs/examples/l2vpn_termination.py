@@ -55,7 +55,7 @@ def l2vpn_termination_extended() -> L2VPNTermination:
     """Create a L2VPNTermination with common optional fields."""
     return L2VPNTermination(
         l2vpn="Example L2Vpn",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
     )
 
 
@@ -68,7 +68,11 @@ def l2vpn_termination_explicit() -> L2VPNTermination:
             status="active",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         tags=[Tag(name="production")],
     )
 

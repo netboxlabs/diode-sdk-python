@@ -11,8 +11,12 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     IPRange,
+    Owner,
+    OwnerGroup,
+    Role,
     Tag,
     Tenant,
+    VRF,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -57,9 +61,14 @@ def ip_range_extended() -> IPRange:
     return IPRange(
         start_address="Example Start Address",
         end_address="Example End Address",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        tenant="Example Tenant",
+        role="Example Role",
+        comments="Example comments",
+        mark_utilized=True,
+        mark_populated=True,
     )
 
 
@@ -68,12 +77,27 @@ def ip_range_explicit() -> IPRange:
     return IPRange(
         start_address="Example Start Address",
         end_address="Example End Address",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        mark_utilized=True,
+        mark_populated=True,
+        vrf=VRF(name="Example Name", metadata={"source": "example"}),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        role=Role(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

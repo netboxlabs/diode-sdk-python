@@ -10,6 +10,8 @@ This module demonstrates three patterns for ingesting VirtualCircuitType entitie
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
     VirtualCircuitType,
 )
@@ -58,9 +60,10 @@ def virtual_circuit_type_extended() -> VirtualCircuitType:
     return VirtualCircuitType(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
-        color="0000ff",
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        color="0000ff",
+        comments="Example comments",
     )
 
 
@@ -69,10 +72,19 @@ def virtual_circuit_type_explicit() -> VirtualCircuitType:
     return VirtualCircuitType(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
-        color="0000ff",
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        color="0000ff",
         comments="Example comments",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

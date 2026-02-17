@@ -3,7 +3,7 @@
 #
 # Generated code. DO NOT EDIT.
 # Source: NetBox v4.5.0
-# Timestamp: 2026-02-13 21:40:41Z
+# Timestamp: 2026-02-17 23:39:36Z
 #
 # ruff: noqa: C901
 

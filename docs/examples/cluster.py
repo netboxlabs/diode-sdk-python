@@ -10,8 +10,11 @@ This module demonstrates three patterns for ingesting Cluster entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Cluster,
+    ClusterGroup,
     ClusterType,
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
 )
@@ -58,9 +61,11 @@ def cluster_extended() -> Cluster:
     return Cluster(
         name="Example Name",
         type="Example Type",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        tenant="Example Tenant",
+        comments="Example comments",
     )
 
 
@@ -71,12 +76,24 @@ def cluster_explicit() -> Cluster:
         type=ClusterType(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        group=ClusterGroup(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

@@ -58,7 +58,7 @@ def fhrp_group_assignment_extended() -> FHRPGroupAssignment:
     return FHRPGroupAssignment(
         group="Example Group",
         priority=1,
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
     )
 
 
@@ -69,7 +69,11 @@ def fhrp_group_assignment_explicit() -> FHRPGroupAssignment:
             protocol="Example Protocol", group_id=1, metadata={"source": "example"}
         ),
         priority=1,
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
     )
 
 

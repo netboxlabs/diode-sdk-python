@@ -8,6 +8,12 @@ This module demonstrates three patterns for ingesting CustomLink entities:
 """
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    CustomLink,
+    Entity,
+    Owner,
+    OwnerGroup,
+)
 
 TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "custom_link-example"
@@ -53,7 +59,12 @@ def custom_link_extended() -> CustomLink:
         name="Example Name",
         link_text="Example Link Text",
         link_url="Example Link Url",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
+        enabled=True,
+        weight=1,
+        group_name="Example Group Name",
+        button_class="black",
+        new_window=True,
     )
 
 
@@ -63,7 +74,21 @@ def custom_link_explicit() -> CustomLink:
         name="Example Name",
         link_text="Example Link Text",
         link_url="Example Link Url",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        enabled=True,
+        weight=1,
+        group_name="Example Group Name",
+        button_class="black",
+        new_window=True,
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
     )
 
 

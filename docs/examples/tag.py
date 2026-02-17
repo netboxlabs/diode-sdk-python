@@ -51,9 +51,10 @@ def tag_extended() -> Tag:
     return Tag(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
-        color="0000ff",
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        color="0000ff",
+        weight=1,
     )
 
 
@@ -62,9 +63,14 @@ def tag_explicit() -> Tag:
     return Tag(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
-        color="0000ff",
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        color="0000ff",
+        weight=1,
     )
 
 

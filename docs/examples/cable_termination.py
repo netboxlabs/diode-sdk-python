@@ -56,7 +56,7 @@ def cable_termination_extended() -> CableTermination:
     return CableTermination(
         cable="Example Cable",
         cable_end="A",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
     )
 
 
@@ -65,7 +65,11 @@ def cable_termination_explicit() -> CableTermination:
     return CableTermination(
         cable=Cable(status="active", color="0000ff", metadata={"source": "example"}),
         cable_end="A",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
     )
 
 

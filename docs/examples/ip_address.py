@@ -11,8 +11,11 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     IPAddress,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
+    VRF,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -55,9 +58,13 @@ def ip_address_extended() -> IPAddress:
     """Create a IPAddress with common optional fields."""
     return IPAddress(
         address="192.0.2.1/32",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        tenant="Example Tenant",
+        role="anycast",
+        dns_name="Example Dns Name",
+        comments="Example comments",
     )
 
 
@@ -65,12 +72,27 @@ def ip_address_explicit() -> IPAddress:
     """Create a IPAddress with fully nested objects and all common fields."""
     return IPAddress(
         address="192.0.2.1/32",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        role="anycast",
+        dns_name="Example Dns Name",
+        vrf=VRF(name="Example Name", metadata={"source": "example"}),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        nat_inside=IPAddress(
+            address="192.0.2.1/32", status="active", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

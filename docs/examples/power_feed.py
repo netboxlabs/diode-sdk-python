@@ -10,8 +10,11 @@ This module demonstrates three patterns for ingesting PowerFeed entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     PowerFeed,
     PowerPanel,
+    Rack,
     Site,
     Tag,
     Tenant,
@@ -59,9 +62,19 @@ def power_feed_extended() -> PowerFeed:
     return PowerFeed(
         power_panel="Example Power Panel",
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        rack="Example Rack",
+        type="primary",
+        supply="ac",
+        phase="single-phase",
+        voltage=1,
+        amperage=1,
+        max_utilization=1,
+        mark_connected=True,
+        tenant="Example Tenant",
+        comments="Example comments",
     )
 
 
@@ -79,12 +92,39 @@ def power_feed_explicit() -> PowerFeed:
             metadata={"source": "example"},
         ),
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        type="primary",
+        supply="ac",
+        phase="single-phase",
+        voltage=1,
+        amperage=1,
+        max_utilization=1,
+        mark_connected=True,
+        rack=Rack(
+            name="Example Name",
+            site=Site(
+                name="Example Name",
+                slug="example-slug",
+                status="active",
+                metadata={"source": "example"},
+            ),
+            status="active",
+            metadata={"source": "example"},
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

@@ -12,6 +12,9 @@ from netboxlabs.diode.sdk.ingester import (
     DeviceType,
     Entity,
     Manufacturer,
+    Owner,
+    OwnerGroup,
+    Platform,
     Tag,
 )
 
@@ -59,8 +62,17 @@ def device_type_extended() -> DeviceType:
         manufacturer="Example Manufacturer",
         model="Model X",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        part_number="Example Part Number",
+        u_height=1.0,
+        exclude_from_utilization=True,
+        is_full_depth=True,
+        subdevice_role="child",
+        airflow="bottom-to-top",
+        weight=1.0,
+        weight_unit="g",
+        comments="Example comments",
     )
 
 
@@ -72,9 +84,29 @@ def device_type_explicit() -> DeviceType:
         ),
         model="Model X",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        part_number="Example Part Number",
+        u_height=1.0,
+        exclude_from_utilization=True,
+        is_full_depth=True,
+        subdevice_role="child",
+        airflow="bottom-to-top",
+        weight=1.0,
+        weight_unit="g",
+        default_platform=Platform(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

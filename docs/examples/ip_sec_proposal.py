@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     IPSecProposal,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -54,8 +56,13 @@ def ip_sec_proposal_extended() -> IPSecProposal:
     """Create a IPSecProposal with common optional fields."""
     return IPSecProposal(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        encryption_algorithm="3des-cbc",
+        authentication_algorithm="hmac-md5",
+        sa_lifetime_seconds=1,
+        sa_lifetime_data=1,
+        comments="Example comments",
     )
 
 
@@ -63,9 +70,22 @@ def ip_sec_proposal_explicit() -> IPSecProposal:
     """Create a IPSecProposal with fully nested objects and all common fields."""
     return IPSecProposal(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        encryption_algorithm="3des-cbc",
+        authentication_algorithm="hmac-md5",
+        sa_lifetime_seconds=1,
+        sa_lifetime_data=1,
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

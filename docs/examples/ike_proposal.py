@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     IKEProposal,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -60,8 +62,11 @@ def ike_proposal_extended() -> IKEProposal:
         authentication_method="certificates",
         encryption_algorithm="3des-cbc",
         group=1,
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        authentication_algorithm="hmac-md5",
+        sa_lifetime=1,
+        comments="Example comments",
     )
 
 
@@ -72,9 +77,20 @@ def ike_proposal_explicit() -> IKEProposal:
         authentication_method="certificates",
         encryption_algorithm="3des-cbc",
         group=1,
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        authentication_algorithm="hmac-md5",
+        sa_lifetime=1,
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

@@ -14,7 +14,10 @@ from netboxlabs.diode.sdk.ingester import (
     DeviceType,
     Entity,
     InventoryItem,
+    InventoryItemRole,
     Manufacturer,
+    Owner,
+    OwnerGroup,
     Site,
     Tag,
 )
@@ -61,10 +64,16 @@ def inventory_item_extended() -> InventoryItem:
     return InventoryItem(
         device="Example Device",
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         serial="SN-001234",
         description="Example description",
+        label="Example Label",
+        role="Example Role",
+        manufacturer="Example Manufacturer",
+        part_id="Example Part Id",
+        asset_tag="ASSET-001",
+        discovered=True,
     )
 
 
@@ -98,11 +107,63 @@ def inventory_item_explicit() -> InventoryItem:
             metadata={"source": "example"},
         ),
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         serial="SN-001234",
-        asset_tag="ASSET-001",
         description="Example description",
+        asset_tag="ASSET-001",
+        label="Example Label",
+        part_id="Example Part Id",
+        discovered=True,
+        parent=InventoryItem(
+            device=Device(
+                device_type=DeviceType(
+                    manufacturer=Manufacturer(
+                        name="Example Name",
+                        slug="example-slug",
+                        metadata={"source": "example"},
+                    ),
+                    model="Model X",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                role=DeviceRole(
+                    name="Example Name",
+                    slug="example-slug",
+                    color="0000ff",
+                    metadata={"source": "example"},
+                ),
+                site=Site(
+                    name="Example Name",
+                    slug="example-slug",
+                    status="active",
+                    metadata={"source": "example"},
+                ),
+                status="active",
+                metadata={"source": "example"},
+            ),
+            name="Example Name",
+            status="active",
+            metadata={"source": "example"},
+        ),
+        role=InventoryItemRole(
+            name="Example Name",
+            slug="example-slug",
+            color="0000ff",
+            metadata={"source": "example"},
+        ),
+        manufacturer=Manufacturer(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

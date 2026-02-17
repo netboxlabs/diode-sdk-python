@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     CircuitGroup,
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
 )
@@ -57,8 +59,10 @@ def circuit_group_extended() -> CircuitGroup:
     return CircuitGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        tenant="Example Tenant",
+        comments="Example comments",
     )
 
 
@@ -67,11 +71,20 @@ def circuit_group_explicit() -> CircuitGroup:
     return CircuitGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

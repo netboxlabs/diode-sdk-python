@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     MACAddress,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -54,8 +56,9 @@ def mac_address_extended() -> MACAddress:
     """Create a MACAddress with common optional fields."""
     return MACAddress(
         mac_address="00:11:22:33:44:55",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        comments="Example comments",
     )
 
 
@@ -63,9 +66,18 @@ def mac_address_explicit() -> MACAddress:
     """Create a MACAddress with fully nested objects and all common fields."""
     return MACAddress(
         mac_address="00:11:22:33:44:55",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

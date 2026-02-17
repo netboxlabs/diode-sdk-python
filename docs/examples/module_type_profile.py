@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     ModuleTypeProfile,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -56,8 +58,10 @@ def module_type_profile_extended() -> ModuleTypeProfile:
     """Create a ModuleTypeProfile with common optional fields."""
     return ModuleTypeProfile(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        schema="Example Schema",
+        comments="Example comments",
     )
 
 
@@ -65,9 +69,19 @@ def module_type_profile_explicit() -> ModuleTypeProfile:
     """Create a ModuleTypeProfile with fully nested objects and all common fields."""
     return ModuleTypeProfile(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        schema="Example Schema",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

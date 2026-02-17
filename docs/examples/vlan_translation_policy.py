@@ -8,6 +8,12 @@ This module demonstrates three patterns for ingesting VLANTranslationPolicy enti
 """
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    Owner,
+    OwnerGroup,
+    VLANTranslationPolicy,
+)
 
 TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "vlan_translation_policy-example"
@@ -51,8 +57,9 @@ def vlan_translation_policy_extended() -> VLANTranslationPolicy:
     """Create a VLANTranslationPolicy with common optional fields."""
     return VLANTranslationPolicy(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        comments="Example comments",
     )
 
 
@@ -60,9 +67,18 @@ def vlan_translation_policy_explicit() -> VLANTranslationPolicy:
     """Create a VLANTranslationPolicy with fully nested objects and all common fields."""
     return VLANTranslationPolicy(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
     )
 
 

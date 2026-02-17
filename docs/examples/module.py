@@ -17,6 +17,8 @@ from netboxlabs.diode.sdk.ingester import (
     Module,
     ModuleBay,
     ModuleType,
+    Owner,
+    OwnerGroup,
     Site,
     Tag,
 )
@@ -65,10 +67,12 @@ def module_extended() -> Module:
         device="Example Device",
         module_bay="Example Module Bay",
         module_type="Example Module Type",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         serial="SN-001234",
         description="Example description",
+        asset_tag="ASSET-001",
+        comments="Example comments",
     )
 
 
@@ -138,12 +142,21 @@ def module_explicit() -> Module:
             model="Model X",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         serial="SN-001234",
-        asset_tag="ASSET-001",
         description="Example description",
         comments="Example comments",
+        asset_tag="ASSET-001",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

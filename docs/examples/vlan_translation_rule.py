@@ -60,7 +60,7 @@ def vlan_translation_rule_extended() -> VLANTranslationRule:
         policy="Example Policy",
         local_vid=1,
         remote_vid=1,
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
     )
 
@@ -73,7 +73,11 @@ def vlan_translation_rule_explicit() -> VLANTranslationRule:
         ),
         local_vid=1,
         remote_vid=1,
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
     )
 

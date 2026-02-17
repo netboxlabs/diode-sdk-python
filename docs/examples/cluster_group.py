@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     ClusterGroup,
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -56,8 +58,9 @@ def cluster_group_extended() -> ClusterGroup:
     return ClusterGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        comments="Example comments",
     )
 
 
@@ -66,9 +69,18 @@ def cluster_group_explicit() -> ClusterGroup:
     return ClusterGroup(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

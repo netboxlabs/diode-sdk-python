@@ -10,9 +10,14 @@ This module demonstrates three patterns for ingesting Prefix entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Prefix,
+    Role,
     Tag,
     Tenant,
+    VLAN,
+    VRF,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -55,9 +60,14 @@ def prefix_extended() -> Prefix:
     """Create a Prefix with common optional fields."""
     return Prefix(
         prefix="192.0.2.0/24",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        tenant="Example Tenant",
+        role="Example Role",
+        is_pool=True,
+        mark_utilized=True,
+        comments="Example comments",
     )
 
 
@@ -65,12 +75,30 @@ def prefix_explicit() -> Prefix:
     """Create a Prefix with fully nested objects and all common fields."""
     return Prefix(
         prefix="192.0.2.0/24",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        is_pool=True,
+        mark_utilized=True,
+        vrf=VRF(name="Example Name", metadata={"source": "example"}),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        vlan=VLAN(
+            vid=1, name="Example Name", status="active", metadata={"source": "example"}
+        ),
+        role=Role(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

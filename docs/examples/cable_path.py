@@ -47,14 +47,24 @@ def cable_path_minimal() -> CablePath:
 def cable_path_extended() -> CablePath:
     """Create a CablePath with common optional fields."""
     return CablePath(
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
+        is_active=True,
+        is_complete=True,
+        is_split=True,
     )
 
 
 def cable_path_explicit() -> CablePath:
     """Create a CablePath with fully nested objects and all common fields."""
     return CablePath(
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        is_active=True,
+        is_complete=True,
+        is_split=True,
     )
 
 

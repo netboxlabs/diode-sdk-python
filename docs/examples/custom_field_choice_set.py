@@ -8,6 +8,12 @@ This module demonstrates three patterns for ingesting CustomFieldChoiceSet entit
 """
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    CustomFieldChoiceSet,
+    Entity,
+    Owner,
+    OwnerGroup,
+)
 
 TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "custom_field_choice_set-example"
@@ -51,8 +57,10 @@ def custom_field_choice_set_extended() -> CustomFieldChoiceSet:
     """Create a CustomFieldChoiceSet with common optional fields."""
     return CustomFieldChoiceSet(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        base_choices="IATA",
+        order_alphabetically=True,
     )
 
 
@@ -60,8 +68,19 @@ def custom_field_choice_set_explicit() -> CustomFieldChoiceSet:
     """Create a CustomFieldChoiceSet with fully nested objects and all common fields."""
     return CustomFieldChoiceSet(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        base_choices="IATA",
+        order_alphabetically=True,
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
     )
 
 

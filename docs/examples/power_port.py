@@ -14,6 +14,11 @@ from netboxlabs.diode.sdk.ingester import (
     DeviceType,
     Entity,
     Manufacturer,
+    Module,
+    ModuleBay,
+    ModuleType,
+    Owner,
+    OwnerGroup,
     PowerPort,
     Site,
     Tag,
@@ -61,8 +66,13 @@ def power_port_extended() -> PowerPort:
     return PowerPort(
         device="Example Device",
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        label="Example Label",
+        type="cs6361c",
+        maximum_draw=1,
+        allocated_draw=1,
+        mark_connected=True,
     )
 
 
@@ -96,8 +106,91 @@ def power_port_explicit() -> PowerPort:
             metadata={"source": "example"},
         ),
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        label="Example Label",
+        type="cs6361c",
+        maximum_draw=1,
+        allocated_draw=1,
+        mark_connected=True,
+        module=Module(
+            device=Device(
+                device_type=DeviceType(
+                    manufacturer=Manufacturer(
+                        name="Example Name",
+                        slug="example-slug",
+                        metadata={"source": "example"},
+                    ),
+                    model="Model X",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                role=DeviceRole(
+                    name="Example Name",
+                    slug="example-slug",
+                    color="0000ff",
+                    metadata={"source": "example"},
+                ),
+                site=Site(
+                    name="Example Name",
+                    slug="example-slug",
+                    status="active",
+                    metadata={"source": "example"},
+                ),
+                status="active",
+                metadata={"source": "example"},
+            ),
+            module_bay=ModuleBay(
+                device=Device(
+                    device_type=DeviceType(
+                        manufacturer=Manufacturer(
+                            name="Example Name",
+                            slug="example-slug",
+                            metadata={"source": "example"},
+                        ),
+                        model="Model X",
+                        slug="example-slug",
+                        metadata={"source": "example"},
+                    ),
+                    role=DeviceRole(
+                        name="Example Name",
+                        slug="example-slug",
+                        color="0000ff",
+                        metadata={"source": "example"},
+                    ),
+                    site=Site(
+                        name="Example Name",
+                        slug="example-slug",
+                        status="active",
+                        metadata={"source": "example"},
+                    ),
+                    status="active",
+                    metadata={"source": "example"},
+                ),
+                name="Example Name",
+                metadata={"source": "example"},
+            ),
+            module_type=ModuleType(
+                manufacturer=Manufacturer(
+                    name="Example Name",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                model="Model X",
+                metadata={"source": "example"},
+            ),
+            status="active",
+            metadata={"source": "example"},
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

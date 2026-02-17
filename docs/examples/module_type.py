@@ -12,6 +12,9 @@ from netboxlabs.diode.sdk.ingester import (
     Entity,
     Manufacturer,
     ModuleType,
+    ModuleTypeProfile,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -57,8 +60,14 @@ def module_type_extended() -> ModuleType:
     return ModuleType(
         manufacturer="Example Manufacturer",
         model="Model X",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        part_number="Example Part Number",
+        airflow="front-to-rear",
+        weight=1.0,
+        weight_unit="g",
+        comments="Example comments",
+        attributes="Example Attributes",
     )
 
 
@@ -69,9 +78,24 @@ def module_type_explicit() -> ModuleType:
             name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         model="Model X",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        part_number="Example Part Number",
+        airflow="front-to-rear",
+        weight=1.0,
+        weight_unit="g",
+        attributes="Example Attributes",
+        profile=ModuleTypeProfile(name="Example Name", metadata={"source": "example"}),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

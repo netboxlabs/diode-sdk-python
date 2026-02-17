@@ -10,6 +10,9 @@ This module demonstrates three patterns for ingesting Platform entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Manufacturer,
+    Owner,
+    OwnerGroup,
     Platform,
     Tag,
 )
@@ -56,8 +59,10 @@ def platform_extended() -> Platform:
     return Platform(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        manufacturer="Example Manufacturer",
+        comments="Example comments",
     )
 
 
@@ -66,9 +71,24 @@ def platform_explicit() -> Platform:
     return Platform(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        manufacturer=Manufacturer(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        parent=Platform(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

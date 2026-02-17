@@ -49,7 +49,7 @@ def owner_group_extended() -> OwnerGroup:
     """Create a OwnerGroup with common optional fields."""
     return OwnerGroup(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
     )
 
@@ -58,7 +58,11 @@ def owner_group_explicit() -> OwnerGroup:
     """Create a OwnerGroup with fully nested objects and all common fields."""
     return OwnerGroup(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
     )
 

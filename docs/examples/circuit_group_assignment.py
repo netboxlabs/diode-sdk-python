@@ -57,7 +57,8 @@ def circuit_group_assignment_extended() -> CircuitGroupAssignment:
     """Create a CircuitGroupAssignment with common optional fields."""
     return CircuitGroupAssignment(
         group="Example Group",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
+        priority="inactive",
     )
 
 
@@ -67,7 +68,12 @@ def circuit_group_assignment_explicit() -> CircuitGroupAssignment:
         group=CircuitGroup(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        priority="inactive",
         tags=[Tag(name="production")],
     )
 

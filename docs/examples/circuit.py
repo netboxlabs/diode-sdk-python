@@ -12,7 +12,10 @@ from netboxlabs.diode.sdk.ingester import (
     Circuit,
     CircuitType,
     Entity,
+    Owner,
+    OwnerGroup,
     Provider,
+    ProviderAccount,
     Tag,
     Tenant,
 )
@@ -61,9 +64,14 @@ def circuit_extended() -> Circuit:
         cid="CID-001",
         provider="Example Provider",
         type="Example Type",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        tenant="Example Tenant",
+        commit_rate=1,
+        distance=1.0,
+        distance_unit="ft",
+        comments="Example comments",
     )
 
 
@@ -80,12 +88,31 @@ def circuit_explicit() -> Circuit:
             color="0000ff",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        commit_rate=1,
+        distance=1.0,
+        distance_unit="ft",
+        provider_account=ProviderAccount(
+            provider=Provider(
+                name="Example Name", slug="example-slug", metadata={"source": "example"}
+            ),
+            account="Example Account",
+            metadata={"source": "example"},
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

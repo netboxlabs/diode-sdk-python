@@ -10,6 +10,7 @@ This module demonstrates three patterns for ingesting TunnelTermination entities
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    IPAddress,
     Tag,
     Tunnel,
     TunnelTermination,
@@ -59,7 +60,7 @@ def tunnel_termination_extended() -> TunnelTermination:
     return TunnelTermination(
         tunnel="Example Tunnel",
         role="hub",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
     )
 
 
@@ -73,7 +74,14 @@ def tunnel_termination_explicit() -> TunnelTermination:
             metadata={"source": "example"},
         ),
         role="hub",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        outside_ip=IPAddress(
+            address="192.0.2.1/32", status="active", metadata={"source": "example"}
+        ),
         tags=[Tag(name="production")],
     )
 

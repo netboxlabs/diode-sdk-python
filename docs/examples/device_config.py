@@ -41,8 +41,6 @@ def device_config_minimal() -> DeviceConfig:
     """Create a DeviceConfig with only required fields using flat strings."""
     return DeviceConfig(
         startup=b"example data",
-        running=b"example data",
-        candidate=b"example data",
         metadata={"source": "example"},
     )
 
@@ -52,8 +50,7 @@ def device_config_extended() -> DeviceConfig:
     return DeviceConfig(
         startup=b"example data",
         running=b"example data",
-        candidate=b"example data",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
     )
 
 
@@ -63,7 +60,11 @@ def device_config_explicit() -> DeviceConfig:
         startup=b"example data",
         running=b"example data",
         candidate=b"example data",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
     )
 
 

@@ -54,7 +54,8 @@ def journal_entry_extended() -> JournalEntry:
     """Create a JournalEntry with common optional fields."""
     return JournalEntry(
         comments="Example comments",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
+        kind="danger",
     )
 
 
@@ -62,7 +63,12 @@ def journal_entry_explicit() -> JournalEntry:
     """Create a JournalEntry with fully nested objects and all common fields."""
     return JournalEntry(
         comments="Example comments",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        kind="danger",
         tags=[Tag(name="production")],
     )
 

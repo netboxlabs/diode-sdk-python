@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     IPSecPolicy,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -54,8 +56,10 @@ def ip_sec_policy_extended() -> IPSecPolicy:
     """Create a IPSecPolicy with common optional fields."""
     return IPSecPolicy(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        pfs_group=1,
+        comments="Example comments",
     )
 
 
@@ -63,9 +67,19 @@ def ip_sec_policy_explicit() -> IPSecPolicy:
     """Create a IPSecPolicy with fully nested objects and all common fields."""
     return IPSecPolicy(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        pfs_group=1,
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

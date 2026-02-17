@@ -9,7 +9,14 @@ This module demonstrates three patterns for ingesting VirtualChassis entities:
 
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Device,
+    DeviceRole,
+    DeviceType,
     Entity,
+    Manufacturer,
+    Owner,
+    OwnerGroup,
+    Site,
     Tag,
     VirtualChassis,
 )
@@ -54,8 +61,10 @@ def virtual_chassis_extended() -> VirtualChassis:
     """Create a VirtualChassis with common optional fields."""
     return VirtualChassis(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        domain="Example Domain",
+        comments="Example comments",
     )
 
 
@@ -63,9 +72,45 @@ def virtual_chassis_explicit() -> VirtualChassis:
     """Create a VirtualChassis with fully nested objects and all common fields."""
     return VirtualChassis(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        domain="Example Domain",
+        master=Device(
+            device_type=DeviceType(
+                manufacturer=Manufacturer(
+                    name="Example Name",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                model="Model X",
+                slug="example-slug",
+                metadata={"source": "example"},
+            ),
+            role=DeviceRole(
+                name="Example Name",
+                slug="example-slug",
+                color="0000ff",
+                metadata={"source": "example"},
+            ),
+            site=Site(
+                name="Example Name",
+                slug="example-slug",
+                status="active",
+                metadata={"source": "example"},
+            ),
+            status="active",
+            metadata={"source": "example"},
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

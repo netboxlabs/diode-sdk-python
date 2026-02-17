@@ -10,7 +10,11 @@ This module demonstrates three patterns for ingesting Site entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
+    Region,
     Site,
+    SiteGroup,
     Tag,
     Tenant,
 )
@@ -57,9 +61,18 @@ def site_extended() -> Site:
     return Site(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        region="Example Region",
+        tenant="Example Tenant",
+        facility="Example Facility",
+        time_zone="Example Time Zone",
+        physical_address="Example Physical Address",
+        shipping_address="Example Shipping Address",
+        latitude=1.0,
+        longitude=1.0,
+        comments="Example comments",
     )
 
 
@@ -68,12 +81,33 @@ def site_explicit() -> Site:
     return Site(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        facility="Example Facility",
+        time_zone="Example Time Zone",
+        physical_address="Example Physical Address",
+        shipping_address="Example Shipping Address",
+        latitude=1.0,
+        longitude=1.0,
+        region=Region(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        group=SiteGroup(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

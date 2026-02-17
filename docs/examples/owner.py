@@ -56,7 +56,7 @@ def owner_extended() -> Owner:
     return Owner(
         name="Example Name",
         group="Example Group",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
     )
 
@@ -66,7 +66,11 @@ def owner_explicit() -> Owner:
     return Owner(
         name="Example Name",
         group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
     )
 

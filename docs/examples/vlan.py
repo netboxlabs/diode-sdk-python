@@ -10,9 +10,14 @@ This module demonstrates three patterns for ingesting VLAN entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
+    Role,
+    Site,
     Tag,
     Tenant,
     VLAN,
+    VLANGroup,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -57,9 +62,14 @@ def vlan_extended() -> VLAN:
     return VLAN(
         vid=1,
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        site="Example Site",
+        tenant="Example Tenant",
+        role="Example Role",
+        qinq_role="cvlan",
+        comments="Example comments",
     )
 
 
@@ -68,12 +78,37 @@ def vlan_explicit() -> VLAN:
     return VLAN(
         vid=1,
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        qinq_role="cvlan",
+        site=Site(
+            name="Example Name",
+            slug="example-slug",
+            status="active",
+            metadata={"source": "example"},
+        ),
+        group=VLANGroup(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        role=Role(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        qinq_svlan=VLAN(
+            vid=1, name="Example Name", status="active", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

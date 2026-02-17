@@ -10,8 +10,14 @@ This module demonstrates three patterns for ingesting VMInterface entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    MACAddress,
+    Owner,
+    OwnerGroup,
     Tag,
+    VLAN,
+    VLANTranslationPolicy,
     VMInterface,
+    VRF,
     VirtualMachine,
 )
 
@@ -57,8 +63,11 @@ def vm_interface_extended() -> VMInterface:
     return VMInterface(
         virtual_machine="Example Virtual Machine",
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        enabled=True,
+        mtu=1,
+        mode="access",
     )
 
 
@@ -69,8 +78,47 @@ def vm_interface_explicit() -> VMInterface:
             name="Example Name", status="active", metadata={"source": "example"}
         ),
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        enabled=True,
+        mtu=1,
+        mode="access",
+        parent=VMInterface(
+            virtual_machine=VirtualMachine(
+                name="Example Name", status="active", metadata={"source": "example"}
+            ),
+            name="Example Name",
+            metadata={"source": "example"},
+        ),
+        bridge=VMInterface(
+            virtual_machine=VirtualMachine(
+                name="Example Name", status="active", metadata={"source": "example"}
+            ),
+            name="Example Name",
+            metadata={"source": "example"},
+        ),
+        primary_mac_address=MACAddress(
+            mac_address="00:11:22:33:44:55", metadata={"source": "example"}
+        ),
+        untagged_vlan=VLAN(
+            vid=1, name="Example Name", status="active", metadata={"source": "example"}
+        ),
+        qinq_svlan=VLAN(
+            vid=1, name="Example Name", status="active", metadata={"source": "example"}
+        ),
+        vlan_translation_policy=VLANTranslationPolicy(
+            name="Example Name", metadata={"source": "example"}
+        ),
+        vrf=VRF(name="Example Name", metadata={"source": "example"}),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

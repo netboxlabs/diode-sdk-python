@@ -10,9 +10,15 @@ This module demonstrates three patterns for ingesting Tunnel entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    IKEPolicy,
+    IPSecPolicy,
+    IPSecProfile,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
     Tunnel,
+    TunnelGroup,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -59,8 +65,11 @@ def tunnel_extended() -> Tunnel:
         name="Example Name",
         status="active",
         encapsulation="gre",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        tenant="Example Tenant",
+        tunnel_id=1,
+        comments="Example comments",
     )
 
 
@@ -70,11 +79,35 @@ def tunnel_explicit() -> Tunnel:
         name="Example Name",
         status="active",
         encapsulation="gre",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        tunnel_id=1,
+        group=TunnelGroup(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        ipsec_profile=IPSecProfile(
+            name="Example Name",
+            mode="Example Mode",
+            ike_policy=IKEPolicy(
+                name="Example Name", version=1, metadata={"source": "example"}
+            ),
+            ipsec_policy=IPSecPolicy(
+                name="Example Name", metadata={"source": "example"}
+            ),
+            metadata={"source": "example"},
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

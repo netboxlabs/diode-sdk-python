@@ -11,6 +11,7 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Contact,
     ContactAssignment,
+    ContactRole,
     Entity,
     Tag,
 )
@@ -57,7 +58,9 @@ def contact_assignment_extended() -> ContactAssignment:
     """Create a ContactAssignment with common optional fields."""
     return ContactAssignment(
         contact="Example Contact",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
+        role="Example Role",
+        priority="inactive",
     )
 
 
@@ -65,7 +68,15 @@ def contact_assignment_explicit() -> ContactAssignment:
     """Create a ContactAssignment with fully nested objects and all common fields."""
     return ContactAssignment(
         contact=Contact(name="Example Name", metadata={"source": "example"}),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        priority="inactive",
+        role=ContactRole(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
         tags=[Tag(name="production")],
     )
 

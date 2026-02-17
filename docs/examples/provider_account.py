@@ -10,6 +10,8 @@ This module demonstrates three patterns for ingesting ProviderAccount entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Provider,
     ProviderAccount,
     Tag,
@@ -57,8 +59,10 @@ def provider_account_extended() -> ProviderAccount:
     return ProviderAccount(
         provider="Example Provider",
         account="Example Account",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        name="Example Name",
+        comments="Example comments",
     )
 
 
@@ -69,9 +73,19 @@ def provider_account_explicit() -> ProviderAccount:
             name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         account="Example Account",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        name="Example Name",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

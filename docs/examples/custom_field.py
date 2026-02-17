@@ -8,6 +8,13 @@ This module demonstrates three patterns for ingesting CustomField entities:
 """
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    CustomField,
+    CustomFieldChoiceSet,
+    Entity,
+    Owner,
+    OwnerGroup,
+)
 
 TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "custom_field-example"
@@ -51,8 +58,25 @@ def custom_field_extended() -> CustomField:
     return CustomField(
         type="boolean",
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        related_object_type="circuits.circuit",
+        label="Example Label",
+        group_name="Example Group Name",
+        required=True,
+        unique=True,
+        search_weight=1,
+        filter_logic="disabled",
+        ui_visible="always",
+        ui_editable="hidden",
+        is_cloneable=True,
+        default="Example Default",
+        related_object_filter="Example Related Object Filter",
+        weight=1,
+        validation_minimum=1.0,
+        validation_maximum=1.0,
+        validation_regex="Example Validation Regex",
+        comments="Example comments",
     )
 
 
@@ -61,9 +85,37 @@ def custom_field_explicit() -> CustomField:
     return CustomField(
         type="boolean",
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        related_object_type="circuits.circuit",
+        label="Example Label",
+        group_name="Example Group Name",
+        required=True,
+        unique=True,
+        search_weight=1,
+        filter_logic="disabled",
+        ui_visible="always",
+        ui_editable="hidden",
+        is_cloneable=True,
+        default="Example Default",
+        related_object_filter="Example Related Object Filter",
+        weight=1,
+        validation_minimum=1.0,
+        validation_maximum=1.0,
+        validation_regex="Example Validation Regex",
+        choice_set=CustomFieldChoiceSet(
+            name="Example Name", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
     )
 
 

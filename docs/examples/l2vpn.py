@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     L2VPN,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
 )
@@ -57,9 +59,13 @@ def l2vpn_extended() -> L2VPN:
     return L2VPN(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
-        description="Example description",
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
+        description="Example description",
+        identifier=1,
+        type="ep-lan",
+        comments="Example comments",
+        tenant="Example Tenant",
     )
 
 
@@ -68,12 +74,23 @@ def l2vpn_explicit() -> L2VPN:
     return L2VPN(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        status="active",
         description="Example description",
         comments="Example comments",
-        status="active",
+        identifier=1,
+        type="ep-lan",
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

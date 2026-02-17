@@ -15,6 +15,8 @@ from netboxlabs.diode.sdk.ingester import (
     Entity,
     Interface,
     Manufacturer,
+    Owner,
+    OwnerGroup,
     Site,
     Tag,
     Tenant,
@@ -63,9 +65,17 @@ def wireless_link_extended() -> WirelessLink:
     return WirelessLink(
         interface_a="Example Interface A",
         interface_b="Example Interface B",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="connected",
         description="Example description",
+        ssid="ExampleSSID",
+        tenant="Example Tenant",
+        auth_type="open",
+        auth_cipher="aes",
+        auth_psk="Example Auth Psk",
+        distance=1.0,
+        distance_unit="ft",
+        comments="Example comments",
     )
 
 
@@ -134,12 +144,27 @@ def wireless_link_explicit() -> WirelessLink:
             type="Example Type",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="connected",
         description="Example description",
         comments="Example comments",
+        ssid="ExampleSSID",
+        auth_type="open",
+        auth_cipher="aes",
+        auth_psk="Example Auth Psk",
+        distance=1.0,
+        distance_unit="ft",
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

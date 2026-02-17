@@ -10,9 +10,13 @@ This module demonstrates three patterns for ingesting WirelessLAN entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
+    VLAN,
     WirelessLAN,
+    WirelessLANGroup,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -55,9 +59,14 @@ def wireless_lan_extended() -> WirelessLAN:
     """Create a WirelessLAN with common optional fields."""
     return WirelessLAN(
         ssid="ExampleSSID",
-        metadata={"source": "example"},
-        description="Example description",
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
+        description="Example description",
+        tenant="Example Tenant",
+        auth_type="open",
+        auth_cipher="aes",
+        auth_psk="Example Auth Psk",
+        comments="Example comments",
     )
 
 
@@ -65,12 +74,30 @@ def wireless_lan_explicit() -> WirelessLAN:
     """Create a WirelessLAN with fully nested objects and all common fields."""
     return WirelessLAN(
         ssid="ExampleSSID",
-        metadata={"source": "example"},
-        description="Example description",
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
+        description="Example description",
         comments="Example comments",
+        auth_type="open",
+        auth_cipher="aes",
+        auth_psk="Example Auth Psk",
+        group=WirelessLANGroup(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        vlan=VLAN(
+            vid=1, name="Example Name", status="active", metadata={"source": "example"}
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

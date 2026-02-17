@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Cable,
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
 )
@@ -53,23 +55,44 @@ def cable_minimal() -> Cable:
 def cable_extended() -> Cable:
     """Create a Cable with common optional fields."""
     return Cable(
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="connected",
-        color="0000ff",
         description="Example description",
+        color="0000ff",
+        type="aoc",
+        tenant="Example Tenant",
+        label="Example Label",
+        length=1.0,
+        length_unit="cm",
+        comments="Example comments",
+        profile="breakout-1c4p-4c1p",
     )
 
 
 def cable_explicit() -> Cable:
     """Create a Cable with fully nested objects and all common fields."""
     return Cable(
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="connected",
-        color="0000ff",
         description="Example description",
+        color="0000ff",
         comments="Example comments",
+        type="aoc",
+        label="Example Label",
+        length=1.0,
+        length_unit="cm",
+        profile="breakout-1c4p-4c1p",
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

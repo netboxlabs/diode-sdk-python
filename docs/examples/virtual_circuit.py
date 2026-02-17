@@ -10,7 +10,10 @@ This module demonstrates three patterns for ingesting VirtualCircuit entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Provider,
+    ProviderAccount,
     ProviderNetwork,
     Tag,
     Tenant,
@@ -62,9 +65,11 @@ def virtual_circuit_extended() -> VirtualCircuit:
         cid="CID-001",
         provider_network="Example Provider Network",
         type="Example Type",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        tenant="Example Tenant",
+        comments="Example comments",
     )
 
 
@@ -85,12 +90,28 @@ def virtual_circuit_explicit() -> VirtualCircuit:
             color="0000ff",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        provider_account=ProviderAccount(
+            provider=Provider(
+                name="Example Name", slug="example-slug", metadata={"source": "example"}
+            ),
+            account="Example Account",
+            metadata={"source": "example"},
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

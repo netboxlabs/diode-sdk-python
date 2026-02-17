@@ -61,8 +61,13 @@ def circuit_termination_extended() -> CircuitTermination:
     return CircuitTermination(
         circuit="Example Circuit",
         term_side="A",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        port_speed=1,
+        upstream_speed=1,
+        xconnect_id="Example Xconnect Id",
+        pp_info="Example Pp Info",
+        mark_connected=True,
     )
 
 
@@ -84,8 +89,17 @@ def circuit_termination_explicit() -> CircuitTermination:
             metadata={"source": "example"},
         ),
         term_side="A",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        port_speed=1,
+        upstream_speed=1,
+        xconnect_id="Example Xconnect Id",
+        pp_info="Example Pp Info",
+        mark_connected=True,
         tags=[Tag(name="production")],
     )
 

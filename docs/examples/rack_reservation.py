@@ -10,6 +10,8 @@ This module demonstrates three patterns for ingesting RackReservation entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Rack,
     RackReservation,
     Site,
@@ -59,8 +61,10 @@ def rack_reservation_extended() -> RackReservation:
     return RackReservation(
         rack="Example Rack",
         description="Example description",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
+        tenant="Example Tenant",
+        comments="Example comments",
     )
 
 
@@ -79,11 +83,20 @@ def rack_reservation_explicit() -> RackReservation:
             metadata={"source": "example"},
         ),
         description="Example description",
-        metadata={"source": "example"},
-        comments="Example comments",
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
+        comments="Example comments",
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

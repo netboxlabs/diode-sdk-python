@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     Location,
+    Owner,
+    OwnerGroup,
     Site,
     Tag,
     Tenant,
@@ -60,9 +62,12 @@ def location_extended() -> Location:
         name="Example Name",
         slug="example-slug",
         site="Example Site",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         status="active",
         description="Example description",
+        tenant="Example Tenant",
+        facility="Example Facility",
+        comments="Example comments",
     )
 
 
@@ -77,12 +82,34 @@ def location_explicit() -> Location:
             status="active",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         status="active",
         description="Example description",
         comments="Example comments",
+        facility="Example Facility",
+        parent=Location(
+            name="Example Name",
+            slug="example-slug",
+            site=Site(
+                name="Example Name",
+                slug="example-slug",
+                status="active",
+                metadata={"source": "example"},
+            ),
+            status="active",
+            metadata={"source": "example"},
+        ),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     DeviceRole,
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -56,9 +58,11 @@ def device_role_extended() -> DeviceRole:
     return DeviceRole(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
-        color="0000ff",
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        color="0000ff",
+        vm_role=True,
+        comments="Example comments",
     )
 
 
@@ -67,10 +71,26 @@ def device_role_explicit() -> DeviceRole:
     return DeviceRole(
         name="Example Name",
         slug="example-slug",
-        metadata={"source": "example"},
-        color="0000ff",
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        color="0000ff",
         comments="Example comments",
+        vm_role=True,
+        parent=DeviceRole(
+            name="Example Name",
+            slug="example-slug",
+            color="0000ff",
+            metadata={"source": "example"},
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     FHRPGroup,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -56,8 +58,12 @@ def fhrp_group_extended() -> FHRPGroup:
     return FHRPGroup(
         protocol="carp",
         group_id=1,
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        name="Example Name",
+        auth_type="md5",
+        auth_key="Example Auth Key",
+        comments="Example comments",
     )
 
 
@@ -66,9 +72,21 @@ def fhrp_group_explicit() -> FHRPGroup:
     return FHRPGroup(
         protocol="carp",
         group_id=1,
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        name="Example Name",
+        auth_type="md5",
+        auth_key="Example Auth Key",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

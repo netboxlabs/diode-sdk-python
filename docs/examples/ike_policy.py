@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
     IKEPolicy,
+    Owner,
+    OwnerGroup,
     Tag,
 )
 
@@ -56,8 +58,11 @@ def ike_policy_extended() -> IKEPolicy:
     return IKEPolicy(
         name="Example Name",
         version=1,
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        mode="aggressive",
+        preshared_key="Example Preshared Key",
+        comments="Example comments",
     )
 
 
@@ -66,9 +71,20 @@ def ike_policy_explicit() -> IKEPolicy:
     return IKEPolicy(
         name="Example Name",
         version=1,
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        mode="aggressive",
+        preshared_key="Example Preshared Key",
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
+        ),
         tags=[Tag(name="production")],
     )
 

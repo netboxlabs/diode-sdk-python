@@ -10,6 +10,8 @@ This module demonstrates three patterns for ingesting VRF entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Owner,
+    OwnerGroup,
     Tag,
     Tenant,
     VRF,
@@ -55,8 +57,12 @@ def vrf_extended() -> VRF:
     """Create a VRF with common optional fields."""
     return VRF(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        rd="Example Rd",
+        tenant="Example Tenant",
+        enforce_unique=True,
+        comments="Example comments",
     )
 
 
@@ -64,11 +70,22 @@ def vrf_explicit() -> VRF:
     """Create a VRF with fully nested objects and all common fields."""
     return VRF(
         name="Example Name",
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
         comments="Example comments",
+        rd="Example Rd",
+        enforce_unique=True,
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
+        ),
+        owner=Owner(
+            name="Example Name",
+            group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
+            metadata={"source": "example"},
         ),
         tags=[Tag(name="production")],
     )

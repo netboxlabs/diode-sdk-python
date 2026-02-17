@@ -68,8 +68,9 @@ def virtual_circuit_termination_extended() -> VirtualCircuitTermination:
     return VirtualCircuitTermination(
         virtual_circuit="Example Virtual Circuit",
         interface="Example Interface",
-        metadata={"source": "example"},
+        metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
+        role="hub",
     )
 
 
@@ -127,8 +128,13 @@ def virtual_circuit_termination_explicit() -> VirtualCircuitTermination:
             type="Example Type",
             metadata={"source": "example"},
         ),
-        metadata={"source": "example"},
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
         description="Example description",
+        role="hub",
         tags=[Tag(name="production")],
     )
 
