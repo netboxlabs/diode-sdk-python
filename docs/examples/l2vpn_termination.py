@@ -1,0 +1,81 @@
+"""
+L2VPNTermination entity examples for the Diode Python SDK.
+
+This module demonstrates three patterns for ingesting L2VPNTermination entities:
+- l2vpn_termination_minimal: Required fields only
+- l2vpn_termination_extended: Common optional fields
+- l2vpn_termination_explicit: Fully nested objects with all fields
+"""
+
+from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    L2VPN,
+    L2VPNTermination,
+    Tag,
+)
+
+TARGET = "grpc://localhost:8080/diode"
+APP_NAME = "l2vpn_termination-example"
+APP_VERSION = "1.0.0"
+CLIENT_ID = "diode"
+CLIENT_SECRET = "changeme"
+
+
+def main():
+    """Main execution - demonstrates ingesting a L2VPNTermination entity."""
+    with DiodeClient(
+        target=TARGET,
+        app_name=APP_NAME,
+        app_version=APP_VERSION,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+    ) as client:
+        # Choose one of the three patterns:
+        l2vpn_termination = l2vpn_termination_minimal()
+        # l2vpn_termination = l2vpn_termination_extended()
+        # l2vpn_termination = l2vpn_termination_explicit()
+
+        response = client.ingest(entities=[Entity(l2vpn_termination=l2vpn_termination)])
+        if response.errors:
+            print(f"Errors: {response.errors}")
+        else:
+            print("L2VPNTermination ingested successfully")
+
+
+def l2vpn_termination_minimal() -> L2VPNTermination:
+    """Create a L2VPNTermination with only required fields using flat strings."""
+    return L2VPNTermination(
+        l2vpn="Example L2Vpn",  # flat string -> L2VPN
+        metadata={"source": "example"},
+    )
+
+
+def l2vpn_termination_extended() -> L2VPNTermination:
+    """Create a L2VPNTermination with common optional fields."""
+    return L2VPNTermination(
+        l2vpn="Example L2Vpn",
+        metadata={"source": "example", "custom_key": "custom_value"},
+    )
+
+
+def l2vpn_termination_explicit() -> L2VPNTermination:
+    """Create a L2VPNTermination with fully nested objects and all common fields."""
+    return L2VPNTermination(
+        l2vpn=L2VPN(
+            name="Example Name",
+            slug="example-slug",
+            status="active",
+            metadata={"source": "example"},
+        ),
+        metadata={
+            "source": "example",
+            "custom_key": "custom_value",
+            "collected_at": "2024-01-15T10:30:00Z",
+        },
+        tags=[Tag(name="production")],
+    )
+
+
+if __name__ == "__main__":
+    main()
