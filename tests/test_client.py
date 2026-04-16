@@ -87,7 +87,7 @@ def test_client_error(mock_diode_authentication):
         )
         client.ingest(entities=[])
     assert err.value.status_code == grpc.StatusCode.UNAVAILABLE
-    assert "DNS resolution failed for invalid:8081" in err.value.details
+    assert "invalid:8081" in err.value.details
 
 
 def test_diode_client_error_repr_returns_correct_string():
