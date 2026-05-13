@@ -145,10 +145,21 @@ def _get_optional_config_value(
     return value
 
 
-def _base_grpc_channel_options(primary_user_agent_value: str) -> list[tuple[str, Any]]:
-    """grpc channel options shared by Diode clients: user-agent and keepalive."""
+def _otlp_grpc_channel_options(primary_user_agent_value: str) -> list[tuple[str, Any]]:
+    """gRPC channel options for generic OTLP collectors (user-agent only).
+
+    Avoid aggressive HTTP/2 keepalive here: many OTLP backends enforce strict ping
+    limits and may GOAWAY idle exporters when permit-without-stream or unlimited
+    pings are enabled.
+    """
     return [
         ("grpc.primary_user_agent", primary_user_agent_value),
+    ]
+
+
+def _diode_ingest_grpc_channel_options(primary_user_agent_value: str) -> list[tuple[str, Any]]:
+    """gRPC channel options for the Diode ingester API (keepalive-friendly servers)."""
+    return _otlp_grpc_channel_options(primary_user_agent_value) + [
         ("grpc.keepalive_time_ms", _GRPC_KEEPALIVE_TIME_MS),
         ("grpc.keepalive_timeout_ms", _GRPC_KEEPALIVE_TIMEOUT_MS),
         (
@@ -356,7 +367,7 @@ class DiodeClient(DiodeClientInterface):
 
         self._authenticate(_INGEST_SCOPE)
 
-        channel_opts = _base_grpc_channel_options(
+        channel_opts = _diode_ingest_grpc_channel_options(
             f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
         )
 
@@ -649,7 +660,7 @@ class DiodeOTLPClient(DiodeClientInterface):
             else None
         )
 
-        channel_opts = _base_grpc_channel_options(
+        channel_opts = _otlp_grpc_channel_options(
             f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
         )
 

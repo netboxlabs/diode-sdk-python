@@ -18,7 +18,8 @@ from netboxlabs.diode.sdk.client import (
     DiodeMethodClientInterceptor,
     DiodeOTLPClient,
     _ClientCallDetails,
-    _base_grpc_channel_options,
+    _diode_ingest_grpc_channel_options,
+    _otlp_grpc_channel_options,
     _DiodeAuthentication,
     _get_sentry_dsn,
     _load_certs,
@@ -270,7 +271,7 @@ def test_insecure_channel_options_with_primary_user_agent(mock_diode_authenticat
         mock_insecure_channel.assert_called_once()
         _, kwargs = mock_insecure_channel.call_args
         assert kwargs["options"] == tuple(
-            _base_grpc_channel_options(
+            _diode_ingest_grpc_channel_options(
                 f"{client.name}/{client.version} {client.app_name}/{client.app_version}"
             )
         )
@@ -290,7 +291,7 @@ def test_secure_channel_options_with_primary_user_agent(mock_diode_authenticatio
         mock_secure_channel.assert_called_once()
         _, kwargs = mock_secure_channel.call_args
         assert kwargs["options"] == tuple(
-            _base_grpc_channel_options(
+            _diode_ingest_grpc_channel_options(
                 f"{client.name}/{client.version} {client.app_name}/{client.app_version}"
             )
         )
@@ -881,6 +882,30 @@ def test_otlp_client_grpcs_uses_secure_channel():
 
         client.close()
         base_channel.close.assert_called_once()
+
+
+def test_otlp_insecure_channel_options_exclude_diode_keepalive():
+    """OTLP targets arbitrary collectors; only user-agent is forced (Codex/OBS-2873)."""
+    with (
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"),
+    ):
+        client = DiodeOTLPClient(
+            target="grpc://collector:4317",
+            app_name="orb-producer",
+            app_version="1.2.3",
+        )
+
+        mock_insecure.assert_called_once()
+        _, kwargs = mock_insecure.call_args
+        ua = (
+            f"{client.name}/{client.version} "
+            f"{client.app_name}/{client.app_version}"
+        )
+        assert kwargs["options"] == tuple(_otlp_grpc_channel_options(ua))
+        assert all(
+            opt[0] != "grpc.keepalive_time_ms" for opt in kwargs["options"]
+        )
 
 
 def test_diode_authentication_with_custom_certificates():
