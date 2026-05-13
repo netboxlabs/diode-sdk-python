@@ -146,7 +146,8 @@ def _get_optional_config_value(
 
 
 def _otlp_grpc_channel_options(primary_user_agent_value: str) -> list[tuple[str, Any]]:
-    """gRPC channel options for generic OTLP collectors (user-agent only).
+    """
+    Build gRPC channel argument list for generic OTLP collectors (user-agent only).
 
     Avoid aggressive HTTP/2 keepalive here: many OTLP backends enforce strict ping
     limits and may GOAWAY idle exporters when permit-without-stream or unlimited
@@ -158,7 +159,7 @@ def _otlp_grpc_channel_options(primary_user_agent_value: str) -> list[tuple[str,
 
 
 def _diode_ingest_grpc_channel_options(primary_user_agent_value: str) -> list[tuple[str, Any]]:
-    """gRPC channel options for the Diode ingester API (keepalive-friendly servers)."""
+    """Build gRPC channel argument list for the Diode ingester API (with keepalive)."""
     return _otlp_grpc_channel_options(primary_user_agent_value) + [
         ("grpc.keepalive_time_ms", _GRPC_KEEPALIVE_TIME_MS),
         ("grpc.keepalive_timeout_ms", _GRPC_KEEPALIVE_TIMEOUT_MS),

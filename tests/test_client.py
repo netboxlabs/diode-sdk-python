@@ -19,10 +19,10 @@ from netboxlabs.diode.sdk.client import (
     DiodeOTLPClient,
     _ClientCallDetails,
     _diode_ingest_grpc_channel_options,
-    _otlp_grpc_channel_options,
     _DiodeAuthentication,
     _get_sentry_dsn,
     _load_certs,
+    _otlp_grpc_channel_options,
     load_dryrun_entities,
     parse_target,
 )
