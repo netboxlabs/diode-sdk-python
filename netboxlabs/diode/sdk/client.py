@@ -50,6 +50,13 @@ _DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
 _INGEST_SCOPE = "diode:ingest"
 _LOGGER = logging.getLogger(__name__)
 _MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
+# HTTP/2 keepalive: align with netbox-assurance-plugin (ENGHLP-1220) and diode-pro
+# server policy (MinTime 10s so client pings must be >= 10s, e.g. 30s interval).
+_GRPC_KEEPALIVE_TIME_MS = 30_000
+_GRPC_KEEPALIVE_TIMEOUT_MS = 10_000
+_GRPC_KEEPALIVE_PERMIT_WITHOUT_CALLS = 1
+# 0 = no cap on keepalive pings without data (matches reconciler Python client).
+_GRPC_HTTP2_MAX_PINGS_WITHOUT_DATA = 0
 
 
 def load_dryrun_entities(file_path: str | Path) -> Iterable[Entity]:
@@ -136,6 +143,20 @@ def _get_optional_config_value(
     if value is None:
         value = os.getenv(env_var_name)
     return value
+
+
+def _base_grpc_channel_options(primary_user_agent_value: str) -> list[tuple[str, Any]]:
+    """grpc channel options shared by Diode clients: user-agent and keepalive."""
+    return [
+        ("grpc.primary_user_agent", primary_user_agent_value),
+        ("grpc.keepalive_time_ms", _GRPC_KEEPALIVE_TIME_MS),
+        ("grpc.keepalive_timeout_ms", _GRPC_KEEPALIVE_TIMEOUT_MS),
+        (
+            "grpc.keepalive_permit_without_calls",
+            _GRPC_KEEPALIVE_PERMIT_WITHOUT_CALLS,
+        ),
+        ("grpc.http2.max_pings_without_data", _GRPC_HTTP2_MAX_PINGS_WITHOUT_DATA),
+    ]
 
 
 def _get_proxy_env_var(var_name: str) -> str | None:
@@ -335,12 +356,9 @@ class DiodeClient(DiodeClientInterface):
 
         self._authenticate(_INGEST_SCOPE)
 
-        channel_opts = [
-            (
-                "grpc.primary_user_agent",
-                f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
-            ),
-        ]
+        channel_opts = _base_grpc_channel_options(
+            f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
+        )
 
         proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
         if proxy_url:
@@ -631,12 +649,9 @@ class DiodeOTLPClient(DiodeClientInterface):
             else None
         )
 
-        channel_opts = [
-            (
-                "grpc.primary_user_agent",
-                f"{self._name}/{self._version} {self._app_name}/{self._app_version}",
-            ),
-        ]
+        channel_opts = _base_grpc_channel_options(
+            f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
+        )
 
         proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
         if proxy_url:

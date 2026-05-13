@@ -18,6 +18,7 @@ from netboxlabs.diode.sdk.client import (
     DiodeMethodClientInterceptor,
     DiodeOTLPClient,
     _ClientCallDetails,
+    _base_grpc_channel_options,
     _DiodeAuthentication,
     _get_sentry_dsn,
     _load_certs,
@@ -268,11 +269,10 @@ def test_insecure_channel_options_with_primary_user_agent(mock_diode_authenticat
 
         mock_insecure_channel.assert_called_once()
         _, kwargs = mock_insecure_channel.call_args
-        assert kwargs["options"] == (
-            (
-                "grpc.primary_user_agent",
-                f"{client.name}/{client.version} {client.app_name}/{client.app_version}",
-            ),
+        assert kwargs["options"] == tuple(
+            _base_grpc_channel_options(
+                f"{client.name}/{client.version} {client.app_name}/{client.app_version}"
+            )
         )
 
 
@@ -289,11 +289,10 @@ def test_secure_channel_options_with_primary_user_agent(mock_diode_authenticatio
 
         mock_secure_channel.assert_called_once()
         _, kwargs = mock_secure_channel.call_args
-        assert kwargs["options"] == (
-            (
-                "grpc.primary_user_agent",
-                f"{client.name}/{client.version} {client.app_name}/{client.app_version}",
-            ),
+        assert kwargs["options"] == tuple(
+            _base_grpc_channel_options(
+                f"{client.name}/{client.version} {client.app_name}/{client.app_version}"
+            )
         )
 
 
