@@ -73,6 +73,8 @@ def module_extended() -> Module:
         description="Example description",
         asset_tag="ASSET-001",
         comments="Example comments",
+        replicate_components=True,
+        adopt_components=True,
     )
 
 
@@ -152,6 +154,8 @@ def module_explicit() -> Module:
         description="Example description",
         comments="Example comments",
         asset_tag="ASSET-001",
+        replicate_components=True,
+        adopt_components=True,
         owner=Owner(
             name="Example Name",
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),

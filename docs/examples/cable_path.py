@@ -8,6 +8,10 @@ This module demonstrates three patterns for ingesting CablePath entities:
 """
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    CablePath,
+    Entity,
+)
 
 TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "cable_path-example"

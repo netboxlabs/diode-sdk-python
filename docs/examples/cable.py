@@ -10,6 +10,7 @@ This module demonstrates three patterns for ingesting Cable entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Cable,
+    CableBundle,
     Entity,
     Owner,
     OwnerGroup,
@@ -65,7 +66,7 @@ def cable_extended() -> Cable:
         length=1.0,
         length_unit="cm",
         comments="Example comments",
-        profile="breakout-1c4p-4c1p",
+        profile="breakout-1c2p-2c1p",
     )
 
 
@@ -85,7 +86,7 @@ def cable_explicit() -> Cable:
         label="Example Label",
         length=1.0,
         length_unit="cm",
-        profile="breakout-1c4p-4c1p",
+        profile="breakout-1c2p-2c1p",
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
@@ -94,6 +95,7 @@ def cable_explicit() -> Cable:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        bundle=CableBundle(name="Example Name", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

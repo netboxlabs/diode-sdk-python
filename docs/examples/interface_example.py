@@ -61,7 +61,7 @@ def interface_example_minimal() -> Interface:
     return Interface(
         device="Example Device",  # flat string -> Device
         name="Example Name",
-        type="1000base-bx10-d",
+        type="1.6tbase-cr8",
         metadata={"source": "example"},
     )
 
@@ -71,7 +71,7 @@ def interface_example_extended() -> Interface:
     return Interface(
         device="Example Device",
         name="Example Name",
-        type="1000base-bx10-d",
+        type="1.6tbase-cr8",
         metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
         label="Example Label",
@@ -123,7 +123,7 @@ def interface_example_explicit() -> Interface:
             metadata={"source": "example"},
         ),
         name="Example Name",
-        type="1000base-bx10-d",
+        type="1.6tbase-cr8",
         metadata={
             "source": "example",
             "custom_key": "custom_value",
