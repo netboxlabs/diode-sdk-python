@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from diode.v1 import ingester_pb2 as diode_dot_v1_dot_ingester__pb2
+from netboxlabs.diode.sdk.diode.v1 import ingester_pb2 as diode_dot_v1_dot_ingester__pb2
 
 
 class IngesterServiceStub(object):
