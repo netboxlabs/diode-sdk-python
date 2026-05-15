@@ -50,7 +50,6 @@ _DRY_RUN_OUTPUT_DIR_ENVVAR_NAME = "DIODE_DRY_RUN_OUTPUT_DIR"
 _INGEST_SCOPE = "diode:ingest"
 _LOGGER = logging.getLogger(__name__)
 _MAX_RETRIES_ENVVAR_NAME = "DIODE_MAX_AUTH_RETRIES"
-# HTTP/2 keepalive: align with netbox-assurance-plugin (ENGHLP-1220) and diode-pro
 # server policy (MinTime 10s so client pings must be >= 10s, e.g. 30s interval).
 _GRPC_KEEPALIVE_TIME_MS = 30_000
 _GRPC_KEEPALIVE_TIMEOUT_MS = 10_000
