@@ -14,6 +14,7 @@ from netboxlabs.diode.sdk.ingester import (
     Owner,
     OwnerGroup,
     RIR,
+    Role,
     Tag,
     Tenant,
 )
@@ -63,6 +64,7 @@ def asn_extended() -> ASN:
         rir="Example RIR",
         tenant="Example Tenant",
         comments="Example comments",
+        role="Example Role",
     )
 
 
@@ -87,6 +89,9 @@ def asn_explicit() -> ASN:
             name="Example Name",
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
+        ),
+        role=Role(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
     )

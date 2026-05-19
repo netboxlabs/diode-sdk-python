@@ -15,6 +15,7 @@ from netboxlabs.diode.sdk.ingester import (
     Owner,
     OwnerGroup,
     Rack,
+    RackGroup,
     RackRole,
     RackType,
     Site,
@@ -159,6 +160,9 @@ def rack_explicit() -> Rack:
             name="Example Name",
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
+        ),
+        group=RackGroup(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
     )

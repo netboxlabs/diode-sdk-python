@@ -61,6 +61,7 @@ def custom_field_choice_set_extended() -> CustomFieldChoiceSet:
         description="Example description",
         base_choices="IATA",
         order_alphabetically=True,
+        choice_colors="Example Choice Colors",
     )
 
 
@@ -76,6 +77,7 @@ def custom_field_choice_set_explicit() -> CustomFieldChoiceSet:
         description="Example description",
         base_choices="IATA",
         order_alphabetically=True,
+        choice_colors="Example Choice Colors",
         owner=Owner(
             name="Example Name",
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),

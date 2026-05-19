@@ -2,8 +2,8 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Source: NetBox v4.5.0
-# Timestamp: 2026-02-17 23:39:36Z
+# Source: NetBox v4.6.0
+# Timestamp: 2026-05-14 20:30:14Z
 #
 # ruff: noqa: C901
 
@@ -97,6 +97,9 @@ PRIMARY_VALUE_MAP = {
     "CustomLink": "name",
     "Owner": "name",
     "OwnerGroup": "name",
+    "CableBundle": "name",
+    "RackGroup": "name",
+    "VirtualMachineType": "name",
 }
 
 
@@ -279,6 +282,12 @@ class Entity:
         owner: str | Owner | pb.Owner | None = None,
         owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
         device_config: DeviceConfig | pb.DeviceConfig | None = None,
+        cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        rack_group: str | RackGroup | pb.RackGroup | None = None,
+        script_module: ScriptModule | pb.ScriptModule | None = None,
+        virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
     ) -> pb.Entity:
         """Create a new Entity."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -407,6 +416,12 @@ class Entity:
         owner = convert_to_protobuf(owner, pb.Owner)
         owner_group = convert_to_protobuf(owner_group, pb.OwnerGroup)
         device_config = convert_to_protobuf(device_config, pb.DeviceConfig)
+        cable_bundle = convert_to_protobuf(cable_bundle, pb.CableBundle)
+        rack_group = convert_to_protobuf(rack_group, pb.RackGroup)
+        script_module = convert_to_protobuf(script_module, pb.ScriptModule)
+        virtual_machine_type = convert_to_protobuf(
+            virtual_machine_type, pb.VirtualMachineType
+        )
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
@@ -509,6 +524,10 @@ class Entity:
             owner=owner,
             owner_group=owner_group,
             device_config=device_config,
+            cable_bundle=cable_bundle,
+            rack_group=rack_group,
+            script_module=script_module,
+            virtual_machine_type=virtual_machine_type,
         )
         return result
 
@@ -528,6 +547,7 @@ class ASN:
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         sites: list[str | Site | pb.Site] | None = None,
+        role: str | Role | pb.Role | None = None,
     ) -> pb.ASN:
         """Create a new ASN."""
         rir = convert_to_protobuf(rir, pb.RIR)
@@ -537,6 +557,7 @@ class ASN:
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
         sites = convert_to_protobuf_list(sites, pb.Site)
+        role = convert_to_protobuf(role, pb.Role)
         result = pb.ASN(
             asn=asn,
             rir=rir,
@@ -548,6 +569,7 @@ class ASN:
             metadata=metadata,
             owner=owner,
             sites=sites,
+            role=role,
         )
         return result
 
@@ -653,6 +675,7 @@ class Cable:
         metadata: dict[str, Any] | None = None,
         profile: str | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        bundle: str | CableBundle | pb.CableBundle | None = None,
     ) -> pb.Cable:
         """Create a new Cable."""
         a_terminations = convert_to_protobuf_list(a_terminations, pb.GenericObject)
@@ -662,6 +685,7 @@ class Cable:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
+        bundle = convert_to_protobuf(bundle, pb.CableBundle)
         result = pb.Cable(
             type=type,
             a_terminations=a_terminations,
@@ -679,6 +703,7 @@ class Cable:
             metadata=metadata,
             profile=profile,
             owner=owner,
+            bundle=bundle,
         )
         return result
 
@@ -1368,6 +1393,12 @@ class ContactAssignment:
         object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         object_owner: str | Owner | pb.Owner | None = None,
         object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        object_cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        object_rack_group: str | RackGroup | pb.RackGroup | None = None,
+        object_script_module: ScriptModule | pb.ScriptModule | None = None,
+        object_virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
         contact: str | Contact | pb.Contact | None = None,
         role: str | ContactRole | pb.ContactRole | None = None,
         priority: str | None = None,
@@ -1533,6 +1564,14 @@ class ContactAssignment:
         object_custom_link = convert_to_protobuf(object_custom_link, pb.CustomLink)
         object_owner = convert_to_protobuf(object_owner, pb.Owner)
         object_owner_group = convert_to_protobuf(object_owner_group, pb.OwnerGroup)
+        object_cable_bundle = convert_to_protobuf(object_cable_bundle, pb.CableBundle)
+        object_rack_group = convert_to_protobuf(object_rack_group, pb.RackGroup)
+        object_script_module = convert_to_protobuf(
+            object_script_module, pb.ScriptModule
+        )
+        object_virtual_machine_type = convert_to_protobuf(
+            object_virtual_machine_type, pb.VirtualMachineType
+        )
         contact = convert_to_protobuf(contact, pb.Contact)
         role = convert_to_protobuf(role, pb.ContactRole)
         tags = convert_to_protobuf_list(tags, pb.Tag)
@@ -1634,6 +1673,10 @@ class ContactAssignment:
             object_custom_link=object_custom_link,
             object_owner=object_owner,
             object_owner_group=object_owner_group,
+            object_cable_bundle=object_cable_bundle,
+            object_rack_group=object_rack_group,
+            object_script_module=object_script_module,
+            object_virtual_machine_type=object_virtual_machine_type,
             contact=contact,
             role=role,
             priority=priority,
@@ -1833,6 +1876,12 @@ class CustomFieldObjectReference:
         custom_link: str | CustomLink | pb.CustomLink | None = None,
         owner: str | Owner | pb.Owner | None = None,
         owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        rack_group: str | RackGroup | pb.RackGroup | None = None,
+        script_module: ScriptModule | pb.ScriptModule | None = None,
+        virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -1960,6 +2009,12 @@ class CustomFieldObjectReference:
         custom_link = convert_to_protobuf(custom_link, pb.CustomLink)
         owner = convert_to_protobuf(owner, pb.Owner)
         owner_group = convert_to_protobuf(owner_group, pb.OwnerGroup)
+        cable_bundle = convert_to_protobuf(cable_bundle, pb.CableBundle)
+        rack_group = convert_to_protobuf(rack_group, pb.RackGroup)
+        script_module = convert_to_protobuf(script_module, pb.ScriptModule)
+        virtual_machine_type = convert_to_protobuf(
+            virtual_machine_type, pb.VirtualMachineType
+        )
         result = pb.CustomFieldObjectReference(
             asn=asn,
             asn_range=asn_range,
@@ -2056,6 +2111,10 @@ class CustomFieldObjectReference:
             custom_link=custom_link,
             owner=owner,
             owner_group=owner_group,
+            cable_bundle=cable_bundle,
+            rack_group=rack_group,
+            script_module=script_module,
+            virtual_machine_type=virtual_machine_type,
         )
         return result
 
@@ -2221,6 +2280,7 @@ class DeviceBay:
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        enabled: bool | None = None,
     ) -> pb.DeviceBay:
         """Create a new DeviceBay."""
         device = convert_to_protobuf(device, pb.Device)
@@ -2239,6 +2299,7 @@ class DeviceBay:
             custom_fields=custom_fields,
             metadata=metadata,
             owner=owner,
+            enabled=enabled,
         )
         return result
 
@@ -2519,6 +2580,12 @@ class FHRPGroupAssignment:
         interface_custom_link: str | CustomLink | pb.CustomLink | None = None,
         interface_owner: str | Owner | pb.Owner | None = None,
         interface_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        interface_cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        interface_rack_group: str | RackGroup | pb.RackGroup | None = None,
+        interface_script_module: ScriptModule | pb.ScriptModule | None = None,
+        interface_virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
         priority: int | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroupAssignment:
@@ -2725,6 +2792,16 @@ class FHRPGroupAssignment:
         interface_owner_group = convert_to_protobuf(
             interface_owner_group, pb.OwnerGroup
         )
+        interface_cable_bundle = convert_to_protobuf(
+            interface_cable_bundle, pb.CableBundle
+        )
+        interface_rack_group = convert_to_protobuf(interface_rack_group, pb.RackGroup)
+        interface_script_module = convert_to_protobuf(
+            interface_script_module, pb.ScriptModule
+        )
+        interface_virtual_machine_type = convert_to_protobuf(
+            interface_virtual_machine_type, pb.VirtualMachineType
+        )
         metadata = convert_dict_to_struct(metadata)
         result = pb.FHRPGroupAssignment(
             group=group,
@@ -2823,6 +2900,10 @@ class FHRPGroupAssignment:
             interface_custom_link=interface_custom_link,
             interface_owner=interface_owner,
             interface_owner_group=interface_owner_group,
+            interface_cable_bundle=interface_cable_bundle,
+            interface_rack_group=interface_rack_group,
+            interface_script_module=interface_script_module,
+            interface_virtual_machine_type=interface_virtual_machine_type,
             priority=priority,
             metadata=metadata,
         )
@@ -3012,6 +3093,12 @@ class GenericObject:
         object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         object_owner: str | Owner | pb.Owner | None = None,
         object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        object_cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        object_rack_group: str | RackGroup | pb.RackGroup | None = None,
+        object_script_module: ScriptModule | pb.ScriptModule | None = None,
+        object_virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
     ) -> pb.GenericObject:
         """Create a new GenericObject."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -3171,6 +3258,14 @@ class GenericObject:
         object_custom_link = convert_to_protobuf(object_custom_link, pb.CustomLink)
         object_owner = convert_to_protobuf(object_owner, pb.Owner)
         object_owner_group = convert_to_protobuf(object_owner_group, pb.OwnerGroup)
+        object_cable_bundle = convert_to_protobuf(object_cable_bundle, pb.CableBundle)
+        object_rack_group = convert_to_protobuf(object_rack_group, pb.RackGroup)
+        object_script_module = convert_to_protobuf(
+            object_script_module, pb.ScriptModule
+        )
+        object_virtual_machine_type = convert_to_protobuf(
+            object_virtual_machine_type, pb.VirtualMachineType
+        )
         result = pb.GenericObject(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
@@ -3267,6 +3362,10 @@ class GenericObject:
             object_custom_link=object_custom_link,
             object_owner=object_owner,
             object_owner_group=object_owner_group,
+            object_cable_bundle=object_cable_bundle,
+            object_rack_group=object_rack_group,
+            object_script_module=object_script_module,
+            object_virtual_machine_type=object_virtual_machine_type,
         )
         return result
 
@@ -4073,6 +4172,12 @@ class L2VPNTermination:
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         assigned_object_owner: str | Owner | pb.Owner | None = None,
         assigned_object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        assigned_object_cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        assigned_object_rack_group: str | RackGroup | pb.RackGroup | None = None,
+        assigned_object_script_module: ScriptModule | pb.ScriptModule | None = None,
+        assigned_object_virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
@@ -4330,6 +4435,18 @@ class L2VPNTermination:
         assigned_object_owner_group = convert_to_protobuf(
             assigned_object_owner_group, pb.OwnerGroup
         )
+        assigned_object_cable_bundle = convert_to_protobuf(
+            assigned_object_cable_bundle, pb.CableBundle
+        )
+        assigned_object_rack_group = convert_to_protobuf(
+            assigned_object_rack_group, pb.RackGroup
+        )
+        assigned_object_script_module = convert_to_protobuf(
+            assigned_object_script_module, pb.ScriptModule
+        )
+        assigned_object_virtual_machine_type = convert_to_protobuf(
+            assigned_object_virtual_machine_type, pb.VirtualMachineType
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -4430,6 +4547,10 @@ class L2VPNTermination:
             assigned_object_custom_link=assigned_object_custom_link,
             assigned_object_owner=assigned_object_owner,
             assigned_object_owner_group=assigned_object_owner_group,
+            assigned_object_cable_bundle=assigned_object_cable_bundle,
+            assigned_object_rack_group=assigned_object_rack_group,
+            assigned_object_script_module=assigned_object_script_module,
+            assigned_object_virtual_machine_type=assigned_object_virtual_machine_type,
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
@@ -4571,6 +4692,8 @@ class Module:
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        replicate_components: bool | None = None,
+        adopt_components: bool | None = None,
     ) -> pb.Module:
         """Create a new Module."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4593,6 +4716,8 @@ class Module:
             custom_fields=custom_fields,
             metadata=metadata,
             owner=owner,
+            replicate_components=replicate_components,
+            adopt_components=adopt_components,
         )
         return result
 
@@ -4613,6 +4738,7 @@ class ModuleBay:
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        enabled: bool | None = None,
     ) -> pb.ModuleBay:
         """Create a new ModuleBay."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4634,6 +4760,7 @@ class ModuleBay:
             custom_fields=custom_fields,
             metadata=metadata,
             owner=owner,
+            enabled=enabled,
         )
         return result
 
@@ -5143,6 +5270,7 @@ class Rack:
         outer_height: int | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        group: str | RackGroup | pb.RackGroup | None = None,
     ) -> pb.Rack:
         """Create a new Rack."""
         site = convert_to_protobuf(site, pb.Site)
@@ -5154,6 +5282,7 @@ class Rack:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
+        group = convert_to_protobuf(group, pb.RackGroup)
         result = pb.Rack(
             name=name,
             facility_id=facility_id,
@@ -5185,6 +5314,7 @@ class Rack:
             outer_height=outer_height,
             metadata=metadata,
             owner=owner,
+            group=group,
         )
         return result
 
@@ -5945,6 +6075,12 @@ class TunnelTermination:
         termination_custom_link: str | CustomLink | pb.CustomLink | None = None,
         termination_owner: str | Owner | pb.Owner | None = None,
         termination_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        termination_cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        termination_rack_group: str | RackGroup | pb.RackGroup | None = None,
+        termination_script_module: ScriptModule | pb.ScriptModule | None = None,
+        termination_virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
@@ -6175,6 +6311,18 @@ class TunnelTermination:
         termination_owner_group = convert_to_protobuf(
             termination_owner_group, pb.OwnerGroup
         )
+        termination_cable_bundle = convert_to_protobuf(
+            termination_cable_bundle, pb.CableBundle
+        )
+        termination_rack_group = convert_to_protobuf(
+            termination_rack_group, pb.RackGroup
+        )
+        termination_script_module = convert_to_protobuf(
+            termination_script_module, pb.ScriptModule
+        )
+        termination_virtual_machine_type = convert_to_protobuf(
+            termination_virtual_machine_type, pb.VirtualMachineType
+        )
         outside_ip = convert_to_protobuf(outside_ip, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
@@ -6277,6 +6425,10 @@ class TunnelTermination:
             termination_custom_link=termination_custom_link,
             termination_owner=termination_owner,
             termination_owner_group=termination_owner_group,
+            termination_cable_bundle=termination_cable_bundle,
+            termination_rack_group=termination_rack_group,
+            termination_script_module=termination_script_module,
+            termination_virtual_machine_type=termination_virtual_machine_type,
             outside_ip=outside_ip,
             tags=tags,
             custom_fields=custom_fields,
@@ -6350,6 +6502,7 @@ class VLANGroup:
         scope_region: str | Region | pb.Region | None = None,
         scope_site: str | Site | pb.Site | None = None,
         scope_site_group: str | SiteGroup | pb.SiteGroup | None = None,
+        scope_rack_group: str | RackGroup | pb.RackGroup | None = None,
         vid_ranges: list[int] | None = None,
         description: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
@@ -6367,6 +6520,7 @@ class VLANGroup:
         scope_region = convert_to_protobuf(scope_region, pb.Region)
         scope_site = convert_to_protobuf(scope_site, pb.Site)
         scope_site_group = convert_to_protobuf(scope_site_group, pb.SiteGroup)
+        scope_rack_group = convert_to_protobuf(scope_rack_group, pb.RackGroup)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         tenant = convert_to_protobuf(tenant, pb.Tenant)
@@ -6382,6 +6536,7 @@ class VLANGroup:
             scope_region=scope_region,
             scope_site=scope_site,
             scope_site_group=scope_site_group,
+            scope_rack_group=scope_rack_group,
             vid_ranges=vid_ranges,
             description=description,
             tags=tags,
@@ -6799,6 +6954,9 @@ class VirtualMachine:
         metadata: dict[str, Any] | None = None,
         start_on_boot: str | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
     ) -> pb.VirtualMachine:
         """Create a new VirtualMachine."""
         site = convert_to_protobuf(site, pb.Site)
@@ -6813,6 +6971,9 @@ class VirtualMachine:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
+        virtual_machine_type = convert_to_protobuf(
+            virtual_machine_type, pb.VirtualMachineType
+        )
 
         # apply shortcuts
         if platform is not None:
@@ -6848,6 +7009,7 @@ class VirtualMachine:
             metadata=metadata,
             start_on_boot=start_on_boot,
             owner=owner,
+            virtual_machine_type=virtual_machine_type,
         )
         return result
 
@@ -7026,6 +7188,7 @@ class CustomField:
         object_types: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        validation_schema: str | None = None,
     ) -> pb.CustomField:
         """Create a new CustomField."""
         choice_set = convert_to_protobuf(choice_set, pb.CustomFieldChoiceSet)
@@ -7056,6 +7219,7 @@ class CustomField:
             object_types=object_types,
             metadata=metadata,
             owner=owner,
+            validation_schema=validation_schema,
         )
         return result
 
@@ -7072,6 +7236,7 @@ class CustomFieldChoiceSet:
         extra_choices: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        choice_colors: str | None = None,
     ) -> pb.CustomFieldChoiceSet:
         """Create a new CustomFieldChoiceSet."""
         metadata = convert_dict_to_struct(metadata)
@@ -7084,6 +7249,7 @@ class CustomFieldChoiceSet:
             extra_choices=extra_choices,
             metadata=metadata,
             owner=owner,
+            choice_colors=choice_colors,
         )
         return result
 
@@ -7248,6 +7414,12 @@ class JournalEntry:
         assigned_object_custom_link: str | CustomLink | pb.CustomLink | None = None,
         assigned_object_owner: str | Owner | pb.Owner | None = None,
         assigned_object_owner_group: str | OwnerGroup | pb.OwnerGroup | None = None,
+        assigned_object_cable_bundle: str | CableBundle | pb.CableBundle | None = None,
+        assigned_object_rack_group: str | RackGroup | pb.RackGroup | None = None,
+        assigned_object_script_module: ScriptModule | pb.ScriptModule | None = None,
+        assigned_object_virtual_machine_type: (
+            str | VirtualMachineType | pb.VirtualMachineType | None
+        ) = None,
         kind: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
@@ -7506,6 +7678,18 @@ class JournalEntry:
         assigned_object_owner_group = convert_to_protobuf(
             assigned_object_owner_group, pb.OwnerGroup
         )
+        assigned_object_cable_bundle = convert_to_protobuf(
+            assigned_object_cable_bundle, pb.CableBundle
+        )
+        assigned_object_rack_group = convert_to_protobuf(
+            assigned_object_rack_group, pb.RackGroup
+        )
+        assigned_object_script_module = convert_to_protobuf(
+            assigned_object_script_module, pb.ScriptModule
+        )
+        assigned_object_virtual_machine_type = convert_to_protobuf(
+            assigned_object_virtual_machine_type, pb.VirtualMachineType
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -7605,6 +7789,10 @@ class JournalEntry:
             assigned_object_custom_link=assigned_object_custom_link,
             assigned_object_owner=assigned_object_owner,
             assigned_object_owner_group=assigned_object_owner_group,
+            assigned_object_cable_bundle=assigned_object_cable_bundle,
+            assigned_object_rack_group=assigned_object_rack_group,
+            assigned_object_script_module=assigned_object_script_module,
+            assigned_object_virtual_machine_type=assigned_object_virtual_machine_type,
             kind=kind,
             comments=comments,
             tags=tags,
@@ -7739,6 +7927,124 @@ class DeviceConfig:
             startup=startup,
             running=running,
             candidate=candidate,
+            metadata=metadata,
+        )
+        return result
+
+
+class CableBundle:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.CableBundle."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        description: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.CableBundle:
+        """Create a new CableBundle."""
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CableBundle(
+            name=name,
+            description=description,
+            owner=owner,
+            comments=comments,
+            tags=tags,
+            custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class RackGroup:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.RackGroup."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        slug: str | None = None,
+        description: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.RackGroup:
+        """Create a new RackGroup."""
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.RackGroup(
+            name=name,
+            slug=slug,
+            description=description,
+            owner=owner,
+            comments=comments,
+            tags=tags,
+            custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class ScriptModule:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.ScriptModule."""
+
+    def __new__(
+        cls,
+        file: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.ScriptModule:
+        """Create a new ScriptModule."""
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ScriptModule(
+            file=file,
+            metadata=metadata,
+        )
+        return result
+
+
+class VirtualMachineType:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.VirtualMachineType."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        slug: str | None = None,
+        default_platform: str | Platform | pb.Platform | None = None,
+        default_vcpus: float | None = None,
+        default_memory: int | None = None,
+        description: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.VirtualMachineType:
+        """Create a new VirtualMachineType."""
+        default_platform = convert_to_protobuf(default_platform, pb.Platform)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.VirtualMachineType(
+            name=name,
+            slug=slug,
+            default_platform=default_platform,
+            default_vcpus=default_vcpus,
+            default_memory=default_memory,
+            description=description,
+            owner=owner,
+            comments=comments,
+            tags=tags,
+            custom_fields=custom_fields,
             metadata=metadata,
         )
         return result

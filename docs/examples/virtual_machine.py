@@ -24,6 +24,7 @@ from netboxlabs.diode.sdk.ingester import (
     Tag,
     Tenant,
     VirtualMachine,
+    VirtualMachineType,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -163,6 +164,9 @@ def virtual_machine_explicit() -> VirtualMachine:
             name="Example Name",
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
+        ),
+        virtual_machine_type=VirtualMachineType(
+            name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),
         tags=[Tag(name="production")],
     )

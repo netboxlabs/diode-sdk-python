@@ -77,6 +77,7 @@ def custom_field_extended() -> CustomField:
         validation_maximum=1.0,
         validation_regex="Example Validation Regex",
         comments="Example comments",
+        validation_schema="Example Validation Schema",
     )
 
 
@@ -108,6 +109,7 @@ def custom_field_explicit() -> CustomField:
         validation_minimum=1.0,
         validation_maximum=1.0,
         validation_regex="Example Validation Regex",
+        validation_schema="Example Validation Schema",
         choice_set=CustomFieldChoiceSet(
             name="Example Name", metadata={"source": "example"}
         ),

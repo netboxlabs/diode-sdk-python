@@ -69,6 +69,7 @@ def module_bay_extended() -> ModuleBay:
         description="Example description",
         label="Example Label",
         position="Example Position",
+        enabled=True,
     )
 
 
@@ -110,6 +111,7 @@ def module_bay_explicit() -> ModuleBay:
         description="Example description",
         label="Example Label",
         position="Example Position",
+        enabled=True,
         module=Module(
             device=Device(
                 device_type=DeviceType(

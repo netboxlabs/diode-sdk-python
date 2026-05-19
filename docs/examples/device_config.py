@@ -8,6 +8,10 @@ This module demonstrates three patterns for ingesting DeviceConfig entities:
 """
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    DeviceConfig,
+    Entity,
+)
 
 TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "device_config-example"
