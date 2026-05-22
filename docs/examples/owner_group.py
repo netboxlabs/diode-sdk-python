@@ -8,6 +8,10 @@ This module demonstrates three patterns for ingesting OwnerGroup entities:
 """
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk.ingester import (
+    Entity,
+    OwnerGroup,
+)
 
 TARGET = "grpc://localhost:8080/diode"
 APP_NAME = "owner_group-example"

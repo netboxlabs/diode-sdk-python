@@ -66,6 +66,7 @@ def device_bay_extended() -> DeviceBay:
         metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
         label="Example Label",
+        enabled=True,
     )
 
 
@@ -106,6 +107,7 @@ def device_bay_explicit() -> DeviceBay:
         },
         description="Example description",
         label="Example Label",
+        enabled=True,
         installed_device=Device(
             device_type=DeviceType(
                 manufacturer=Manufacturer(
