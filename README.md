@@ -82,6 +82,8 @@ if __name__ == "__main__":
 
 ```
 
+See [`docs/examples/`](./docs/examples) for per-entity examples (one file per supported NetBox object type).
+
 ### Using Metadata
 
 Entities support attaching custom metadata as key-value pairs. Metadata can be used to store additional context, tracking information, or custom attributes that don't fit into the standard NetBox fields.
