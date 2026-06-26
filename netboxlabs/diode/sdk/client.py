@@ -104,7 +104,9 @@ def parse_target(target: str) -> tuple[str, str, bool]:
     parsed_target = urlparse(target)
 
     if parsed_target.scheme not in ["grpc", "grpcs", "http", "https"]:
-        raise ValueError("target should start with grpc://, grpcs://, http:// or https://")
+        raise ValueError(
+            "target should start with grpc://, grpcs://, http:// or https://"
+        )
 
     # Determine if TLS verification should be enabled
     tls_verify = _should_verify_tls(parsed_target.scheme)
@@ -132,11 +134,15 @@ def _get_required_config_value(env_var_name: str, value: str | None = None) -> s
     if value is None:
         value = os.getenv(env_var_name)
     if value is None:
-        raise DiodeConfigError(f"parameter or {env_var_name} environment variable required")
+        raise DiodeConfigError(
+            f"parameter or {env_var_name} environment variable required"
+        )
     return value
 
 
-def _get_optional_config_value(env_var_name: str, value: str | None = None) -> str | None:
+def _get_optional_config_value(
+    env_var_name: str, value: str | None = None
+) -> str | None:
     """Get optional config value either from provided value or environment variable."""
     if value is None:
         value = os.getenv(env_var_name)
@@ -251,11 +257,17 @@ def _should_bypass_proxy(target_host: str) -> bool:
     # Maximum reasonable length for hostname/domain (RFC 1035: 253 chars, we allow 256)
     MAX_NO_PROXY_ENTRY_LENGTH = 256
 
-    no_proxy_list = [entry.strip().lower() for entry in no_proxy.split(",") if len(entry.strip()) <= MAX_NO_PROXY_ENTRY_LENGTH]
+    no_proxy_list = [
+        entry.strip().lower()
+        for entry in no_proxy.split(",")
+        if len(entry.strip()) <= MAX_NO_PROXY_ENTRY_LENGTH
+    ]
 
     filtered_count = len([e for e in no_proxy.split(",") if len(e.strip()) > MAX_NO_PROXY_ENTRY_LENGTH])
     if filtered_count > 0:
-        _LOGGER.warning(f"Ignored {filtered_count} NO_PROXY entries exceeding {MAX_NO_PROXY_ENTRY_LENGTH} characters")
+        _LOGGER.warning(
+            f"Ignored {filtered_count} NO_PROXY entries exceeding {MAX_NO_PROXY_ENTRY_LENGTH} characters"
+        )
 
     for entry in no_proxy_list:
         if entry and _matches_no_proxy_entry(host, entry):
@@ -291,7 +303,8 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
     if proxy_url:
         if not _validate_proxy_url(proxy_url):
             _LOGGER.warning(
-                f"Invalid proxy URL format: {proxy_url}. Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
+                f"Invalid proxy URL format: {proxy_url}. "
+                f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
             )
             return None
         _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")
@@ -326,12 +339,21 @@ class DiodeClient(DiodeClientInterface):
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
         logging.basicConfig(level=log_level)
 
-        self._max_auth_retries = int(_get_optional_config_value(_MAX_RETRIES_ENVVAR_NAME, str(max_auth_retries)) or max_auth_retries)
-        self._cert_file = _get_optional_config_value(_DIODE_CERT_FILE_ENVVAR_NAME, cert_file)
+        self._max_auth_retries = int(
+            _get_optional_config_value(_MAX_RETRIES_ENVVAR_NAME, str(max_auth_retries))
+            or max_auth_retries
+        )
+        self._cert_file = _get_optional_config_value(
+            _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
+        )
         self._target, self._path, self._tls_verify = parse_target(target)
 
         # Load certificates once if needed
-        self._certificates = _load_certs(self._cert_file) if (self._tls_verify or self._cert_file) else None
+        self._certificates = (
+            _load_certs(self._cert_file)
+            if (self._tls_verify or self._cert_file)
+            else None
+        )
         self._app_name = app_name
         self._app_version = app_version
         self._platform = platform.platform()
@@ -339,7 +361,9 @@ class DiodeClient(DiodeClientInterface):
 
         # Read client credentials from environment variables
         self._client_id = _get_required_config_value(_CLIENT_ID_ENVVAR_NAME, client_id)
-        self._client_secret = _get_required_config_value(_CLIENT_SECRET_ENVVAR_NAME, client_secret)
+        self._client_secret = _get_required_config_value(
+            _CLIENT_SECRET_ENVVAR_NAME, client_secret
+        )
 
         self._metadata = (
             ("platform", self._platform),
@@ -348,7 +372,9 @@ class DiodeClient(DiodeClientInterface):
 
         self._authenticate(_INGEST_SCOPE)
 
-        channel_opts = _diode_ingest_grpc_channel_options(f"{self._name}/{self._version} {self._app_name}/{self._app_version}")
+        channel_opts = _diode_ingest_grpc_channel_options(
+            f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
+        )
 
         proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
         if proxy_url:
@@ -360,7 +386,9 @@ class DiodeClient(DiodeClientInterface):
         # Channel creation logic
         if self._tls_verify:
             credentials = (
-                grpc.ssl_channel_credentials(root_certificates=self._certificates) if self._certificates else grpc.ssl_channel_credentials()
+                grpc.ssl_channel_credentials(root_certificates=self._certificates)
+                if self._certificates
+                else grpc.ssl_channel_credentials()
             )
 
             _LOGGER.debug(
@@ -386,7 +414,9 @@ class DiodeClient(DiodeClientInterface):
             _LOGGER.debug(f"Setting up gRPC interceptor for path: {self._path}")
             rpc_method_interceptor = DiodeMethodClientInterceptor(subpath=self._path)
 
-            intercept_channel = grpc.intercept_channel(self._channel, rpc_method_interceptor)
+            intercept_channel = grpc.intercept_channel(
+                self._channel, rpc_method_interceptor
+            )
             channel = intercept_channel
 
         self._stub = ingester_pb2_grpc.IngesterServiceStub(channel)
@@ -395,7 +425,9 @@ class DiodeClient(DiodeClientInterface):
 
         if self._sentry_dsn is not None:
             _LOGGER.debug("Setting up Sentry")
-            self._setup_sentry(self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate)
+            self._setup_sentry(
+                self._sentry_dsn, sentry_traces_sample_rate, sentry_profiles_sample_rate
+            )
 
     @property
     def name(self) -> str:
@@ -475,13 +507,17 @@ class DiodeClient(DiodeClientInterface):
             except grpc.RpcError as err:
                 if err.code() == grpc.StatusCode.UNAUTHENTICATED:
                     if attempt < self._max_auth_retries - 1:
-                        _LOGGER.info(f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}")
+                        _LOGGER.info(
+                            f"Retrying ingestion due to UNAUTHENTICATED error, attempt {attempt + 1}"
+                        )
                         self._authenticate(_INGEST_SCOPE)
                         continue
                 raise DiodeClientError(err) from err
         raise RuntimeError("Max retries exceeded")
 
-    def _setup_sentry(self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float):
+    def _setup_sentry(
+        self, dsn: str, traces_sample_rate: float, profiles_sample_rate: float
+    ):
         sentry_sdk.init(
             dsn=dsn,
             release=self.version,
@@ -513,7 +549,9 @@ class DiodeClient(DiodeClientInterface):
             max_retries=self._max_auth_retries,
         )
         access_token = authentication_client.authenticate()
-        self._metadata = list(filter(lambda x: x[0] != "authorization", self._metadata)) + [("authorization", f"Bearer {access_token}")]
+        self._metadata = list(
+            filter(lambda x: x[0] != "authorization", self._metadata)
+        ) + [("authorization", f"Bearer {access_token}")]
 
 
 class DiodeDryRunClient(DiodeClientInterface):
@@ -581,7 +619,9 @@ class DiodeDryRunClient(DiodeClientInterface):
             timestamp = time.perf_counter_ns()
             path = Path(self._output_dir)
             path.mkdir(parents=True, exist_ok=True)
-            filename = "".join(c if c.isalnum() or c in ("_", "-") else "_" for c in self._app_name)
+            filename = "".join(
+                c if c.isalnum() or c in ("_", "-") else "_" for c in self._app_name
+            )
             file_path = path / f"{filename}_{timestamp}.json"
             with file_path.open("w") as fh:
                 fh.write(output)
@@ -617,10 +657,18 @@ class DiodeOTLPClient(DiodeClientInterface):
         self._timeout = timeout
 
         self._target, self._path, self._tls_verify = parse_target(target)
-        self._cert_file = _get_optional_config_value(_DIODE_CERT_FILE_ENVVAR_NAME, cert_file)
-        self._certificates = _load_certs(self._cert_file) if (self._tls_verify or self._cert_file) else None
+        self._cert_file = _get_optional_config_value(
+            _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
+        )
+        self._certificates = (
+            _load_certs(self._cert_file)
+            if (self._tls_verify or self._cert_file)
+            else None
+        )
 
-        channel_opts = _otlp_grpc_channel_options(f"{self._name}/{self._version} {self._app_name}/{self._app_version}")
+        channel_opts = _otlp_grpc_channel_options(
+            f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
+        )
 
         proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
         if proxy_url:
@@ -636,7 +684,9 @@ class DiodeOTLPClient(DiodeClientInterface):
         # Channel creation logic
         if self._tls_verify:
             credentials = (
-                grpc.ssl_channel_credentials(root_certificates=self._certificates) if self._certificates else grpc.ssl_channel_credentials()
+                grpc.ssl_channel_credentials(root_certificates=self._certificates)
+                if self._certificates
+                else grpc.ssl_channel_credentials()
             )
 
             _LOGGER.debug(
@@ -728,7 +778,10 @@ class DiodeOTLPClient(DiodeClientInterface):
     ) -> ingester_pb2.IngestResponse:
         """Export entities as OTLP logs with optional request-level metadata."""
         stream = stream or _DEFAULT_STREAM
-        log_records = [self._entity_to_log_record(entity) for entity in self._normalize_entities(entities)]
+        log_records = [
+            self._entity_to_log_record(entity)
+            for entity in self._normalize_entities(entities)
+        ]
 
         if not log_records:
             return ingester_pb2.IngestResponse()
@@ -746,7 +799,9 @@ class DiodeOTLPClient(DiodeClientInterface):
 
         return ingester_pb2.IngestResponse()
 
-    def _normalize_entities(self, entities: Iterable[Entity | ingester_pb2.Entity | None]) -> list[ingester_pb2.Entity]:
+    def _normalize_entities(
+        self, entities: Iterable[Entity | ingester_pb2.Entity | None]
+    ) -> list[ingester_pb2.Entity]:
         normalized: list[ingester_pb2.Entity] = []
         for entity in entities:
             if entity is None:
@@ -764,7 +819,9 @@ class DiodeOTLPClient(DiodeClientInterface):
     ) -> logs_service_pb2.ExportLogsServiceRequest:
         resource_logs = logs_pb2.ResourceLogs()
         resource_logs.resource.attributes.extend(self._resource_attributes())
-        resource_logs.resource.attributes.append(self._string_kv("diode.stream", stream))
+        resource_logs.resource.attributes.append(
+            self._string_kv("diode.stream", stream)
+        )
 
         # Add request-level metadata as resource attributes with diode.metadata.* prefix
         if metadata:
@@ -816,7 +873,9 @@ class DiodeOTLPClient(DiodeClientInterface):
 
     @staticmethod
     def _string_kv(key: str, value: str) -> common_pb2.KeyValue:
-        return common_pb2.KeyValue(key=key, value=common_pb2.AnyValue(string_value=value))
+        return common_pb2.KeyValue(
+            key=key, value=common_pb2.AnyValue(string_value=value)
+        )
 
     @staticmethod
     def _value_to_any_value(value: Any) -> common_pb2.AnyValue | None:  # noqa: C901
@@ -839,14 +898,18 @@ class DiodeOTLPClient(DiodeClientInterface):
                 any_value = DiodeOTLPClient._value_to_any_value(item)
                 if any_value:
                     array_values.append(any_value)
-            return common_pb2.AnyValue(array_value=common_pb2.ArrayValue(values=array_values))
+            return common_pb2.AnyValue(
+                array_value=common_pb2.ArrayValue(values=array_values)
+            )
         if isinstance(value, dict):
             # Recursively convert dict to KeyValueList
             kvlist = common_pb2.KeyValueList()
             for k, v in value.items():
                 any_value = DiodeOTLPClient._value_to_any_value(v)
                 if any_value:
-                    kvlist.values.append(common_pb2.KeyValue(key=k, value=any_value))
+                    kvlist.values.append(
+                        common_pb2.KeyValue(key=k, value=any_value)
+                    )
             return common_pb2.AnyValue(kvlist_value=kvlist)
         # Skip unsupported types
         return None
@@ -893,8 +956,12 @@ class _DiodeAuthentication:
         self._certificates = certificates
         self._cert_file = cert_file
         self._max_retries = max_retries
-        self._initial_retry_delay = _AUTH_INITIAL_RETRY_DELAY if initial_retry_delay is None else initial_retry_delay
-        self._max_retry_delay = _AUTH_MAX_RETRY_DELAY if max_retry_delay is None else max_retry_delay
+        self._initial_retry_delay = (
+            _AUTH_INITIAL_RETRY_DELAY if initial_retry_delay is None else initial_retry_delay
+        )
+        self._max_retry_delay = (
+            _AUTH_MAX_RETRY_DELAY if max_retry_delay is None else max_retry_delay
+        )
         self._sleep = sleep or time.sleep
 
     def authenticate(self) -> str:
@@ -908,20 +975,27 @@ class _DiodeAuthentication:
         except requests.RequestException as e:
             raise DiodeConfigError(f"Failed to obtain access token: {e}")
         finally:
+            # Clean up temp certificate file
             if temp_cert_file and os.path.exists(temp_cert_file):
                 try:
                     os.unlink(temp_cert_file)
                     _LOGGER.debug(f"Cleaned up temp certificate file: {temp_cert_file}")
                 except OSError as e:
-                    _LOGGER.warning(f"Failed to clean up temp certificate file {temp_cert_file}: {e}")
+                    _LOGGER.warning(
+                        f"Failed to clean up temp certificate file {temp_cert_file}: {e}"
+                    )
 
     def _configure_auth_session(self, session: requests.Session) -> str | None:
         temp_cert_file = None
         if self._tls_verify and self._certificates:
+            # Use cert_file path directly if available, otherwise write to temp file
             if self._cert_file:
                 session.verify = self._cert_file
             else:
-                with tempfile.NamedTemporaryFile(mode="wb", delete=False, suffix=".pem") as f:
+                # Write certificates to temp file for requests
+                with tempfile.NamedTemporaryFile(
+                    mode="wb", delete=False, suffix=".pem"
+                ) as f:
                     f.write(self._certificates)
                     temp_cert_file = f.name
                 session.verify = temp_cert_file
@@ -949,7 +1023,9 @@ class _DiodeAuthentication:
             if response.status_code == 200:
                 access_token = response.json().get("access_token")
                 if not access_token:
-                    raise DiodeConfigError(f"Failed to obtain access token for client {self._client_id}")
+                    raise DiodeConfigError(
+                        f"Failed to obtain access token for client {self._client_id}"
+                    )
                 _LOGGER.debug(f"Access token obtained for client {self._client_id}")
                 return access_token
 
@@ -1065,7 +1141,9 @@ class _ClientCallDetails(
     """
 
 
-class DiodeMethodClientInterceptor(grpc.UnaryUnaryClientInterceptor, grpc.StreamUnaryClientInterceptor):
+class DiodeMethodClientInterceptor(
+    grpc.UnaryUnaryClientInterceptor, grpc.StreamUnaryClientInterceptor
+):
     """
     Diode Method Client Interceptor class.
 
@@ -1104,6 +1182,8 @@ class DiodeMethodClientInterceptor(grpc.UnaryUnaryClientInterceptor, grpc.Stream
         """Intercept unary unary."""
         return self._intercept_call(continuation, client_call_details, request)
 
-    def intercept_stream_unary(self, continuation, client_call_details, request_iterator):
+    def intercept_stream_unary(
+        self, continuation, client_call_details, request_iterator
+    ):
         """Intercept stream unary."""
         return self._intercept_call(continuation, client_call_details, request_iterator)
