@@ -750,7 +750,14 @@ def test_auth_retry_delay_honours_retry_after():
 def test_auth_retry_delay_caps_retry_after():
     """Cap Retry-After delays at the configured maximum."""
     delay = _auth_retry_delay(1, 429, "120", 1.0, 30.0)
-    assert 30.0 <= delay <= 37.5
+    assert delay == 30.0
+
+
+def test_auth_retry_delay_never_exceeds_max():
+    """Jitter must not push the final delay above the configured maximum."""
+    for attempt in range(1, 8):
+        delay = _auth_retry_delay(attempt, 500, None, 1.0, 30.0)
+        assert delay <= 30.0
 
 
 def test_diode_authentication_retries_retriable_status(mock_diode_authentication):

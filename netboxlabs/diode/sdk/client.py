@@ -1039,7 +1039,8 @@ def _auth_retry_delay(
     if delay is None:
         delay = initial_delay * (2 ** (attempt - 1))
     delay = min(delay, max_delay)
-    return delay + random.uniform(0, delay / 4)
+    delay += random.uniform(0, delay / 4)
+    return min(delay, max_delay)
 
 
 class _ClientCallDetails(
