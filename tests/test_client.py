@@ -17,12 +17,15 @@ from netboxlabs.diode.sdk.client import (
     DiodeDryRunClient,
     DiodeMethodClientInterceptor,
     DiodeOTLPClient,
+    _auth_retry_delay,
     _ClientCallDetails,
     _diode_ingest_grpc_channel_options,
     _DiodeAuthentication,
     _get_sentry_dsn,
+    _is_retriable_auth_http_status,
     _load_certs,
     _otlp_grpc_channel_options,
+    _parse_retry_after,
     load_dryrun_entities,
     parse_target,
 )
@@ -72,9 +75,7 @@ def test_config_errors(client_id, client_secret, env_var_name):
             client_id=client_id,
             client_secret=client_secret,
         )
-    assert (
-        str(err.value) == f"parameter or {env_var_name} environment variable required"
-    )
+    assert str(err.value) == f"parameter or {env_var_name} environment variable required"
 
 
 def test_client_error(mock_diode_authentication):
@@ -100,10 +101,7 @@ def test_diode_client_error_repr_returns_correct_string():
     error = DiodeClientError(grpc_error)
     error._status_code = grpc.StatusCode.UNAVAILABLE
     error._details = "Some details about the error"
-    assert (
-        repr(error)
-        == "<DiodeClientError status code: StatusCode.UNAVAILABLE, details: Some details about the error>"
-    )
+    assert repr(error) == "<DiodeClientError status code: StatusCode.UNAVAILABLE, details: Some details about the error>"
 
 
 def test_load_certs_returns_bytes():
@@ -271,9 +269,7 @@ def test_insecure_channel_options_with_primary_user_agent(mock_diode_authenticat
         mock_insecure_channel.assert_called_once()
         _, kwargs = mock_insecure_channel.call_args
         assert kwargs["options"] == tuple(
-            _diode_ingest_grpc_channel_options(
-                f"{client.name}/{client.version} {client.app_name}/{client.app_version}"
-            )
+            _diode_ingest_grpc_channel_options(f"{client.name}/{client.version} {client.app_name}/{client.app_version}")
         )
 
 
@@ -291,9 +287,7 @@ def test_secure_channel_options_with_primary_user_agent(mock_diode_authenticatio
         mock_secure_channel.assert_called_once()
         _, kwargs = mock_secure_channel.call_args
         assert kwargs["options"] == tuple(
-            _diode_ingest_grpc_channel_options(
-                f"{client.name}/{client.version} {client.app_name}/{client.app_version}"
-            )
+            _diode_ingest_grpc_channel_options(f"{client.name}/{client.version} {client.app_name}/{client.app_version}")
         )
 
 
@@ -370,9 +364,7 @@ def test_client_setup_sentry_called_when_sentry_dsn_exists(mock_diode_authentica
             client_secret="123456",
             sentry_dsn="https://user@password.mock.dsn/123456",
         )
-        mock_setup_sentry.assert_called_once_with(
-            "https://user@password.mock.dsn/123456", 1.0, 1.0
-        )
+        mock_setup_sentry.assert_called_once_with("https://user@password.mock.dsn/123456", 1.0, 1.0)
 
 
 def test_client_setup_sentry_not_called_when_sentry_dsn_not_exists(
@@ -498,10 +490,7 @@ def test_interceptor_intercepts_unary_unary_calls():
         None,
     )
     request = None
-    assert (
-        interceptor.intercept_unary_unary(continuation, client_call_details, request)
-        == "/my/path/diode.v1.IngesterService/Ingest"
-    )
+    assert interceptor.intercept_unary_unary(continuation, client_call_details, request) == "/my/path/diode.v1.IngesterService/Ingest"
 
 
 def test_interceptor_intercepts_stream_unary_calls():
@@ -521,9 +510,7 @@ def test_interceptor_intercepts_stream_unary_calls():
     )
     request_iterator = None
     assert (
-        interceptor.intercept_stream_unary(
-            continuation, client_call_details, request_iterator
-        )
+        interceptor.intercept_stream_unary(continuation, client_call_details, request_iterator)
         == "/my/path/diode.v1.IngesterService/Ingest"
     )
 
@@ -705,11 +692,158 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
         mock_session = mock_session_class.return_value
         # Import requests.RequestException for the side effect
         import requests
+
         mock_session.post.side_effect = requests.RequestException("Connection error")
 
         with pytest.raises(DiodeConfigError) as excinfo:
             auth.authenticate()
         assert "Failed to obtain access token: Connection error" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    ("status_code", "expected"),
+    [
+        (429, True),
+        (500, True),
+        (502, True),
+        (503, True),
+        (401, False),
+        (403, False),
+        (400, False),
+        (200, False),
+    ],
+)
+def test_is_retriable_auth_http_status(status_code, expected):
+    """Check retriable auth HTTP status classification."""
+    assert _is_retriable_auth_http_status(status_code) is expected
+
+
+def test_parse_retry_after_seconds():
+    """Parse Retry-After header values in seconds."""
+    assert _parse_retry_after("5") == 5.0
+
+
+def test_parse_retry_after_invalid():
+    """Return None for invalid Retry-After values."""
+    assert _parse_retry_after("not-a-date") is None
+    assert _parse_retry_after("") is None
+
+
+def test_auth_retry_delay_exponential():
+    """Apply exponential backoff when Retry-After is absent."""
+    delay1 = _auth_retry_delay(1, 500, None, 1.0, 30.0)
+    delay2 = _auth_retry_delay(2, 500, None, 1.0, 30.0)
+    delay3 = _auth_retry_delay(3, 502, None, 1.0, 30.0)
+    assert 1.0 <= delay1 <= 1.25
+    assert 2.0 <= delay2 <= 2.5
+    assert 4.0 <= delay3 <= 5.0
+
+
+def test_auth_retry_delay_honours_retry_after():
+    """Honour Retry-After for 429 and 503 responses."""
+    delay429 = _auth_retry_delay(1, 429, "7", 1.0, 30.0)
+    delay503 = _auth_retry_delay(1, 503, "12", 1.0, 30.0)
+    assert 7.0 <= delay429 <= 8.75
+    assert 12.0 <= delay503 <= 15.0
+
+
+def test_auth_retry_delay_caps_retry_after():
+    """Cap Retry-After delays at the configured maximum."""
+    delay = _auth_retry_delay(1, 429, "120", 1.0, 30.0)
+    assert 30.0 <= delay <= 37.5
+
+
+def test_diode_authentication_retries_retriable_status(mock_diode_authentication):
+    """Retry auth token fetch on transient HTTP failures."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        max_retries=3,
+        initial_retry_delay=0,
+        max_retry_delay=0,
+        sleep=lambda _delay: None,
+    )
+    responses = [
+        mock.Mock(status_code=503, reason="Service Unavailable", headers={"Retry-After": "0"}),
+        mock.Mock(status_code=200, json=mock.Mock(return_value={"access_token": "mocked_token"})),
+    ]
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_session.post.side_effect = responses
+
+        token = auth.authenticate()
+        assert token == "mocked_token"
+        assert mock_session.post.call_count == 2
+
+
+def test_diode_authentication_fails_fast_on_401(mock_diode_authentication):
+    """Do not retry auth token fetch on 401 responses."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        max_retries=3,
+        initial_retry_delay=0,
+        max_retry_delay=0,
+        sleep=lambda _delay: None,
+    )
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_response = mock.Mock()
+        mock_response.status_code = 401
+        mock_response.reason = "Unauthorized"
+        mock_response.headers = {}
+        mock_session.post.return_value = mock_response
+
+        with pytest.raises(DiodeConfigError):
+            auth.authenticate()
+        assert mock_session.post.call_count == 1
+
+
+def test_diode_authentication_exhausts_retries_on_429(mock_diode_authentication):
+    """Stop retrying auth token fetch after max attempts on 429."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        max_retries=2,
+        initial_retry_delay=0,
+        max_retry_delay=0,
+        sleep=lambda _delay: None,
+    )
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_response = mock.Mock()
+        mock_response.status_code = 429
+        mock_response.reason = "Too Many Requests"
+        mock_response.headers = {"Retry-After": "0"}
+        mock_session.post.return_value = mock_response
+
+        with pytest.raises(DiodeConfigError):
+            auth.authenticate()
+        assert mock_session.post.call_count == 2
 
 
 def test_ingest_dry_run_stdout(capsys):
@@ -767,21 +901,15 @@ def test_load_dryrun_entities_from_fixture(message_path, tmp_path):
     assert isinstance(entities[0], ingester_pb2.Entity)
     assert entities[0].asn.asn == 555
     assert entities[33].ip_address.address == "192.168.100.1/24"
-    assert (
-        entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
-    )
+    assert entities[33].ip_address.assigned_object_interface.name == "GigabitEthernet1/0/1"
     assert entities[-1].wireless_link.ssid == "P2P-Link-1"
 
 
 def test_otlp_client_exports_entities():
     """Ensure DiodeOTLPClient serializes entities and exports them as logs."""
     with (
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
-        ) as mock_insecure_channel,
-        patch(
-            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
-        ) as mock_stub_cls,
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
@@ -792,9 +920,7 @@ def test_otlp_client_exports_entities():
             app_version="1.2.3",
         )
 
-        response = client.ingest(
-            entities=[Entity(site="Site1"), Entity(device="Device1")]
-        )
+        response = client.ingest(entities=[Entity(site="Site1"), Entity(device="Device1")])
 
         stub_instance.Export.assert_called_once()
         export_args, export_kwargs = stub_instance.Export.call_args
@@ -826,18 +952,12 @@ def test_otlp_client_raises_on_rpc_error():
             return self._details
 
     with (
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
-        ) as mock_insecure_channel,
-        patch(
-            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
-        ) as mock_stub_cls,
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
-        stub_instance.Export.side_effect = DummyRpcError(
-            grpc.StatusCode.UNAVAILABLE, "endpoint offline"
-        )
+        stub_instance.Export.side_effect = DummyRpcError(grpc.StatusCode.UNAVAILABLE, "endpoint offline")
 
         client = DiodeOTLPClient(
             target="grpc://collector:4317",
@@ -855,13 +975,9 @@ def test_otlp_client_raises_on_rpc_error():
 def test_otlp_client_grpcs_uses_secure_channel():
     """Ensure DiodeOTLPClient configures SSL credentials for secure targets."""
     with (
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials"
-        ) as mock_ssl_credentials,
+        patch("netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials") as mock_ssl_credentials,
         patch("netboxlabs.diode.sdk.client.grpc.secure_channel") as mock_secure_channel,
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.intercept_channel"
-        ) as mock_intercept_channel,
+        patch("netboxlabs.diode.sdk.client.grpc.intercept_channel") as mock_intercept_channel,
         patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"),
     ):
         base_channel = mock.Mock()
@@ -898,22 +1014,15 @@ def test_otlp_insecure_channel_options_exclude_diode_keepalive():
 
         mock_insecure.assert_called_once()
         _, kwargs = mock_insecure.call_args
-        ua = (
-            f"{client.name}/{client.version} "
-            f"{client.app_name}/{client.app_version}"
-        )
+        ua = f"{client.name}/{client.version} {client.app_name}/{client.app_version}"
         assert kwargs["options"] == tuple(_otlp_grpc_channel_options(ua))
-        assert all(
-            opt[0] != "grpc.keepalive_time_ms" for opt in kwargs["options"]
-        )
+        assert all(opt[0] != "grpc.keepalive_time_ms" for opt in kwargs["options"])
 
 
 def test_diode_authentication_with_custom_certificates():
     """Test _DiodeAuthentication with custom certificates - covers SSL context creation."""
     # Create test certificate content
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
 
     auth = _DiodeAuthentication(
         target="example.com:443",
@@ -984,9 +1093,7 @@ def test_diode_authentication_with_custom_certificates():
 def test_load_certs_with_custom_cert_file(tmp_path):
     """Test _load_certs loads custom certificate file."""
     # Create a dummy certificate file
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     cert_file = tmp_path / "custom.pem"
     cert_file.write_bytes(cert_content)
 
@@ -1004,9 +1111,7 @@ def test_load_certs_with_none_uses_default():
 def test_client_with_cert_file_parameter(mock_diode_authentication, tmp_path):
     """Test DiodeClient with cert_file parameter loads custom cert but respects TLS scheme."""
     # Create a dummy certificate file
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     cert_file = tmp_path / "custom.pem"
     cert_file.write_bytes(cert_content)
 
@@ -1035,9 +1140,7 @@ def test_client_with_cert_file_env_var(mock_diode_authentication, tmp_path):
     from netboxlabs.diode.sdk.client import _DIODE_CERT_FILE_ENVVAR_NAME
 
     # Create a dummy certificate file
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     cert_file = tmp_path / "custom.pem"
     cert_file.write_bytes(cert_content)
 
@@ -1073,19 +1176,13 @@ def test_client_with_cert_file_env_var(mock_diode_authentication, tmp_path):
                 del os.environ[_DIODE_CERT_FILE_ENVVAR_NAME]
 
 
-def test_client_cert_file_parameter_overrides_env_var(
-    mock_diode_authentication, tmp_path
-):
+def test_client_cert_file_parameter_overrides_env_var(mock_diode_authentication, tmp_path):
     """Test cert_file parameter takes precedence over environment variable."""
     from netboxlabs.diode.sdk.client import _DIODE_CERT_FILE_ENVVAR_NAME
 
     # Create two dummy certificate files
-    env_cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nENV CERT\n-----END CERTIFICATE-----\n"
-    )
-    param_cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nPARAM CERT\n-----END CERTIFICATE-----\n"
-    )
+    env_cert_content = b"-----BEGIN CERTIFICATE-----\nENV CERT\n-----END CERTIFICATE-----\n"
+    param_cert_content = b"-----BEGIN CERTIFICATE-----\nPARAM CERT\n-----END CERTIFICATE-----\n"
 
     env_cert_file = tmp_path / "env.pem"
     param_cert_file = tmp_path / "param.pem"
@@ -1127,9 +1224,7 @@ def test_client_cert_file_parameter_overrides_env_var(
 def test_client_secure_channel_uses_custom_cert(mock_diode_authentication, tmp_path):
     """Test secure channel creation uses custom certificate when provided."""
     # Create a dummy certificate file
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     cert_file = tmp_path / "custom.pem"
     cert_file.write_bytes(cert_content)
 
@@ -1180,9 +1275,7 @@ def test_client_without_cert_file_uses_default_certs(mock_diode_authentication):
         mock_load_certs.assert_called_with(None)
 
         # Verify ssl_channel_credentials was called with default cert content
-        mock_ssl_creds.assert_called_once_with(
-            root_certificates=b"default cert content"
-        )
+        mock_ssl_creds.assert_called_once_with(root_certificates=b"default cert content")
 
         # Verify secure_channel was called
         mock_secure_channel.assert_called_once()
@@ -1218,16 +1311,12 @@ def test_should_verify_tls_with_skip_env_var():
         # Test truthy values that should skip TLS verification
         for skip_value in ["true", "True", "TRUE", "1", "yes", "on"]:
             os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = skip_value
-            assert (
-                _should_verify_tls("grpcs") is False
-            )  # Should skip even for secure schemes
+            assert _should_verify_tls("grpcs") is False  # Should skip even for secure schemes
 
         # Test falsy values that should NOT skip TLS verification
         for verify_value in ["false", "0", "no", "off", "", "random"]:
             os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = verify_value
-            assert (
-                _should_verify_tls("grpcs") is True
-            )  # Should verify for secure schemes
+            assert _should_verify_tls("grpcs") is True  # Should verify for secure schemes
 
     finally:
         # Clean up environment variable
@@ -1272,16 +1361,12 @@ def test_client_with_skip_tls_verify_env_var(mock_diode_authentication):
                 del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
 
 
-def test_client_cert_file_with_skip_tls_verify_env_var(
-    mock_diode_authentication, tmp_path
-):
+def test_client_cert_file_with_skip_tls_verify_env_var(mock_diode_authentication, tmp_path):
     """Test cert_file parameter with DIODE_SKIP_TLS_VERIFY environment variable."""
     from netboxlabs.diode.sdk.client import _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME
 
     # Create a dummy certificate file
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     cert_file = tmp_path / "custom.pem"
     cert_file.write_bytes(cert_content)
 
@@ -1322,17 +1407,13 @@ def test_client_cert_file_with_skip_tls_verify_env_var(
 def test_certificate_loading_efficiency(tmp_path):
     """Test that certificates are loaded only once during client initialization."""
     # Create a dummy certificate file
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     cert_file = tmp_path / "custom.pem"
     cert_file.write_bytes(cert_content)
 
     with (
         mock.patch("netboxlabs.diode.sdk.client._load_certs") as mock_load_certs,
-        mock.patch(
-            "netboxlabs.diode.sdk.client._DiodeAuthentication"
-        ) as mock_auth_class,
+        mock.patch("netboxlabs.diode.sdk.client._DiodeAuthentication") as mock_auth_class,
     ):
         mock_load_certs.return_value = cert_content
         mock_auth_instance = mock_auth_class.return_value
@@ -1493,12 +1574,8 @@ def test_dryrun_client_includes_metadata_in_output(tmp_path):
 def test_otlp_client_maps_metadata_to_resource_attributes():
     """Test DiodeOTLPClient maps request metadata to OTLP resource attributes."""
     with (
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
-        ) as mock_insecure_channel,
-        patch(
-            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
-        ) as mock_stub_cls,
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
@@ -1541,12 +1618,8 @@ def test_otlp_client_maps_metadata_to_resource_attributes():
 def test_otlp_client_handles_nested_metadata():
     """Test DiodeOTLPClient handles nested metadata structures."""
     with (
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
-        ) as mock_insecure_channel,
-        patch(
-            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
-        ) as mock_stub_cls,
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
@@ -1607,12 +1680,8 @@ def test_otlp_client_handles_nested_metadata():
 def test_otlp_client_metadata_type_conversion():
     """Test DiodeOTLPClient correctly converts different Python types."""
     with (
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
-        ) as mock_insecure_channel,
-        patch(
-            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
-        ) as mock_stub_cls,
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
@@ -1656,12 +1725,8 @@ def test_otlp_client_metadata_type_conversion():
 def test_otlp_client_without_metadata():
     """Test DiodeOTLPClient works without metadata (backward compatibility)."""
     with (
-        patch(
-            "netboxlabs.diode.sdk.client.grpc.insecure_channel"
-        ) as mock_insecure_channel,
-        patch(
-            "netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"
-        ) as mock_stub_cls,
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub") as mock_stub_cls,
     ):
         mock_insecure_channel.return_value = mock.Mock()
         stub_instance = mock_stub_cls.return_value
@@ -1833,9 +1898,7 @@ def test_diode_client_configures_proxy_option(mock_diode_authentication):
             options = kwargs["options"]
 
             # Check that grpc.http_proxy option is present
-            proxy_option = next(
-                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
-            )
+            proxy_option = next((opt for opt in options if opt[0] == "grpc.http_proxy"), None)
             assert proxy_option is not None
             assert proxy_option[1] == "http://proxy.example.com:8080"
     finally:
@@ -1864,9 +1927,7 @@ def test_diode_client_uses_insecure_channel_with_proxy_when_skip_tls(
             options = kwargs["options"]
 
             # Verify proxy option is set
-            proxy_option = next(
-                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
-            )
+            proxy_option = next((opt for opt in options if opt[0] == "grpc.http_proxy"), None)
             assert proxy_option is not None
             assert proxy_option[1] == "http://proxy.example.com:8080"
     finally:
@@ -1893,9 +1954,7 @@ def test_diode_client_respects_no_proxy_for_target(mock_diode_authentication):
             options = kwargs["options"]
 
             # Check that grpc.http_proxy option is NOT present
-            proxy_option = next(
-                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
-            )
+            proxy_option = next((opt for opt in options if opt[0] == "grpc.http_proxy"), None)
             assert proxy_option is None
     finally:
         del os.environ["HTTP_PROXY"]
@@ -1904,9 +1963,7 @@ def test_diode_client_respects_no_proxy_for_target(mock_diode_authentication):
 
 def test_diode_client_with_proxy_and_custom_cert(mock_diode_authentication, tmp_path):
     """Test DiodeClient with proxy and custom certificate (for MITM proxies)."""
-    cert_content = (
-        b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
-    )
+    cert_content = b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     cert_file = tmp_path / "custom.pem"
     cert_file.write_bytes(cert_content)
 
@@ -1938,9 +1995,7 @@ def test_diode_client_with_proxy_and_custom_cert(mock_diode_authentication, tmp_
             # Verify proxy option is set
             _, kwargs = mock_secure_channel.call_args
             options = kwargs["options"]
-            proxy_option = next(
-                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
-            )
+            proxy_option = next((opt for opt in options if opt[0] == "grpc.http_proxy"), None)
             assert proxy_option is not None
             assert proxy_option[1] == "http://proxy.example.com:8080"
     finally:
@@ -2142,9 +2197,7 @@ def test_diode_client_with_invalid_proxy_url_falls_back_to_no_proxy(
             # Verify no proxy option is set (invalid proxy was rejected)
             _, kwargs = mock_insecure_channel.call_args
             options = kwargs["options"]
-            proxy_option = next(
-                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
-            )
+            proxy_option = next((opt for opt in options if opt[0] == "grpc.http_proxy"), None)
             assert proxy_option is None
 
             # Should log warning about invalid proxy
