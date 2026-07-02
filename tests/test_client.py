@@ -12,12 +12,12 @@ import grpc
 import pytest
 
 from netboxlabs.diode.sdk.client import (
-    _auth_retry_delay,
     _DIODE_SENTRY_DSN_ENVVAR_NAME,
     DiodeClient,
     DiodeDryRunClient,
     DiodeMethodClientInterceptor,
     DiodeOTLPClient,
+    _auth_retry_delay,
     _ClientCallDetails,
     _diode_ingest_grpc_channel_options,
     _DiodeAuthentication,

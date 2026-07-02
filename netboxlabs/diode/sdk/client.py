@@ -1081,7 +1081,7 @@ def _is_retriable_auth_http_status(status_code: int) -> bool:
 
 
 def _parse_retry_after(value: str | None) -> float | None:
-    if not value:
+    if not value or not isinstance(value, str):
         return None
     try:
         seconds = int(value)
