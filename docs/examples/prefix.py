@@ -10,10 +10,14 @@ This module demonstrates three patterns for ingesting Prefix entities:
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Entity,
+    Location,
     Owner,
     OwnerGroup,
     Prefix,
+    Region,
     Role,
+    Site,
+    SiteGroup,
     Tag,
     Tenant,
     VLAN,
@@ -100,6 +104,16 @@ def prefix_explicit() -> Prefix:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        # Polymorphic 'scope' — choose ONE of these mutually exclusive variants:
+        scope_site=Site(
+            name="Example Name",
+            slug="example-slug",
+            status="active",
+            metadata={"source": "example"},
+        ),
+        # scope_location=Location(name="Example Name", slug="example-slug", site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}),
+        # scope_region=Region(name="Example Name", slug="example-slug", metadata={"source": "example"}),
+        # scope_site_group=SiteGroup(name="Example Name", slug="example-slug", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

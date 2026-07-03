@@ -65,9 +65,7 @@ def fhrp_group_assignment_extended() -> FHRPGroupAssignment:
 def fhrp_group_assignment_explicit() -> FHRPGroupAssignment:
     """Create a FHRPGroupAssignment with fully nested objects and all common fields."""
     return FHRPGroupAssignment(
-        group=FHRPGroup(
-            protocol="Example Protocol", group_id=1, metadata={"source": "example"}
-        ),
+        group=FHRPGroup(protocol="carp", group_id=1, metadata={"source": "example"}),
         priority=1,
         metadata={
             "source": "example",

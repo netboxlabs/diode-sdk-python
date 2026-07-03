@@ -13,6 +13,7 @@ from netboxlabs.diode.sdk.ingester import (
     DeviceRole,
     DeviceType,
     Entity,
+    FHRPGroup,
     Manufacturer,
     Owner,
     OwnerGroup,
@@ -116,6 +117,35 @@ def service_explicit() -> Service:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        # Polymorphic 'parent_object' — choose ONE of these mutually exclusive variants:
+        parent_object_device=Device(
+            device_type=DeviceType(
+                manufacturer=Manufacturer(
+                    name="Example Name",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                model="Model X",
+                slug="example-slug",
+                metadata={"source": "example"},
+            ),
+            role=DeviceRole(
+                name="Example Name",
+                slug="example-slug",
+                color="0000ff",
+                metadata={"source": "example"},
+            ),
+            site=Site(
+                name="Example Name",
+                slug="example-slug",
+                status="active",
+                metadata={"source": "example"},
+            ),
+            status="active",
+            metadata={"source": "example"},
+        ),
+        # parent_object_fhrp_group=FHRPGroup(protocol="carp", group_id=1, metadata={"source": "example"}),
+        # parent_object_virtual_machine=VirtualMachine(name="Example Name", status="active", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 
