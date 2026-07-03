@@ -11,9 +11,16 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Cable,
     CableBundle,
+    Device,
+    DeviceRole,
+    DeviceType,
     Entity,
+    GenericObject,
+    Interface,
+    Manufacturer,
     Owner,
     OwnerGroup,
+    Site,
     Tag,
     Tenant,
 )
@@ -50,6 +57,76 @@ def cable_minimal() -> Cable:
     """Create a Cable with only required fields using flat strings."""
     return Cable(
         metadata={"source": "example"},
+        a_terminations=[
+            GenericObject(
+                object_interface=Interface(
+                    device=Device(
+                        device_type=DeviceType(
+                            manufacturer=Manufacturer(
+                                name="Example Name",
+                                slug="example-slug",
+                                metadata={"source": "example"},
+                            ),
+                            model="Model X",
+                            slug="example-slug",
+                            metadata={"source": "example"},
+                        ),
+                        role=DeviceRole(
+                            name="Example Name",
+                            slug="example-slug",
+                            color="0000ff",
+                            metadata={"source": "example"},
+                        ),
+                        site=Site(
+                            name="Example Name",
+                            slug="example-slug",
+                            status="active",
+                            metadata={"source": "example"},
+                        ),
+                        status="active",
+                        metadata={"source": "example"},
+                    ),
+                    name="Example Name A",
+                    type="1000base-t",
+                    metadata={"source": "example"},
+                )
+            )
+        ],
+        b_terminations=[
+            GenericObject(
+                object_interface=Interface(
+                    device=Device(
+                        device_type=DeviceType(
+                            manufacturer=Manufacturer(
+                                name="Example Name",
+                                slug="example-slug",
+                                metadata={"source": "example"},
+                            ),
+                            model="Model X",
+                            slug="example-slug",
+                            metadata={"source": "example"},
+                        ),
+                        role=DeviceRole(
+                            name="Example Name",
+                            slug="example-slug",
+                            color="0000ff",
+                            metadata={"source": "example"},
+                        ),
+                        site=Site(
+                            name="Example Name",
+                            slug="example-slug",
+                            status="active",
+                            metadata={"source": "example"},
+                        ),
+                        status="active",
+                        metadata={"source": "example"},
+                    ),
+                    name="Example Name B",
+                    type="1000base-t",
+                    metadata={"source": "example"},
+                )
+            )
+        ],
     )
 
 
@@ -57,7 +134,7 @@ def cable_extended() -> Cable:
     """Create a Cable with common optional fields."""
     return Cable(
         metadata={"source": "example", "custom_key": "custom_value"},
-        status="connected",
+        status="planned",
         description="Example description",
         color="0000ff",
         type="aoc",
@@ -67,6 +144,76 @@ def cable_extended() -> Cable:
         length_unit="cm",
         comments="Example comments",
         profile="breakout-1c2p-2c1p",
+        a_terminations=[
+            GenericObject(
+                object_interface=Interface(
+                    device=Device(
+                        device_type=DeviceType(
+                            manufacturer=Manufacturer(
+                                name="Example Name",
+                                slug="example-slug",
+                                metadata={"source": "example"},
+                            ),
+                            model="Model X",
+                            slug="example-slug",
+                            metadata={"source": "example"},
+                        ),
+                        role=DeviceRole(
+                            name="Example Name",
+                            slug="example-slug",
+                            color="0000ff",
+                            metadata={"source": "example"},
+                        ),
+                        site=Site(
+                            name="Example Name",
+                            slug="example-slug",
+                            status="active",
+                            metadata={"source": "example"},
+                        ),
+                        status="active",
+                        metadata={"source": "example"},
+                    ),
+                    name="Example Name A",
+                    type="1000base-t",
+                    metadata={"source": "example"},
+                )
+            )
+        ],
+        b_terminations=[
+            GenericObject(
+                object_interface=Interface(
+                    device=Device(
+                        device_type=DeviceType(
+                            manufacturer=Manufacturer(
+                                name="Example Name",
+                                slug="example-slug",
+                                metadata={"source": "example"},
+                            ),
+                            model="Model X",
+                            slug="example-slug",
+                            metadata={"source": "example"},
+                        ),
+                        role=DeviceRole(
+                            name="Example Name",
+                            slug="example-slug",
+                            color="0000ff",
+                            metadata={"source": "example"},
+                        ),
+                        site=Site(
+                            name="Example Name",
+                            slug="example-slug",
+                            status="active",
+                            metadata={"source": "example"},
+                        ),
+                        status="active",
+                        metadata={"source": "example"},
+                    ),
+                    name="Example Name B",
+                    type="1000base-t",
+                    metadata={"source": "example"},
+                )
+            )
+        ],
     )
 
 
@@ -78,7 +225,7 @@ def cable_explicit() -> Cable:
             "custom_key": "custom_value",
             "collected_at": "2024-01-15T10:30:00Z",
         },
-        status="connected",
+        status="planned",
         description="Example description",
         color="0000ff",
         comments="Example comments",
@@ -96,6 +243,76 @@ def cable_explicit() -> Cable:
             metadata={"source": "example"},
         ),
         bundle=CableBundle(name="Example Name", metadata={"source": "example"}),
+        a_terminations=[
+            GenericObject(
+                object_interface=Interface(
+                    device=Device(
+                        device_type=DeviceType(
+                            manufacturer=Manufacturer(
+                                name="Example Name",
+                                slug="example-slug",
+                                metadata={"source": "example"},
+                            ),
+                            model="Model X",
+                            slug="example-slug",
+                            metadata={"source": "example"},
+                        ),
+                        role=DeviceRole(
+                            name="Example Name",
+                            slug="example-slug",
+                            color="0000ff",
+                            metadata={"source": "example"},
+                        ),
+                        site=Site(
+                            name="Example Name",
+                            slug="example-slug",
+                            status="active",
+                            metadata={"source": "example"},
+                        ),
+                        status="active",
+                        metadata={"source": "example"},
+                    ),
+                    name="Example Name A",
+                    type="1000base-t",
+                    metadata={"source": "example"},
+                )
+            )
+        ],
+        b_terminations=[
+            GenericObject(
+                object_interface=Interface(
+                    device=Device(
+                        device_type=DeviceType(
+                            manufacturer=Manufacturer(
+                                name="Example Name",
+                                slug="example-slug",
+                                metadata={"source": "example"},
+                            ),
+                            model="Model X",
+                            slug="example-slug",
+                            metadata={"source": "example"},
+                        ),
+                        role=DeviceRole(
+                            name="Example Name",
+                            slug="example-slug",
+                            color="0000ff",
+                            metadata={"source": "example"},
+                        ),
+                        site=Site(
+                            name="Example Name",
+                            slug="example-slug",
+                            status="active",
+                            metadata={"source": "example"},
+                        ),
+                        status="active",
+                        metadata={"source": "example"},
+                    ),
+                    name="Example Name B",
+                    type="1000base-t",
+                    metadata={"source": "example"},
+                )
+            )
+        ],
         tags=[Tag(name="production")],
     )
 
