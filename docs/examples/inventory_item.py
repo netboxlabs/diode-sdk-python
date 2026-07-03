@@ -9,15 +9,22 @@ This module demonstrates three patterns for ingesting InventoryItem entities:
 
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    ConsolePort,
+    ConsoleServerPort,
     Device,
     DeviceRole,
     DeviceType,
     Entity,
+    FrontPort,
+    Interface,
     InventoryItem,
     InventoryItemRole,
     Manufacturer,
     Owner,
     OwnerGroup,
+    PowerOutlet,
+    PowerPort,
+    RearPort,
     Site,
     Tag,
 )
@@ -164,6 +171,44 @@ def inventory_item_explicit() -> InventoryItem:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        # Polymorphic 'component' — choose ONE of these mutually exclusive variants:
+        component_interface=Interface(
+            device=Device(
+                device_type=DeviceType(
+                    manufacturer=Manufacturer(
+                        name="Example Name",
+                        slug="example-slug",
+                        metadata={"source": "example"},
+                    ),
+                    model="Model X",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                role=DeviceRole(
+                    name="Example Name",
+                    slug="example-slug",
+                    color="0000ff",
+                    metadata={"source": "example"},
+                ),
+                site=Site(
+                    name="Example Name",
+                    slug="example-slug",
+                    status="active",
+                    metadata={"source": "example"},
+                ),
+                status="active",
+                metadata={"source": "example"},
+            ),
+            name="Example Name",
+            type="1000base-t",
+            metadata={"source": "example"},
+        ),
+        # component_console_port=ConsolePort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # component_console_server_port=ConsoleServerPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # component_front_port=FrontPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", type="110-punch", color="0000ff", rear_port=RearPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", type="110-punch", color="0000ff", metadata={"source": "example"}), metadata={"source": "example"}),
+        # component_power_outlet=PowerOutlet(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", color="0000ff", status="disabled", metadata={"source": "example"}),
+        # component_power_port=PowerPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # component_rear_port=RearPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", type="110-punch", color="0000ff", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

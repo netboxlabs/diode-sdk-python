@@ -70,7 +70,7 @@ def tunnel_termination_explicit() -> TunnelTermination:
         tunnel=Tunnel(
             name="Example Name",
             status="active",
-            encapsulation="Example Encapsulation",
+            encapsulation="gre",
             metadata={"source": "example"},
         ),
         role="hub",

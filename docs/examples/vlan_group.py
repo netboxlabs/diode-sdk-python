@@ -9,9 +9,18 @@ This module demonstrates three patterns for ingesting VLANGroup entities:
 
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Cluster,
+    ClusterGroup,
+    ClusterType,
     Entity,
+    Location,
     Owner,
     OwnerGroup,
+    Rack,
+    RackGroup,
+    Region,
+    Site,
+    SiteGroup,
     Tag,
     Tenant,
     VLANGroup,
@@ -86,6 +95,20 @@ def vlan_group_explicit() -> VLANGroup:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        # Polymorphic 'scope' — choose ONE of these mutually exclusive variants:
+        scope_site=Site(
+            name="Example Name",
+            slug="example-slug",
+            status="active",
+            metadata={"source": "example"},
+        ),
+        # scope_cluster=Cluster(name="Example Name", type=ClusterType(name="Example Name", slug="example-slug", metadata={"source": "example"}), status="active", metadata={"source": "example"}),
+        # scope_cluster_group=ClusterGroup(name="Example Name", slug="example-slug", metadata={"source": "example"}),
+        # scope_location=Location(name="Example Name", slug="example-slug", site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}),
+        # scope_rack=Rack(name="Example Name", site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}),
+        # scope_region=Region(name="Example Name", slug="example-slug", metadata={"source": "example"}),
+        # scope_site_group=SiteGroup(name="Example Name", slug="example-slug", metadata={"source": "example"}),
+        # scope_rack_group=RackGroup(name="Example Name", slug="example-slug", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

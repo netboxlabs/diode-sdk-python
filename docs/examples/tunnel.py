@@ -92,7 +92,7 @@ def tunnel_explicit() -> Tunnel:
         ),
         ipsec_profile=IPSecProfile(
             name="Example Name",
-            mode="Example Mode",
+            mode="ah",
             ike_policy=IKEPolicy(
                 name="Example Name", version=1, metadata={"source": "example"}
             ),

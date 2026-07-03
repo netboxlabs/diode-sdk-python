@@ -140,7 +140,7 @@ def front_port_explicit() -> FrontPort:
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="Example Type",
+            type="110-punch",
             color="0000ff",
             metadata={"source": "example"},
         ),

@@ -9,10 +9,16 @@ This module demonstrates three patterns for ingesting CircuitGroupAssignment ent
 
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Circuit,
     CircuitGroup,
     CircuitGroupAssignment,
+    CircuitType,
     Entity,
+    Provider,
+    ProviderNetwork,
     Tag,
+    VirtualCircuit,
+    VirtualCircuitType,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -74,6 +80,22 @@ def circuit_group_assignment_explicit() -> CircuitGroupAssignment:
             "collected_at": "2024-01-15T10:30:00Z",
         },
         priority="inactive",
+        # Polymorphic 'member' — choose ONE of these mutually exclusive variants:
+        member_circuit=Circuit(
+            cid="CID-001",
+            provider=Provider(
+                name="Example Name", slug="example-slug", metadata={"source": "example"}
+            ),
+            type=CircuitType(
+                name="Example Name",
+                slug="example-slug",
+                color="0000ff",
+                metadata={"source": "example"},
+            ),
+            status="active",
+            metadata={"source": "example"},
+        ),
+        # member_virtual_circuit=VirtualCircuit(cid="CID-001", provider_network=ProviderNetwork(provider=Provider(name="Example Name", slug="example-slug", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}), type=VirtualCircuitType(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), status="active", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

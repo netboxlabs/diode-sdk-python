@@ -61,7 +61,7 @@ def interface_example_minimal() -> Interface:
     return Interface(
         device="Example Device",  # flat string -> Device
         name="Example Name",
-        type="1.6tbase-cr8",
+        type="1000base-t",
         metadata={"source": "example"},
     )
 
@@ -71,7 +71,7 @@ def interface_example_extended() -> Interface:
     return Interface(
         device="Example Device",
         name="Example Name",
-        type="1.6tbase-cr8",
+        type="1000base-t",
         metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
         label="Example Label",
@@ -84,8 +84,8 @@ def interface_example_extended() -> Interface:
         mode="access",
         rf_role="ap",
         rf_channel="2.4g-1-2412-22",
-        poe_mode="pd",
-        poe_type="passive-24v-2pair",
+        poe_mode="pse",
+        poe_type="type1-ieee802.3af",
         rf_channel_frequency=1.0,
         rf_channel_width=1.0,
         tx_power=1,
@@ -123,7 +123,7 @@ def interface_example_explicit() -> Interface:
             metadata={"source": "example"},
         ),
         name="Example Name",
-        type="1.6tbase-cr8",
+        type="1000base-t",
         metadata={
             "source": "example",
             "custom_key": "custom_value",
@@ -140,8 +140,8 @@ def interface_example_explicit() -> Interface:
         mode="access",
         rf_role="ap",
         rf_channel="2.4g-1-2412-22",
-        poe_mode="pd",
-        poe_type="passive-24v-2pair",
+        poe_mode="pse",
+        poe_type="type1-ieee802.3af",
         rf_channel_frequency=1.0,
         rf_channel_width=1.0,
         tx_power=1,
@@ -243,7 +243,7 @@ def interface_example_explicit() -> Interface:
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="Example Type",
+            type="1000base-t",
             metadata={"source": "example"},
         ),
         bridge=Interface(
@@ -274,7 +274,7 @@ def interface_example_explicit() -> Interface:
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="Example Type",
+            type="1000base-t",
             metadata={"source": "example"},
         ),
         lag=Interface(
@@ -305,7 +305,7 @@ def interface_example_explicit() -> Interface:
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="Example Type",
+            type="1000base-t",
             metadata={"source": "example"},
         ),
         primary_mac_address=MACAddress(

@@ -9,13 +9,22 @@ This module demonstrates three patterns for ingesting IPAddress entities:
 
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Device,
+    DeviceRole,
+    DeviceType,
     Entity,
+    FHRPGroup,
     IPAddress,
+    Interface,
+    Manufacturer,
     Owner,
     OwnerGroup,
+    Site,
     Tag,
     Tenant,
+    VMInterface,
     VRF,
+    VirtualMachine,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -63,7 +72,7 @@ def ip_address_extended() -> IPAddress:
         description="Example description",
         tenant="Example Tenant",
         role="anycast",
-        dns_name="Example Dns Name",
+        dns_name="example.host.local",
         comments="Example comments",
     )
 
@@ -81,7 +90,7 @@ def ip_address_explicit() -> IPAddress:
         description="Example description",
         comments="Example comments",
         role="anycast",
-        dns_name="Example Dns Name",
+        dns_name="example.host.local",
         vrf=VRF(name="Example Name", metadata={"source": "example"}),
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
@@ -94,6 +103,40 @@ def ip_address_explicit() -> IPAddress:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        # Polymorphic 'assigned_object' — choose ONE of these mutually exclusive variants:
+        assigned_object_interface=Interface(
+            device=Device(
+                device_type=DeviceType(
+                    manufacturer=Manufacturer(
+                        name="Example Name",
+                        slug="example-slug",
+                        metadata={"source": "example"},
+                    ),
+                    model="Model X",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                role=DeviceRole(
+                    name="Example Name",
+                    slug="example-slug",
+                    color="0000ff",
+                    metadata={"source": "example"},
+                ),
+                site=Site(
+                    name="Example Name",
+                    slug="example-slug",
+                    status="active",
+                    metadata={"source": "example"},
+                ),
+                status="active",
+                metadata={"source": "example"},
+            ),
+            name="Example Name",
+            type="1000base-t",
+            metadata={"source": "example"},
+        ),
+        # assigned_object_vm_interface=VMInterface(virtual_machine=VirtualMachine(name="Example Name", status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # assigned_object_fhrp_group=FHRPGroup(protocol="carp", group_id=1, metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 
