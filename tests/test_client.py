@@ -665,6 +665,7 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         target="localhost:8081",
         path=path,
         tls_verify=False,
+        secure=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
         scope="diode:ingest",
@@ -688,6 +689,75 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         url = call_args[0][0]
         expected_url = f"http://localhost:8081{(path or '').rstrip('/')}/auth/token"
         assert url == expected_url
+
+
+@pytest.mark.parametrize(
+    ("secure", "tls_verify", "skip_tls_env", "expected_scheme"),
+    [
+        # (scheme secure?, verify certs?, DIODE_SKIP_TLS_VERIFY, expected auth scheme)
+        (False, False, None, "http"),  # grpc://
+        # grpc:// + skip must stay HTTP (the #101 fix), not flip to HTTPS.
+        (False, False, "true", "http"),
+        (True, True, None, "https"),  # grpcs://
+        # grpcs:// + skip is preserved: HTTPS with cert verification disabled.
+        (True, False, "true", "https"),
+        # Independence guards: the scheme follows `secure`, never `tls_verify`.
+        # A scheme = self._tls_verify regression would fail both of these.
+        (True, False, None, "https"),
+        (False, True, None, "http"),
+    ],
+)
+def test_auth_url_scheme_follows_target(
+    mock_diode_authentication, monkeypatch, secure, tls_verify, skip_tls_env, expected_scheme
+):
+    """Auth endpoint scheme follows the target scheme, independent of tls_verify/env."""
+    if skip_tls_env is None:
+        monkeypatch.delenv("DIODE_SKIP_TLS_VERIFY", raising=False)
+    else:
+        monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", skip_tls_env)
+
+    auth = _DiodeAuthentication(
+        target="host:8080",
+        path="",
+        tls_verify=tls_verify,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        secure=secure,
+    )
+
+    assert auth._get_full_auth_url() == f"{expected_scheme}://host:8080/auth/token"
+
+
+@pytest.mark.parametrize(
+    ("target", "expected_secure"),
+    [
+        ("grpc://localhost:8081", False),
+        ("http://localhost:8081", False),
+        ("grpcs://localhost:8081", True),
+        ("https://localhost:8081", True),
+    ],
+)
+def test_client_secure_flag_follows_target_scheme(
+    mock_diode_authentication, monkeypatch, target, expected_secure
+):
+    """DiodeClient._secure reflects the target scheme even with DIODE_SKIP_TLS_VERIFY set."""
+    monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", "true")
+    client = DiodeClient(
+        target=target,
+        app_name="my-producer",
+        app_version="0.0.1",
+        client_id="abcde",
+        client_secret="123456",
+    )
+    assert client._secure is expected_secure
+    # tls_verify is driven off skip-verify and is False here regardless of scheme,
+    # which is exactly why it cannot be reused to pick the auth scheme.
+    assert client.tls_verify is False
 
 
 def test_diode_authentication_request_exception(mock_diode_authentication):
