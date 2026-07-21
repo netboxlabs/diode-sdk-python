@@ -3,7 +3,7 @@
 #
 # Generated code. DO NOT EDIT.
 # Source: NetBox v4.6.0
-# Timestamp: 2026-05-14 20:30:14Z
+# Timestamp: 2026-07-08 14:57:56Z
 #
 # ruff: noqa: C901
 
@@ -100,6 +100,7 @@ PRIMARY_VALUE_MAP = {
     "CableBundle": "name",
     "RackGroup": "name",
     "VirtualMachineType": "name",
+    "User": "username",
 }
 
 
@@ -288,6 +289,7 @@ class Entity:
         virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        user: str | User | pb.User | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -422,6 +424,7 @@ class Entity:
         virtual_machine_type = convert_to_protobuf(
             virtual_machine_type, pb.VirtualMachineType
         )
+        user = convert_to_protobuf(user, pb.User)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
@@ -528,6 +531,7 @@ class Entity:
             rack_group=rack_group,
             script_module=script_module,
             virtual_machine_type=virtual_machine_type,
+            user=user,
         )
         return result
 
@@ -1399,6 +1403,7 @@ class ContactAssignment:
         object_virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        object_user: str | User | pb.User | None = None,
         contact: str | Contact | pb.Contact | None = None,
         role: str | ContactRole | pb.ContactRole | None = None,
         priority: str | None = None,
@@ -1572,6 +1577,7 @@ class ContactAssignment:
         object_virtual_machine_type = convert_to_protobuf(
             object_virtual_machine_type, pb.VirtualMachineType
         )
+        object_user = convert_to_protobuf(object_user, pb.User)
         contact = convert_to_protobuf(contact, pb.Contact)
         role = convert_to_protobuf(role, pb.ContactRole)
         tags = convert_to_protobuf_list(tags, pb.Tag)
@@ -1677,6 +1683,7 @@ class ContactAssignment:
             object_rack_group=object_rack_group,
             object_script_module=object_script_module,
             object_virtual_machine_type=object_virtual_machine_type,
+            object_user=object_user,
             contact=contact,
             role=role,
             priority=priority,
@@ -1882,6 +1889,7 @@ class CustomFieldObjectReference:
         virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        user: str | User | pb.User | None = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -2015,6 +2023,7 @@ class CustomFieldObjectReference:
         virtual_machine_type = convert_to_protobuf(
             virtual_machine_type, pb.VirtualMachineType
         )
+        user = convert_to_protobuf(user, pb.User)
         result = pb.CustomFieldObjectReference(
             asn=asn,
             asn_range=asn_range,
@@ -2115,6 +2124,7 @@ class CustomFieldObjectReference:
             rack_group=rack_group,
             script_module=script_module,
             virtual_machine_type=virtual_machine_type,
+            user=user,
         )
         return result
 
@@ -2586,6 +2596,7 @@ class FHRPGroupAssignment:
         interface_virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        interface_user: str | User | pb.User | None = None,
         priority: int | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroupAssignment:
@@ -2802,6 +2813,7 @@ class FHRPGroupAssignment:
         interface_virtual_machine_type = convert_to_protobuf(
             interface_virtual_machine_type, pb.VirtualMachineType
         )
+        interface_user = convert_to_protobuf(interface_user, pb.User)
         metadata = convert_dict_to_struct(metadata)
         result = pb.FHRPGroupAssignment(
             group=group,
@@ -2904,6 +2916,7 @@ class FHRPGroupAssignment:
             interface_rack_group=interface_rack_group,
             interface_script_module=interface_script_module,
             interface_virtual_machine_type=interface_virtual_machine_type,
+            interface_user=interface_user,
             priority=priority,
             metadata=metadata,
         )
@@ -3099,6 +3112,7 @@ class GenericObject:
         object_virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        object_user: str | User | pb.User | None = None,
     ) -> pb.GenericObject:
         """Create a new GenericObject."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -3266,6 +3280,7 @@ class GenericObject:
         object_virtual_machine_type = convert_to_protobuf(
             object_virtual_machine_type, pb.VirtualMachineType
         )
+        object_user = convert_to_protobuf(object_user, pb.User)
         result = pb.GenericObject(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
@@ -3366,6 +3381,7 @@ class GenericObject:
             object_rack_group=object_rack_group,
             object_script_module=object_script_module,
             object_virtual_machine_type=object_virtual_machine_type,
+            object_user=object_user,
         )
         return result
 
@@ -4178,6 +4194,7 @@ class L2VPNTermination:
         assigned_object_virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        assigned_object_user: str | User | pb.User | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
@@ -4447,6 +4464,7 @@ class L2VPNTermination:
         assigned_object_virtual_machine_type = convert_to_protobuf(
             assigned_object_virtual_machine_type, pb.VirtualMachineType
         )
+        assigned_object_user = convert_to_protobuf(assigned_object_user, pb.User)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -4551,6 +4569,7 @@ class L2VPNTermination:
             assigned_object_rack_group=assigned_object_rack_group,
             assigned_object_script_module=assigned_object_script_module,
             assigned_object_virtual_machine_type=assigned_object_virtual_machine_type,
+            assigned_object_user=assigned_object_user,
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
@@ -5334,6 +5353,7 @@ class RackReservation:
         status: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        user: str | User | pb.User | None = None,
     ) -> pb.RackReservation:
         """Create a new RackReservation."""
         rack = convert_to_protobuf(rack, pb.Rack)
@@ -5342,6 +5362,7 @@ class RackReservation:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
+        user = convert_to_protobuf(user, pb.User)
         result = pb.RackReservation(
             rack=rack,
             units=units,
@@ -5353,6 +5374,7 @@ class RackReservation:
             status=status,
             metadata=metadata,
             owner=owner,
+            user=user,
         )
         return result
 
@@ -6081,6 +6103,7 @@ class TunnelTermination:
         termination_virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        termination_user: str | User | pb.User | None = None,
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
@@ -6323,6 +6346,7 @@ class TunnelTermination:
         termination_virtual_machine_type = convert_to_protobuf(
             termination_virtual_machine_type, pb.VirtualMachineType
         )
+        termination_user = convert_to_protobuf(termination_user, pb.User)
         outside_ip = convert_to_protobuf(outside_ip, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
@@ -6429,6 +6453,7 @@ class TunnelTermination:
             termination_rack_group=termination_rack_group,
             termination_script_module=termination_script_module,
             termination_virtual_machine_type=termination_virtual_machine_type,
+            termination_user=termination_user,
             outside_ip=outside_ip,
             tags=tags,
             custom_fields=custom_fields,
@@ -7420,11 +7445,13 @@ class JournalEntry:
         assigned_object_virtual_machine_type: (
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
+        assigned_object_user: str | User | pb.User | None = None,
         kind: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
+        created_by: str | User | pb.User | None = None,
     ) -> pb.JournalEntry:
         """Create a new JournalEntry."""
         assigned_object_asn = convert_to_protobuf(assigned_object_asn, pb.ASN)
@@ -7690,9 +7717,11 @@ class JournalEntry:
         assigned_object_virtual_machine_type = convert_to_protobuf(
             assigned_object_virtual_machine_type, pb.VirtualMachineType
         )
+        assigned_object_user = convert_to_protobuf(assigned_object_user, pb.User)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
+        created_by = convert_to_protobuf(created_by, pb.User)
         result = pb.JournalEntry(
             assigned_object_asn=assigned_object_asn,
             assigned_object_asn_range=assigned_object_asn_range,
@@ -7793,11 +7822,13 @@ class JournalEntry:
             assigned_object_rack_group=assigned_object_rack_group,
             assigned_object_script_module=assigned_object_script_module,
             assigned_object_virtual_machine_type=assigned_object_virtual_machine_type,
+            assigned_object_user=assigned_object_user,
             kind=kind,
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
+            created_by=created_by,
         )
         return result
 
@@ -7879,15 +7910,18 @@ class Owner:
         group: str | OwnerGroup | pb.OwnerGroup | None = None,
         description: str | None = None,
         metadata: dict[str, Any] | None = None,
+        users: list[str | User | pb.User] | None = None,
     ) -> pb.Owner:
         """Create a new Owner."""
         group = convert_to_protobuf(group, pb.OwnerGroup)
         metadata = convert_dict_to_struct(metadata)
+        users = convert_to_protobuf_list(users, pb.User)
         result = pb.Owner(
             name=name,
             group=group,
             description=description,
             metadata=metadata,
+            users=users,
         )
         return result
 
@@ -8045,6 +8079,23 @@ class VirtualMachineType:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class User:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.User."""
+
+    def __new__(
+        cls,
+        username: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.User:
+        """Create a new User."""
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.User(
+            username=username,
             metadata=metadata,
         )
         return result
