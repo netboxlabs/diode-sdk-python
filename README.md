@@ -504,6 +504,10 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * ASN
 * ASN Range
 * Aggregate
+* Cable
+* Cable Bundle
+* Cable Path
+* Cable Termination
 * Circuit
 * Circuit Group
 * Circuit Group Assignment
@@ -518,8 +522,12 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Contact Assignment
 * Contact Group
 * Contact Role
+* Custom Field
+* Custom Field Choice Set
+* Custom Link
 * Device
 * Device Bay
+* Device Config
 * Device Role
 * Device Type
 * FHRP Group
@@ -535,6 +543,7 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Interface
 * Inventory Item
 * Inventory Item Role
+* Journal Entry
 * L2VPN
 * L2VPN Termination
 * Location
@@ -543,6 +552,9 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Module
 * Module Bay
 * Module Type
+* Module Type Profile
+* Owner
+* Owner Group
 * Platform
 * Power Feed
 * Power Outlet
@@ -554,12 +566,15 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Provider Network
 * RIR
 * Rack
+* Rack Group
+* Rack Reservation
 * Rack Role
 * Rack Type
 * Rear Port
 * Region
 * Role
 * Route Target
+* Script Module
 * Service
 * Site
 * Site Group
@@ -582,6 +597,7 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Virtual Device Context
 * Virtual Disk
 * Virtual Machine
+* Virtual Machine Type
 * Wireless Lan
 * Wireless Lan Group
 * Wireless Link
