@@ -347,6 +347,12 @@ class DiodeClient(DiodeClientInterface):
             _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
         )
         self._target, self._path, self._tls_verify = parse_target(target)
+        # Whether the target scheme is secure (grpcs/https). Kept separately from
+        # tls_verify, which only controls certificate verification: tls_verify is
+        # False both for an insecure grpc:// target and for a grpcs:// target with
+        # verification disabled, so it cannot by itself tell the auth endpoint
+        # which scheme to use.
+        self._secure = urlparse(target).scheme in ("grpcs", "https")
 
         # Load certificates once if needed
         self._certificates = (
@@ -547,6 +553,7 @@ class DiodeClient(DiodeClientInterface):
             self._certificates,
             self._cert_file,
             max_retries=self._max_auth_retries,
+            secure=self._secure,
         )
         access_token = authentication_client.authenticate()
         self._metadata = list(
@@ -942,9 +949,11 @@ class _DiodeAuthentication:
         initial_retry_delay: float | None = None,
         max_retry_delay: float | None = None,
         sleep: Callable[[float], None] | None = None,
+        secure: bool = True,
     ):
         self._target = target
         self._tls_verify = tls_verify
+        self._secure = secure
         self._client_id = client_id
         self._client_secret = client_secret
         self._path = path
@@ -1059,19 +1068,15 @@ class _DiodeAuthentication:
         return f"{path}/auth/token"
 
     def _get_full_auth_url(self) -> str:
-        """Construct full authentication URL with scheme and authority."""
-        # Determine the correct scheme
-        # If tls_verify is False, check if SKIP_TLS_VERIFY was set
-        # If it was set, the original scheme was likely HTTPS but verification is disabled
-        skip_tls_env = os.getenv(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME, "").lower()
-        skip_tls_from_env = skip_tls_env in ["true", "1", "yes", "on"]
+        """
+        Construct full authentication URL, matching the target's scheme.
 
-        # Use HTTPS if:
-        # 1. tls_verify is True, OR
-        # 2. tls_verify is False but SKIP_TLS_VERIFY is set (original was HTTPS)
-        use_https = self._tls_verify or (not self._tls_verify and skip_tls_from_env)
-        scheme = "https" if use_https else "http"
-
+        The scheme follows the target (https for grpcs/https, http for grpc/http)
+        and is independent of certificate verification, which is handled separately
+        via the session's verify setting. This keeps an insecure grpc:// target on
+        HTTP even when DIODE_SKIP_TLS_VERIFY is set.
+        """
+        scheme = "https" if self._secure else "http"
         path = self._path.rstrip("/") if self._path else ""
         return f"{scheme}://{self._target}{path}/auth/token"
 
