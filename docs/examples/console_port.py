@@ -70,7 +70,7 @@ def console_port_extended() -> ConsolePort:
         description="Example description",
         label="Example Label",
         type="db-25",
-        speed=1,
+        speed=1200,
         mark_connected=True,
     )
 
@@ -113,7 +113,7 @@ def console_port_explicit() -> ConsolePort:
         description="Example description",
         label="Example Label",
         type="db-25",
-        speed=1,
+        speed=1200,
         mark_connected=True,
         module=Module(
             device=Device(

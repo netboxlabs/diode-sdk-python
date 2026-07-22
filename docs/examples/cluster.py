@@ -13,8 +13,12 @@ from netboxlabs.diode.sdk.ingester import (
     ClusterGroup,
     ClusterType,
     Entity,
+    Location,
     Owner,
     OwnerGroup,
+    Region,
+    Site,
+    SiteGroup,
     Tag,
     Tenant,
 )
@@ -95,6 +99,16 @@ def cluster_explicit() -> Cluster:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        # Polymorphic 'scope' — choose ONE of these mutually exclusive variants:
+        scope_site=Site(
+            name="Example Name",
+            slug="example-slug",
+            status="active",
+            metadata={"source": "example"},
+        ),
+        # scope_location=Location(name="Example Name", slug="example-slug", site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}),
+        # scope_region=Region(name="Example Name", slug="example-slug", metadata={"source": "example"}),
+        # scope_site_group=SiteGroup(name="Example Name", slug="example-slug", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

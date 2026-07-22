@@ -11,7 +11,25 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     Cable,
     CableTermination,
+    Circuit,
+    CircuitTermination,
+    CircuitType,
+    ConsolePort,
+    ConsoleServerPort,
+    Device,
+    DeviceRole,
+    DeviceType,
     Entity,
+    FrontPort,
+    Interface,
+    Manufacturer,
+    PowerFeed,
+    PowerOutlet,
+    PowerPanel,
+    PowerPort,
+    Provider,
+    RearPort,
+    Site,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -63,13 +81,53 @@ def cable_termination_extended() -> CableTermination:
 def cable_termination_explicit() -> CableTermination:
     """Create a CableTermination with fully nested objects and all common fields."""
     return CableTermination(
-        cable=Cable(status="active", color="0000ff", metadata={"source": "example"}),
+        cable=Cable(status="planned", color="0000ff", metadata={"source": "example"}),
         cable_end="A",
         metadata={
             "source": "example",
             "custom_key": "custom_value",
             "collected_at": "2024-01-15T10:30:00Z",
         },
+        # Polymorphic 'termination' — choose ONE of these mutually exclusive variants:
+        termination_interface=Interface(
+            device=Device(
+                device_type=DeviceType(
+                    manufacturer=Manufacturer(
+                        name="Example Name",
+                        slug="example-slug",
+                        metadata={"source": "example"},
+                    ),
+                    model="Model X",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                role=DeviceRole(
+                    name="Example Name",
+                    slug="example-slug",
+                    color="0000ff",
+                    metadata={"source": "example"},
+                ),
+                site=Site(
+                    name="Example Name",
+                    slug="example-slug",
+                    status="active",
+                    metadata={"source": "example"},
+                ),
+                status="active",
+                metadata={"source": "example"},
+            ),
+            name="Example Name",
+            type="1000base-t",
+            metadata={"source": "example"},
+        ),
+        # termination_circuit_termination=CircuitTermination(circuit=Circuit(cid="CID-001", provider=Provider(name="Example Name", slug="example-slug", metadata={"source": "example"}), type=CircuitType(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), status="active", metadata={"source": "example"}), term_side="A", metadata={"source": "example"}),
+        # termination_console_port=ConsolePort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # termination_console_server_port=ConsoleServerPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # termination_front_port=FrontPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", type="110-punch", color="0000ff", rear_port=RearPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", type="110-punch", color="0000ff", metadata={"source": "example"}), metadata={"source": "example"}),
+        # termination_power_feed=PowerFeed(power_panel=PowerPanel(site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}), name="Example Name", status="active", metadata={"source": "example"}),
+        # termination_power_outlet=PowerOutlet(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", color="0000ff", status="disabled", metadata={"source": "example"}),
+        # termination_power_port=PowerPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # termination_rear_port=RearPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", type="110-punch", color="0000ff", metadata={"source": "example"}),
     )
 
 

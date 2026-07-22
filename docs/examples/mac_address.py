@@ -9,11 +9,19 @@ This module demonstrates three patterns for ingesting MACAddress entities:
 
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    Device,
+    DeviceRole,
+    DeviceType,
     Entity,
+    Interface,
     MACAddress,
+    Manufacturer,
     Owner,
     OwnerGroup,
+    Site,
     Tag,
+    VMInterface,
+    VirtualMachine,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -78,6 +86,39 @@ def mac_address_explicit() -> MACAddress:
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
             metadata={"source": "example"},
         ),
+        # Polymorphic 'assigned_object' — choose ONE of these mutually exclusive variants:
+        assigned_object_interface=Interface(
+            device=Device(
+                device_type=DeviceType(
+                    manufacturer=Manufacturer(
+                        name="Example Name",
+                        slug="example-slug",
+                        metadata={"source": "example"},
+                    ),
+                    model="Model X",
+                    slug="example-slug",
+                    metadata={"source": "example"},
+                ),
+                role=DeviceRole(
+                    name="Example Name",
+                    slug="example-slug",
+                    color="0000ff",
+                    metadata={"source": "example"},
+                ),
+                site=Site(
+                    name="Example Name",
+                    slug="example-slug",
+                    status="active",
+                    metadata={"source": "example"},
+                ),
+                status="active",
+                metadata={"source": "example"},
+            ),
+            name="Example Name",
+            type="1000base-t",
+            metadata={"source": "example"},
+        ),
+        # assigned_object_vm_interface=VMInterface(virtual_machine=VirtualMachine(name="Example Name", status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

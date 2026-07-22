@@ -27,6 +27,7 @@ pip install netboxlabs-diode-sdk
 * `DIODE_SENTRY_DSN` - Optional Sentry DSN for error reporting
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_MAX_AUTH_RETRIES` - Maximum attempts for OAuth2 token fetch and gRPC re-authentication on `Unauthenticated` (default: `3`). Token fetch retries with exponential backoff on `429`, `500`, `502`, and `503`, honouring `Retry-After` when present on `429`/`503`.
 * `DIODE_CERT_FILE` - Path to custom certificate file for TLS connections
 * `DIODE_SKIP_TLS_VERIFY` - Skip TLS verification (default: `false`)
 * `DIODE_DRY_RUN_OUTPUT_DIR` - Directory where `DiodeDryRunClient` will write JSON files
@@ -81,6 +82,8 @@ if __name__ == "__main__":
     main()
 
 ```
+
+See [`docs/examples/`](./docs/examples) for per-entity examples (one file per supported NetBox object type).
 
 ### Using Metadata
 
@@ -501,6 +504,10 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * ASN
 * ASN Range
 * Aggregate
+* Cable
+* Cable Bundle
+* Cable Path
+* Cable Termination
 * Circuit
 * Circuit Group
 * Circuit Group Assignment
@@ -515,8 +522,12 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Contact Assignment
 * Contact Group
 * Contact Role
+* Custom Field
+* Custom Field Choice Set
+* Custom Link
 * Device
 * Device Bay
+* Device Config
 * Device Role
 * Device Type
 * FHRP Group
@@ -532,6 +543,7 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Interface
 * Inventory Item
 * Inventory Item Role
+* Journal Entry
 * L2VPN
 * L2VPN Termination
 * Location
@@ -540,6 +552,9 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Module
 * Module Bay
 * Module Type
+* Module Type Profile
+* Owner
+* Owner Group
 * Platform
 * Power Feed
 * Power Outlet
@@ -551,12 +566,15 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Provider Network
 * RIR
 * Rack
+* Rack Group
+* Rack Reservation
 * Rack Role
 * Rack Type
 * Rear Port
 * Region
 * Role
 * Route Target
+* Script Module
 * Service
 * Site
 * Site Group
@@ -579,6 +597,7 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Virtual Device Context
 * Virtual Disk
 * Virtual Machine
+* Virtual Machine Type
 * Wireless Lan
 * Wireless Lan Group
 * Wireless Link

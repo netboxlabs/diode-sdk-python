@@ -17,6 +17,7 @@ from netboxlabs.diode.sdk.ingester import (
     Site,
     Tag,
     Tenant,
+    User,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -53,6 +54,7 @@ def rack_reservation_minimal() -> RackReservation:
         rack="Example Rack",  # flat string -> Rack
         description="Example description",
         metadata={"source": "example"},
+        user="Example User",  # flat string -> User
     )
 
 
@@ -62,6 +64,7 @@ def rack_reservation_extended() -> RackReservation:
         rack="Example Rack",
         description="Example description",
         metadata={"source": "example", "custom_key": "custom_value"},
+        user="Example User",
         status="active",
         tenant="Example Tenant",
         comments="Example comments",
@@ -88,6 +91,7 @@ def rack_reservation_explicit() -> RackReservation:
             "custom_key": "custom_value",
             "collected_at": "2024-01-15T10:30:00Z",
         },
+        user=User(username="Example Username", metadata={"source": "example"}),
         status="active",
         comments="Example comments",
         tenant=Tenant(

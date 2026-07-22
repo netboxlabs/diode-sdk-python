@@ -125,7 +125,7 @@ def virtual_circuit_termination_explicit() -> VirtualCircuitTermination:
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="Example Type",
+            type="1000base-t",
             metadata={"source": "example"},
         ),
         metadata={

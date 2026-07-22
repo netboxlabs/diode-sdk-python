@@ -13,7 +13,12 @@ from netboxlabs.diode.sdk.ingester import (
     CircuitTermination,
     CircuitType,
     Entity,
+    Location,
     Provider,
+    ProviderNetwork,
+    Region,
+    Site,
+    SiteGroup,
     Tag,
 )
 
@@ -100,6 +105,17 @@ def circuit_termination_explicit() -> CircuitTermination:
         xconnect_id="Example Xconnect Id",
         pp_info="Example Pp Info",
         mark_connected=True,
+        # Polymorphic 'termination' — choose ONE of these mutually exclusive variants:
+        termination_site=Site(
+            name="Example Name",
+            slug="example-slug",
+            status="active",
+            metadata={"source": "example"},
+        ),
+        # termination_location=Location(name="Example Name", slug="example-slug", site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}),
+        # termination_provider_network=ProviderNetwork(provider=Provider(name="Example Name", slug="example-slug", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # termination_region=Region(name="Example Name", slug="example-slug", metadata={"source": "example"}),
+        # termination_site_group=SiteGroup(name="Example Name", slug="example-slug", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

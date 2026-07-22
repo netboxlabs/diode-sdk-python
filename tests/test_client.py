@@ -17,12 +17,15 @@ from netboxlabs.diode.sdk.client import (
     DiodeDryRunClient,
     DiodeMethodClientInterceptor,
     DiodeOTLPClient,
+    _auth_retry_delay,
     _ClientCallDetails,
     _diode_ingest_grpc_channel_options,
     _DiodeAuthentication,
     _get_sentry_dsn,
+    _is_retriable_auth_http_status,
     _load_certs,
     _otlp_grpc_channel_options,
+    _parse_retry_after,
     load_dryrun_entities,
     parse_target,
 )
@@ -662,6 +665,7 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         target="localhost:8081",
         path=path,
         tls_verify=False,
+        secure=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
         scope="diode:ingest",
@@ -687,6 +691,75 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
         assert url == expected_url
 
 
+@pytest.mark.parametrize(
+    ("secure", "tls_verify", "skip_tls_env", "expected_scheme"),
+    [
+        # (scheme secure?, verify certs?, DIODE_SKIP_TLS_VERIFY, expected auth scheme)
+        (False, False, None, "http"),  # grpc://
+        # grpc:// + skip must stay HTTP (the #101 fix), not flip to HTTPS.
+        (False, False, "true", "http"),
+        (True, True, None, "https"),  # grpcs://
+        # grpcs:// + skip is preserved: HTTPS with cert verification disabled.
+        (True, False, "true", "https"),
+        # Independence guards: the scheme follows `secure`, never `tls_verify`.
+        # A scheme = self._tls_verify regression would fail both of these.
+        (True, False, None, "https"),
+        (False, True, None, "http"),
+    ],
+)
+def test_auth_url_scheme_follows_target(
+    mock_diode_authentication, monkeypatch, secure, tls_verify, skip_tls_env, expected_scheme
+):
+    """Auth endpoint scheme follows the target scheme, independent of tls_verify/env."""
+    if skip_tls_env is None:
+        monkeypatch.delenv("DIODE_SKIP_TLS_VERIFY", raising=False)
+    else:
+        monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", skip_tls_env)
+
+    auth = _DiodeAuthentication(
+        target="host:8080",
+        path="",
+        tls_verify=tls_verify,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        secure=secure,
+    )
+
+    assert auth._get_full_auth_url() == f"{expected_scheme}://host:8080/auth/token"
+
+
+@pytest.mark.parametrize(
+    ("target", "expected_secure"),
+    [
+        ("grpc://localhost:8081", False),
+        ("http://localhost:8081", False),
+        ("grpcs://localhost:8081", True),
+        ("https://localhost:8081", True),
+    ],
+)
+def test_client_secure_flag_follows_target_scheme(
+    mock_diode_authentication, monkeypatch, target, expected_secure
+):
+    """DiodeClient._secure reflects the target scheme even with DIODE_SKIP_TLS_VERIFY set."""
+    monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", "true")
+    client = DiodeClient(
+        target=target,
+        app_name="my-producer",
+        app_version="0.0.1",
+        client_id="abcde",
+        client_secret="123456",
+    )
+    assert client._secure is expected_secure
+    # tls_verify is driven off skip-verify and is False here regardless of scheme,
+    # which is exactly why it cannot be reused to pick the auth scheme.
+    assert client.tls_verify is False
+
+
 def test_diode_authentication_request_exception(mock_diode_authentication):
     """Test that an exception during the request raises a DiodeConfigError."""
     auth = _DiodeAuthentication(
@@ -710,6 +783,163 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
         with pytest.raises(DiodeConfigError) as excinfo:
             auth.authenticate()
         assert "Failed to obtain access token: Connection error" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    ("status_code", "expected"),
+    [
+        (429, True),
+        (500, True),
+        (502, True),
+        (503, True),
+        (401, False),
+        (403, False),
+        (400, False),
+        (200, False),
+    ],
+)
+def test_is_retriable_auth_http_status(status_code, expected):
+    """Check retriable auth HTTP status classification."""
+    assert _is_retriable_auth_http_status(status_code) is expected
+
+
+def test_parse_retry_after_seconds():
+    """Parse Retry-After header values in seconds."""
+    assert _parse_retry_after("5") == 5.0
+
+
+def test_parse_retry_after_invalid():
+    """Return None for invalid Retry-After values."""
+    assert _parse_retry_after("not-a-date") is None
+    assert _parse_retry_after("") is None
+
+
+def test_auth_retry_delay_exponential():
+    """Apply exponential backoff when Retry-After is absent."""
+    delay1 = _auth_retry_delay(1, 500, None, 1.0, 30.0)
+    delay2 = _auth_retry_delay(2, 500, None, 1.0, 30.0)
+    delay3 = _auth_retry_delay(3, 502, None, 1.0, 30.0)
+    assert 1.0 <= delay1 <= 1.25
+    assert 2.0 <= delay2 <= 2.5
+    assert 4.0 <= delay3 <= 5.0
+
+
+def test_auth_retry_delay_honours_retry_after():
+    """Honour Retry-After for 429 and 503 responses."""
+    delay429 = _auth_retry_delay(1, 429, "7", 1.0, 30.0)
+    delay503 = _auth_retry_delay(1, 503, "12", 1.0, 30.0)
+    assert 7.0 <= delay429 <= 8.75
+    assert 12.0 <= delay503 <= 15.0
+
+
+def test_auth_retry_delay_caps_retry_after():
+    """Cap Retry-After delays at the configured maximum."""
+    delay = _auth_retry_delay(1, 429, "120", 1.0, 30.0)
+    assert delay == 30.0
+
+
+def test_auth_retry_delay_never_exceeds_max():
+    """Jitter must not push the final delay above the configured maximum."""
+    for attempt in range(1, 8):
+        delay = _auth_retry_delay(attempt, 500, None, 1.0, 30.0)
+        assert delay <= 30.0
+
+
+def test_diode_authentication_retries_retriable_status(mock_diode_authentication):
+    """Retry auth token fetch on transient HTTP failures."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        max_retries=3,
+        initial_retry_delay=0,
+        max_retry_delay=0,
+        sleep=lambda _delay: None,
+    )
+    responses = [
+        mock.Mock(
+            status_code=503,
+            reason="Service Unavailable",
+            headers={"Retry-After": "0"},
+        ),
+        mock.Mock(
+            status_code=200,
+            json=mock.Mock(return_value={"access_token": "mocked_token"}),
+        ),
+    ]
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_session.post.side_effect = responses
+
+        token = auth.authenticate()
+        assert token == "mocked_token"
+        assert mock_session.post.call_count == 2
+
+
+def test_diode_authentication_fails_fast_on_401(mock_diode_authentication):
+    """Do not retry auth token fetch on 401 responses."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        max_retries=3,
+        initial_retry_delay=0,
+        max_retry_delay=0,
+        sleep=lambda _delay: None,
+    )
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_session.post.return_value = mock.Mock(status_code=401, reason="Unauthorized")
+
+        with pytest.raises(DiodeConfigError) as excinfo:
+            auth.authenticate()
+        assert "Failed to obtain access token: Unauthorized" in str(excinfo.value)
+        assert mock_session.post.call_count == 1
+
+
+def test_diode_authentication_exhausts_retries(mock_diode_authentication):
+    """Raise after exhausting auth retry attempts."""
+    auth = _DiodeAuthentication(
+        target="localhost:8081",
+        path="/diode",
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+        max_retries=2,
+        initial_retry_delay=0,
+        max_retry_delay=0,
+        sleep=lambda _delay: None,
+    )
+    with mock.patch("requests.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_session.post.return_value = mock.Mock(
+            status_code=503,
+            reason="Service Unavailable",
+        )
+
+        with pytest.raises(DiodeConfigError) as excinfo:
+            auth.authenticate()
+        assert "Failed to obtain access token: Service Unavailable" in str(excinfo.value)
+        assert mock_session.post.call_count == 2
 
 
 def test_ingest_dry_run_stdout(capsys):
