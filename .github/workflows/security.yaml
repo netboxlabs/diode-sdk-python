@@ -1,0 +1,109 @@
+name: Security scan
+
+on:
+  push:
+    branches:
+      - "!release"
+  pull_request:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 06:00 UTC, to catch newly published advisories
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  trivy:
+    name: Trivy dependency scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TRIVY_DISABLE_VEX_NOTICE: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # pyproject.toml declares open ">=" ranges, which Trivy cannot evaluate
+      # on their own. Resolve them to concrete installed versions and write a
+      # pinned requirements.txt (not committed) so the scan reflects what a
+      # consumer actually gets today. This is the library equivalent of the
+      # container scan orb-agent runs against its built image.
+      - name: Resolve installed dependency versions
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+          pip freeze --exclude-editable | grep -viE '^netboxlabs[._-]diode' > requirements.txt
+          echo "Resolved dependencies:"; cat requirements.txt
+
+      # exit-code 0 keeps this non-blocking: findings surface as GitHub
+      # code-scanning alerts rather than failing the build.
+      - name: Scan resolved dependencies and tree
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: json
+          output: trivy-output.json
+          scanners: vuln,secret
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+          ignore-unfixed: true
+          exit-code: "0"
+
+      - name: Build scan summary
+        if: "!cancelled()"
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('trivy-output.json', 'utf8'));
+            const vulns = (data.Results || []).flatMap(r =>
+              (r.Vulnerabilities || []).map(v => ({ ...v, target: r.Target }))
+            );
+            const secrets = (data.Results || []).flatMap(r =>
+              (r.Secrets || []).map(s => ({ ...s, target: r.Target }))
+            );
+
+            const SEVERITY_LABEL = {
+              CRITICAL: '🔴 **CRITICAL**',
+              HIGH: '🟠 **HIGH**',
+              MEDIUM: '🟡 MEDIUM',
+              LOW: '⚪ LOW'
+            };
+
+            let summary = `### Trivy dependency scan\n\n`;
+            if (vulns.length === 0) {
+              summary += '_No known-vulnerable dependencies found._\n';
+            } else {
+              summary += `| Package | Vulnerability | Severity | Installed | Fixed | Title |\n`;
+              summary += `|---|---|---|---|---|---|\n`;
+              for (const v of vulns) {
+                const title = (v.Title || '').replace(/\|/g, '\\|').substring(0, 80);
+                const id = v.PrimaryURL ? `[${v.VulnerabilityID}](${v.PrimaryURL})` : v.VulnerabilityID;
+                summary += `| ${v.PkgName} | ${id} | ${SEVERITY_LABEL[v.Severity] || v.Severity} | ${v.InstalledVersion} | ${v.FixedVersion || 'N/A'} | ${title} |\n`;
+              }
+            }
+            if (secrets.length > 0) {
+              summary += `\n**Potential secrets:** ${secrets.length} (see the Security tab for details).\n`;
+            }
+
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+
+      - name: Convert scan results to SARIF
+        if: "!cancelled()"
+        run: trivy convert --format sarif --output trivy-results.sarif trivy-output.json
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: "!cancelled()"
+        uses: github/codeql-action/upload-sarif@0d579ffd059c29b07949a3cce3983f0780820c98 # v4.32.6
+        with:
+          sarif_file: trivy-results.sarif
