@@ -7007,7 +7007,10 @@ class VirtualMachine:
         if site is not None:
             if device is not None and not device.HasField("site"):
                 device.site.CopyFrom(site)
-            if cluster is not None and not cluster.HasField("scope_site"):
+            # scope_site shares a oneof with scope_location/region/site_group, so
+            # HasField("scope_site") is False while a sibling holds the scope and
+            # CopyFrom would silently clear it.
+            if cluster is not None and not cluster.WhichOneof("scope"):
                 cluster.scope_site.CopyFrom(site)
         if role is not None:
             if device is not None and not device.HasField("role"):
