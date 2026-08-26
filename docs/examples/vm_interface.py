@@ -68,6 +68,7 @@ def vm_interface_extended() -> VMInterface:
         enabled=True,
         mtu=1,
         mode="access",
+        mac_address="00:11:22:33:44:55",
     )
 
 
@@ -87,6 +88,7 @@ def vm_interface_explicit() -> VMInterface:
         enabled=True,
         mtu=1,
         mode="access",
+        mac_address="00:11:22:33:44:55",
         parent=VMInterface(
             virtual_machine=VirtualMachine(
                 name="Example Name", status="active", metadata={"source": "example"}

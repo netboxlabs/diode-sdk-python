@@ -2,8 +2,8 @@
 
 #
 # Generated code. DO NOT EDIT.
-# Source: NetBox v4.6.0
-# Timestamp: 2026-07-08 14:57:56Z
+# Source: NetBox v4.7.0-beta1
+# Timestamp: 2026-08-18 14:37:00Z
 #
 # ruff: noqa: C901
 
@@ -101,6 +101,11 @@ PRIMARY_VALUE_MAP = {
     "RackGroup": "name",
     "VirtualMachineType": "name",
     "User": "username",
+    "CoolingFeed": "name",
+    "CoolingIntake": "name",
+    "CoolingOutflow": "name",
+    "CoolingSource": "name",
+    "ModuleBayType": "name",
 }
 
 
@@ -290,6 +295,11 @@ class Entity:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         user: str | User | pb.User | None = None,
+        cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        cooling_intake: str | CoolingIntake | pb.CoolingIntake | None = None,
+        cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
+        cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
+        module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -425,6 +435,11 @@ class Entity:
             virtual_machine_type, pb.VirtualMachineType
         )
         user = convert_to_protobuf(user, pb.User)
+        cooling_feed = convert_to_protobuf(cooling_feed, pb.CoolingFeed)
+        cooling_intake = convert_to_protobuf(cooling_intake, pb.CoolingIntake)
+        cooling_outflow = convert_to_protobuf(cooling_outflow, pb.CoolingOutflow)
+        cooling_source = convert_to_protobuf(cooling_source, pb.CoolingSource)
+        module_bay_type = convert_to_protobuf(module_bay_type, pb.ModuleBayType)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
@@ -532,6 +547,11 @@ class Entity:
             script_module=script_module,
             virtual_machine_type=virtual_machine_type,
             user=user,
+            cooling_feed=cooling_feed,
+            cooling_intake=cooling_intake,
+            cooling_outflow=cooling_outflow,
+            cooling_source=cooling_source,
+            module_bay_type=module_bay_type,
         )
         return result
 
@@ -1404,6 +1424,11 @@ class ContactAssignment:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         object_user: str | User | pb.User | None = None,
+        object_cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        object_cooling_intake: str | CoolingIntake | pb.CoolingIntake | None = None,
+        object_cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
+        object_cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
+        object_module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
         contact: str | Contact | pb.Contact | None = None,
         role: str | ContactRole | pb.ContactRole | None = None,
         priority: str | None = None,
@@ -1578,6 +1603,19 @@ class ContactAssignment:
             object_virtual_machine_type, pb.VirtualMachineType
         )
         object_user = convert_to_protobuf(object_user, pb.User)
+        object_cooling_feed = convert_to_protobuf(object_cooling_feed, pb.CoolingFeed)
+        object_cooling_intake = convert_to_protobuf(
+            object_cooling_intake, pb.CoolingIntake
+        )
+        object_cooling_outflow = convert_to_protobuf(
+            object_cooling_outflow, pb.CoolingOutflow
+        )
+        object_cooling_source = convert_to_protobuf(
+            object_cooling_source, pb.CoolingSource
+        )
+        object_module_bay_type = convert_to_protobuf(
+            object_module_bay_type, pb.ModuleBayType
+        )
         contact = convert_to_protobuf(contact, pb.Contact)
         role = convert_to_protobuf(role, pb.ContactRole)
         tags = convert_to_protobuf_list(tags, pb.Tag)
@@ -1684,6 +1722,11 @@ class ContactAssignment:
             object_script_module=object_script_module,
             object_virtual_machine_type=object_virtual_machine_type,
             object_user=object_user,
+            object_cooling_feed=object_cooling_feed,
+            object_cooling_intake=object_cooling_intake,
+            object_cooling_outflow=object_cooling_outflow,
+            object_cooling_source=object_cooling_source,
+            object_module_bay_type=object_module_bay_type,
             contact=contact,
             role=role,
             priority=priority,
@@ -1890,6 +1933,11 @@ class CustomFieldObjectReference:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         user: str | User | pb.User | None = None,
+        cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        cooling_intake: str | CoolingIntake | pb.CoolingIntake | None = None,
+        cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
+        cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
+        module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -2024,6 +2072,11 @@ class CustomFieldObjectReference:
             virtual_machine_type, pb.VirtualMachineType
         )
         user = convert_to_protobuf(user, pb.User)
+        cooling_feed = convert_to_protobuf(cooling_feed, pb.CoolingFeed)
+        cooling_intake = convert_to_protobuf(cooling_intake, pb.CoolingIntake)
+        cooling_outflow = convert_to_protobuf(cooling_outflow, pb.CoolingOutflow)
+        cooling_source = convert_to_protobuf(cooling_source, pb.CoolingSource)
+        module_bay_type = convert_to_protobuf(module_bay_type, pb.ModuleBayType)
         result = pb.CustomFieldObjectReference(
             asn=asn,
             asn_range=asn_range,
@@ -2125,6 +2178,11 @@ class CustomFieldObjectReference:
             script_module=script_module,
             virtual_machine_type=virtual_machine_type,
             user=user,
+            cooling_feed=cooling_feed,
+            cooling_intake=cooling_intake,
+            cooling_outflow=cooling_outflow,
+            cooling_source=cooling_source,
+            module_bay_type=module_bay_type,
         )
         return result
 
@@ -2210,6 +2268,7 @@ class Device:
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         config: DeviceConfig | pb.DeviceConfig | None = None,
+        cooling_method: str | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
     ) -> pb.Device:
@@ -2272,6 +2331,7 @@ class Device:
             metadata=metadata,
             owner=owner,
             config=config,
+            cooling_method=cooling_method,
         )
         return result
 
@@ -2376,6 +2436,8 @@ class DeviceType:
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        cooling_method: str | None = None,
+        end_of_life: datetime.datetime | None = None,
     ) -> pb.DeviceType:
         """Create a new DeviceType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -2403,6 +2465,8 @@ class DeviceType:
             custom_fields=custom_fields,
             metadata=metadata,
             owner=owner,
+            cooling_method=cooling_method,
+            end_of_life=end_of_life,
         )
         return result
 
@@ -2597,6 +2661,13 @@ class FHRPGroupAssignment:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         interface_user: str | User | pb.User | None = None,
+        interface_cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        interface_cooling_intake: str | CoolingIntake | pb.CoolingIntake | None = None,
+        interface_cooling_outflow: (
+            str | CoolingOutflow | pb.CoolingOutflow | None
+        ) = None,
+        interface_cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
+        interface_module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
         priority: int | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroupAssignment:
@@ -2814,6 +2885,21 @@ class FHRPGroupAssignment:
             interface_virtual_machine_type, pb.VirtualMachineType
         )
         interface_user = convert_to_protobuf(interface_user, pb.User)
+        interface_cooling_feed = convert_to_protobuf(
+            interface_cooling_feed, pb.CoolingFeed
+        )
+        interface_cooling_intake = convert_to_protobuf(
+            interface_cooling_intake, pb.CoolingIntake
+        )
+        interface_cooling_outflow = convert_to_protobuf(
+            interface_cooling_outflow, pb.CoolingOutflow
+        )
+        interface_cooling_source = convert_to_protobuf(
+            interface_cooling_source, pb.CoolingSource
+        )
+        interface_module_bay_type = convert_to_protobuf(
+            interface_module_bay_type, pb.ModuleBayType
+        )
         metadata = convert_dict_to_struct(metadata)
         result = pb.FHRPGroupAssignment(
             group=group,
@@ -2917,6 +3003,11 @@ class FHRPGroupAssignment:
             interface_script_module=interface_script_module,
             interface_virtual_machine_type=interface_virtual_machine_type,
             interface_user=interface_user,
+            interface_cooling_feed=interface_cooling_feed,
+            interface_cooling_intake=interface_cooling_intake,
+            interface_cooling_outflow=interface_cooling_outflow,
+            interface_cooling_source=interface_cooling_source,
+            interface_module_bay_type=interface_module_bay_type,
             priority=priority,
             metadata=metadata,
         )
@@ -3113,6 +3204,11 @@ class GenericObject:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         object_user: str | User | pb.User | None = None,
+        object_cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        object_cooling_intake: str | CoolingIntake | pb.CoolingIntake | None = None,
+        object_cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
+        object_cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
+        object_module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
     ) -> pb.GenericObject:
         """Create a new GenericObject."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -3281,6 +3377,19 @@ class GenericObject:
             object_virtual_machine_type, pb.VirtualMachineType
         )
         object_user = convert_to_protobuf(object_user, pb.User)
+        object_cooling_feed = convert_to_protobuf(object_cooling_feed, pb.CoolingFeed)
+        object_cooling_intake = convert_to_protobuf(
+            object_cooling_intake, pb.CoolingIntake
+        )
+        object_cooling_outflow = convert_to_protobuf(
+            object_cooling_outflow, pb.CoolingOutflow
+        )
+        object_cooling_source = convert_to_protobuf(
+            object_cooling_source, pb.CoolingSource
+        )
+        object_module_bay_type = convert_to_protobuf(
+            object_module_bay_type, pb.ModuleBayType
+        )
         result = pb.GenericObject(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
@@ -3382,6 +3491,11 @@ class GenericObject:
             object_script_module=object_script_module,
             object_virtual_machine_type=object_virtual_machine_type,
             object_user=object_user,
+            object_cooling_feed=object_cooling_feed,
+            object_cooling_intake=object_cooling_intake,
+            object_cooling_outflow=object_cooling_outflow,
+            object_cooling_source=object_cooling_source,
+            object_module_bay_type=object_module_bay_type,
         )
         return result
 
@@ -3771,6 +3885,9 @@ class Interface:
         wireless_lans: list[str | WirelessLAN | pb.WirelessLAN] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        channels: int | None = None,
+        channel_id: int | None = None,
+        mac_address: str | None = None,
         # shortcuts
         manufacturer: str | Manufacturer | pb.Manufacturer = None,
         device_type: str | DeviceType | pb.DeviceType = None,
@@ -3861,6 +3978,9 @@ class Interface:
             wireless_lans=wireless_lans,
             metadata=metadata,
             owner=owner,
+            channels=channels,
+            channel_id=channel_id,
+            mac_address=mac_address,
         )
         return result
 
@@ -3891,6 +4011,10 @@ class InventoryItem:
         component_power_outlet: str | PowerOutlet | pb.PowerOutlet | None = None,
         component_power_port: str | PowerPort | pb.PowerPort | None = None,
         component_rear_port: str | RearPort | pb.RearPort | None = None,
+        component_cooling_intake: str | CoolingIntake | pb.CoolingIntake | None = None,
+        component_cooling_outflow: (
+            str | CoolingOutflow | pb.CoolingOutflow | None
+        ) = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
@@ -3914,6 +4038,12 @@ class InventoryItem:
         )
         component_power_port = convert_to_protobuf(component_power_port, pb.PowerPort)
         component_rear_port = convert_to_protobuf(component_rear_port, pb.RearPort)
+        component_cooling_intake = convert_to_protobuf(
+            component_cooling_intake, pb.CoolingIntake
+        )
+        component_cooling_outflow = convert_to_protobuf(
+            component_cooling_outflow, pb.CoolingOutflow
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -3938,6 +4068,8 @@ class InventoryItem:
             component_power_outlet=component_power_outlet,
             component_power_port=component_power_port,
             component_rear_port=component_rear_port,
+            component_cooling_intake=component_cooling_intake,
+            component_cooling_outflow=component_cooling_outflow,
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
@@ -4195,6 +4327,19 @@ class L2VPNTermination:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         assigned_object_user: str | User | pb.User | None = None,
+        assigned_object_cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        assigned_object_cooling_intake: (
+            str | CoolingIntake | pb.CoolingIntake | None
+        ) = None,
+        assigned_object_cooling_outflow: (
+            str | CoolingOutflow | pb.CoolingOutflow | None
+        ) = None,
+        assigned_object_cooling_source: (
+            str | CoolingSource | pb.CoolingSource | None
+        ) = None,
+        assigned_object_module_bay_type: (
+            str | ModuleBayType | pb.ModuleBayType | None
+        ) = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
@@ -4465,6 +4610,21 @@ class L2VPNTermination:
             assigned_object_virtual_machine_type, pb.VirtualMachineType
         )
         assigned_object_user = convert_to_protobuf(assigned_object_user, pb.User)
+        assigned_object_cooling_feed = convert_to_protobuf(
+            assigned_object_cooling_feed, pb.CoolingFeed
+        )
+        assigned_object_cooling_intake = convert_to_protobuf(
+            assigned_object_cooling_intake, pb.CoolingIntake
+        )
+        assigned_object_cooling_outflow = convert_to_protobuf(
+            assigned_object_cooling_outflow, pb.CoolingOutflow
+        )
+        assigned_object_cooling_source = convert_to_protobuf(
+            assigned_object_cooling_source, pb.CoolingSource
+        )
+        assigned_object_module_bay_type = convert_to_protobuf(
+            assigned_object_module_bay_type, pb.ModuleBayType
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -4570,6 +4730,11 @@ class L2VPNTermination:
             assigned_object_script_module=assigned_object_script_module,
             assigned_object_virtual_machine_type=assigned_object_virtual_machine_type,
             assigned_object_user=assigned_object_user,
+            assigned_object_cooling_feed=assigned_object_cooling_feed,
+            assigned_object_cooling_intake=assigned_object_cooling_intake,
+            assigned_object_cooling_outflow=assigned_object_cooling_outflow,
+            assigned_object_cooling_source=assigned_object_cooling_source,
+            assigned_object_module_bay_type=assigned_object_module_bay_type,
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
@@ -4758,6 +4923,7 @@ class ModuleBay:
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         enabled: bool | None = None,
+        module_bay_types: list[str | ModuleBayType | pb.ModuleBayType] | None = None,
     ) -> pb.ModuleBay:
         """Create a new ModuleBay."""
         device = convert_to_protobuf(device, pb.Device)
@@ -4767,6 +4933,7 @@ class ModuleBay:
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
+        module_bay_types = convert_to_protobuf_list(module_bay_types, pb.ModuleBayType)
         result = pb.ModuleBay(
             device=device,
             module=module,
@@ -4780,6 +4947,7 @@ class ModuleBay:
             metadata=metadata,
             owner=owner,
             enabled=enabled,
+            module_bay_types=module_bay_types,
         )
         return result
 
@@ -4803,6 +4971,9 @@ class ModuleType:
         attributes: str | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        cooling_method: str | None = None,
+        end_of_life: datetime.datetime | None = None,
+        module_bay_types: list[str | ModuleBayType | pb.ModuleBayType] | None = None,
     ) -> pb.ModuleType:
         """Create a new ModuleType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -4811,6 +4982,7 @@ class ModuleType:
         profile = convert_to_protobuf(profile, pb.ModuleTypeProfile)
         metadata = convert_dict_to_struct(metadata)
         owner = convert_to_protobuf(owner, pb.Owner)
+        module_bay_types = convert_to_protobuf_list(module_bay_types, pb.ModuleBayType)
         result = pb.ModuleType(
             manufacturer=manufacturer,
             model=model,
@@ -4826,6 +4998,9 @@ class ModuleType:
             attributes=attributes,
             metadata=metadata,
             owner=owner,
+            cooling_method=cooling_method,
+            end_of_life=end_of_life,
+            module_bay_types=module_bay_types,
         )
         return result
 
@@ -5290,6 +5465,8 @@ class Rack:
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         group: str | RackGroup | pb.RackGroup | None = None,
+        cooling_capability: str | None = None,
+        cooling_capacity: float | None = None,
     ) -> pb.Rack:
         """Create a new Rack."""
         site = convert_to_protobuf(site, pb.Site)
@@ -5334,6 +5511,8 @@ class Rack:
             metadata=metadata,
             owner=owner,
             group=group,
+            cooling_capability=cooling_capability,
+            cooling_capacity=cooling_capacity,
         )
         return result
 
@@ -5440,6 +5619,8 @@ class RackType:
         outer_height: int | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        cooling_capability: str | None = None,
+        cooling_capacity: float | None = None,
     ) -> pb.RackType:
         """Create a new RackType."""
         manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
@@ -5470,6 +5651,8 @@ class RackType:
             outer_height=outer_height,
             metadata=metadata,
             owner=owner,
+            cooling_capability=cooling_capability,
+            cooling_capacity=cooling_capacity,
         )
         return result
 
@@ -5642,6 +5825,7 @@ class Service:
         ) = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        port_mappings: list[str] | None = None,
     ) -> pb.Service:
         """Create a new Service."""
         device = convert_to_protobuf(device, pb.Device)
@@ -5674,6 +5858,7 @@ class Service:
             parent_object_virtual_machine=parent_object_virtual_machine,
             metadata=metadata,
             owner=owner,
+            port_mappings=port_mappings,
         )
         return result
 
@@ -6104,6 +6289,19 @@ class TunnelTermination:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         termination_user: str | User | pb.User | None = None,
+        termination_cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        termination_cooling_intake: (
+            str | CoolingIntake | pb.CoolingIntake | None
+        ) = None,
+        termination_cooling_outflow: (
+            str | CoolingOutflow | pb.CoolingOutflow | None
+        ) = None,
+        termination_cooling_source: (
+            str | CoolingSource | pb.CoolingSource | None
+        ) = None,
+        termination_module_bay_type: (
+            str | ModuleBayType | pb.ModuleBayType | None
+        ) = None,
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
@@ -6347,6 +6545,21 @@ class TunnelTermination:
             termination_virtual_machine_type, pb.VirtualMachineType
         )
         termination_user = convert_to_protobuf(termination_user, pb.User)
+        termination_cooling_feed = convert_to_protobuf(
+            termination_cooling_feed, pb.CoolingFeed
+        )
+        termination_cooling_intake = convert_to_protobuf(
+            termination_cooling_intake, pb.CoolingIntake
+        )
+        termination_cooling_outflow = convert_to_protobuf(
+            termination_cooling_outflow, pb.CoolingOutflow
+        )
+        termination_cooling_source = convert_to_protobuf(
+            termination_cooling_source, pb.CoolingSource
+        )
+        termination_module_bay_type = convert_to_protobuf(
+            termination_module_bay_type, pb.ModuleBayType
+        )
         outside_ip = convert_to_protobuf(outside_ip, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
@@ -6454,6 +6667,11 @@ class TunnelTermination:
             termination_script_module=termination_script_module,
             termination_virtual_machine_type=termination_virtual_machine_type,
             termination_user=termination_user,
+            termination_cooling_feed=termination_cooling_feed,
+            termination_cooling_intake=termination_cooling_intake,
+            termination_cooling_outflow=termination_cooling_outflow,
+            termination_cooling_source=termination_cooling_source,
+            termination_module_bay_type=termination_module_bay_type,
             outside_ip=outside_ip,
             tags=tags,
             custom_fields=custom_fields,
@@ -6647,6 +6865,7 @@ class VMInterface:
         tagged_vlans: list[str | VLAN | pb.VLAN] | None = None,
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
+        mac_address: str | None = None,
     ) -> pb.VMInterface:
         """Create a new VMInterface."""
         virtual_machine = convert_to_protobuf(virtual_machine, pb.VirtualMachine)
@@ -6683,6 +6902,7 @@ class VMInterface:
             tagged_vlans=tagged_vlans,
             metadata=metadata,
             owner=owner,
+            mac_address=mac_address,
         )
         return result
 
@@ -7214,6 +7434,7 @@ class CustomField:
         metadata: dict[str, Any] | None = None,
         owner: str | Owner | pb.Owner | None = None,
         validation_schema: str | None = None,
+        nulls_first: bool | None = None,
     ) -> pb.CustomField:
         """Create a new CustomField."""
         choice_set = convert_to_protobuf(choice_set, pb.CustomFieldChoiceSet)
@@ -7245,6 +7466,7 @@ class CustomField:
             metadata=metadata,
             owner=owner,
             validation_schema=validation_schema,
+            nulls_first=nulls_first,
         )
         return result
 
@@ -7446,6 +7668,19 @@ class JournalEntry:
             str | VirtualMachineType | pb.VirtualMachineType | None
         ) = None,
         assigned_object_user: str | User | pb.User | None = None,
+        assigned_object_cooling_feed: str | CoolingFeed | pb.CoolingFeed | None = None,
+        assigned_object_cooling_intake: (
+            str | CoolingIntake | pb.CoolingIntake | None
+        ) = None,
+        assigned_object_cooling_outflow: (
+            str | CoolingOutflow | pb.CoolingOutflow | None
+        ) = None,
+        assigned_object_cooling_source: (
+            str | CoolingSource | pb.CoolingSource | None
+        ) = None,
+        assigned_object_module_bay_type: (
+            str | ModuleBayType | pb.ModuleBayType | None
+        ) = None,
         kind: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
@@ -7718,6 +7953,21 @@ class JournalEntry:
             assigned_object_virtual_machine_type, pb.VirtualMachineType
         )
         assigned_object_user = convert_to_protobuf(assigned_object_user, pb.User)
+        assigned_object_cooling_feed = convert_to_protobuf(
+            assigned_object_cooling_feed, pb.CoolingFeed
+        )
+        assigned_object_cooling_intake = convert_to_protobuf(
+            assigned_object_cooling_intake, pb.CoolingIntake
+        )
+        assigned_object_cooling_outflow = convert_to_protobuf(
+            assigned_object_cooling_outflow, pb.CoolingOutflow
+        )
+        assigned_object_cooling_source = convert_to_protobuf(
+            assigned_object_cooling_source, pb.CoolingSource
+        )
+        assigned_object_module_bay_type = convert_to_protobuf(
+            assigned_object_module_bay_type, pb.ModuleBayType
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -7823,6 +8073,11 @@ class JournalEntry:
             assigned_object_script_module=assigned_object_script_module,
             assigned_object_virtual_machine_type=assigned_object_virtual_machine_type,
             assigned_object_user=assigned_object_user,
+            assigned_object_cooling_feed=assigned_object_cooling_feed,
+            assigned_object_cooling_intake=assigned_object_cooling_intake,
+            assigned_object_cooling_outflow=assigned_object_cooling_outflow,
+            assigned_object_cooling_source=assigned_object_cooling_source,
+            assigned_object_module_bay_type=assigned_object_module_bay_type,
             kind=kind,
             comments=comments,
             tags=tags,
@@ -8096,6 +8351,228 @@ class User:
         metadata = convert_dict_to_struct(metadata)
         result = pb.User(
             username=username,
+            metadata=metadata,
+        )
+        return result
+
+
+class CoolingFeed:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.CoolingFeed."""
+
+    def __new__(
+        cls,
+        cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
+        rack: str | Rack | pb.Rack | None = None,
+        name: str | None = None,
+        status: str | None = None,
+        cooling_capacity: float | None = None,
+        max_flow: float | None = None,
+        max_flow_unit: str | None = None,
+        description: str | None = None,
+        tenant: str | Tenant | pb.Tenant | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.CoolingFeed:
+        """Create a new CoolingFeed."""
+        cooling_source = convert_to_protobuf(cooling_source, pb.CoolingSource)
+        rack = convert_to_protobuf(rack, pb.Rack)
+        tenant = convert_to_protobuf(tenant, pb.Tenant)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CoolingFeed(
+            cooling_source=cooling_source,
+            rack=rack,
+            name=name,
+            status=status,
+            cooling_capacity=cooling_capacity,
+            max_flow=max_flow,
+            max_flow_unit=max_flow_unit,
+            description=description,
+            tenant=tenant,
+            owner=owner,
+            comments=comments,
+            tags=tags,
+            custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class CoolingIntake:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.CoolingIntake."""
+
+    def __new__(
+        cls,
+        device: str | Device | pb.Device | None = None,
+        module: Module | pb.Module | None = None,
+        name: str | None = None,
+        label: str | None = None,
+        type: str | None = None,
+        diameter: float | None = None,
+        diameter_unit: str | None = None,
+        max_flow: float | None = None,
+        max_flow_unit: str | None = None,
+        cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
+        description: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.CoolingIntake:
+        """Create a new CoolingIntake."""
+        device = convert_to_protobuf(device, pb.Device)
+        module = convert_to_protobuf(module, pb.Module)
+        cooling_outflow = convert_to_protobuf(cooling_outflow, pb.CoolingOutflow)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CoolingIntake(
+            device=device,
+            module=module,
+            name=name,
+            label=label,
+            type=type,
+            diameter=diameter,
+            diameter_unit=diameter_unit,
+            max_flow=max_flow,
+            max_flow_unit=max_flow_unit,
+            cooling_outflow=cooling_outflow,
+            description=description,
+            owner=owner,
+            tags=tags,
+            custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class CoolingOutflow:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.CoolingOutflow."""
+
+    def __new__(
+        cls,
+        device: str | Device | pb.Device | None = None,
+        module: Module | pb.Module | None = None,
+        name: str | None = None,
+        label: str | None = None,
+        type: str | None = None,
+        diameter: float | None = None,
+        diameter_unit: str | None = None,
+        cooling_intake: str | CoolingIntake | pb.CoolingIntake | None = None,
+        description: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.CoolingOutflow:
+        """Create a new CoolingOutflow."""
+        device = convert_to_protobuf(device, pb.Device)
+        module = convert_to_protobuf(module, pb.Module)
+        cooling_intake = convert_to_protobuf(cooling_intake, pb.CoolingIntake)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CoolingOutflow(
+            device=device,
+            module=module,
+            name=name,
+            label=label,
+            type=type,
+            diameter=diameter,
+            diameter_unit=diameter_unit,
+            cooling_intake=cooling_intake,
+            description=description,
+            owner=owner,
+            tags=tags,
+            custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class CoolingSource:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.CoolingSource."""
+
+    def __new__(
+        cls,
+        site: str | Site | pb.Site | None = None,
+        location: str | Location | pb.Location | None = None,
+        name: str | None = None,
+        type: str | None = None,
+        status: str | None = None,
+        fluid_type: str | None = None,
+        cooling_capacity: float | None = None,
+        description: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.CoolingSource:
+        """Create a new CoolingSource."""
+        site = convert_to_protobuf(site, pb.Site)
+        location = convert_to_protobuf(location, pb.Location)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.CoolingSource(
+            site=site,
+            location=location,
+            name=name,
+            type=type,
+            status=status,
+            fluid_type=fluid_type,
+            cooling_capacity=cooling_capacity,
+            description=description,
+            owner=owner,
+            comments=comments,
+            tags=tags,
+            custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class ModuleBayType:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.ModuleBayType."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        slug: str | None = None,
+        manufacturer: str | Manufacturer | pb.Manufacturer | None = None,
+        color: str | None = None,
+        description: str | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        comments: str | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.ModuleBayType:
+        """Create a new ModuleBayType."""
+        manufacturer = convert_to_protobuf(manufacturer, pb.Manufacturer)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ModuleBayType(
+            name=name,
+            slug=slug,
+            manufacturer=manufacturer,
+            color=color,
+            description=description,
+            owner=owner,
+            comments=comments,
+            tags=tags,
+            custom_fields=custom_fields,
             metadata=metadata,
         )
         return result

@@ -73,6 +73,7 @@ def device_type_extended() -> DeviceType:
         weight=1.0,
         weight_unit="g",
         comments="Example comments",
+        cooling_method="air",
     )
 
 
@@ -99,6 +100,7 @@ def device_type_explicit() -> DeviceType:
         airflow="bottom-to-top",
         weight=1.0,
         weight_unit="g",
+        cooling_method="air",
         default_platform=Platform(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),

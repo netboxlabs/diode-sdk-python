@@ -92,6 +92,7 @@ def device_extended() -> Device:
         vc_position=1,
         vc_priority=1,
         comments="Example comments",
+        cooling_method="air",
     )
 
 
@@ -136,6 +137,7 @@ def device_explicit() -> Device:
         airflow="bottom-to-top",
         vc_position=1,
         vc_priority=1,
+        cooling_method="air",
         tenant=Tenant(
             name="Example Name", slug="example-slug", metadata={"source": "example"}
         ),

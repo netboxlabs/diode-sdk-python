@@ -1,20 +1,20 @@
 """
-Interface entity examples for the Diode Python SDK.
+CoolingIntake entity examples for the Diode Python SDK.
 
-This module demonstrates three patterns for ingesting Interface entities:
-- interface_example_minimal: Required fields only
-- interface_example_extended: Common optional fields
-- interface_example_explicit: Fully nested objects with all fields
+This module demonstrates three patterns for ingesting CoolingIntake entities:
+- cooling_intake_minimal: Required fields only
+- cooling_intake_extended: Common optional fields
+- cooling_intake_explicit: Fully nested objects with all fields
 """
 
 from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
+    CoolingIntake,
+    CoolingOutflow,
     Device,
     DeviceRole,
     DeviceType,
     Entity,
-    Interface,
-    MACAddress,
     Manufacturer,
     Module,
     ModuleBay,
@@ -23,20 +23,17 @@ from netboxlabs.diode.sdk.ingester import (
     OwnerGroup,
     Site,
     Tag,
-    VLAN,
-    VLANTranslationPolicy,
-    VRF,
 )
 
 TARGET = "grpc://localhost:8080/diode"
-APP_NAME = "interface-example"
+APP_NAME = "cooling_intake-example"
 APP_VERSION = "1.0.0"
 CLIENT_ID = "diode"
 CLIENT_SECRET = "changeme"
 
 
 def main():
-    """Main execution - demonstrates ingesting a Interface entity."""
+    """Main execution - demonstrates ingesting a CoolingIntake entity."""
     with DiodeClient(
         target=TARGET,
         app_name=APP_NAME,
@@ -45,60 +42,45 @@ def main():
         client_secret=CLIENT_SECRET,
     ) as client:
         # Choose one of the three patterns:
-        interface = interface_example_minimal()
-        # interface = interface_example_extended()
-        # interface = interface_example_explicit()
+        cooling_intake = cooling_intake_minimal()
+        # cooling_intake = cooling_intake_extended()
+        # cooling_intake = cooling_intake_explicit()
 
-        response = client.ingest(entities=[Entity(interface=interface)])
+        response = client.ingest(entities=[Entity(cooling_intake=cooling_intake)])
         if response.errors:
             print(f"Errors: {response.errors}")
         else:
-            print("Interface ingested successfully")
+            print("CoolingIntake ingested successfully")
 
 
-def interface_example_minimal() -> Interface:
-    """Create a Interface with only required fields using flat strings."""
-    return Interface(
+def cooling_intake_minimal() -> CoolingIntake:
+    """Create a CoolingIntake with only required fields using flat strings."""
+    return CoolingIntake(
         device="Example Device",  # flat string -> Device
         name="Example Name",
-        type="1000base-t",
         metadata={"source": "example"},
     )
 
 
-def interface_example_extended() -> Interface:
-    """Create a Interface with common optional fields."""
-    return Interface(
+def cooling_intake_extended() -> CoolingIntake:
+    """Create a CoolingIntake with common optional fields."""
+    return CoolingIntake(
         device="Example Device",
         name="Example Name",
-        type="1000base-t",
         metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
         label="Example Label",
-        enabled=True,
-        mtu=1,
-        speed=1,
-        duplex="auto",
-        wwn="Example Wwn",
-        mgmt_only=True,
-        mode="access",
-        rf_role="ap",
-        rf_channel="2.4g-1-2412-22",
-        poe_mode="pse",
-        poe_type="type1-ieee802.3af",
-        rf_channel_frequency=1.0,
-        rf_channel_width=1.0,
-        tx_power=1,
-        mark_connected=True,
-        channels=1,
-        channel_id=1,
-        mac_address="00:11:22:33:44:55",
+        type="bsp",
+        diameter=1.0,
+        diameter_unit="cm",
+        max_flow=1.0,
+        max_flow_unit="gpm",
     )
 
 
-def interface_example_explicit() -> Interface:
-    """Create a Interface with fully nested objects and all common fields."""
-    return Interface(
+def cooling_intake_explicit() -> CoolingIntake:
+    """Create a CoolingIntake with fully nested objects and all common fields."""
+    return CoolingIntake(
         device=Device(
             device_type=DeviceType(
                 manufacturer=Manufacturer(
@@ -126,7 +108,6 @@ def interface_example_explicit() -> Interface:
             metadata={"source": "example"},
         ),
         name="Example Name",
-        type="1000base-t",
         metadata={
             "source": "example",
             "custom_key": "custom_value",
@@ -134,24 +115,11 @@ def interface_example_explicit() -> Interface:
         },
         description="Example description",
         label="Example Label",
-        enabled=True,
-        mtu=1,
-        speed=1,
-        duplex="auto",
-        wwn="Example Wwn",
-        mgmt_only=True,
-        mode="access",
-        rf_role="ap",
-        rf_channel="2.4g-1-2412-22",
-        poe_mode="pse",
-        poe_type="type1-ieee802.3af",
-        rf_channel_frequency=1.0,
-        rf_channel_width=1.0,
-        tx_power=1,
-        mark_connected=True,
-        channels=1,
-        channel_id=1,
-        mac_address="00:11:22:33:44:55",
+        type="bsp",
+        diameter=1.0,
+        diameter_unit="cm",
+        max_flow=1.0,
+        max_flow_unit="gpm",
         module=Module(
             device=Device(
                 device_type=DeviceType(
@@ -221,7 +189,7 @@ def interface_example_explicit() -> Interface:
             status="active",
             metadata={"source": "example"},
         ),
-        parent=Interface(
+        cooling_outflow=CoolingOutflow(
             device=Device(
                 device_type=DeviceType(
                     manufacturer=Manufacturer(
@@ -249,84 +217,8 @@ def interface_example_explicit() -> Interface:
                 metadata={"source": "example"},
             ),
             name="Example Name",
-            type="1000base-t",
             metadata={"source": "example"},
         ),
-        bridge=Interface(
-            device=Device(
-                device_type=DeviceType(
-                    manufacturer=Manufacturer(
-                        name="Example Name",
-                        slug="example-slug",
-                        metadata={"source": "example"},
-                    ),
-                    model="Model X",
-                    slug="example-slug",
-                    metadata={"source": "example"},
-                ),
-                role=DeviceRole(
-                    name="Example Name",
-                    slug="example-slug",
-                    color="0000ff",
-                    metadata={"source": "example"},
-                ),
-                site=Site(
-                    name="Example Name",
-                    slug="example-slug",
-                    status="active",
-                    metadata={"source": "example"},
-                ),
-                status="active",
-                metadata={"source": "example"},
-            ),
-            name="Example Name",
-            type="1000base-t",
-            metadata={"source": "example"},
-        ),
-        lag=Interface(
-            device=Device(
-                device_type=DeviceType(
-                    manufacturer=Manufacturer(
-                        name="Example Name",
-                        slug="example-slug",
-                        metadata={"source": "example"},
-                    ),
-                    model="Model X",
-                    slug="example-slug",
-                    metadata={"source": "example"},
-                ),
-                role=DeviceRole(
-                    name="Example Name",
-                    slug="example-slug",
-                    color="0000ff",
-                    metadata={"source": "example"},
-                ),
-                site=Site(
-                    name="Example Name",
-                    slug="example-slug",
-                    status="active",
-                    metadata={"source": "example"},
-                ),
-                status="active",
-                metadata={"source": "example"},
-            ),
-            name="Example Name",
-            type="1000base-t",
-            metadata={"source": "example"},
-        ),
-        primary_mac_address=MACAddress(
-            mac_address="00:11:22:33:44:55", metadata={"source": "example"}
-        ),
-        untagged_vlan=VLAN(
-            vid=1, name="Example Name", status="active", metadata={"source": "example"}
-        ),
-        qinq_svlan=VLAN(
-            vid=1, name="Example Name", status="active", metadata={"source": "example"}
-        ),
-        vlan_translation_policy=VLANTranslationPolicy(
-            name="Example Name", metadata={"source": "example"}
-        ),
-        vrf=VRF(name="Example Name", metadata={"source": "example"}),
         owner=Owner(
             name="Example Name",
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),
