@@ -91,7 +91,6 @@ def interface_example_extended() -> Interface:
         tx_power=1,
         mark_connected=True,
         channels=1,
-        channel_id=1,
         mac_address="00:11:22:33:44:55",
     )
 
@@ -150,7 +149,6 @@ def interface_example_explicit() -> Interface:
         tx_power=1,
         mark_connected=True,
         channels=1,
-        channel_id=1,
         mac_address="00:11:22:33:44:55",
         module=Module(
             device=Device(

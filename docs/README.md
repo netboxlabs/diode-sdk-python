@@ -1,7 +1,7 @@
 # Diode Python SDK - Entity Examples
 
-Source: NetBox v4.7.0-beta2
-Generated: 2026-08-28 12:13:47Z
+Source: NetBox v4.7.0-beta1
+Generated: 2026-09-02 20:34:34Z
 
 ## Prerequisites
 
