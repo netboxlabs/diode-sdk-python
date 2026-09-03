@@ -12,6 +12,7 @@ from netboxlabs.diode.sdk.ingester import (
     Entity,
     JournalEntry,
     Tag,
+    User,
 )
 
 TARGET = "grpc://localhost:8080/diode"
@@ -69,6 +70,7 @@ def journal_entry_explicit() -> JournalEntry:
             "collected_at": "2024-01-15T10:30:00Z",
         },
         kind="danger",
+        created_by=User(username="Example Username", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

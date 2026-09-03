@@ -1,7 +1,7 @@
 # Diode Python SDK - Entity Examples
 
-Source: NetBox v4.6.0
-Generated: 2026-07-03 00:59:24Z
+Source: NetBox v4.7.0
+Generated: 2026-09-02 20:52:39Z
 
 ## Prerequisites
 
@@ -127,7 +127,12 @@ Switch between patterns by uncommenting the desired function call in `main()`.
 ### Other
 
 - [CableBundle](examples/cable_bundle.py)
+- [CoolingFeed](examples/cooling_feed.py)
+- [CoolingIntake](examples/cooling_intake.py)
+- [CoolingOutflow](examples/cooling_outflow.py)
+- [CoolingSource](examples/cooling_source.py)
 - [DeviceConfig](examples/device_config.py)
+- [ModuleBayType](examples/module_bay_type.py)
 - [RackGroup](examples/rack_group.py)
 - [ScriptModule](examples/script_module.py)
 - [VirtualMachineType](examples/virtual_machine_type.py)
