@@ -77,6 +77,8 @@ def rack_type_extended() -> RackType:
         mounting_depth=1,
         comments="Example comments",
         outer_height=1,
+        cooling_capability="air-only",
+        cooling_capacity=1.0,
     )
 
 
@@ -108,6 +110,8 @@ def rack_type_explicit() -> RackType:
         weight_unit="g",
         mounting_depth=1,
         outer_height=1,
+        cooling_capability="air-only",
+        cooling_capacity=1.0,
         owner=Owner(
             name="Example Name",
             group=OwnerGroup(name="Example Name", metadata={"source": "example"}),

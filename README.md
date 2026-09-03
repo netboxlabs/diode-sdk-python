@@ -522,6 +522,10 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Contact Assignment
 * Contact Group
 * Contact Role
+* Cooling Feed
+* Cooling Intake
+* Cooling Outflow
+* Cooling Source
 * Custom Field
 * Custom Field Choice Set
 * Custom Link
@@ -551,6 +555,7 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Manufacturer
 * Module
 * Module Bay
+* Module Bay Type
 * Module Type
 * Module Type Profile
 * Owner

@@ -89,6 +89,8 @@ def rack_extended() -> Rack:
         airflow="front-to-rear",
         comments="Example comments",
         outer_height=1,
+        cooling_capability="air-only",
+        cooling_capacity=1.0,
     )
 
 
@@ -127,6 +129,8 @@ def rack_explicit() -> Rack:
         mounting_depth=1,
         airflow="front-to-rear",
         outer_height=1,
+        cooling_capability="air-only",
+        cooling_capacity=1.0,
         location=Location(
             name="Example Name",
             slug="example-slug",

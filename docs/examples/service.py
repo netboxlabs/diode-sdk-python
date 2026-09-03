@@ -66,8 +66,8 @@ def service_extended() -> Service:
         metadata={"source": "example", "custom_key": "custom_value"},
         description="Example description",
         device="Example Device",
-        protocol="sctp",
         comments="Example comments",
+        port_mappings=["tcp/80", "udp/53"],
     )
 
 
@@ -82,7 +82,7 @@ def service_explicit() -> Service:
         },
         description="Example description",
         comments="Example comments",
-        protocol="sctp",
+        port_mappings=["tcp/80", "udp/53"],
         device=Device(
             device_type=DeviceType(
                 manufacturer=Manufacturer(

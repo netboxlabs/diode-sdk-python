@@ -11,6 +11,8 @@ from netboxlabs.diode.sdk import DiodeClient
 from netboxlabs.diode.sdk.ingester import (
     ConsolePort,
     ConsoleServerPort,
+    CoolingIntake,
+    CoolingOutflow,
     Device,
     DeviceRole,
     DeviceType,
@@ -209,6 +211,8 @@ def inventory_item_explicit() -> InventoryItem:
         # component_power_outlet=PowerOutlet(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", color="0000ff", status="disabled", metadata={"source": "example"}),
         # component_power_port=PowerPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
         # component_rear_port=RearPort(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", type="110-punch", color="0000ff", metadata={"source": "example"}),
+        # component_cooling_intake=CoolingIntake(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
+        # component_cooling_outflow=CoolingOutflow(device=Device(device_type=DeviceType(manufacturer=Manufacturer(name="Example Name", slug="example-slug", metadata={"source": "example"}), model="Model X", slug="example-slug", metadata={"source": "example"}), role=DeviceRole(name="Example Name", slug="example-slug", color="0000ff", metadata={"source": "example"}), site=Site(name="Example Name", slug="example-slug", status="active", metadata={"source": "example"}), status="active", metadata={"source": "example"}), name="Example Name", metadata={"source": "example"}),
         tags=[Tag(name="production")],
     )
 

@@ -68,6 +68,7 @@ def module_type_extended() -> ModuleType:
         weight_unit="g",
         comments="Example comments",
         attributes="Example Attributes",
+        cooling_method="air",
     )
 
 
@@ -90,6 +91,7 @@ def module_type_explicit() -> ModuleType:
         weight=1.0,
         weight_unit="g",
         attributes="Example Attributes",
+        cooling_method="air",
         profile=ModuleTypeProfile(name="Example Name", metadata={"source": "example"}),
         owner=Owner(
             name="Example Name",
