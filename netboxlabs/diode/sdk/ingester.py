@@ -7227,7 +7227,7 @@ class VirtualMachine:
         if site is not None:
             if device is not None and not device.HasField("site"):
                 device.site.CopyFrom(site)
-            if cluster is not None and not cluster.HasField("scope_site"):
+            if cluster is not None and not cluster.WhichOneof("scope"):
                 cluster.scope_site.CopyFrom(site)
         if role is not None:
             if device is not None and not device.HasField("role"):
