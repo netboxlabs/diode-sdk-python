@@ -43,6 +43,7 @@ from netboxlabs.diode.sdk.ingester import (
     Prefix,
     Role,
     Site,
+    SiteGroup,
     Tag,
     VirtualDisk,
     VMInterface,
@@ -606,6 +607,22 @@ def test_virtual_machine_instantiation_with_cluster_without_site():
     assert virtual_machine.status == "active"
     assert virtual_machine.site.name == "Site1"
     assert virtual_machine.cluster.scope_site.name == "Site1"
+
+
+def test_virtual_machine_instantiation_keeps_cluster_scope_site_group():
+    """Check VirtualMachine leaves a cluster that is already scoped to a SiteGroup untouched."""
+    cluster = Cluster(name="gc-us-east1", scope_site_group=SiteGroup(name="SiteGroup1"))
+
+    virtual_machine = VirtualMachine(
+        name="vm1",
+        cluster=cluster,
+        site=Site(name="Site1"),
+    )
+
+    assert cluster.WhichOneof("scope") == "scope_site_group"
+    assert cluster.scope_site_group.name == "SiteGroup1"
+    assert virtual_machine.cluster.WhichOneof("scope") == "scope_site_group"
+    assert virtual_machine.cluster.scope_site_group.name == "SiteGroup1"
 
 
 def test_virtual_disk_instantiation_with_all_fields():
