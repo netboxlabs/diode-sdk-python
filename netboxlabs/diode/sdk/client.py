@@ -116,58 +116,76 @@ def parse_target(target: str) -> tuple[str, str, bool, bool]:
     return authority, parsed_target.path, is_plaintext, tls_verify
 
 
-def _tls_server_name_from_cert_pem(pem: bytes) -> str | None:
-    with tempfile.NamedTemporaryFile(mode="wb", delete=False, suffix=".pem") as cert_file:
-        cert_file.write(pem)
-        cert_path = cert_file.name
-    try:
-        decoded = ssl._ssl._test_decode_cert(cert_path)
-    except ssl.SSLError:
-        return None
-    finally:
-        os.unlink(cert_path)
+_SKIP_VERIFY_PEER_PROBE_ATTEMPTS = 3
 
-    san = decoded.get("subjectAltName")
+
+def _tls_server_name_from_peercert(
+    peercert: dict[str, Any] | None, host: str
+) -> str:
+    if not peercert:
+        return host
+
+    san = peercert.get("subjectAltName")
     if san:
         for name_type, value in san:
             if name_type == "DNS":
                 return value
 
-    for rdn in decoded.get("subject", ()):
+    for rdn in peercert.get("subject", ()):
         for key, value in rdn:
             if key == "commonName":
                 return value
-    return None
+    return host
+
+
+def _insecure_tls_client_context() -> ssl.SSLContext:
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    if hasattr(ssl, "TLSVersion"):
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+    return context
 
 
 def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
     host, port_str = authority.rsplit(":", 1)
     port = int(port_str)
 
-    if not proxy_url:
-        return socket.create_connection((host, port), timeout=10)
+    try:
+        if not proxy_url:
+            return socket.create_connection((host, port), timeout=10)
 
-    parsed_proxy = urlparse(proxy_url)
-    if not parsed_proxy.hostname:
-        raise DiodeConfigError(f"Invalid proxy URL: {proxy_url}")
-    proxy_port = parsed_proxy.port or (443 if parsed_proxy.scheme == "https" else 80)
-    sock = socket.create_connection((parsed_proxy.hostname, proxy_port), timeout=10)
-    connect_request = (
-        f"CONNECT {host}:{port} HTTP/1.1\r\n"
-        f"Host: {host}:{port}\r\n\r\n"
-    )
-    sock.sendall(connect_request.encode())
-    response = b""
-    while b"\r\n\r\n" not in response:
-        chunk = sock.recv(4096)
-        if not chunk:
-            break
-        response += chunk
-    status_line = response.split(b"\r\n", 1)[0]
-    if b" 200 " not in status_line:
-        sock.close()
-        raise DiodeConfigError(f"Proxy CONNECT failed for {authority}")
-    return sock
+        parsed_proxy = urlparse(proxy_url)
+        if not parsed_proxy.hostname:
+            raise DiodeConfigError(f"Invalid proxy URL: {proxy_url}")
+        proxy_port = parsed_proxy.port or (
+            443 if parsed_proxy.scheme == "https" else 80
+        )
+        sock = socket.create_connection(
+            (parsed_proxy.hostname, proxy_port), timeout=10
+        )
+        connect_request = (
+            f"CONNECT {host}:{port} HTTP/1.1\r\n"
+            f"Host: {host}:{port}\r\n\r\n"
+        )
+        sock.sendall(connect_request.encode())
+        response = b""
+        while b"\r\n\r\n" not in response:
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            response += chunk
+        status_line = response.split(b"\r\n", 1)[0]
+        if b" 200 " not in status_line:
+            sock.close()
+            raise DiodeConfigError(f"Proxy CONNECT failed for {authority}")
+        return sock
+    except DiodeConfigError:
+        raise
+    except OSError as exc:
+        raise DiodeConfigError(
+            f"Failed to connect to {authority}: {exc}"
+        ) from exc
 
 
 def _fetch_peer_leaf_certificate(
@@ -175,10 +193,9 @@ def _fetch_peer_leaf_certificate(
 ) -> tuple[bytes, str]:
     host, _ = authority.rsplit(":", 1)
     raw_sock = _connect_socket(authority, proxy_url)
+    tls_sock: ssl.SSLSocket | None = None
     try:
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+        context = _insecure_tls_client_context()
         tls_sock = context.wrap_socket(raw_sock, server_hostname=host)
         der_cert = tls_sock.getpeercert(binary_form=True)
         if not der_cert:
@@ -186,19 +203,52 @@ def _fetch_peer_leaf_certificate(
                 f"No peer certificate returned from {authority}"
             )
         pem = ssl.DER_cert_to_PEM_cert(der_cert).encode()
+        server_name = _tls_server_name_from_peercert(tls_sock.getpeercert(), host)
+    except DiodeConfigError:
+        raise
+    except ssl.SSLError as exc:
+        raise DiodeConfigError(
+            f"TLS handshake failed for {authority}: {exc}"
+        ) from exc
     finally:
-        raw_sock.close()
+        if tls_sock is not None:
+            tls_sock.close()
+        else:
+            raw_sock.close()
 
-    server_name = _tls_server_name_from_cert_pem(pem) or host
     return pem, server_name
 
 
 def _skip_verify_channel_credentials(
     authority: str, proxy_url: str | None
 ) -> tuple[grpc.ChannelCredentials, tuple[tuple[str, str], ...]]:
-    pem, server_name = _fetch_peer_leaf_certificate(authority, proxy_url)
-    credentials = grpc.ssl_channel_credentials(root_certificates=pem)
-    return credentials, (("grpc.ssl_target_name_override", server_name),)
+    host, _ = authority.rsplit(":", 1)
+    root_certificates: list[bytes] = []
+    server_names: list[str] = []
+    errors: list[DiodeConfigError] = []
+
+    for _ in range(_SKIP_VERIFY_PEER_PROBE_ATTEMPTS):
+        try:
+            pem, server_name = _fetch_peer_leaf_certificate(authority, proxy_url)
+        except DiodeConfigError as exc:
+            errors.append(exc)
+            continue
+        if pem not in root_certificates:
+            root_certificates.append(pem)
+            server_names.append(server_name)
+
+    if not root_certificates:
+        raise errors[-1]
+
+    override = (
+        server_names[0]
+        if len(set(server_names)) == 1
+        else host
+    )
+    credentials = grpc.ssl_channel_credentials(
+        root_certificates=b"".join(root_certificates)
+    )
+    return credentials, (("grpc.ssl_target_name_override", override),)
 
 
 def _open_grpc_channel(

@@ -1489,28 +1489,59 @@ def test_skip_tls_verify_from_env(monkeypatch):
         assert _skip_tls_verify_from_env() is False
 
 
-def test_tls_server_name_from_cert_pem_prefers_san():
+def test_tls_server_name_from_peercert_prefers_san():
     """Extract DNS SAN for grpc.ssl_target_name_override when skipping verify."""
-    from netboxlabs.diode.sdk.client import _tls_server_name_from_cert_pem
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
-    pem = b"-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n"
-    with patch(
-        "netboxlabs.diode.sdk.client.ssl._ssl._test_decode_cert",
-        return_value={"subjectAltName": [("DNS", "traefik.local")]},
-    ):
-        assert _tls_server_name_from_cert_pem(pem) == "traefik.local"
+    peercert = {"subjectAltName": [("DNS", "traefik.local")]}
+    assert _tls_server_name_from_peercert(peercert, "localhost") == "traefik.local"
 
 
-def test_tls_server_name_from_cert_pem_falls_back_to_cn():
+def test_tls_server_name_from_peercert_falls_back_to_cn():
     """Use commonName when the certificate has no DNS SAN."""
-    from netboxlabs.diode.sdk.client import _tls_server_name_from_cert_pem
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
-    pem = b"-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n"
+    peercert = {"subject": [[("commonName", "TRAEFIK")]]}
+    assert _tls_server_name_from_peercert(peercert, "localhost") == "TRAEFIK"
+
+
+def test_tls_server_name_from_peercert_falls_back_to_host():
+    """Use the connection host when the peer certificate has no usable names."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    assert _tls_server_name_from_peercert(None, "diode.example") == "diode.example"
+
+
+def test_connect_socket_wraps_os_error():
+    """Low-level connection failures become DiodeConfigError."""
+    from netboxlabs.diode.sdk.client import _connect_socket
+    from netboxlabs.diode.sdk.exceptions import DiodeConfigError
+
     with patch(
-        "netboxlabs.diode.sdk.client.ssl._ssl._test_decode_cert",
-        return_value={"subject": [[("commonName", "TRAEFIK")]]},
+        "netboxlabs.diode.sdk.client.socket.create_connection",
+        side_effect=ConnectionRefusedError("refused"),
     ):
-        assert _tls_server_name_from_cert_pem(pem) == "TRAEFIK"
+        with pytest.raises(DiodeConfigError, match="Failed to connect"):
+            _connect_socket("localhost:443", None)
+
+
+def test_skip_verify_channel_credentials_probes_multiple_peers():
+    """Pin every distinct leaf seen across probe attempts for load-balanced peers."""
+    from netboxlabs.diode.sdk.client import _skip_verify_channel_credentials
+
+    pem_a = b"-----BEGIN CERTIFICATE-----\nA\n-----END CERTIFICATE-----\n"
+    pem_b = b"-----BEGIN CERTIFICATE-----\nB\n-----END CERTIFICATE-----\n"
+    with patch(
+        "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+        side_effect=[(pem_a, "a.local"), (pem_b, "b.local"), (pem_a, "a.local")],
+    ), patch(
+        "netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials"
+    ) as mock_credentials:
+        credentials, opts = _skip_verify_channel_credentials("host:443", None)
+
+    mock_credentials.assert_called_once_with(root_certificates=pem_a + pem_b)
+    assert opts == (("grpc.ssl_target_name_override", "host"),)
+    assert credentials is mock_credentials.return_value
 
 
 def test_client_with_skip_tls_verify_env_var(mock_diode_authentication):
