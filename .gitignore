@@ -16,6 +16,9 @@ venv.bak/
 # macOS
 .DS_Store
 
+# Local git worktrees
+.worktrees/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -26,3 +29,5 @@ dist/
 .eggs/
 *.egg-info
 poetry.lock
+
+.worktrees/
