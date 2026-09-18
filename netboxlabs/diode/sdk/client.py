@@ -138,15 +138,6 @@ def _tls_server_name_from_peercert(
     return host
 
 
-def _insecure_tls_client_context() -> ssl.SSLContext:
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
-    if hasattr(ssl, "TLSVersion"):
-        context.minimum_version = ssl.TLSVersion.TLSv1_2
-    return context
-
-
 def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
     host, port_str = authority.rsplit(":", 1)
     port = int(port_str)
@@ -195,7 +186,10 @@ def _fetch_peer_leaf_certificate(
     raw_sock = _connect_socket(authority, proxy_url)
     tls_sock: ssl.SSLSocket | None = None
     try:
-        context = _insecure_tls_client_context()
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
         tls_sock = context.wrap_socket(raw_sock, server_hostname=host)
         der_cert = tls_sock.getpeercert(binary_form=True)
         if not der_cert:
