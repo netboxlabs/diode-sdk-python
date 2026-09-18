@@ -163,7 +163,8 @@ def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
             (parsed_proxy.hostname, proxy_port), timeout=10
         )
         if parsed_proxy.scheme == "https":
-            proxy_ctx = ssl.create_default_context()
+            proxy_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            proxy_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
             sock = proxy_ctx.wrap_socket(
                 sock, server_hostname=parsed_proxy.hostname
             )

@@ -1559,7 +1559,7 @@ def test_connect_socket_https_proxy_uses_tls_to_proxy():
             return_value=plain_sock,
         ),
         patch(
-            "netboxlabs.diode.sdk.client.ssl.create_default_context",
+            "netboxlabs.diode.sdk.client.ssl.SSLContext",
             return_value=proxy_ctx,
         ),
     ):
