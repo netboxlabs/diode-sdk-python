@@ -1525,6 +1525,51 @@ def test_connect_socket_wraps_os_error():
             _connect_socket("localhost:443", None)
 
 
+def test_authority_host_port_ipv6_literal():
+    """Bracketed IPv6 authorities parse to host and port."""
+    from netboxlabs.diode.sdk.client import _authority_host_port
+
+    assert _authority_host_port("[::1]:8443") == ("::1", 8443)
+
+
+def test_connect_socket_ipv6_literal():
+    """Skip-verify probe connects using unbracketed IPv6 hostnames."""
+    from netboxlabs.diode.sdk.client import _connect_socket
+
+    with patch(
+        "netboxlabs.diode.sdk.client.socket.create_connection"
+    ) as mock_connect:
+        mock_connect.return_value = mock.Mock()
+        _connect_socket("[::1]:443", None)
+    mock_connect.assert_called_once_with(("::1", 443), timeout=10)
+
+
+def test_connect_socket_https_proxy_uses_tls_to_proxy():
+    """HTTPS_PROXY CONNECT is sent over TLS to the proxy."""
+    from netboxlabs.diode.sdk.client import _connect_socket
+
+    plain_sock = mock.Mock()
+    tls_sock = mock.Mock()
+    tls_sock.recv.return_value = b"HTTP/1.1 200 Connection established\r\n\r\n"
+    proxy_ctx = mock.Mock()
+    proxy_ctx.wrap_socket.return_value = tls_sock
+    with (
+        patch(
+            "netboxlabs.diode.sdk.client.socket.create_connection",
+            return_value=plain_sock,
+        ),
+        patch(
+            "netboxlabs.diode.sdk.client.ssl.create_default_context",
+            return_value=proxy_ctx,
+        ),
+    ):
+        _connect_socket("localhost:443", "https://proxy.example:8443")
+    proxy_ctx.wrap_socket.assert_called_once_with(
+        plain_sock, server_hostname="proxy.example"
+    )
+    tls_sock.sendall.assert_called_once()
+
+
 def test_skip_verify_channel_credentials_probes_multiple_peers():
     """Pin every distinct leaf seen across probe attempts for load-balanced peers."""
     from netboxlabs.diode.sdk.client import _skip_verify_channel_credentials

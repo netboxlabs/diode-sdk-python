@@ -119,6 +119,14 @@ def parse_target(target: str) -> tuple[str, str, bool, bool]:
 _SKIP_VERIFY_PEER_PROBE_ATTEMPTS = 3
 
 
+def _authority_host_port(authority: str) -> tuple[str, int]:
+    if authority.startswith("[") and "]:" in authority:
+        host_part, port_str = authority.rsplit("]:", 1)
+        return host_part[1:], int(port_str)
+    host, port_str = authority.rsplit(":", 1)
+    return host, int(port_str)
+
+
 def _tls_server_name_from_peercert(
     peercert: dict[str, Any] | None, host: str
 ) -> str:
@@ -139,8 +147,7 @@ def _tls_server_name_from_peercert(
 
 
 def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
-    host, port_str = authority.rsplit(":", 1)
-    port = int(port_str)
+    host, port = _authority_host_port(authority)
 
     try:
         if not proxy_url:
@@ -155,6 +162,11 @@ def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
         sock = socket.create_connection(
             (parsed_proxy.hostname, proxy_port), timeout=10
         )
+        if parsed_proxy.scheme == "https":
+            proxy_ctx = ssl.create_default_context()
+            sock = proxy_ctx.wrap_socket(
+                sock, server_hostname=parsed_proxy.hostname
+            )
         connect_request = (
             f"CONNECT {host}:{port} HTTP/1.1\r\n"
             f"Host: {host}:{port}\r\n\r\n"
@@ -182,7 +194,7 @@ def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
 def _fetch_peer_leaf_certificate(
     authority: str, proxy_url: str | None = None
 ) -> tuple[bytes, str]:
-    host, _ = authority.rsplit(":", 1)
+    host, _ = _authority_host_port(authority)
     raw_sock = _connect_socket(authority, proxy_url)
     tls_sock: ssl.SSLSocket | None = None
     try:
@@ -216,7 +228,7 @@ def _fetch_peer_leaf_certificate(
 def _skip_verify_channel_credentials(
     authority: str, proxy_url: str | None
 ) -> tuple[grpc.ChannelCredentials, tuple[tuple[str, str], ...]]:
-    host, _ = authority.rsplit(":", 1)
+    host, _ = _authority_host_port(authority)
     root_certificates: list[bytes] = []
     server_names: list[str] = []
     errors: list[DiodeConfigError] = []
