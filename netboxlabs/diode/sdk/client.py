@@ -200,7 +200,7 @@ def _fetch_peer_leaf_certificate(
         server_name = _tls_server_name_from_peercert(tls_sock.getpeercert(), host)
     except DiodeConfigError:
         raise
-    except ssl.SSLError as exc:
+    except (ssl.SSLError, OSError) as exc:
         raise DiodeConfigError(
             f"TLS handshake failed for {authority}: {exc}"
         ) from exc
