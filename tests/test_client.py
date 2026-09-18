@@ -1544,32 +1544,6 @@ def test_connect_socket_ipv6_literal():
     mock_connect.assert_called_once_with(("::1", 443), timeout=10)
 
 
-def test_connect_socket_https_proxy_uses_tls_to_proxy():
-    """HTTPS_PROXY CONNECT is sent over TLS to the proxy."""
-    from netboxlabs.diode.sdk.client import _connect_socket
-
-    plain_sock = mock.Mock()
-    tls_sock = mock.Mock()
-    tls_sock.recv.return_value = b"HTTP/1.1 200 Connection established\r\n\r\n"
-    proxy_ctx = mock.Mock()
-    proxy_ctx.wrap_socket.return_value = tls_sock
-    with (
-        patch(
-            "netboxlabs.diode.sdk.client.socket.create_connection",
-            return_value=plain_sock,
-        ),
-        patch(
-            "netboxlabs.diode.sdk.client.ssl.SSLContext",
-            return_value=proxy_ctx,
-        ),
-    ):
-        _connect_socket("localhost:443", "https://proxy.example:8443")
-    proxy_ctx.wrap_socket.assert_called_once_with(
-        plain_sock, server_hostname="proxy.example"
-    )
-    tls_sock.sendall.assert_called_once()
-
-
 def test_skip_verify_channel_credentials_probes_multiple_peers():
     """Pin every distinct leaf seen across probe attempts for load-balanced peers."""
     from netboxlabs.diode.sdk.client import _skip_verify_channel_credentials

@@ -162,12 +162,6 @@ def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
         sock = socket.create_connection(
             (parsed_proxy.hostname, proxy_port), timeout=10
         )
-        if parsed_proxy.scheme == "https":
-            proxy_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-            proxy_ctx.minimum_version = ssl.TLSVersion.TLSv1_2
-            sock = proxy_ctx.wrap_socket(
-                sock, server_hostname=parsed_proxy.hostname
-            )
         connect_request = (
             f"CONNECT {host}:{port} HTTP/1.1\r\n"
             f"Host: {host}:{port}\r\n\r\n"
