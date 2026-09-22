@@ -127,23 +127,62 @@ def _authority_host_port(authority: str) -> tuple[str, int]:
     return host, int(port_str)
 
 
-def _tls_server_name_from_peercert(
-    peercert: dict[str, Any] | None, host: str
-) -> str:
+def _tls_server_name_from_peercert(peercert: dict[str, Any] | None) -> str:
     if not peercert:
-        return host
+        raise DiodeConfigError(
+            "Could not decode peer certificate for TLS name override"
+        )
 
     san = peercert.get("subjectAltName")
     if san:
         for name_type, value in san:
             if name_type == "DNS":
                 return value
-
-    for rdn in peercert.get("subject", ()):
-        for key, value in rdn:
-            if key == "commonName":
+        for name_type, value in san:
+            if name_type == "IP Address":
                 return value
-    return host
+    else:
+        for rdn in peercert.get("subject", ()):
+            for key, value in rdn:
+                if key == "commonName":
+                    return value
+
+    raise DiodeConfigError(
+        "Peer certificate has no DNS SAN, IP SAN, or CN for TLS name override"
+    )
+
+
+def _decoded_peercert_from_leaf(
+    authority: str, proxy_url: str | None, leaf_pem: bytes
+) -> dict[str, Any]:
+    host, _ = _authority_host_port(authority)
+    raw_sock = _connect_socket(authority, proxy_url)
+    tls_sock: ssl.SSLSocket | None = None
+    try:
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_REQUIRED
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context.load_verify_locations(cadata=leaf_pem.decode())
+        context.verify_flags |= ssl.VERIFY_X509_PARTIAL_CHAIN
+        tls_sock = context.wrap_socket(raw_sock, server_hostname=host)
+        peercert = tls_sock.getpeercert()
+        if not peercert:
+            raise DiodeConfigError(
+                f"Could not decode peer certificate from {authority}"
+            )
+        return peercert
+    except DiodeConfigError:
+        raise
+    except (ssl.SSLError, OSError) as exc:
+        raise DiodeConfigError(
+            f"TLS handshake failed decoding peer cert from {authority}: {exc}"
+        ) from exc
+    finally:
+        if tls_sock is not None:
+            tls_sock.close()
+        else:
+            raw_sock.close()
 
 
 def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
@@ -204,7 +243,6 @@ def _fetch_peer_leaf_certificate(
                 f"No peer certificate returned from {authority}"
             )
         pem = ssl.DER_cert_to_PEM_cert(der_cert).encode()
-        server_name = _tls_server_name_from_peercert(tls_sock.getpeercert(), host)
     except DiodeConfigError:
         raise
     except (ssl.SSLError, OSError) as exc:
@@ -217,13 +255,14 @@ def _fetch_peer_leaf_certificate(
         else:
             raw_sock.close()
 
+    peercert = _decoded_peercert_from_leaf(authority, proxy_url, pem)
+    server_name = _tls_server_name_from_peercert(peercert)
     return pem, server_name
 
 
 def _skip_verify_channel_credentials(
     authority: str, proxy_url: str | None
 ) -> tuple[grpc.ChannelCredentials, tuple[tuple[str, str], ...]]:
-    host, _ = _authority_host_port(authority)
     root_certificates: list[bytes] = []
     server_names: list[str] = []
     errors: list[DiodeConfigError] = []
@@ -241,11 +280,7 @@ def _skip_verify_channel_credentials(
     if not root_certificates:
         raise errors[-1]
 
-    override = (
-        server_names[0]
-        if len(set(server_names)) == 1
-        else host
-    )
+    override = server_names[0]
     credentials = grpc.ssl_channel_credentials(
         root_certificates=b"".join(root_certificates)
     )

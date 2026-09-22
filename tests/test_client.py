@@ -4,6 +4,8 @@
 
 import json
 import os
+import subprocess
+from concurrent import futures
 from pathlib import Path
 from unittest import mock
 from unittest.mock import MagicMock, patch
@@ -1494,22 +1496,47 @@ def test_tls_server_name_from_peercert_prefers_san():
     from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
     peercert = {"subjectAltName": [("DNS", "traefik.local")]}
-    assert _tls_server_name_from_peercert(peercert, "localhost") == "traefik.local"
+    assert _tls_server_name_from_peercert(peercert) == "traefik.local"
+
+
+def test_tls_server_name_from_peercert_prefers_ip_san_over_cn():
+    """IP SAN wins over commonName when both are present."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {
+        "subjectAltName": [("IP Address", "203.0.113.10")],
+        "subject": [[("commonName", "TRAEFIK")]],
+    }
+    assert _tls_server_name_from_peercert(peercert) == "203.0.113.10"
+
+
+def test_tls_server_name_from_peercert_ignores_cn_when_sans_present():
+    """CommonName is ignored when any SAN is present."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {
+        "subjectAltName": [("DNS", "diode.internal")],
+        "subject": [[("commonName", "ignored-cn")]],
+    }
+    assert _tls_server_name_from_peercert(peercert) == "diode.internal"
 
 
 def test_tls_server_name_from_peercert_falls_back_to_cn():
-    """Use commonName when the certificate has no DNS SAN."""
+    """Use commonName when the certificate has no SANs."""
     from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
     peercert = {"subject": [[("commonName", "TRAEFIK")]]}
-    assert _tls_server_name_from_peercert(peercert, "localhost") == "TRAEFIK"
+    assert _tls_server_name_from_peercert(peercert) == "TRAEFIK"
 
 
-def test_tls_server_name_from_peercert_falls_back_to_host():
-    """Use the connection host when the peer certificate has no usable names."""
+def test_tls_server_name_from_peercert_raises_without_names():
+    """Do not fall back to the dialed host when the cert has no usable names."""
     from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
-    assert _tls_server_name_from_peercert(None, "diode.example") == "diode.example"
+    with pytest.raises(DiodeConfigError):
+        _tls_server_name_from_peercert(None)
+    with pytest.raises(DiodeConfigError):
+        _tls_server_name_from_peercert({})
 
 
 def test_connect_socket_wraps_os_error():
@@ -1559,8 +1586,58 @@ def test_skip_verify_channel_credentials_probes_multiple_peers():
         credentials, opts = _skip_verify_channel_credentials("host:443", None)
 
     mock_credentials.assert_called_once_with(root_certificates=pem_a + pem_b)
-    assert opts == (("grpc.ssl_target_name_override", "host"),)
+    assert opts == (("grpc.ssl_target_name_override", "a.local"),)
     assert credentials is mock_credentials.return_value
+
+
+def test_open_grpc_channel_skip_verify_mismatched_san(tmp_path):
+    """Skip-verify pins the leaf and overrides SNI to the cert SAN, not the dial host."""
+    from netboxlabs.diode.sdk.client import _open_grpc_channel
+
+    key_file = tmp_path / "server.key"
+    cert_file = tmp_path / "server.pem"
+    subprocess.run(
+        [
+            "openssl",
+            "req",
+            "-x509",
+            "-newkey",
+            "rsa:2048",
+            "-keyout",
+            str(key_file),
+            "-out",
+            str(cert_file),
+            "-days",
+            "1",
+            "-nodes",
+            "-subj",
+            "/CN=ignored",
+            "-addext",
+            "subjectAltName=DNS:diode.internal",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    server_cert = cert_file.read_bytes()
+    private_key = key_file.read_bytes()
+    server_credentials = grpc.ssl_server_credentials([(private_key, server_cert)])
+
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+    port = server.add_secure_port("127.0.0.1:0", server_credentials)
+    server.start()
+    try:
+        channel = _open_grpc_channel(
+            f"127.0.0.1:{port}",
+            is_plaintext=False,
+            tls_verify=False,
+            certificates=None,
+            channel_options=(),
+            proxy_url=None,
+        )
+        grpc.channel_ready_future(channel).result(timeout=10)
+        channel.close()
+    finally:
+        server.stop(None)
 
 
 def test_client_with_skip_tls_verify_env_var(mock_diode_authentication):
