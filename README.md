@@ -268,7 +268,9 @@ export DIODE_CERT_FILE=/path/to/cert.pem
 
 #### Disabling TLS verification
 
-Use this only as a development or break-glass escape hatch. The connection remains TLS-encrypted; the SDK skips validating the server certificate (same idea as Go `InsecureSkipVerify`).
+Use this only as a development or break-glass escape hatch. The connection remains TLS-encrypted; the SDK pins the server leaf certificate seen at client construction and skips normal chain validation.
+
+When skip-verify is enabled, the leaf is pinned once at construction. If the server presents a new leaf (for example a Traefik default certificate regenerated on restart), connections fail until you create a new client. The probe reads names from that pinned leaf, but gRPC sends `grpc.ssl_target_name_override` as SNI—backends that choose certificates by SNI or that present different leaves than the probe can still fail. `DIODE_CERT_FILE` / `cert_file` is not used for the gRPC channel or OAuth token fetch when skip-verify is on (token requests use `verify=False`).
 
 ```bash
 export DIODE_SKIP_TLS_VERIFY=true
@@ -278,12 +280,13 @@ For self-signed or private-CA servers in production, mount the CA or server cert
 
 #### For legacy certificates (CN-only, no SANs)
 
+CN-only certificates still work with skip-verify when the leaf has no SANs (the SDK uses the commonName for `grpc.ssl_target_name_override`). Combining `cert_file` with skip-verify does not add a separate trust path—the pinned leaf from the live handshake is what secures the gRPC channel, and `cert_file` is ignored for gRPC and OAuth as noted above.
+
 ```python
 client = DiodeClient(
     target="grpcs://example.com",
     app_name="my-app",
     app_version="1.0.0",
-    cert_file="/path/to/cert.pem",
     skip_tls_verify=True,
 )
 ```

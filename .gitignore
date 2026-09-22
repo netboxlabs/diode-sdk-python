@@ -30,4 +30,3 @@ dist/
 *.egg-info
 poetry.lock
 
-.worktrees/
