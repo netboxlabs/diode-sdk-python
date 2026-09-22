@@ -2,6 +2,7 @@
 # Copyright 2026 NetBox Labs Inc
 """NetBox Labs, Diode - SDK - Client."""
 
+import base64
 import collections
 import json
 import logging
@@ -19,7 +20,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import certifi
 import grpc
@@ -107,7 +108,11 @@ def parse_target(target: str) -> tuple[str, str, bool, bool]:
 
     authority = parsed_target.netloc
 
-    if ":" not in authority:
+    has_explicit_port = (
+        authority.startswith("[") and "]:" in authority
+    ) or (":" in authority and not authority.startswith("["))
+
+    if not has_explicit_port:
         if parsed_target.scheme in ["grpc", "http"]:
             authority += ":80"
         elif parsed_target.scheme in ["grpcs", "https"]:
@@ -125,6 +130,12 @@ def _authority_host_port(authority: str) -> tuple[str, int]:
         return host_part[1:], int(port_str)
     host, port_str = authority.rsplit(":", 1)
     return host, int(port_str)
+
+
+def _connect_host_port(host: str, port: int) -> str:
+    if ":" in host:
+        return f"[{host}]:{port}"
+    return f"{host}:{port}"
 
 
 def _tls_server_name_from_peercert(peercert: dict[str, Any] | None) -> str:
@@ -195,16 +206,21 @@ def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
         parsed_proxy = urlparse(proxy_url)
         if not parsed_proxy.hostname:
             raise DiodeConfigError(f"Invalid proxy URL: {proxy_url}")
-        proxy_port = parsed_proxy.port or (
-            443 if parsed_proxy.scheme == "https" else 80
-        )
+        proxy_port = parsed_proxy.port or 80
         sock = socket.create_connection(
             (parsed_proxy.hostname, proxy_port), timeout=10
         )
-        connect_request = (
-            f"CONNECT {host}:{port} HTTP/1.1\r\n"
-            f"Host: {host}:{port}\r\n\r\n"
-        )
+        connect_target = _connect_host_port(host, port)
+        connect_lines = [
+            f"CONNECT {connect_target} HTTP/1.1",
+            f"Host: {connect_target}",
+        ]
+        if parsed_proxy.username is not None:
+            user = unquote(parsed_proxy.username)
+            password = unquote(parsed_proxy.password or "")
+            token = base64.b64encode(f"{user}:{password}".encode()).decode("ascii")
+            connect_lines.append(f"Proxy-Authorization: Basic {token}")
+        connect_request = "\r\n".join(connect_lines) + "\r\n\r\n"
         sock.sendall(connect_request.encode())
         response = b""
         while b"\r\n\r\n" not in response:
@@ -399,7 +415,7 @@ def _validate_proxy_url(url: str) -> bool:
         return False
     try:
         parsed = urlparse(url)
-        return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+        return parsed.scheme == "http" and bool(parsed.netloc)
     except Exception:
         return False
 
@@ -505,7 +521,7 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
         if not _validate_proxy_url(proxy_url):
             _LOGGER.warning(
                 f"Invalid proxy URL format: {proxy_url}. "
-                f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
+                f"Proxy URL must be http:// with valid host. Ignoring proxy."
             )
             return None
         _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")

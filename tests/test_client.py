@@ -148,6 +148,14 @@ def test_parse_target_adds_default_port_if_missing():
     assert authority == "localhost:443"
 
 
+def test_parse_target_adds_default_port_for_ipv6_literal():
+    """Bracketed IPv6 targets without a port get scheme defaults."""
+    authority, _, _, _ = parse_target("grpcs://[::1]")
+    assert authority == "[::1]:443"
+    authority, _, _, _ = parse_target("grpc://[::1]")
+    assert authority == "[::1]:80"
+
+
 def test_parse_target_parses_path_correctly():
     """Check that parse_target parses the path correctly."""
     _, path, _, _ = parse_target("grpc://localhost:8081/my/path")
@@ -1571,6 +1579,47 @@ def test_connect_socket_ipv6_literal():
     mock_connect.assert_called_once_with(("::1", 443), timeout=10)
 
 
+def test_connect_socket_proxy_ipv6_connect_target():
+    """HTTP CONNECT uses bracketed IPv6 authority lines."""
+    from netboxlabs.diode.sdk.client import _connect_socket
+
+    mock_sock = mock.Mock()
+    mock_sock.recv.side_effect = [b"HTTP/1.1 200 Connection established\r\n\r\n"]
+
+    with patch(
+        "netboxlabs.diode.sdk.client.socket.create_connection",
+        return_value=mock_sock,
+    ):
+        _connect_socket("[::1]:443", "http://proxy.example.com:8080")
+
+    sent = mock_sock.sendall.call_args[0][0].decode()
+    assert "CONNECT [::1]:443 HTTP/1.1" in sent
+    assert "Host: [::1]:443" in sent
+
+
+def test_connect_socket_proxy_basic_auth():
+    """Proxy userinfo becomes a Proxy-Authorization Basic header."""
+    import base64
+
+    from netboxlabs.diode.sdk.client import _connect_socket
+
+    mock_sock = mock.Mock()
+    mock_sock.recv.side_effect = [b"HTTP/1.1 200 Connection established\r\n\r\n"]
+    expected = base64.b64encode(b"user:secret").decode("ascii")
+
+    with patch(
+        "netboxlabs.diode.sdk.client.socket.create_connection",
+        return_value=mock_sock,
+    ):
+        _connect_socket(
+            "example.com:443",
+            "http://user:secret@proxy.example.com:8080",
+        )
+
+    sent = mock_sock.sendall.call_args[0][0].decode()
+    assert f"Proxy-Authorization: Basic {expected}" in sent
+
+
 def test_skip_verify_channel_credentials_probes_multiple_peers():
     """Pin every distinct leaf seen across probe attempts for load-balanced peers."""
     from netboxlabs.diode.sdk.client import _skip_verify_channel_credentials
@@ -2406,11 +2455,11 @@ def test_validate_proxy_url_valid_http():
     assert _validate_proxy_url("http://proxy.example.com:8080") is True
 
 
-def test_validate_proxy_url_valid_https():
-    """Test _validate_proxy_url with valid HTTPS URL."""
+def test_validate_proxy_url_rejects_https():
+    """HTTPS proxy URLs are ignored (grpc-core connects direct instead)."""
     from netboxlabs.diode.sdk.client import _validate_proxy_url
 
-    assert _validate_proxy_url("https://proxy.example.com:8443") is True
+    assert _validate_proxy_url("https://proxy.example.com:8443") is False
 
 
 def test_validate_proxy_url_invalid_scheme():
@@ -2466,7 +2515,7 @@ def test_get_grpc_proxy_url_invalid_proxy_url():
 
 
 def test_get_grpc_proxy_url_ftp_scheme_rejected():
-    """Test _get_grpc_proxy_url rejects non-HTTP/HTTPS schemes."""
+    """Test _get_grpc_proxy_url rejects non-HTTP schemes."""
     from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
 
     os.environ["HTTP_PROXY"] = "ftp://proxy.example.com:21"
