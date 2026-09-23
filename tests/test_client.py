@@ -4,6 +4,8 @@
 
 import json
 import os
+import subprocess
+from concurrent import futures
 from pathlib import Path
 from unittest import mock
 from unittest.mock import MagicMock, patch
@@ -37,6 +39,11 @@ from netboxlabs.diode.sdk.exceptions import (
 )
 from netboxlabs.diode.sdk.ingester import Entity
 from netboxlabs.diode.sdk.version import version_semver
+
+_MOCK_PEER_CERT = (
+    b"-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n",
+    "example.com",
+)
 
 
 def test_init(mock_diode_authentication):
@@ -122,46 +129,75 @@ def test_parse_target_handles_ftp_prefix():
 
 def test_parse_target_parses_authority_correctly():
     """Check that parse_target parses the authority correctly."""
-    authority, path, tls_verify = parse_target("grpc://localhost:8081")
+    authority, path, is_plaintext, tls_verify = parse_target("grpc://localhost:8081")
     assert authority == "localhost:8081"
     assert path == ""
+    assert is_plaintext is True
     assert tls_verify is False
 
 
 def test_parse_target_adds_default_port_if_missing():
     """Check that parse_target adds the default port if missing."""
-    authority, _, _ = parse_target("grpc://localhost")
+    authority, _, _, _ = parse_target("grpc://localhost")
     assert authority == "localhost:80"
-    authority, _, _ = parse_target("http://localhost")
+    authority, _, _, _ = parse_target("http://localhost")
     assert authority == "localhost:80"
-    authority, _, _ = parse_target("grpcs://localhost")
+    authority, _, _, _ = parse_target("grpcs://localhost")
     assert authority == "localhost:443"
-    authority, _, _ = parse_target("https://localhost")
+    authority, _, _, _ = parse_target("https://localhost")
     assert authority == "localhost:443"
+
+
+def test_parse_target_adds_default_port_for_ipv6_literal():
+    """Bracketed IPv6 targets without a port get scheme defaults."""
+    authority, _, _, _ = parse_target("grpcs://[::1]")
+    assert authority == "[::1]:443"
+    authority, _, _, _ = parse_target("grpc://[::1]")
+    assert authority == "[::1]:80"
 
 
 def test_parse_target_parses_path_correctly():
     """Check that parse_target parses the path correctly."""
-    _, path, _ = parse_target("grpc://localhost:8081/my/path")
+    _, path, _, _ = parse_target("grpc://localhost:8081/my/path")
     assert path == "/my/path"
 
 
 def test_parse_target_handles_no_path():
     """Check that parse_target handles no path."""
-    _, path, _ = parse_target("grpc://localhost:8081")
+    _, path, _, _ = parse_target("grpc://localhost:8081")
     assert path == ""
 
 
-def test_parse_target_parses_tls_verify_correctly():
-    """Check that parse_target parses tls_verify correctly."""
-    _, _, tls_verify = parse_target("grpc://localhost:8081")
+def test_parse_target_parses_plaintext_and_tls_verify():
+    """Check that parse_target splits scheme from verification."""
+    _, _, is_plaintext, tls_verify = parse_target("grpc://localhost:8081")
+    assert is_plaintext is True
     assert tls_verify is False
-    _, _, tls_verify = parse_target("http://localhost:8081")
+    _, _, is_plaintext, tls_verify = parse_target("http://localhost:8081")
+    assert is_plaintext is True
     assert tls_verify is False
-    _, _, tls_verify = parse_target("grpcs://localhost:8081")
+    _, _, is_plaintext, tls_verify = parse_target("grpcs://localhost:8081")
+    assert is_plaintext is False
     assert tls_verify is True
-    _, _, tls_verify = parse_target("https://localhost:8081")
+    _, _, is_plaintext, tls_verify = parse_target("https://localhost:8081")
+    assert is_plaintext is False
     assert tls_verify is True
+
+
+def test_parse_target_skip_tls_env_on_secure_scheme(monkeypatch):
+    """DIODE_SKIP_TLS_VERIFY disables verification but keeps TLS for grpcs://."""
+    monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", "true")
+    _, _, is_plaintext, tls_verify = parse_target("grpcs://localhost:8081")
+    assert is_plaintext is False
+    assert tls_verify is False
+
+
+def test_parse_target_skip_tls_env_ignored_on_plaintext(monkeypatch):
+    """Plaintext grpc:// stays plaintext when skip-verify is set."""
+    monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", "true")
+    _, _, is_plaintext, tls_verify = parse_target("grpc://localhost:8081")
+    assert is_plaintext is True
+    assert tls_verify is False
 
 
 def test_get_sentry_dsn_returns_env_var_when_no_input():
@@ -602,6 +638,7 @@ def test_diode_authentication_success(mock_diode_authentication):
     auth = _DiodeAuthentication(
         target="localhost:8081",
         path="/diode",
+        is_plaintext=True,
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
@@ -627,6 +664,7 @@ def test_diode_authentication_failure(mock_diode_authentication):
     auth = _DiodeAuthentication(
         target="localhost:8081",
         path="/diode",
+        is_plaintext=True,
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
@@ -664,8 +702,8 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
     auth = _DiodeAuthentication(
         target="localhost:8081",
         path=path,
+        is_plaintext=True,
         tls_verify=False,
-        secure=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
         scope="diode:ingest",
@@ -692,23 +730,18 @@ def test_diode_authentication_url_with_path(mock_diode_authentication, path):
 
 
 @pytest.mark.parametrize(
-    ("secure", "tls_verify", "skip_tls_env", "expected_scheme"),
+    ("is_plaintext", "tls_verify", "skip_tls_env", "expected_scheme"),
     [
-        # (scheme secure?, verify certs?, DIODE_SKIP_TLS_VERIFY, expected auth scheme)
-        (False, False, None, "http"),  # grpc://
-        # grpc:// + skip must stay HTTP (the #101 fix), not flip to HTTPS.
-        (False, False, "true", "http"),
-        (True, True, None, "https"),  # grpcs://
-        # grpcs:// + skip is preserved: HTTPS with cert verification disabled.
-        (True, False, "true", "https"),
-        # Independence guards: the scheme follows `secure`, never `tls_verify`.
-        # A scheme = self._tls_verify regression would fail both of these.
-        (True, False, None, "https"),
-        (False, True, None, "http"),
+        (True, False, None, "http"),
+        (True, False, "true", "http"),
+        (False, True, None, "https"),
+        (False, False, "true", "https"),
+        (False, False, None, "https"),
+        (True, True, None, "http"),
     ],
 )
 def test_auth_url_scheme_follows_target(
-    mock_diode_authentication, monkeypatch, secure, tls_verify, skip_tls_env, expected_scheme
+    mock_diode_authentication, monkeypatch, is_plaintext, tls_verify, skip_tls_env, expected_scheme
 ):
     """Auth endpoint scheme follows the target scheme, independent of tls_verify/env."""
     if skip_tls_env is None:
@@ -719,6 +752,7 @@ def test_auth_url_scheme_follows_target(
     auth = _DiodeAuthentication(
         target="host:8080",
         path="",
+        is_plaintext=is_plaintext,
         tls_verify=tls_verify,
         client_id="test_client_id",
         client_secret="test_client_secret",
@@ -727,36 +761,37 @@ def test_auth_url_scheme_follows_target(
         sdk_version="0.1.0",
         app_name="test-app",
         app_version="1.0.0",
-        secure=secure,
     )
 
     assert auth._get_full_auth_url() == f"{expected_scheme}://host:8080/auth/token"
 
 
 @pytest.mark.parametrize(
-    ("target", "expected_secure"),
+    ("target", "expected_is_plaintext"),
     [
-        ("grpc://localhost:8081", False),
-        ("http://localhost:8081", False),
-        ("grpcs://localhost:8081", True),
-        ("https://localhost:8081", True),
+        ("grpc://localhost:8081", True),
+        ("http://localhost:8081", True),
+        ("grpcs://localhost:8081", False),
+        ("https://localhost:8081", False),
     ],
 )
-def test_client_secure_flag_follows_target_scheme(
-    mock_diode_authentication, monkeypatch, target, expected_secure
+def test_client_is_plaintext_follows_target_scheme(
+    mock_diode_authentication, monkeypatch, target, expected_is_plaintext
 ):
-    """DiodeClient._secure reflects the target scheme even with DIODE_SKIP_TLS_VERIFY set."""
+    """DiodeClient._is_plaintext reflects the target scheme even with skip-verify set."""
     monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", "true")
-    client = DiodeClient(
-        target=target,
-        app_name="my-producer",
-        app_version="0.0.1",
-        client_id="abcde",
-        client_secret="123456",
-    )
-    assert client._secure is expected_secure
-    # tls_verify is driven off skip-verify and is False here regardless of scheme,
-    # which is exactly why it cannot be reused to pick the auth scheme.
+    with patch(
+        "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+        return_value=(b"-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n", "localhost"),
+    ):
+        client = DiodeClient(
+            target=target,
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id="abcde",
+            client_secret="123456",
+        )
+    assert client._is_plaintext is expected_is_plaintext
     assert client.tls_verify is False
 
 
@@ -765,6 +800,7 @@ def test_diode_authentication_request_exception(mock_diode_authentication):
     auth = _DiodeAuthentication(
         target="localhost:8081",
         path="/diode",
+        is_plaintext=True,
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
@@ -850,6 +886,7 @@ def test_diode_authentication_retries_retriable_status(mock_diode_authentication
     auth = _DiodeAuthentication(
         target="localhost:8081",
         path="/diode",
+        is_plaintext=True,
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
@@ -888,6 +925,7 @@ def test_diode_authentication_fails_fast_on_401(mock_diode_authentication):
     auth = _DiodeAuthentication(
         target="localhost:8081",
         path="/diode",
+        is_plaintext=True,
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
@@ -916,6 +954,7 @@ def test_diode_authentication_exhausts_retries(mock_diode_authentication):
     auth = _DiodeAuthentication(
         target="localhost:8081",
         path="/diode",
+        is_plaintext=True,
         tls_verify=False,
         client_id="test_client_id",
         client_secret="test_client_secret",
@@ -1114,6 +1153,34 @@ def test_otlp_client_grpcs_uses_secure_channel():
         base_channel.close.assert_called_once()
 
 
+def test_otlp_client_grpcs_skip_tls_uses_secure_channel():
+    """DiodeOTLPClient keeps TLS when skip-verify is set."""
+    with (
+        patch(
+            "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+            return_value=_MOCK_PEER_CERT,
+        ),
+        patch("netboxlabs.diode.sdk.client.grpc.secure_channel") as mock_secure_channel,
+        patch("netboxlabs.diode.sdk.client.grpc.insecure_channel") as mock_insecure_channel,
+        patch(
+            "netboxlabs.diode.sdk.client.grpc.intercept_channel",
+            return_value=mock.Mock(),
+        ),
+        patch("netboxlabs.diode.sdk.client.logs_service_pb2_grpc.LogsServiceStub"),
+    ):
+        mock_secure_channel.return_value = mock.Mock()
+        client = DiodeOTLPClient(
+            target="grpcs://collector.example:4317",
+            app_name="orb-producer",
+            app_version="1.2.3",
+            skip_tls_verify=True,
+        )
+        assert client.tls_verify is False
+        mock_secure_channel.assert_called_once()
+        mock_insecure_channel.assert_not_called()
+        client.close()
+
+
 def test_otlp_insecure_channel_options_exclude_diode_keepalive():
     """OTLP targets arbitrary collectors; only user-agent is forced (Codex/OBS-2873)."""
     with (
@@ -1148,6 +1215,7 @@ def test_diode_authentication_with_custom_certificates():
     auth = _DiodeAuthentication(
         target="example.com:443",
         path="/api/v1",
+        is_plaintext=False,
         tls_verify=True,
         client_id="test_client",
         client_secret="test_secret",
@@ -1418,97 +1486,274 @@ def test_client_without_cert_file_uses_default_certs(mock_diode_authentication):
         mock_secure_channel.assert_called_once()
 
 
-def test_should_verify_tls_with_different_schemes():
-    """Test _should_verify_tls with different URL schemes."""
-    from netboxlabs.diode.sdk.client import (
-        _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME,
-        _should_verify_tls,
+def test_skip_tls_verify_from_env(monkeypatch):
+    """Test DIODE_SKIP_TLS_VERIFY truthy values match Go SDK."""
+    from netboxlabs.diode.sdk.client import _skip_tls_verify_from_env
+
+    for skip_value in ["true", "True", "TRUE", "1", "yes", "on"]:
+        monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", skip_value)
+        assert _skip_tls_verify_from_env() is True
+
+    for verify_value in ["false", "0", "no", "off", "", "random"]:
+        monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", verify_value)
+        assert _skip_tls_verify_from_env() is False
+
+
+def test_tls_server_name_from_peercert_prefers_san():
+    """Extract DNS SAN for grpc.ssl_target_name_override when skipping verify."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {"subjectAltName": [("DNS", "traefik.local")]}
+    assert _tls_server_name_from_peercert(peercert) == "traefik.local"
+
+
+def test_tls_server_name_from_peercert_prefers_ip_san_over_cn():
+    """IP SAN wins over commonName when both are present."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {
+        "subjectAltName": [("IP Address", "203.0.113.10")],
+        "subject": [[("commonName", "TRAEFIK")]],
+    }
+    assert _tls_server_name_from_peercert(peercert) == "203.0.113.10"
+
+
+def test_tls_server_name_from_peercert_ignores_cn_when_sans_present():
+    """CommonName is ignored when any SAN is present."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {
+        "subjectAltName": [("DNS", "diode.internal")],
+        "subject": [[("commonName", "ignored-cn")]],
+    }
+    assert _tls_server_name_from_peercert(peercert) == "diode.internal"
+
+
+def test_tls_server_name_from_peercert_falls_back_to_cn():
+    """Use commonName when the certificate has no SANs."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {"subject": [[("commonName", "TRAEFIK")]]}
+    assert _tls_server_name_from_peercert(peercert) == "TRAEFIK"
+
+
+def test_tls_server_name_from_peercert_raises_without_names():
+    """Do not fall back to the dialed host when the cert has no usable names."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    with pytest.raises(DiodeConfigError):
+        _tls_server_name_from_peercert(None)
+    with pytest.raises(DiodeConfigError):
+        _tls_server_name_from_peercert({})
+
+
+def test_connect_socket_wraps_os_error():
+    """Low-level connection failures become DiodeConfigError."""
+    from netboxlabs.diode.sdk.client import _connect_socket
+    from netboxlabs.diode.sdk.exceptions import DiodeConfigError
+
+    with patch(
+        "netboxlabs.diode.sdk.client.socket.create_connection",
+        side_effect=ConnectionRefusedError("refused"),
+    ):
+        with pytest.raises(DiodeConfigError, match="Failed to connect"):
+            _connect_socket("localhost:443", None)
+
+
+def test_authority_host_port_ipv6_literal():
+    """Bracketed IPv6 authorities parse to host and port."""
+    from netboxlabs.diode.sdk.client import _authority_host_port
+
+    assert _authority_host_port("[::1]:8443") == ("::1", 8443)
+
+
+def test_connect_socket_ipv6_literal():
+    """Skip-verify probe connects using unbracketed IPv6 hostnames."""
+    from netboxlabs.diode.sdk.client import _connect_socket
+
+    with patch(
+        "netboxlabs.diode.sdk.client.socket.create_connection"
+    ) as mock_connect:
+        mock_connect.return_value = mock.Mock()
+        _connect_socket("[::1]:443", None)
+    mock_connect.assert_called_once_with(("::1", 443), timeout=10)
+
+
+def test_connect_socket_proxy_ipv6_connect_target():
+    """HTTP CONNECT uses bracketed IPv6 authority lines."""
+    from netboxlabs.diode.sdk.client import _connect_socket
+
+    mock_sock = mock.Mock()
+    mock_sock.recv.side_effect = [b"HTTP/1.1 200 Connection established\r\n\r\n"]
+
+    with patch(
+        "netboxlabs.diode.sdk.client.socket.create_connection",
+        return_value=mock_sock,
+    ):
+        _connect_socket("[::1]:443", "http://proxy.example.com:8080")
+
+    sent = mock_sock.sendall.call_args[0][0].decode()
+    assert "CONNECT [::1]:443 HTTP/1.1" in sent
+    assert "Host: [::1]:443" in sent
+
+
+def test_connect_socket_proxy_basic_auth():
+    """Proxy userinfo becomes a Proxy-Authorization Basic header."""
+    import base64
+
+    from netboxlabs.diode.sdk.client import _connect_socket
+
+    mock_sock = mock.Mock()
+    mock_sock.recv.side_effect = [b"HTTP/1.1 200 Connection established\r\n\r\n"]
+    expected = base64.b64encode(b"user:secret").decode("ascii")
+
+    with patch(
+        "netboxlabs.diode.sdk.client.socket.create_connection",
+        return_value=mock_sock,
+    ):
+        _connect_socket(
+            "example.com:443",
+            "http://user:secret@proxy.example.com:8080",
+        )
+
+    sent = mock_sock.sendall.call_args[0][0].decode()
+    assert f"Proxy-Authorization: Basic {expected}" in sent
+
+
+def test_skip_verify_channel_credentials_probes_multiple_peers():
+    """Pin every distinct leaf seen across probe attempts for load-balanced peers."""
+    from netboxlabs.diode.sdk.client import _skip_verify_channel_credentials
+
+    pem_a = b"-----BEGIN CERTIFICATE-----\nA\n-----END CERTIFICATE-----\n"
+    pem_b = b"-----BEGIN CERTIFICATE-----\nB\n-----END CERTIFICATE-----\n"
+    with patch(
+        "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+        side_effect=[(pem_a, "a.local"), (pem_b, "b.local"), (pem_a, "a.local")],
+    ), patch(
+        "netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials"
+    ) as mock_credentials:
+        credentials, opts = _skip_verify_channel_credentials("host:443", None)
+
+    mock_credentials.assert_called_once_with(root_certificates=pem_a + pem_b)
+    assert opts == (("grpc.ssl_target_name_override", "a.local"),)
+    assert credentials is mock_credentials.return_value
+
+
+def test_open_grpc_channel_skip_verify_mismatched_san(tmp_path):
+    """Skip-verify pins the leaf and overrides SNI to the cert SAN, not the dial host."""
+    from netboxlabs.diode.sdk.client import _open_grpc_channel
+
+    key_file = tmp_path / "server.key"
+    cert_file = tmp_path / "server.pem"
+    subprocess.run(
+        [
+            "openssl",
+            "req",
+            "-x509",
+            "-newkey",
+            "rsa:2048",
+            "-keyout",
+            str(key_file),
+            "-out",
+            str(cert_file),
+            "-days",
+            "1",
+            "-nodes",
+            "-subj",
+            "/CN=ignored",
+            "-addext",
+            "subjectAltName=DNS:diode.internal",
+        ],
+        check=True,
+        capture_output=True,
     )
+    server_cert = cert_file.read_bytes()
+    private_key = key_file.read_bytes()
+    server_credentials = grpc.ssl_server_credentials([(private_key, server_cert)])
 
-    # Clear environment variable to avoid interference
-    if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
-        del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
-
-    assert _should_verify_tls("grpc") is False  # insecure scheme
-    assert _should_verify_tls("http") is False  # insecure scheme
-    assert _should_verify_tls("grpcs") is True  # secure scheme
-    assert _should_verify_tls("https") is True  # secure scheme
-
-
-def test_should_verify_tls_with_skip_env_var():
-    """Test _should_verify_tls with DIODE_SKIP_TLS_VERIFY environment variable."""
-    from netboxlabs.diode.sdk.client import (
-        _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME,
-        _should_verify_tls,
-    )
-
-    original_env = os.environ.get(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME)
-
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+    port = server.add_secure_port("127.0.0.1:0", server_credentials)
+    server.start()
     try:
-        # Test truthy values that should skip TLS verification
-        for skip_value in ["true", "True", "TRUE", "1", "yes", "on"]:
-            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = skip_value
-            assert (
-                _should_verify_tls("grpcs") is False
-            )  # Should skip even for secure schemes
-
-        # Test falsy values that should NOT skip TLS verification
-        for verify_value in ["false", "0", "no", "off", "", "random"]:
-            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = verify_value
-            assert (
-                _should_verify_tls("grpcs") is True
-            )  # Should verify for secure schemes
-
+        channel = _open_grpc_channel(
+            f"127.0.0.1:{port}",
+            is_plaintext=False,
+            tls_verify=False,
+            certificates=None,
+            channel_options=(),
+            proxy_url=None,
+        )
+        grpc.channel_ready_future(channel).result(timeout=10)
+        channel.close()
     finally:
-        # Clean up environment variable
-        if original_env is not None:
-            os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = original_env
-        else:
-            if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
-                del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
+        server.stop(None)
 
 
 def test_client_with_skip_tls_verify_env_var(mock_diode_authentication):
-    """Test DiodeClient with DIODE_SKIP_TLS_VERIFY environment variable."""
+    """grpcs:// with DIODE_SKIP_TLS_VERIFY keeps a secure channel."""
     from netboxlabs.diode.sdk.client import _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME
 
     original_env = os.environ.get(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME)
 
     try:
-        # Set environment variable to skip TLS verification
         os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = "true"
 
-        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+        with (
+            patch(
+                "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+                return_value=_MOCK_PEER_CERT,
+            ),
+            mock.patch("grpc.insecure_channel") as mock_insecure_channel,
+            mock.patch("grpc.secure_channel") as mock_secure_channel,
+        ):
             client = DiodeClient(
-                target="grpcs://localhost:8081",  # Note: grpcs:// but TLS should be skipped
+                target="grpcs://localhost:8081",
                 app_name="my-producer",
                 app_version="0.0.1",
                 client_id="abcde",
                 client_secret="123456",
             )
 
-            # Should skip TLS verification due to environment variable
             assert client.tls_verify is False
-
-            # Should use insecure channel even with grpcs://
-            mock_insecure_channel.assert_called_once()
+            mock_insecure_channel.assert_not_called()
+            mock_secure_channel.assert_called_once()
 
     finally:
-        # Clean up environment variable
         if original_env is not None:
             os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = original_env
         else:
-            if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
-                del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
+            os.environ.pop(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME, None)
+
+
+def test_client_with_skip_tls_verify_constructor(mock_diode_authentication):
+    """skip_tls_verify=True on DiodeClient uses secure_channel for grpcs://."""
+    with (
+        patch(
+            "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+            return_value=_MOCK_PEER_CERT,
+        ),
+        mock.patch("grpc.secure_channel") as mock_secure_channel,
+        mock.patch("grpc.insecure_channel") as mock_insecure_channel,
+    ):
+        client = DiodeClient(
+            target="grpcs://localhost:8081",
+            app_name="my-producer",
+            app_version="0.0.1",
+            client_id="abcde",
+            client_secret="123456",
+            skip_tls_verify=True,
+        )
+        assert client.tls_verify is False
+        mock_secure_channel.assert_called_once()
+        mock_insecure_channel.assert_not_called()
 
 
 def test_client_cert_file_with_skip_tls_verify_env_var(
     mock_diode_authentication, tmp_path
 ):
-    """Test cert_file parameter with DIODE_SKIP_TLS_VERIFY environment variable."""
+    """cert_file with skip-verify still opens a secure channel."""
     from netboxlabs.diode.sdk.client import _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME
 
-    # Create a dummy certificate file
     cert_content = (
         b"-----BEGIN CERTIFICATE-----\nTEST CERT\n-----END CERTIFICATE-----\n"
     )
@@ -1518,10 +1763,16 @@ def test_client_cert_file_with_skip_tls_verify_env_var(
     original_skip_env = os.environ.get(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME)
 
     try:
-        # Set environment variable to skip TLS verification
         os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = "true"
 
-        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+        with (
+            patch(
+                "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+                return_value=_MOCK_PEER_CERT,
+            ),
+            mock.patch("grpc.insecure_channel") as mock_insecure_channel,
+            mock.patch("grpc.secure_channel") as mock_secure_channel,
+        ):
             client = DiodeClient(
                 target="grpcs://localhost:8081",
                 app_name="my-producer",
@@ -1531,22 +1782,36 @@ def test_client_cert_file_with_skip_tls_verify_env_var(
                 cert_file=str(cert_file),
             )
 
-            # Should respect DIODE_SKIP_TLS_VERIFY=true even with cert_file
             assert client.tls_verify is False
-
-            # Should use insecure channel due to environment variable
-            mock_insecure_channel.assert_called_once()
-
-            # Certificate should still be loaded for potential use
+            mock_insecure_channel.assert_not_called()
+            mock_secure_channel.assert_called_once()
             assert client._certificates == cert_content
 
     finally:
-        # Clean up environment variable
         if original_skip_env is not None:
             os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME] = original_skip_env
         else:
-            if _DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME in os.environ:
-                del os.environ[_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME]
+            os.environ.pop(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME, None)
+
+
+def test_auth_session_verify_false_when_skip_tls(mock_diode_authentication):
+    """Token fetch uses HTTPS with verify=False when tls_verify is disabled."""
+    auth = _DiodeAuthentication(
+        target="localhost:443",
+        path="",
+        is_plaintext=False,
+        tls_verify=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        scope="diode:ingest",
+        sdk_name="diode-sdk-python",
+        sdk_version="0.1.0",
+        app_name="test-app",
+        app_version="1.0.0",
+    )
+    session = mock.Mock()
+    auth._configure_auth_session(session)
+    assert session.verify is False
 
 
 def test_certificate_loading_efficiency(tmp_path):
@@ -2072,14 +2337,21 @@ def test_diode_client_configures_proxy_option(mock_diode_authentication):
         del os.environ["HTTP_PROXY"]
 
 
-def test_diode_client_uses_insecure_channel_with_proxy_when_skip_tls(
+def test_diode_client_uses_secure_channel_with_proxy_when_skip_tls(
     mock_diode_authentication,
 ):
-    """Test DiodeClient uses insecure channel with proxy when SKIP_TLS_VERIFY is set."""
+    """grpcs:// with proxy and skip-verify stays on a secure channel."""
     os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
     os.environ["DIODE_SKIP_TLS_VERIFY"] = "true"
     try:
-        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
+        with (
+            patch(
+                "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+                return_value=_MOCK_PEER_CERT,
+            ),
+            mock.patch("grpc.insecure_channel") as mock_insecure_channel,
+            mock.patch("grpc.secure_channel") as mock_secure_channel,
+        ):
             DiodeClient(
                 target="grpcs://example.com:443",
                 app_name="my-producer",
@@ -2088,12 +2360,11 @@ def test_diode_client_uses_insecure_channel_with_proxy_when_skip_tls(
                 client_secret="123456",
             )
 
-            # Should use insecure channel when SKIP_TLS_VERIFY is set, even with proxy
-            mock_insecure_channel.assert_called_once()
-            _, kwargs = mock_insecure_channel.call_args
+            mock_insecure_channel.assert_not_called()
+            mock_secure_channel.assert_called_once()
+            _, kwargs = mock_secure_channel.call_args
             options = kwargs["options"]
 
-            # Verify proxy option is set
             proxy_option = next(
                 (opt for opt in options if opt[0] == "grpc.http_proxy"), None
             )
@@ -2184,11 +2455,11 @@ def test_validate_proxy_url_valid_http():
     assert _validate_proxy_url("http://proxy.example.com:8080") is True
 
 
-def test_validate_proxy_url_valid_https():
-    """Test _validate_proxy_url with valid HTTPS URL."""
+def test_validate_proxy_url_rejects_https():
+    """HTTPS proxy URLs are ignored (grpc-core connects direct instead)."""
     from netboxlabs.diode.sdk.client import _validate_proxy_url
 
-    assert _validate_proxy_url("https://proxy.example.com:8443") is True
+    assert _validate_proxy_url("https://proxy.example.com:8443") is False
 
 
 def test_validate_proxy_url_invalid_scheme():
@@ -2244,7 +2515,7 @@ def test_get_grpc_proxy_url_invalid_proxy_url():
 
 
 def test_get_grpc_proxy_url_ftp_scheme_rejected():
-    """Test _get_grpc_proxy_url rejects non-HTTP/HTTPS schemes."""
+    """Test _get_grpc_proxy_url rejects non-HTTP schemes."""
     from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
 
     os.environ["HTTP_PROXY"] = "ftp://proxy.example.com:21"
