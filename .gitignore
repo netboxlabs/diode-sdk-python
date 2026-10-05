@@ -19,6 +19,9 @@ venv.bak/
 # Local git worktrees
 .worktrees/
 
+# context-mode session output (local tooling)
+.github/context-mode/
+
 # Python
 __pycache__/
 *.py[cod]
