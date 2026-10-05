@@ -1707,23 +1707,43 @@ def test_connect_socket_proxy_basic_auth():
     assert f"Proxy-Authorization: Basic {expected}" in sent
 
 
-def test_skip_verify_channel_credentials_probes_multiple_peers():
-    """Pin every distinct leaf seen across probe attempts for load-balanced peers."""
+def test_skip_verify_channel_credentials_pins_first_successful_probe():
+    """Only the first successful probe leaf is pinned (no union across peers)."""
     from netboxlabs.diode.sdk.client import _skip_verify_channel_credentials
 
     pem_a = b"-----BEGIN CERTIFICATE-----\nA\n-----END CERTIFICATE-----\n"
     pem_b = b"-----BEGIN CERTIFICATE-----\nB\n-----END CERTIFICATE-----\n"
     with patch(
         "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
-        side_effect=[(pem_a, "a.local"), (pem_b, "b.local"), (pem_a, "a.local")],
+        side_effect=[(pem_a, "a.local"), (pem_b, "b.local")],
     ), patch(
         "netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials"
     ) as mock_credentials:
         credentials, opts = _skip_verify_channel_credentials("host:443", None)
 
-    mock_credentials.assert_called_once_with(root_certificates=pem_a + pem_b)
+    mock_credentials.assert_called_once_with(root_certificates=pem_a)
     assert opts == (("grpc.ssl_target_name_override", "a.local"),)
     assert credentials is mock_credentials.return_value
+
+
+def test_skip_verify_channel_credentials_retries_failed_probes():
+    """Transient probe failures retry until one handshake succeeds."""
+    from netboxlabs.diode.sdk.client import _skip_verify_channel_credentials
+    from netboxlabs.diode.sdk.exceptions import DiodeConfigError
+
+    pem = b"-----BEGIN CERTIFICATE-----\nA\n-----END CERTIFICATE-----\n"
+    with patch(
+        "netboxlabs.diode.sdk.client._fetch_peer_leaf_certificate",
+        side_effect=[
+            DiodeConfigError("timeout"),
+            (pem, "a.local"),
+        ],
+    ), patch(
+        "netboxlabs.diode.sdk.client.grpc.ssl_channel_credentials"
+    ) as mock_credentials:
+        _skip_verify_channel_credentials("host:443", None)
+
+    mock_credentials.assert_called_once_with(root_certificates=pem)
 
 
 def test_open_grpc_channel_skip_verify_mismatched_san(tmp_path):
@@ -2566,6 +2586,13 @@ def test_proxy_url_for_grpc_preserves_implicit_https_port():
     from netboxlabs.diode.sdk.client import _proxy_url_for_grpc
 
     assert _proxy_url_for_grpc("https://proxy.example.com") == "http://proxy.example.com:443"
+
+
+def test_proxy_url_for_grpc_brackets_ipv6_implicit_port():
+    """IPv6 literal proxy hosts keep bracket form after scheme downgrade."""
+    from netboxlabs.diode.sdk.client import _proxy_url_for_grpc
+
+    assert _proxy_url_for_grpc("https://[::1]") == "http://[::1]:443"
 
 
 def test_validate_proxy_url_invalid_scheme():

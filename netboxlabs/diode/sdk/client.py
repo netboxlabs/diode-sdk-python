@@ -308,8 +308,6 @@ def _fetch_peer_leaf_certificate(
 def _skip_verify_channel_credentials(
     authority: str, proxy_url: str | None
 ) -> tuple[grpc.ChannelCredentials, tuple[tuple[str, str], ...]]:
-    root_certificates: list[bytes] = []
-    server_names: list[str] = []
     errors: list[DiodeConfigError] = []
 
     for _ in range(_SKIP_VERIFY_PEER_PROBE_ATTEMPTS):
@@ -318,18 +316,10 @@ def _skip_verify_channel_credentials(
         except DiodeConfigError as exc:
             errors.append(exc)
             continue
-        if pem not in root_certificates:
-            root_certificates.append(pem)
-            server_names.append(server_name)
+        credentials = grpc.ssl_channel_credentials(root_certificates=pem)
+        return credentials, (("grpc.ssl_target_name_override", server_name),)
 
-    if not root_certificates:
-        raise errors[-1]
-
-    override = server_names[0]
-    credentials = grpc.ssl_channel_credentials(
-        root_certificates=b"".join(root_certificates)
-    )
-    return credentials, (("grpc.ssl_target_name_override", override),)
+    raise errors[-1]
 
 
 def _open_grpc_channel(
@@ -459,15 +449,16 @@ def _proxy_url_for_grpc(url: str) -> str:
     hostname = parsed.hostname
     if not hostname:
         return urlunparse(parsed._replace(scheme="http"))
+    host_authority = _connect_host_port(hostname, 443)
     if parsed.username is not None or parsed.password is not None:
         userinfo = ""
         if parsed.username is not None:
             userinfo = unquote(parsed.username)
             if parsed.password is not None:
                 userinfo = f"{userinfo}:{unquote(parsed.password)}"
-        netloc = f"{userinfo}@{hostname}:443"
+        netloc = f"{userinfo}@{host_authority}"
     else:
-        netloc = f"{hostname}:443"
+        netloc = host_authority
     return urlunparse(parsed._replace(scheme="http", netloc=netloc))
 
 
