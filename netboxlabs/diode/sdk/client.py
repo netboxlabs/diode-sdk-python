@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urlparse
+from urllib.parse import unquote, urlparse, urlunparse
 
 import certifi
 import grpc
@@ -138,7 +138,22 @@ def _connect_host_port(host: str, port: int) -> str:
     return f"{host}:{port}"
 
 
-def _tls_server_name_from_peercert(peercert: dict[str, Any] | None) -> str:
+def _dns_name_matches_dial_host(pattern: str, dial_host: str) -> bool:
+    if pattern.startswith("*."):
+        suffix = pattern[2:]
+        return dial_host.endswith(f".{suffix}")
+    return pattern == dial_host
+
+
+def _dial_host_matches_cert_sans(dial_host: str, dns_values: list[str], ip_values: list[str]) -> bool:
+    if dial_host in dns_values or dial_host in ip_values:
+        return True
+    return any(_dns_name_matches_dial_host(dns, dial_host) for dns in dns_values)
+
+
+def _tls_server_name_from_peercert(
+    peercert: dict[str, Any] | None, dial_host: str
+) -> str:
     if not peercert:
         raise DiodeConfigError(
             "Could not decode peer certificate for TLS name override"
@@ -146,12 +161,14 @@ def _tls_server_name_from_peercert(peercert: dict[str, Any] | None) -> str:
 
     san = peercert.get("subjectAltName")
     if san:
-        for name_type, value in san:
-            if name_type == "DNS":
-                return value
-        for name_type, value in san:
-            if name_type == "IP Address":
-                return value
+        dns_values = [value for name_type, value in san if name_type == "DNS"]
+        ip_values = [value for name_type, value in san if name_type == "IP Address"]
+        if _dial_host_matches_cert_sans(dial_host, dns_values, ip_values):
+            return dial_host
+        if dns_values:
+            return dns_values[0]
+        if ip_values:
+            return ip_values[0]
     else:
         for rdn in peercert.get("subject", ()):
             for key, value in rdn:
@@ -163,37 +180,17 @@ def _tls_server_name_from_peercert(peercert: dict[str, Any] | None) -> str:
     )
 
 
-def _decoded_peercert_from_leaf(
-    authority: str, proxy_url: str | None, leaf_pem: bytes
-) -> dict[str, Any]:
-    host, _ = _authority_host_port(authority)
-    raw_sock = _connect_socket(authority, proxy_url)
-    tls_sock: ssl.SSLSocket | None = None
+def _peercert_dict_from_der(der_cert: bytes) -> dict[str, Any]:
+    pem = ssl.DER_cert_to_PEM_cert(der_cert).encode()
+    with tempfile.NamedTemporaryFile(mode="wb", delete=False, suffix=".pem") as cert_file:
+        cert_file.write(pem)
+        cert_path = cert_file.name
     try:
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_REQUIRED
-        context.minimum_version = ssl.TLSVersion.TLSv1_2
-        context.load_verify_locations(cadata=leaf_pem.decode())
-        context.verify_flags |= ssl.VERIFY_X509_PARTIAL_CHAIN
-        tls_sock = context.wrap_socket(raw_sock, server_hostname=host)
-        peercert = tls_sock.getpeercert()
-        if not peercert:
-            raise DiodeConfigError(
-                f"Could not decode peer certificate from {authority}"
-            )
-        return peercert
-    except DiodeConfigError:
-        raise
-    except (ssl.SSLError, OSError) as exc:
-        raise DiodeConfigError(
-            f"TLS handshake failed decoding peer cert from {authority}: {exc}"
-        ) from exc
+        return ssl._ssl._test_decode_cert(cert_path)
+    except ssl.SSLError as exc:
+        raise DiodeConfigError("Could not decode peer certificate") from exc
     finally:
-        if tls_sock is not None:
-            tls_sock.close()
-        else:
-            raw_sock.close()
+        os.unlink(cert_path)
 
 
 def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
@@ -271,8 +268,8 @@ def _fetch_peer_leaf_certificate(
         else:
             raw_sock.close()
 
-    peercert = _decoded_peercert_from_leaf(authority, proxy_url, pem)
-    server_name = _tls_server_name_from_peercert(peercert)
+    peercert = _peercert_dict_from_der(der_cert)
+    server_name = _tls_server_name_from_peercert(peercert, host)
     return pem, server_name
 
 
@@ -325,7 +322,8 @@ def _open_grpc_channel(
             else grpc.ssl_channel_credentials()
         )
         if proxy_url and proxy_ssl_target_name_override:
-            opts.append(("grpc.ssl_target_name_override", target.split(":")[0]))
+            dial_host, _ = _authority_host_port(target)
+            opts.append(("grpc.ssl_target_name_override", dial_host))
         _LOGGER.debug(
             f"Setting up gRPC secure channel with "
             f"{'custom certificates' if certificates else 'system certificates'}"
@@ -415,9 +413,16 @@ def _validate_proxy_url(url: str) -> bool:
         return False
     try:
         parsed = urlparse(url)
-        return parsed.scheme == "http" and bool(parsed.netloc)
+        return parsed.scheme in ("http", "https") and bool(parsed.netloc)
     except Exception:
         return False
+
+
+def _proxy_url_for_grpc(url: str) -> str:
+    parsed = urlparse(url)
+    if parsed.scheme == "https":
+        return urlunparse(parsed._replace(scheme="http"))
+    return url
 
 
 def _matches_no_proxy_entry(host: str, entry: str) -> bool:
@@ -521,9 +526,10 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
         if not _validate_proxy_url(proxy_url):
             _LOGGER.warning(
                 f"Invalid proxy URL format: {proxy_url}. "
-                f"Proxy URL must be http:// with valid host. Ignoring proxy."
+                f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
             )
             return None
+        proxy_url = _proxy_url_for_grpc(proxy_url)
         _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")
 
     return proxy_url
@@ -611,6 +617,7 @@ class DiodeClient(DiodeClientInterface):
             certificates=self._certificates,
             channel_options=tuple(channel_opts),
             proxy_url=proxy_url,
+            proxy_ssl_target_name_override=bool(proxy_url),
         )
 
         channel = self._channel
@@ -894,7 +901,7 @@ class DiodeOTLPClient(DiodeClientInterface):
             certificates=self._certificates,
             channel_options=tuple(channel_opts),
             proxy_url=proxy_url,
-            proxy_ssl_target_name_override=True,
+            proxy_ssl_target_name_override=bool(proxy_url),
         )
 
         self._base_channel = base_channel

@@ -1504,7 +1504,7 @@ def test_tls_server_name_from_peercert_prefers_san():
     from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
     peercert = {"subjectAltName": [("DNS", "traefik.local")]}
-    assert _tls_server_name_from_peercert(peercert) == "traefik.local"
+    assert _tls_server_name_from_peercert(peercert, "10.0.0.20") == "traefik.local"
 
 
 def test_tls_server_name_from_peercert_prefers_ip_san_over_cn():
@@ -1515,7 +1515,7 @@ def test_tls_server_name_from_peercert_prefers_ip_san_over_cn():
         "subjectAltName": [("IP Address", "203.0.113.10")],
         "subject": [[("commonName", "TRAEFIK")]],
     }
-    assert _tls_server_name_from_peercert(peercert) == "203.0.113.10"
+    assert _tls_server_name_from_peercert(peercert, "10.0.0.1") == "203.0.113.10"
 
 
 def test_tls_server_name_from_peercert_ignores_cn_when_sans_present():
@@ -1526,7 +1526,7 @@ def test_tls_server_name_from_peercert_ignores_cn_when_sans_present():
         "subjectAltName": [("DNS", "diode.internal")],
         "subject": [[("commonName", "ignored-cn")]],
     }
-    assert _tls_server_name_from_peercert(peercert) == "diode.internal"
+    assert _tls_server_name_from_peercert(peercert, "127.0.0.1") == "diode.internal"
 
 
 def test_tls_server_name_from_peercert_falls_back_to_cn():
@@ -1534,7 +1534,7 @@ def test_tls_server_name_from_peercert_falls_back_to_cn():
     from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
     peercert = {"subject": [[("commonName", "TRAEFIK")]]}
-    assert _tls_server_name_from_peercert(peercert) == "TRAEFIK"
+    assert _tls_server_name_from_peercert(peercert, "127.0.0.1") == "TRAEFIK"
 
 
 def test_tls_server_name_from_peercert_raises_without_names():
@@ -1542,9 +1542,96 @@ def test_tls_server_name_from_peercert_raises_without_names():
     from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
 
     with pytest.raises(DiodeConfigError):
-        _tls_server_name_from_peercert(None)
+        _tls_server_name_from_peercert(None, "host")
     with pytest.raises(DiodeConfigError):
-        _tls_server_name_from_peercert({})
+        _tls_server_name_from_peercert({}, "host")
+
+
+def test_peercert_dict_from_der_reads_san_without_handshake(tmp_path):
+    """Skip-verify name override decodes the captured DER without a verifying handshake."""
+    from netboxlabs.diode.sdk.client import (
+        _peercert_dict_from_der,
+        _tls_server_name_from_peercert,
+    )
+
+    key_file = tmp_path / "server.key"
+    cert_file = tmp_path / "server.pem"
+    subprocess.run(
+        [
+            "openssl",
+            "req",
+            "-x509",
+            "-newkey",
+            "rsa:2048",
+            "-keyout",
+            str(key_file),
+            "-out",
+            str(cert_file),
+            "-days",
+            "1",
+            "-nodes",
+            "-subj",
+            "/CN=ignored",
+            "-addext",
+            "subjectAltName=DNS:offline.local",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    der = subprocess.check_output(
+        ["openssl", "x509", "-in", str(cert_file), "-outform", "DER"]
+    )
+    peercert = _peercert_dict_from_der(der)
+    assert _tls_server_name_from_peercert(peercert, "127.0.0.1") == "offline.local"
+
+
+def test_tls_server_name_from_peercert_uses_dial_host_for_wildcard_san():
+    """Wildcard SANs keep the tenant hostname for SNI and routing."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {
+        "subjectAltName": [
+            ("DNS", "cloud.example.com"),
+            ("DNS", "*.cloud.example.com"),
+        ]
+    }
+    dial = "tenant.cloud.example.com"
+    assert _tls_server_name_from_peercert(peercert, dial) == dial
+
+
+def test_tls_server_name_from_peercert_wildcard_san_does_not_match_apex():
+    """Wildcard SANs do not match the apex hostname for TLS name override."""
+    from netboxlabs.diode.sdk.client import _tls_server_name_from_peercert
+
+    peercert = {
+        "subjectAltName": [
+            ("DNS", "cloud.example.com"),
+            ("DNS", "*.cloud.example.com"),
+        ]
+    }
+    assert (
+        _tls_server_name_from_peercert(peercert, "cloud.example.com")
+        == "cloud.example.com"
+    )
+
+
+def test_open_grpc_channel_proxy_override_uses_ipv6_host():
+    """Proxy TLS override uses parsed host for bracketed IPv6 authorities."""
+    from netboxlabs.diode.sdk.client import _open_grpc_channel
+
+    target = "[2001:db8::1]:443"
+    with patch("netboxlabs.diode.sdk.client.grpc.secure_channel") as secure_channel:
+        _open_grpc_channel(
+            target,
+            is_plaintext=False,
+            tls_verify=True,
+            certificates=None,
+            channel_options=(),
+            proxy_url="http://proxy.local:8080",
+            proxy_ssl_target_name_override=True,
+        )
+    opts = dict(secure_channel.call_args.kwargs["options"])
+    assert opts["grpc.ssl_target_name_override"] == "2001:db8::1"
 
 
 def test_connect_socket_wraps_os_error():
@@ -2455,11 +2542,23 @@ def test_validate_proxy_url_valid_http():
     assert _validate_proxy_url("http://proxy.example.com:8080") is True
 
 
-def test_validate_proxy_url_rejects_https():
-    """HTTPS proxy URLs are ignored (grpc-core connects direct instead)."""
+def test_validate_proxy_url_accepts_https_scheme():
+    """HTTPS_PROXY often uses https://; validation accepts it."""
     from netboxlabs.diode.sdk.client import _validate_proxy_url
 
-    assert _validate_proxy_url("https://proxy.example.com:8443") is False
+    assert _validate_proxy_url("https://proxy.example.com:8443") is True
+
+
+def test_get_grpc_proxy_url_normalizes_https_scheme():
+    """grpc.http_proxy receives http:// even when HTTPS_PROXY uses https://."""
+    from netboxlabs.diode.sdk.client import _get_grpc_proxy_url
+
+    os.environ["HTTPS_PROXY"] = "https://proxy.example.com:8443"
+    try:
+        proxy_url = _get_grpc_proxy_url("diode.example.com:443", use_tls=True)
+        assert proxy_url == "http://proxy.example.com:8443"
+    finally:
+        del os.environ["HTTPS_PROXY"]
 
 
 def test_validate_proxy_url_invalid_scheme():
