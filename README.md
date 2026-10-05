@@ -232,15 +232,17 @@ export NO_PROXY=localhost,127.0.0.1,.example.com
 
 **Important notes for proxy usage:**
 
-1. **Proxy with SKIP_TLS_VERIFY**: For `grpcs://` / `https://` targets the SDK uses a **secure gRPC channel** (including when `DIODE_SKIP_TLS_VERIFY=true`). Proxies use an HTTP CONNECT tunnel; skip-verify disables certificate checks only, not TLS. Plaintext `grpc://` targets stay on insecure channels and use `HTTP_PROXY`.
+1. **HTTPS_PROXY URL scheme**: `https://host:port` is accepted (the usual env convention). The SDK uses a plain TCP connection and HTTP CONNECT to the proxy, same as for `http://` URLs; it does not open a separate TLS session to the proxy. Userinfo in the proxy URL (`https://user:pass@host:port`) is sent as `Proxy-Authorization` on that CONNECT request.
 
-2. **MITM proxies (like mitmproxy)**: To use an intercepting proxy, you must provide the proxy's CA certificate:
+2. **Proxy with SKIP_TLS_VERIFY**: For `grpcs://` / `https://` targets the SDK uses a **secure gRPC channel** (including when `DIODE_SKIP_TLS_VERIFY=true`). Proxies use an HTTP CONNECT tunnel; skip-verify disables certificate checks only, not TLS. Plaintext `grpc://` targets stay on insecure channels and use `HTTP_PROXY`. For multi-tenant hostnames, skip-verify keeps the dial hostname for SNI when the server certificate includes a matching wildcard SAN.
+
+3. **MITM proxies (like mitmproxy)**: To use an intercepting proxy, you must provide the proxy's CA certificate:
    ```bash
    export HTTPS_PROXY=http://127.0.0.1:8080
    export DIODE_CERT_FILE=~/.mitmproxy/mitmproxy-ca-cert.pem
    ```
 
-3. **Non-intercepting proxies**: Regular forwarding proxies work without additional configuration if the target server has a valid certificate trusted by system CAs.
+4. **Non-intercepting proxies**: Regular forwarding proxies work without additional configuration if the target server has a valid certificate trusted by system CAs.
 
 Example with proxy:
 ```python
