@@ -2561,6 +2561,13 @@ def test_get_grpc_proxy_url_normalizes_https_scheme():
         del os.environ["HTTPS_PROXY"]
 
 
+def test_proxy_url_for_grpc_preserves_implicit_https_port():
+    """Implicit port 443 on https:// proxy URLs survives scheme downgrade."""
+    from netboxlabs.diode.sdk.client import _proxy_url_for_grpc
+
+    assert _proxy_url_for_grpc("https://proxy.example.com") == "http://proxy.example.com:443"
+
+
 def test_validate_proxy_url_invalid_scheme():
     """Test _validate_proxy_url with invalid scheme."""
     from netboxlabs.diode.sdk.client import _validate_proxy_url

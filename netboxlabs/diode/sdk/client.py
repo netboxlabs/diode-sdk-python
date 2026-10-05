@@ -180,17 +180,49 @@ def _tls_server_name_from_peercert(
     )
 
 
+def _x509_name_attr_to_ssl_key(oid: object) -> str:
+    from cryptography.x509.oid import NameOID
+
+    _OID_TO_SSL = {
+        NameOID.COMMON_NAME: "commonName",
+        NameOID.COUNTRY_NAME: "countryName",
+        NameOID.STATE_OR_PROVINCE_NAME: "stateOrProvinceName",
+        NameOID.LOCALITY_NAME: "localityName",
+        NameOID.ORGANIZATION_NAME: "organizationName",
+        NameOID.ORGANIZATIONAL_UNIT_NAME: "organizationalUnitName",
+    }
+    return _OID_TO_SSL.get(oid, getattr(oid, "dotted_string", str(oid)))
+
+
 def _peercert_dict_from_der(der_cert: bytes) -> dict[str, Any]:
-    pem = ssl.DER_cert_to_PEM_cert(der_cert).encode()
-    with tempfile.NamedTemporaryFile(mode="wb", delete=False, suffix=".pem") as cert_file:
-        cert_file.write(pem)
-        cert_path = cert_file.name
+    from cryptography import x509
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.x509.general_name import DNSName, IPAddress
+
     try:
-        return ssl._ssl._test_decode_cert(cert_path)
-    except ssl.SSLError as exc:
+        cert = x509.load_der_x509_certificate(der_cert, default_backend())
+    except ValueError as exc:
         raise DiodeConfigError("Could not decode peer certificate") from exc
-    finally:
-        os.unlink(cert_path)
+
+    subject_alt_name: list[tuple[str, str]] = []
+    try:
+        san_ext = cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
+        for name in san_ext.value:
+            if isinstance(name, DNSName):
+                subject_alt_name.append(("DNS", name.value))
+            elif isinstance(name, IPAddress):
+                subject_alt_name.append(("IP Address", str(name.value)))
+    except x509.ExtensionNotFound:
+        pass
+
+    subject = tuple(
+        tuple((_x509_name_attr_to_ssl_key(attr.oid), attr.value) for attr in rdn)
+        for rdn in cert.subject.rdns
+    )
+    peercert: dict[str, Any] = {"subject": subject}
+    if subject_alt_name:
+        peercert["subjectAltName"] = subject_alt_name
+    return peercert
 
 
 def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
@@ -420,9 +452,23 @@ def _validate_proxy_url(url: str) -> bool:
 
 def _proxy_url_for_grpc(url: str) -> str:
     parsed = urlparse(url)
-    if parsed.scheme == "https":
+    if parsed.scheme != "https":
+        return url
+    if parsed.port is not None:
         return urlunparse(parsed._replace(scheme="http"))
-    return url
+    hostname = parsed.hostname
+    if not hostname:
+        return urlunparse(parsed._replace(scheme="http"))
+    if parsed.username is not None or parsed.password is not None:
+        userinfo = ""
+        if parsed.username is not None:
+            userinfo = unquote(parsed.username)
+            if parsed.password is not None:
+                userinfo = f"{userinfo}:{unquote(parsed.password)}"
+        netloc = f"{userinfo}@{hostname}:443"
+    else:
+        netloc = f"{hostname}:443"
+    return urlunparse(parsed._replace(scheme="http", netloc=netloc))
 
 
 def _matches_no_proxy_entry(host: str, entry: str) -> bool:
