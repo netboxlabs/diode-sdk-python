@@ -8,12 +8,14 @@ pin-and-rename implementation ship with every skip-verify test passing while the
 real handshake still failed.
 """
 
+import asyncio
 import base64
 import datetime as dt
 import logging
 import os
 import socket
 import ssl
+import tempfile
 import threading
 from concurrent import futures
 from unittest import mock
@@ -30,10 +32,11 @@ from opentelemetry.proto.collector.logs.v1 import (
 )
 
 from netboxlabs.diode.sdk import DiodeClient
+from netboxlabs.diode.sdk import _skip_verify_tunnel as tunnel_module
 from netboxlabs.diode.sdk._skip_verify_tunnel import SkipVerifyTunnel, split_authority
 from netboxlabs.diode.sdk.client import DiodeOTLPClient
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
-from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
+from netboxlabs.diode.sdk.exceptions import DiodeClientError
 from netboxlabs.diode.sdk.ingester import Entity, Site
 
 NOW = dt.datetime.now(dt.timezone.utc)
@@ -350,10 +353,44 @@ def test_tunnel_reports_proxy_rejection_without_forwarding(tunnels, echo_server,
         proxy.close()
 
 
-def test_tunnel_rejects_https_proxy_url():
-    """A gRPC channel cannot use an https:// proxy, so fail loudly instead of connecting direct."""
-    with pytest.raises(DiodeConfigError, match="http:// proxy"):
-        SkipVerifyTunnel("localhost:443", proxy_url="https://proxy.example.com:3128")
+def test_tunnel_accepts_https_scheme_proxy_url_and_sends_plain_connect(tunnels, echo_server):
+    """An https:// proxy URL is treated like grpc-go treats it: a plain CONNECT to the proxy."""
+    proxy = ConnectProxy()
+    try:
+        tunnel = tunnels(f"localhost:{echo_server.port}", proxy_url=f"https://127.0.0.1:{proxy.port}")
+
+        assert round_trip(tunnel.target) == b"ping"
+        assert proxy.requests[0][0] == f"CONNECT localhost:{echo_server.port} HTTP/1.1"
+    finally:
+        proxy.close()
+
+
+def test_tunnel_retries_in_tmp_when_the_temp_path_is_too_long(tunnels, echo_server, tmp_path, monkeypatch):
+    """A long TMPDIR must not push the tunnel onto the unauthenticated loopback listener."""
+    if not hasattr(socket, "AF_UNIX") or not os.path.isdir("/tmp"):
+        pytest.skip("needs Unix sockets and /tmp")
+    long_dir = tmp_path / ("d" * 90)
+    long_dir.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(long_dir))
+
+    tunnel = tunnels(f"localhost:{echo_server.port}")
+
+    assert tunnel.target.startswith("unix:/tmp/")
+    assert round_trip(tunnel.target) == b"ping"
+
+
+def test_tunnel_falls_back_to_loopback_and_warns_once(tunnels, echo_server, monkeypatch, caplog):
+    """Without Unix sockets the loopback listener works and the reduced isolation is logged once."""
+    monkeypatch.delattr(asyncio, "start_unix_server")
+    monkeypatch.setattr(tunnel_module, "_loopback_warned", False)
+
+    with caplog.at_level(logging.WARNING):
+        first = tunnels(f"localhost:{echo_server.port}")
+        second = tunnels(f"localhost:{echo_server.port}")
+
+    assert first.target.startswith("127.0.0.1:")
+    assert round_trip(second.target) == b"ping"
+    assert caplog.text.count("listening on 127.0.0.1") == 1
 
 
 class _IngesterServicer(ingester_pb2_grpc.IngesterServiceServicer):

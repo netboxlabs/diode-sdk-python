@@ -232,7 +232,7 @@ export NO_PROXY=localhost,127.0.0.1,.example.com
 
 **Important notes for proxy usage:**
 
-1. **Proxy with SKIP_TLS_VERIFY**: Secure targets stay on TLS and go through the proxy with an HTTP `CONNECT` tunnel, as they do without skip-verify. Only certificate verification is skipped. `Proxy-Authorization` is sent from credentials in the proxy URL. Only `http://` proxy URLs are supported in this mode, as in gRPC itself.
+1. **Proxy with SKIP_TLS_VERIFY**: Secure targets stay on TLS and go through the proxy with an HTTP `CONNECT` tunnel, as they do without skip-verify. Only certificate verification is skipped. `Proxy-Authorization` is sent from credentials in the proxy URL. As in grpc-go, the `CONNECT` to the proxy is always plain HTTP whatever the proxy URL scheme says, so an `https://` proxy URL only works with a proxy that accepts plain `CONNECT`.
 
 2. **MITM proxies (like mitmproxy)**: To use an intercepting proxy, you must provide the proxy's CA certificate:
    ```bash
@@ -285,7 +285,7 @@ client = DiodeClient(
 
 The behaviour matches Go's `InsecureSkipVerify`. The certificate chain, hostname and validity dates are not checked, and expired, self-signed, wrong-name, CN-only, rotating and per-SNI certificates all work. The request is not altered: the server sees the real host as SNI and `:authority`. Plaintext targets (`grpc://`, `http://`) are unaffected. `DIODE_CERT_FILE` is ignored while verification is skipped. The OAuth token request skips verification too.
 
-`grpcio` has no way to turn verification off, so for these targets the SDK opens a private local listener and gRPC connects to it without TLS. A Unix socket in a `0700` temporary directory is used where available, otherwise a loopback port. The SDK forwards each connection to the server over TLS without verifying it. The listener lives for as long as the client. It is stopped by `client.close()`, by leaving the `with` block, or when the client is garbage collected.
+`grpcio` has no way to turn verification off, so for these targets the SDK opens a private local listener and gRPC connects to it without TLS. A Unix socket in a `0700` temporary directory is used where available (the SDK retries in `/tmp` when `TMPDIR` is too long for a socket path). Where Unix sockets are unavailable, for example on Windows, it falls back to a loopback port and logs a warning once. A loopback port is not access controlled, so any local user can connect to it and reach the server through this client's proxy settings. The SDK forwards each connection to the server over TLS without verifying it. The listener lives for as long as the client. It is stopped by `client.close()`, by leaving the `with` block, or when the client is garbage collected.
 
 For self-signed or private-CA servers in production, trust the certificate with `DIODE_CERT_FILE` instead.
 

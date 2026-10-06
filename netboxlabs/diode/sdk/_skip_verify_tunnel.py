@@ -94,6 +94,19 @@ def _http_connect(sock: socket.socket, host: str, port: int, proxy) -> None:
         raise DiodeConfigError(f"Proxy CONNECT to {authority} failed: {status_line}")
 
 
+_loopback_warned = False
+
+
+def _warn_loopback_once() -> None:
+    global _loopback_warned
+    if not _loopback_warned:
+        _loopback_warned = True
+        _LOGGER.warning(
+            "Skip-verify tunnel is listening on 127.0.0.1 because Unix sockets are unavailable. "
+            "Any local user can connect to it and reach the server through this client's proxy settings."
+        )
+
+
 async def _pipe(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
     """Copy bytes until the source ends or either side fails."""
     try:
@@ -112,12 +125,9 @@ class SkipVerifyTunnel:
         self._host, self._port = split_authority(authority)
         self._proxy = None
         if proxy_url:
+            # The URL scheme is advisory. Like grpc-go, the tunnel always sends a plain
+            # CONNECT, so an https:// URL works with the usual plain-HTTP proxy.
             self._proxy = urlparse(proxy_url)
-            if self._proxy.scheme != "http":
-                raise DiodeConfigError(
-                    "DIODE_SKIP_TLS_VERIFY supports only http:// proxy URLs. "
-                    f"Got {self._proxy.scheme}://. gRPC does not support https:// proxies either."
-                )
 
         self._context = _client_context()
         self._loop = asyncio.new_event_loop()
@@ -140,18 +150,31 @@ class SkipVerifyTunnel:
         asyncio.set_event_loop(self._loop)
         self._loop.run_forever()
 
+    def _unix_socket_path(self) -> str | None:
+        """Create the private socket directory and return the socket path inside it."""
+        for base in (None, "/tmp"):
+            if base is not None and not os.path.isdir(base):
+                continue
+            directory = tempfile.mkdtemp(prefix="diode-", dir=base)
+            path = os.path.join(directory, "t.sock")
+            if len(path) < _UNIX_PATH_LIMIT:
+                self._tmpdir = directory
+                return path
+            shutil.rmtree(directory, ignore_errors=True)
+        return None
+
     async def _listen(self) -> str:
         if hasattr(asyncio, "start_unix_server"):
             try:
-                self._tmpdir = tempfile.mkdtemp(prefix="diode-")
-                path = os.path.join(self._tmpdir, "tunnel.sock")
-                if len(path) < _UNIX_PATH_LIMIT:
+                path = self._unix_socket_path()
+                if path:
                     self._server = await asyncio.start_unix_server(self._handle, path=path)
                     return f"unix:{path}"
             except OSError as exc:
-                _LOGGER.debug(f"Unix socket unavailable for skip-verify tunnel, using loopback: {exc}")
+                _LOGGER.debug(f"Unix socket unavailable for skip-verify tunnel: {exc}")
             self._remove_tmpdir()
 
+        _warn_loopback_once()
         self._server = await asyncio.start_server(self._handle, "127.0.0.1", 0)
         return f"127.0.0.1:{self._server.sockets[0].getsockname()[1]}"
 
@@ -159,7 +182,8 @@ class SkipVerifyTunnel:
         if self._proxy is None:
             sock = socket.create_connection((self._host, self._port), timeout=_CONNECT_TIMEOUT_S)
         else:
-            sock = socket.create_connection((self._proxy.hostname, self._proxy.port or 80), timeout=_CONNECT_TIMEOUT_S)
+            proxy_port = self._proxy.port or (443 if self._proxy.scheme == "https" else 80)
+            sock = socket.create_connection((self._proxy.hostname, proxy_port), timeout=_CONNECT_TIMEOUT_S)
             try:
                 _http_connect(sock, self._host, self._port, self._proxy)
             except BaseException:
