@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 import certifi
 import grpc
@@ -185,6 +185,17 @@ def _get_proxy_env_var(var_name: str) -> str | None:
     return os.getenv(var_name.lower())
 
 
+def _redact_proxy_url(url: str) -> str:
+    """Hide credentials in a proxy URL before it is logged."""
+    try:
+        parsed = urlparse(url)
+        if parsed.username is None:
+            return url
+        return urlunparse(parsed._replace(netloc=f"***@{parsed.netloc.rpartition('@')[2]}"))
+    except ValueError:
+        return "<unparsable proxy URL>"
+
+
 def _validate_proxy_url(url: str) -> bool:
     """
     Validate proxy URL format.
@@ -305,13 +316,22 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
     if proxy_url:
         if not _validate_proxy_url(proxy_url):
             _LOGGER.warning(
-                f"Invalid proxy URL format: {proxy_url}. "
+                f"Invalid proxy URL format: {_redact_proxy_url(proxy_url)}. "
                 f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
             )
             return None
-        _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")
+        _LOGGER.debug(f"Using proxy {_redact_proxy_url(proxy_url)} for gRPC target {target_host}")
 
     return proxy_url
+
+
+def _tunnel_hint(tunnel: SkipVerifyTunnel | None, err: grpc.RpcError) -> str | None:
+    """Return why the skip-verify tunnel could not reach the server, when that explains an UNAVAILABLE error."""
+    if tunnel is None or not tunnel.last_error:
+        return None
+    if err.code() != grpc.StatusCode.UNAVAILABLE:
+        return None
+    return f"skip-verify tunnel: {tunnel.last_error}"
 
 
 def _open_grpc_channel(
@@ -340,7 +360,7 @@ def _open_grpc_channel(
 
     if proxy_url:
         opts.append(("grpc.http_proxy", proxy_url))
-        _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
+        _LOGGER.debug(f"Configured gRPC proxy: {_redact_proxy_url(proxy_url)}")
 
     if not secure:
         _LOGGER.debug("Setting up gRPC insecure channel")
@@ -441,7 +461,7 @@ class DiodeClient(DiodeClientInterface):
             proxy_url=proxy_url,
         )
         if self._tunnel:
-            weakref.finalize(self, self._tunnel.close)
+            weakref.finalize(self._channel, self._tunnel.close)
 
         channel = self._channel
 
@@ -549,7 +569,7 @@ class DiodeClient(DiodeClientInterface):
                         )
                         self._authenticate(_INGEST_SCOPE)
                         continue
-                raise DiodeClientError(err) from err
+                raise DiodeClientError(err, hint=_tunnel_hint(self._tunnel, err)) from err
         raise RuntimeError("Max retries exceeded")
 
     def _setup_sentry(
@@ -728,7 +748,7 @@ class DiodeOTLPClient(DiodeClientInterface):
             proxy_url=proxy_url,
         )
         if self._tunnel:
-            weakref.finalize(self, self._tunnel.close)
+            weakref.finalize(base_channel, self._tunnel.close)
 
         self._base_channel = base_channel
         channel = base_channel
@@ -821,7 +841,8 @@ class DiodeOTLPClient(DiodeClientInterface):
                 metadata=self._metadata,
             )
         except grpc.RpcError as err:
-            raise OTLPClientError(err) from err
+            hint = _tunnel_hint(self._tunnel, err)
+            raise OTLPClientError(err, message=f"OTLP export failed ({hint})" if hint else None) from err
 
         return ingester_pb2.IngestResponse()
 

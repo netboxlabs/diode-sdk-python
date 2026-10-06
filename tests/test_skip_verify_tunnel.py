@@ -11,15 +11,19 @@ real handshake still failed.
 import asyncio
 import base64
 import datetime as dt
+import gc
 import logging
 import os
+import shutil
 import socket
 import ssl
 import tempfile
 import threading
 import time
+import types
 from concurrent import futures
 from unittest import mock
+from urllib.parse import unquote
 
 import grpc
 import pytest
@@ -93,6 +97,7 @@ class TLSEchoServer:
         self.sni = None
         self.alpn = None
         self.tls_version = None
+        self.open_connections = 0
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         if low_security:
             context.set_ciphers("DEFAULT:@SECLEVEL=0")
@@ -107,6 +112,10 @@ class TLSEchoServer:
         self._thread = threading.Thread(target=self._serve, daemon=True)
         self._thread.start()
 
+    def reload(self, cert_path, key_path):
+        """Present a different certificate to the next connection."""
+        self._context.load_cert_chain(cert_path, key_path)
+
     def _record_sni(self, _sock, server_name, _context):
         self.sni = server_name
 
@@ -119,6 +128,7 @@ class TLSEchoServer:
             threading.Thread(target=self._echo, args=(raw,), daemon=True).start()
 
     def _echo(self, raw):
+        self.open_connections += 1
         try:
             with self._context.wrap_socket(raw, server_side=True) as tls:
                 self.alpn = tls.selected_alpn_protocol()
@@ -127,6 +137,8 @@ class TLSEchoServer:
                     tls.sendall(data)
         except (OSError, ssl.SSLError):
             pass
+        finally:
+            self.open_connections -= 1
 
     def close(self):
         """Stop accepting connections."""
@@ -206,7 +218,11 @@ def connect_local(target):
     """Open a client socket to the tunnel's local listener."""
     if target.startswith("unix:"):
         sock = socket.socket(socket.AF_UNIX)
-        sock.connect(target[len("unix:") :])
+        try:
+            sock.connect(unquote(target[len("unix:") :]))
+        except OSError:
+            sock.close()
+            raise
         return sock
     host, port = split_authority(target)
     return socket.create_connection((host, port))
@@ -233,6 +249,17 @@ def tunnels():
     yield make
     for tunnel in created:
         tunnel.close()
+
+
+@pytest.fixture
+def percent_tmpdir(monkeypatch):
+    """A short TMPDIR containing a literal percent escape, so the socket path stays under the length limit."""
+    if not hasattr(socket, "AF_UNIX") or not os.path.isdir("/tmp"):
+        pytest.skip("needs Unix sockets and /tmp")
+    directory = tempfile.mkdtemp(prefix="p%41", dir="/tmp")
+    monkeypatch.setattr(tempfile, "tempdir", directory)
+    yield directory
+    shutil.rmtree(directory, ignore_errors=True)
 
 
 @pytest.fixture
@@ -278,21 +305,20 @@ def test_tunnel_sends_real_host_as_sni_and_offers_h2(tunnels, echo_server):
 
 
 def test_tunnel_follows_certificate_rotation(tunnels, tmp_path):
-    """Nothing is pinned: a new certificate on the next connection is accepted."""
+    """Nothing is pinned: the same tunnel accepts a different certificate on the next connection."""
     first_dir, second_dir = tmp_path / "a", tmp_path / "b"
     first_dir.mkdir()
     second_dir.mkdir()
-    first = TLSEchoServer(*make_cert(first_dir))
-    tunnel = tunnels(f"localhost:{first.port}")
-    assert round_trip(tunnel.target) == b"ping"
-    first.close()
-
-    second = TLSEchoServer(*make_cert(second_dir, dns=("other.internal",)))
+    server = TLSEchoServer(*make_cert(first_dir))
     try:
-        tunnel_two = tunnels(f"localhost:{second.port}")
-        assert round_trip(tunnel_two.target) == b"ping"
+        tunnel = tunnels(f"localhost:{server.port}")
+        assert round_trip(tunnel.target) == b"ping"
+
+        server.reload(*make_cert(second_dir, dns=("other.internal",)))
+
+        assert round_trip(tunnel.target) == b"ping"
     finally:
-        second.close()
+        server.close()
 
 
 def test_tunnel_accepts_weak_certificate_like_go(tunnels, tmp_path):
@@ -363,6 +389,133 @@ def test_tunnel_reports_proxy_rejection_without_forwarding(tunnels, echo_server,
         assert echo_server.sni is None
     finally:
         proxy.close()
+
+
+@pytest.mark.parametrize("error", [NotImplementedError, AttributeError])
+def test_tunnel_treats_an_unsupported_unix_server_like_a_missing_one(error, monkeypatch):
+    """The Windows Proactor loop exposes start_unix_server but cannot serve it. That must reach the fallback."""
+
+    async def unsupported(*_args, **_kwargs):
+        raise error("create_unix_server")
+
+    monkeypatch.setattr(asyncio, "start_unix_server", unsupported)
+    monkeypatch.delenv(tunnel_module.ALLOW_LOOPBACK_ENVVAR_NAME, raising=False)
+
+    with pytest.raises(DiodeConfigError, match="DIODE_SKIP_TLS_VERIFY_ALLOW_LOOPBACK"):
+        SkipVerifyTunnel("localhost:443")
+
+    monkeypatch.setenv(tunnel_module.ALLOW_LOOPBACK_ENVVAR_NAME, "true")
+    monkeypatch.setattr(tunnel_module, "_loopback_warned", True)
+    tunnel = SkipVerifyTunnel("localhost:443")
+    try:
+        assert tunnel.target.startswith("127.0.0.1:")
+    finally:
+        tunnel.close()
+
+
+def test_tunnel_skips_unix_server_on_windows(monkeypatch):
+    """On win32 the Unix socket path is not attempted at all."""
+    called = []
+
+    async def record(*_args, **_kwargs):
+        called.append(True)
+        raise AssertionError("must not be called on win32")
+
+    monkeypatch.setattr(asyncio, "start_unix_server", record)
+    monkeypatch.setattr(tunnel_module, "sys", types.SimpleNamespace(platform="win32"))
+    monkeypatch.setenv(tunnel_module.ALLOW_LOOPBACK_ENVVAR_NAME, "true")
+    monkeypatch.setattr(tunnel_module, "_loopback_warned", True)
+
+    tunnel = SkipVerifyTunnel("localhost:443")
+    try:
+        assert tunnel.target.startswith("127.0.0.1:")
+        assert not called
+    finally:
+        tunnel.close()
+
+
+def test_tunnel_close_from_its_own_thread_does_not_hang_or_leak(echo_server):
+    """A finalizer can run on the loop thread, which cannot wait for itself."""
+    tunnel = SkipVerifyTunnel(f"localhost:{echo_server.port}")
+    directory = os.path.dirname(unquote(tunnel.target[len("unix:") :])) if tunnel.target.startswith("unix:") else None
+
+    started = time.monotonic()
+    tunnel._loop.call_soon_threadsafe(tunnel.close)
+    tunnel._thread.join(timeout=5)
+
+    assert time.monotonic() - started < 2
+    assert not tunnel._thread.is_alive()
+    assert tunnel._loop.is_closed()
+    if directory:
+        assert not os.path.exists(directory)
+
+
+@pytest.mark.skipif(not hasattr(os, "fork"), reason="needs fork")
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
+def test_close_in_a_forked_child_leaves_the_parents_tunnel_alone(tunnels, echo_server):
+    """A forked worker exiting through atexit must not delete the socket the parent still uses."""
+    tunnel = tunnels(f"localhost:{echo_server.port}")
+    assert round_trip(tunnel.target) == b"ping"
+
+    pid = os.fork()
+    if pid == 0:
+        started = time.monotonic()
+        tunnel.close()
+        os._exit(0 if time.monotonic() - started < 1 else 1)
+    _, status = os.waitpid(pid, 0)
+
+    assert os.WEXITSTATUS(status) == 0
+    assert round_trip(tunnel.target) == b"ping"
+
+
+@pytest.mark.parametrize("proxy_url", ["http://h:99999", "http://u:p@:1", "http://", "http://h:0"])
+def test_tunnel_rejects_unusable_proxy_url_up_front(proxy_url):
+    """A bad proxy URL fails the constructor, instead of every connection later."""
+    with pytest.raises(DiodeConfigError, match="host or port"):
+        SkipVerifyTunnel("localhost:443", proxy_url=proxy_url)
+
+
+def test_tunnel_records_why_a_dial_failed(tunnels):
+    """The reason is kept so the client can add it to the otherwise bare UNAVAILABLE error."""
+    refused = socket.socket()
+    refused.bind(("127.0.0.1", 0))
+    port = refused.getsockname()[1]
+    refused.close()
+    tunnel = tunnels(f"127.0.0.1:{port}")
+
+    assert round_trip(tunnel.target) == b""
+
+    assert tunnel.last_error and f"127.0.0.1:{port}" in tunnel.last_error
+
+
+def test_tunnel_records_a_proxy_rejection(tunnels, echo_server):
+    """A 407 from the proxy is the recorded reason."""
+    proxy = ConnectProxy(require_auth="lab:lab")
+    try:
+        tunnel = tunnels(f"localhost:{echo_server.port}", proxy_url=f"http://127.0.0.1:{proxy.port}")
+        round_trip(tunnel.target)
+        assert "407" in tunnel.last_error
+    finally:
+        proxy.close()
+
+
+def test_proxy_credentials_are_decoded_as_bytes(tunnels, echo_server):
+    """A non-UTF-8 percent escape reaches the proxy as the raw byte, as Go sends it."""
+    proxy = ConnectProxy()
+    try:
+        tunnel = tunnels(f"localhost:{echo_server.port}", proxy_url=f"http://us%E9er:pw@127.0.0.1:{proxy.port}")
+        assert round_trip(tunnel.target) == b"ping"
+        assert proxy.requests[0][1] == "Basic " + base64.b64encode(b"us\xe9er:pw").decode()
+    finally:
+        proxy.close()
+
+
+def test_tunnel_socket_path_with_percent_in_tmpdir_is_escaped(tunnels, echo_server, percent_tmpdir):
+    """A literal % in TMPDIR has to be escaped in the unix: target, which gRPC percent-decodes."""
+    tunnel = tunnels(f"localhost:{echo_server.port}")
+
+    assert "%2541" in tunnel.target
+    assert round_trip(tunnel.target) == b"ping"
 
 
 def test_tunnel_close_cancels_a_connect_that_is_still_in_flight(echo_server):
@@ -578,7 +731,7 @@ def test_secure_target_with_skip_uses_tunnel_channel_not_proxy_option(stub_auth,
 
 def test_secure_target_with_verification_still_uses_secure_channel(stub_auth):
     """Default behaviour is untouched: verification on means a normal secure channel and no tunnel."""
-    with mock.patch("grpc.secure_channel") as secure_channel:
+    with mock.patch("grpc.secure_channel") as secure_channel, mock.patch("grpc.insecure_channel") as insecure_channel:
         client = DiodeClient(
             target="grpcs://example.com:8443",
             app_name="tls-test",
@@ -587,5 +740,86 @@ def test_secure_target_with_verification_still_uses_secure_channel(stub_auth):
             client_secret="secret",
         )
 
-    secure_channel.assert_called_once()
+    insecure_channel.assert_not_called()
+    args, kwargs = secure_channel.call_args
+    assert args[0] == "example.com:8443"
+    options = dict(kwargs["options"])
+    assert "grpc.default_authority" not in options
+    assert "grpc.enable_http_proxy" not in options
     assert client._tunnel is None
+
+
+def test_client_error_names_the_tunnel_failure(stub_auth):
+    """An unreachable server surfaces its real cause, not just a bare UNAVAILABLE."""
+    refused = socket.socket()
+    refused.bind(("127.0.0.1", 0))
+    port = refused.getsockname()[1]
+    refused.close()
+
+    with _client(port, skip_tls_verify=True) as client, pytest.raises(DiodeClientError) as excinfo:
+        _ingest(client)
+
+    assert "skip-verify tunnel" in excinfo.value.details
+    assert f"127.0.0.1:{port}" in excinfo.value.details
+
+
+def test_client_channel_keeps_working_after_the_client_is_collected(grpc_tls_server, stub_auth):
+    """client.channel is public: the tunnel must live as long as the channel, not as long as the client."""
+    channel = _client(grpc_tls_server, skip_tls_verify=True).channel
+    gc.collect()
+
+    stub = ingester_pb2_grpc.IngesterServiceStub(channel)
+    assert not stub.Ingest(ingester_pb2.IngestRequest(), timeout=5).errors
+    channel.close()
+
+
+def test_percent_in_tmpdir_works_end_to_end(grpc_tls_server, stub_auth, percent_tmpdir):
+    """A literal % in TMPDIR must not break the channel gRPC builds from the unix: target."""
+    with _client(grpc_tls_server, skip_tls_verify=True) as client:
+        assert not _ingest(client).errors
+
+
+def test_proxy_credentials_are_redacted_from_logs(stub_auth, monkeypatch, caplog):
+    """Proxy credentials must not appear in the debug or warning log lines."""
+    monkeypatch.setenv("HTTPS_PROXY", "http://user:secret@proxy.example.com:8080")
+    tunnel = mock.Mock(target="unix:/tmp/t.sock", last_error=None)
+    with (
+        caplog.at_level(logging.DEBUG, logger="netboxlabs.diode.sdk.client"),
+        mock.patch("netboxlabs.diode.sdk.client.SkipVerifyTunnel", return_value=tunnel),
+        mock.patch("grpc.insecure_channel"),
+    ):
+        DiodeClient(
+            target="grpcs://example.com:8443",
+            app_name="tls-test",
+            app_version="0.0.1",
+            client_id="id",
+            client_secret="secret",
+            skip_tls_verify=True,
+        )
+
+    assert "secret" not in caplog.text
+    assert "***@proxy.example.com:8080" in caplog.text
+
+
+@pytest.mark.skipif(not os.path.isdir("/dev/fd"), reason="counts open descriptors through /dev/fd")
+def test_closing_clients_leaves_no_descriptors_behind(grpc_tls_server, stub_auth):
+    """Each close() must close its upstream TLS socket itself rather than leave it to the garbage collector."""
+
+    def cycle():
+        with _client(grpc_tls_server, skip_tls_verify=True) as client:
+            _ingest(client)
+
+    cycle()  # one-off setup is not a leak
+    gc.collect()
+    gc.disable()
+    try:
+        time.sleep(0.3)
+        before = len(os.listdir("/dev/fd"))
+        for _ in range(6):
+            cycle()
+        time.sleep(0.5)
+        after = len(os.listdir("/dev/fd"))
+    finally:
+        gc.enable()
+
+    assert after <= before

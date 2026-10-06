@@ -25,9 +25,10 @@ import os
 import shutil
 import socket
 import ssl
+import sys
 import tempfile
 import threading
-from urllib.parse import unquote, urlparse
+from urllib.parse import quote, unquote_to_bytes, urlparse
 
 from netboxlabs.diode.sdk.exceptions import DiodeConfigError
 
@@ -39,6 +40,8 @@ _CONNECT_TIMEOUT_S = 10.0
 _HANDSHAKE_TIMEOUT_S = 10.0
 _STARTUP_TIMEOUT_S = 10.0
 _SHUTDOWN_TIMEOUT_S = 5.0
+# Time to flush a TLS close_notify. Peers such as grpc-core never answer it, and Go does not wait for the reply either.
+_CLOSE_TIMEOUT_S = 0.1
 _CHUNK_SIZE = 64 * 1024
 _PROXY_RESPONSE_LIMIT = 16 * 1024
 # sun_path is 104 bytes on macOS and 108 on Linux.
@@ -77,8 +80,8 @@ async def _http_connect(sock: socket.socket, host: str, port: int, proxy) -> Non
     authority = f"{_bracket(host)}:{port}"
     lines = [f"CONNECT {authority} HTTP/1.1", f"Host: {authority}"]
     if proxy.username is not None:
-        credentials = f"{unquote(proxy.username)}:{unquote(proxy.password or '')}"
-        token = base64.b64encode(credentials.encode()).decode()
+        credentials = unquote_to_bytes(proxy.username) + b":" + unquote_to_bytes(proxy.password or "")
+        token = base64.b64encode(credentials).decode()
         lines.append(f"Proxy-Authorization: Basic {token}")
     await loop.sock_sendall(sock, ("\r\n".join(lines) + "\r\n\r\n").encode())
 
@@ -101,7 +104,8 @@ async def _open_socket(host: str, port: int) -> socket.socket:
     """Connect a TCP socket without blocking a thread, so close() can cancel it."""
     loop = asyncio.get_running_loop()
     last_error: BaseException = OSError(f"No address found for {_bracket(host)}:{port}")
-    for family, kind, proto, _, address in await loop.getaddrinfo(host, port, type=socket.SOCK_STREAM):
+    addresses = await asyncio.wait_for(loop.getaddrinfo(host, port, type=socket.SOCK_STREAM), _CONNECT_TIMEOUT_S)
+    for family, kind, proto, _, address in addresses:
         sock = socket.socket(family, kind, proto)
         sock.setblocking(False)
         try:
@@ -134,6 +138,18 @@ def _warn_loopback_once() -> None:
         )
 
 
+async def _close_stream(stream: asyncio.StreamWriter) -> None:
+    """Close a stream, then abort its transport if the peer has not finished closing it almost at once."""
+    stream.close()
+    try:
+        await asyncio.wait_for(stream.wait_closed(), _CLOSE_TIMEOUT_S)
+    except asyncio.CancelledError:
+        stream.transport.abort()
+        raise
+    except (OSError, ssl.SSLError, asyncio.TimeoutError):
+        stream.transport.abort()
+
+
 async def _pipe(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
     """Copy bytes until the source ends or either side fails."""
     try:
@@ -155,7 +171,15 @@ class SkipVerifyTunnel:
             # The URL scheme is advisory. Like grpc-go, the tunnel always sends a plain
             # CONNECT, so an https:// URL works with the usual plain-HTTP proxy.
             self._proxy = urlparse(proxy_url)
+            try:
+                valid = bool(self._proxy.hostname) and (self._proxy.port is None or self._proxy.port > 0)
+            except ValueError:
+                valid = False
+            if not valid:
+                raise DiodeConfigError("Proxy URL has no usable host or port")
 
+        self._pid = os.getpid()
+        self.last_error: str | None = None
         self._context = _client_context()
         self._loop = asyncio.new_event_loop()
         self._tasks: set[asyncio.Task] = set()
@@ -175,7 +199,11 @@ class SkipVerifyTunnel:
 
     def _run_loop(self) -> None:
         asyncio.set_event_loop(self._loop)
-        self._loop.run_forever()
+        try:
+            self._loop.run_forever()
+        finally:
+            self._loop.close()
+            self._remove_tmpdir()
 
     def _unix_socket_path(self) -> str | None:
         """Create the private socket directory and return the socket path inside it."""
@@ -191,14 +219,14 @@ class SkipVerifyTunnel:
         return None
 
     async def _listen(self) -> str:
-        if hasattr(asyncio, "start_unix_server"):
+        if sys.platform != "win32" and hasattr(asyncio, "start_unix_server"):
             try:
                 path = self._unix_socket_path()
                 if path:
                     self._server = await asyncio.start_unix_server(self._handle, path=path)
-                    return f"unix:{path}"
-            except OSError as exc:
-                _LOGGER.debug(f"Unix socket unavailable for skip-verify tunnel: {exc}")
+                    return f"unix:{quote(path, safe='/')}"
+            except (OSError, NotImplementedError, AttributeError) as exc:
+                _LOGGER.debug(f"Unix socket unavailable for skip-verify tunnel: {exc!r}")
             self._remove_tmpdir()
 
         if not _allow_loopback():
@@ -256,13 +284,16 @@ class SkipVerifyTunnel:
                 await asyncio.gather(*pipes, return_exceptions=True)
         except asyncio.CancelledError:
             raise
-        except (OSError, ssl.SSLError, asyncio.TimeoutError, DiodeConfigError) as exc:
-            _LOGGER.warning(f"Skip-verify tunnel to {_bracket(self._host)}:{self._port} failed: {exc}")
+        except Exception as exc:
+            self.last_error = f"{_bracket(self._host)}:{self._port}: {exc}"
+            _LOGGER.warning(f"Skip-verify tunnel to {self.last_error}")
         finally:
-            for stream in (writer, upstream_writer):
-                if stream is not None:
-                    stream.close()
-            self._tasks.discard(task)
+            try:
+                for stream in (upstream_writer, writer):
+                    if stream is not None:
+                        await _close_stream(stream)
+            finally:
+                self._tasks.discard(task)
 
     async def _shutdown(self) -> None:
         if self._server is not None:
@@ -279,6 +310,10 @@ class SkipVerifyTunnel:
             shutil.rmtree(self._tmpdir, ignore_errors=True)
             self._tmpdir = None
 
+    async def _shutdown_and_stop(self) -> None:
+        await self._shutdown()
+        self._loop.stop()
+
     def close(self) -> None:
         """Stop the listener, drop live connections and remove the socket. Safe to call twice."""
         with self._close_lock:
@@ -286,11 +321,18 @@ class SkipVerifyTunnel:
                 return
             self._closed = True
 
+        if os.getpid() != self._pid:
+            # A forked child shares the parent's socket path but not its loop thread. Leave both alone.
+            return
+
+        if threading.current_thread() is self._thread:
+            # Reached from a garbage-collection pass on the loop thread: it cannot wait for itself.
+            self._loop.create_task(self._shutdown_and_stop())
+            return
+
         if self._loop.is_running():
             with contextlib.suppress(Exception):
                 asyncio.run_coroutine_threadsafe(self._shutdown(), self._loop).result(timeout=_SHUTDOWN_TIMEOUT_S)
             self._loop.call_soon_threadsafe(self._loop.stop)
         self._thread.join(timeout=_SHUTDOWN_TIMEOUT_S)
-        if not self._loop.is_running():
-            self._loop.close()
         self._remove_tmpdir()
