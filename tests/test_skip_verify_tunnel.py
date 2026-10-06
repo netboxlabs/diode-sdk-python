@@ -37,7 +37,7 @@ from netboxlabs.diode.sdk import _skip_verify_tunnel as tunnel_module
 from netboxlabs.diode.sdk._skip_verify_tunnel import SkipVerifyTunnel, split_authority
 from netboxlabs.diode.sdk.client import DiodeOTLPClient
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
-from netboxlabs.diode.sdk.exceptions import DiodeClientError
+from netboxlabs.diode.sdk.exceptions import DiodeClientError, DiodeConfigError
 from netboxlabs.diode.sdk.ingester import Entity, Site
 
 NOW = dt.datetime.now(dt.timezone.utc)
@@ -416,9 +416,21 @@ def test_tunnel_retries_in_tmp_when_the_temp_path_is_too_long(tunnels, echo_serv
     assert round_trip(tunnel.target) == b"ping"
 
 
-def test_tunnel_falls_back_to_loopback_and_warns_once(tunnels, echo_server, monkeypatch, caplog):
-    """Without Unix sockets the loopback listener works and the reduced isolation is logged once."""
+def test_tunnel_refuses_loopback_fallback_by_default(monkeypatch):
+    """Without Unix sockets the unauthenticated loopback listener is off unless the user opts in."""
     monkeypatch.delattr(asyncio, "start_unix_server")
+    monkeypatch.delenv(tunnel_module.ALLOW_LOOPBACK_ENVVAR_NAME, raising=False)
+
+    with pytest.raises(DiodeConfigError, match="DIODE_SKIP_TLS_VERIFY_ALLOW_LOOPBACK"):
+        SkipVerifyTunnel("localhost:443")
+
+    assert not [t for t in threading.enumerate() if t.name == "diode-skip-verify-tunnel"]
+
+
+def test_tunnel_loopback_fallback_works_when_opted_in_and_warns_once(tunnels, echo_server, monkeypatch, caplog):
+    """Opting in gives the loopback listener, and the reduced isolation is logged once."""
+    monkeypatch.delattr(asyncio, "start_unix_server")
+    monkeypatch.setenv(tunnel_module.ALLOW_LOOPBACK_ENVVAR_NAME, "true")
     monkeypatch.setattr(tunnel_module, "_loopback_warned", False)
 
     with caplog.at_level(logging.WARNING):

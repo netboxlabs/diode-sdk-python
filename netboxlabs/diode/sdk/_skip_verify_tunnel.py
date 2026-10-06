@@ -33,6 +33,8 @@ from netboxlabs.diode.sdk.exceptions import DiodeConfigError
 
 _LOGGER = logging.getLogger(__name__)
 
+ALLOW_LOOPBACK_ENVVAR_NAME = "DIODE_SKIP_TLS_VERIFY_ALLOW_LOOPBACK"
+
 _CONNECT_TIMEOUT_S = 10.0
 _HANDSHAKE_TIMEOUT_S = 10.0
 _STARTUP_TIMEOUT_S = 10.0
@@ -118,13 +120,17 @@ async def _open_socket(host: str, port: int) -> socket.socket:
 _loopback_warned = False
 
 
+def _allow_loopback() -> bool:
+    return os.getenv(ALLOW_LOOPBACK_ENVVAR_NAME, "").lower() in ("true", "1", "yes", "on")
+
+
 def _warn_loopback_once() -> None:
     global _loopback_warned
     if not _loopback_warned:
         _loopback_warned = True
         _LOGGER.warning(
-            "Skip-verify tunnel is listening on 127.0.0.1 because Unix sockets are unavailable. "
-            "Any local user can connect to it and reach the server through this client's proxy settings."
+            f"Skip-verify tunnel is listening on 127.0.0.1 because {ALLOW_LOOPBACK_ENVVAR_NAME} is set and Unix sockets "
+            "are unavailable. Any local user can connect to it and reach the server through this client's proxy settings."
         )
 
 
@@ -195,6 +201,12 @@ class SkipVerifyTunnel:
                 _LOGGER.debug(f"Unix socket unavailable for skip-verify tunnel: {exc}")
             self._remove_tmpdir()
 
+        if not _allow_loopback():
+            raise DiodeConfigError(
+                "DIODE_SKIP_TLS_VERIFY needs a Unix socket, which is unavailable here. The fallback is a loopback port that "
+                "any local user can connect to, so it is off by default. "
+                f"Set {ALLOW_LOOPBACK_ENVVAR_NAME}=true to accept that, or use DIODE_CERT_FILE instead."
+            )
         _warn_loopback_once()
         self._server = await asyncio.start_server(self._handle, "127.0.0.1", 0)
         return f"127.0.0.1:{self._server.sockets[0].getsockname()[1]}"
