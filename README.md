@@ -29,7 +29,7 @@ pip install netboxlabs-diode-sdk
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
 * `DIODE_MAX_AUTH_RETRIES` - Maximum attempts for OAuth2 token fetch and gRPC re-authentication on `Unauthenticated` (default: `3`). Token fetch retries with exponential backoff on `429`, `500`, `502`, and `503`, honouring `Retry-After` when present on `429`/`503`.
 * `DIODE_CERT_FILE` - Path to custom certificate file for TLS connections
-* `DIODE_SKIP_TLS_VERIFY` - Skip TLS certificate verification for `grpcs://` / `https://` targets (default: `false`). Traffic stays encrypted; only chain validation is disabled. Prefer `DIODE_CERT_FILE` for self-signed production servers.
+* `DIODE_SKIP_TLS_VERIFY` - Skip TLS certificate verification for `grpcs://` / `https://` targets (default: `false`). The connection stays encrypted. See [Disabling TLS verification](#disabling-tls-verification)
 * `DIODE_DRY_RUN_OUTPUT_DIR` - Directory where `DiodeDryRunClient` will write JSON files
 
 ### Example
@@ -232,17 +232,15 @@ export NO_PROXY=localhost,127.0.0.1,.example.com
 
 **Important notes for proxy usage:**
 
-1. **HTTPS_PROXY URL scheme**: `https://host:port` is accepted (the usual env convention). The SDK uses a plain TCP connection and HTTP CONNECT to the proxy, same as for `http://` URLs; it does not open a separate TLS session to the proxy. Userinfo in the proxy URL (`https://user:pass@host:port`) is sent as `Proxy-Authorization` on that CONNECT request.
+1. **Proxy with SKIP_TLS_VERIFY**: Secure targets stay on TLS and go through the proxy with an HTTP `CONNECT` tunnel, as they do without skip-verify. Only certificate verification is skipped. `Proxy-Authorization` is sent from credentials in the proxy URL. Only `http://` proxy URLs are supported in this mode, as in gRPC itself.
 
-2. **Proxy with SKIP_TLS_VERIFY**: For `grpcs://` / `https://` targets the SDK uses a **secure gRPC channel** (including when `DIODE_SKIP_TLS_VERIFY=true`). Proxies use an HTTP CONNECT tunnel; skip-verify disables certificate checks only, not TLS. Plaintext `grpc://` targets stay on insecure channels and use `HTTP_PROXY`. For multi-tenant hostnames, skip-verify keeps the dial hostname for SNI when the server certificate includes a matching wildcard SAN.
-
-3. **MITM proxies (like mitmproxy)**: To use an intercepting proxy, you must provide the proxy's CA certificate:
+2. **MITM proxies (like mitmproxy)**: To use an intercepting proxy, you must provide the proxy's CA certificate:
    ```bash
    export HTTPS_PROXY=http://127.0.0.1:8080
    export DIODE_CERT_FILE=~/.mitmproxy/mitmproxy-ca-cert.pem
    ```
 
-4. **Non-intercepting proxies**: Regular forwarding proxies work without additional configuration if the target server has a valid certificate trusted by system CAs.
+3. **Non-intercepting proxies**: Regular forwarding proxies work without additional configuration if the target server has a valid certificate trusted by system CAs.
 
 Example with proxy:
 ```python
@@ -270,19 +268,11 @@ export DIODE_CERT_FILE=/path/to/cert.pem
 
 #### Disabling TLS verification
 
-Use this only as a development or break-glass escape hatch. The connection remains TLS-encrypted; the SDK pins the server leaf certificate seen at client construction and skips normal chain validation.
-
-When skip-verify is enabled, the leaf from the **first successful** startup probe is pinned for the life of the client (transient probe failures retry up to three times; only one leaf is ever trusted, not a union across load-balanced peers). If the server presents a new leaf (for example a Traefik default certificate regenerated on restart), connections fail until you create a new client. The probe reads names from that pinned leaf, but gRPC sends `grpc.ssl_target_name_override` as SNI—backends that choose certificates by SNI or that present different leaves than the probe can still fail. `DIODE_CERT_FILE` / `cert_file` is not used for the gRPC channel or OAuth token fetch when skip-verify is on (token requests use `verify=False`).
+Use this only as a development or break-glass escape hatch. The connection stays TLS-encrypted, but the server is no longer authenticated, so it is open to interception.
 
 ```bash
 export DIODE_SKIP_TLS_VERIFY=true
 ```
-
-For self-signed or private-CA servers in production, mount the CA or server cert via `DIODE_CERT_FILE` instead.
-
-#### For legacy certificates (CN-only, no SANs)
-
-CN-only certificates still work with skip-verify when the leaf has no SANs (the SDK uses the commonName for `grpc.ssl_target_name_override`). Combining `cert_file` with skip-verify does not add a separate trust path—the pinned leaf from the live handshake is what secures the gRPC channel, and `cert_file` is ignored for gRPC and OAuth as noted above.
 
 ```python
 client = DiodeClient(
@@ -292,6 +282,12 @@ client = DiodeClient(
     skip_tls_verify=True,
 )
 ```
+
+The behaviour matches Go's `InsecureSkipVerify`. The certificate chain, hostname and validity dates are not checked, and expired, self-signed, wrong-name, CN-only, rotating and per-SNI certificates all work. The request is not altered: the server sees the real host as SNI and `:authority`. Plaintext targets (`grpc://`, `http://`) are unaffected. `DIODE_CERT_FILE` is ignored while verification is skipped. The OAuth token request skips verification too.
+
+`grpcio` has no way to turn verification off, so for these targets the SDK opens a private local listener and gRPC connects to it without TLS. A Unix socket in a `0700` temporary directory is used where available, otherwise a loopback port. The SDK forwards each connection to the server over TLS without verifying it. The listener lives for as long as the client. It is stopped by `client.close()`, by leaving the `with` block, or when the client is garbage collected.
+
+For self-signed or private-CA servers in production, trust the certificate with `DIODE_CERT_FILE` instead.
 
 ### Message chunking
 
