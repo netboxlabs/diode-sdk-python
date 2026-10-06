@@ -574,10 +574,13 @@ def test_tunnel_refuses_loopback_fallback_by_default(monkeypatch):
     monkeypatch.delattr(asyncio, "start_unix_server")
     monkeypatch.delenv(tunnel_module.ALLOW_LOOPBACK_ENVVAR_NAME, raising=False)
 
+    threads_before = set(threading.enumerate())
+
     with pytest.raises(DiodeConfigError, match="DIODE_SKIP_TLS_VERIFY_ALLOW_LOOPBACK"):
         SkipVerifyTunnel("localhost:443")
 
-    assert not [t for t in threading.enumerate() if t.name == "diode-skip-verify-tunnel"]
+    leaked = [t for t in set(threading.enumerate()) - threads_before if t.name == "diode-skip-verify-tunnel"]
+    assert not leaked
 
 
 def test_tunnel_loopback_fallback_works_when_opted_in_and_warns_once(tunnels, echo_server, monkeypatch, caplog):
@@ -771,6 +774,8 @@ def test_client_channel_keeps_working_after_the_client_is_collected(grpc_tls_ser
     stub = ingester_pb2_grpc.IngesterServiceStub(channel)
     assert not stub.Ingest(ingester_pb2.IngestRequest(), timeout=5).errors
     channel.close()
+    del stub, channel
+    gc.collect()
 
 
 def test_percent_in_tmpdir_works_end_to_end(grpc_tls_server, stub_auth, percent_tmpdir):
