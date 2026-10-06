@@ -17,6 +17,7 @@ import socket
 import ssl
 import tempfile
 import threading
+import time
 from concurrent import futures
 from unittest import mock
 
@@ -135,10 +136,12 @@ class TLSEchoServer:
 class ConnectProxy:
     """Minimal HTTP CONNECT proxy that records requests and optionally demands Basic auth."""
 
-    def __init__(self, *, require_auth=None):
-        """Start listening on a free loopback port."""
+    def __init__(self, *, require_auth=None, hang=False):
+        """Start listening on a free loopback port. With ``hang`` the proxy never answers a CONNECT."""
         self.requests = []
         self._require_auth = require_auth
+        self._hang = hang
+        self._release = threading.Event()
         self._listener = socket.socket()
         self._listener.bind(("127.0.0.1", 0))
         self._listener.listen()
@@ -164,6 +167,10 @@ class ConnectProxy:
         lines = head.decode().split("\r\n")
         headers = {k.lower(): v for k, _, v in (line.partition(": ") for line in lines[1:] if line)}
         self.requests.append((lines[0], headers.get("proxy-authorization")))
+        if self._hang:
+            self._release.wait(30)
+            client.close()
+            return
 
         expected = None
         if self._require_auth:
@@ -190,19 +197,24 @@ class ConnectProxy:
             sink.close()
 
     def close(self):
-        """Stop accepting connections."""
+        """Stop accepting connections and release any hanging CONNECT."""
+        self._release.set()
         self._listener.close()
+
+
+def connect_local(target):
+    """Open a client socket to the tunnel's local listener."""
+    if target.startswith("unix:"):
+        sock = socket.socket(socket.AF_UNIX)
+        sock.connect(target[len("unix:") :])
+        return sock
+    host, port = split_authority(target)
+    return socket.create_connection((host, port))
 
 
 def round_trip(target, payload=b"ping"):
     """Send ``payload`` through a gRPC-style plaintext connection to ``target`` and return the echo."""
-    if target.startswith("unix:"):
-        sock = socket.socket(socket.AF_UNIX)
-        sock.connect(target[len("unix:") :])
-    else:
-        host, port = split_authority(target)
-        sock = socket.create_connection((host, port))
-    with sock:
+    with connect_local(target) as sock:
         sock.settimeout(5)
         sock.sendall(payload)
         return sock.recv(len(payload))
@@ -350,6 +362,31 @@ def test_tunnel_reports_proxy_rejection_without_forwarding(tunnels, echo_server,
         assert "407" in caplog.text
         assert echo_server.sni is None
     finally:
+        proxy.close()
+
+
+def test_tunnel_close_cancels_a_connect_that_is_still_in_flight(echo_server):
+    """close() must not leave the event loop running while a proxy CONNECT is unanswered."""
+    proxy = ConnectProxy(hang=True)
+    tunnel = SkipVerifyTunnel(f"localhost:{echo_server.port}", proxy_url=f"http://127.0.0.1:{proxy.port}")
+    try:
+        with connect_local(tunnel.target) as sock:
+            sock.sendall(b"ping")
+            deadline = time.monotonic() + 5
+            while not proxy.requests and time.monotonic() < deadline:
+                time.sleep(0.02)
+            assert proxy.requests, "the tunnel never reached the proxy"
+
+            started = time.monotonic()
+            tunnel.close()
+            elapsed = time.monotonic() - started
+
+        assert elapsed < 2
+        assert not tunnel._thread.is_alive()
+        assert tunnel._loop.is_closed()
+        assert not tunnel._tasks
+    finally:
+        tunnel.close()
         proxy.close()
 
 

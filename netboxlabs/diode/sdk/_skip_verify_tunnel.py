@@ -69,19 +69,20 @@ def _client_context() -> ssl.SSLContext:
     return context
 
 
-def _http_connect(sock: socket.socket, host: str, port: int, proxy) -> None:
-    """Open a tunnel through an HTTP proxy with CONNECT."""
+async def _http_connect(sock: socket.socket, host: str, port: int, proxy) -> None:
+    """Open a tunnel through an HTTP proxy with CONNECT. Every await here can be cancelled."""
+    loop = asyncio.get_running_loop()
     authority = f"{_bracket(host)}:{port}"
     lines = [f"CONNECT {authority} HTTP/1.1", f"Host: {authority}"]
     if proxy.username is not None:
         credentials = f"{unquote(proxy.username)}:{unquote(proxy.password or '')}"
         token = base64.b64encode(credentials.encode()).decode()
         lines.append(f"Proxy-Authorization: Basic {token}")
-    sock.sendall(("\r\n".join(lines) + "\r\n\r\n").encode())
+    await loop.sock_sendall(sock, ("\r\n".join(lines) + "\r\n\r\n").encode())
 
     response = b""
     while b"\r\n\r\n" not in response:
-        chunk = sock.recv(4096)
+        chunk = await asyncio.wait_for(loop.sock_recv(sock, 4096), _CONNECT_TIMEOUT_S)
         if not chunk:
             raise DiodeConfigError(f"Proxy closed the connection during CONNECT to {authority}")
         response += chunk
@@ -92,6 +93,26 @@ def _http_connect(sock: socket.socket, host: str, port: int, proxy) -> None:
     parts = status_line.split(" ", 2)
     if len(parts) < 2 or parts[1] != "200":
         raise DiodeConfigError(f"Proxy CONNECT to {authority} failed: {status_line}")
+
+
+async def _open_socket(host: str, port: int) -> socket.socket:
+    """Connect a TCP socket without blocking a thread, so close() can cancel it."""
+    loop = asyncio.get_running_loop()
+    last_error: BaseException = OSError(f"No address found for {_bracket(host)}:{port}")
+    for family, kind, proto, _, address in await loop.getaddrinfo(host, port, type=socket.SOCK_STREAM):
+        sock = socket.socket(family, kind, proto)
+        sock.setblocking(False)
+        try:
+            await asyncio.wait_for(loop.sock_connect(sock, address), _CONNECT_TIMEOUT_S)
+        except (OSError, asyncio.TimeoutError) as exc:
+            sock.close()
+            last_error = exc
+        except BaseException:
+            sock.close()
+            raise
+        else:
+            return sock
+    raise last_error
 
 
 _loopback_warned = False
@@ -178,14 +199,14 @@ class SkipVerifyTunnel:
         self._server = await asyncio.start_server(self._handle, "127.0.0.1", 0)
         return f"127.0.0.1:{self._server.sockets[0].getsockname()[1]}"
 
-    def _connect_blocking(self) -> socket.socket:
+    async def _connect(self) -> socket.socket:
         if self._proxy is None:
-            sock = socket.create_connection((self._host, self._port), timeout=_CONNECT_TIMEOUT_S)
+            sock = await _open_socket(self._host, self._port)
         else:
             proxy_port = self._proxy.port or (443 if self._proxy.scheme == "https" else 80)
-            sock = socket.create_connection((self._proxy.hostname, proxy_port), timeout=_CONNECT_TIMEOUT_S)
+            sock = await _open_socket(self._proxy.hostname, proxy_port)
             try:
-                _http_connect(sock, self._host, self._port, self._proxy)
+                await _http_connect(sock, self._host, self._port, self._proxy)
             except BaseException:
                 sock.close()
                 raise
@@ -193,7 +214,7 @@ class SkipVerifyTunnel:
         return sock
 
     async def _dial(self) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
-        sock = await self._loop.run_in_executor(None, self._connect_blocking)
+        sock = await self._connect()
         try:
             return await asyncio.open_connection(
                 sock=sock,
@@ -223,7 +244,7 @@ class SkipVerifyTunnel:
                 await asyncio.gather(*pipes, return_exceptions=True)
         except asyncio.CancelledError:
             raise
-        except (OSError, ssl.SSLError, DiodeConfigError) as exc:
+        except (OSError, ssl.SSLError, asyncio.TimeoutError, DiodeConfigError) as exc:
             _LOGGER.warning(f"Skip-verify tunnel to {_bracket(self._host)}:{self._port} failed: {exc}")
         finally:
             for stream in (writer, upstream_writer):
@@ -238,7 +259,8 @@ class SkipVerifyTunnel:
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
-        await self._loop.shutdown_default_executor()
+        with contextlib.suppress(asyncio.TimeoutError):
+            await asyncio.wait_for(self._loop.shutdown_default_executor(), _SHUTDOWN_TIMEOUT_S / 2)
 
     def _remove_tmpdir(self) -> None:
         if self._tmpdir:
