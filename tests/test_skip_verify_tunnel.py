@@ -354,3 +354,152 @@ def test_tunnel_rejects_https_proxy_url():
     """A gRPC channel cannot use an https:// proxy, so fail loudly instead of connecting direct."""
     with pytest.raises(DiodeConfigError, match="http:// proxy"):
         SkipVerifyTunnel("localhost:443", proxy_url="https://proxy.example.com:3128")
+
+
+class _IngesterServicer(ingester_pb2_grpc.IngesterServiceServicer):
+    def Ingest(self, request, context):  # noqa: N802
+        return ingester_pb2.IngestResponse()
+
+
+class _LogsServicer(logs_service_pb2_grpc.LogsServiceServicer):
+    def Export(self, request, context):  # noqa: N802
+        return logs_service_pb2.ExportLogsServiceResponse()
+
+
+@pytest.fixture
+def grpc_tls_server(tmp_path):
+    """Real gRPC server over TLS with an expired certificate whose SAN does not match 127.0.0.1."""
+    cert, key = make_cert(tmp_path, expired=True)
+    with open(key, "rb") as kf, open(cert, "rb") as cf:
+        credentials = grpc.ssl_server_credentials([(kf.read(), cf.read())])
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
+    ingester_pb2_grpc.add_IngesterServiceServicer_to_server(_IngesterServicer(), server)
+    logs_service_pb2_grpc.add_LogsServiceServicer_to_server(_LogsServicer(), server)
+    port = server.add_secure_port("127.0.0.1:0", credentials)
+    server.start()
+    yield port
+    server.stop(0)
+
+
+@pytest.fixture
+def stub_auth():
+    """Skip the OAuth token request; these tests are about the gRPC channel."""
+    with mock.patch("netboxlabs.diode.sdk.client._DiodeAuthentication.authenticate", return_value="token"):
+        yield
+
+
+def _client(port, **kwargs):
+    return DiodeClient(
+        target=f"grpcs://127.0.0.1:{port}",
+        app_name="tls-test",
+        app_version="0.0.1",
+        client_id="id",
+        client_secret="secret",
+        **kwargs,
+    )
+
+
+def _ingest(client):
+    return client.ingest(entities=[Entity(site=Site(name="tls-test"))])
+
+
+def test_client_fails_by_default_against_untrusted_certificate(grpc_tls_server, stub_auth):
+    """Control: without skip-verify the same server is rejected."""
+    with _client(grpc_tls_server) as client, pytest.raises(DiodeClientError):
+        _ingest(client)
+
+
+def test_client_skip_tls_verify_argument_ingests_through_expired_mismatched_certificate(grpc_tls_server, stub_auth):
+    """skip_tls_verify=True behaves like Go: expiry and a name mismatch are ignored."""
+    with _client(grpc_tls_server, skip_tls_verify=True) as client:
+        assert not _ingest(client).errors
+
+
+def test_client_env_var_ingests_through_expired_mismatched_certificate(grpc_tls_server, stub_auth, monkeypatch):
+    """DIODE_SKIP_TLS_VERIFY has the same effect as the constructor argument."""
+    monkeypatch.setenv("DIODE_SKIP_TLS_VERIFY", "true")
+    with _client(grpc_tls_server) as client:
+        assert not _ingest(client).errors
+
+
+def test_client_close_stops_the_tunnel(grpc_tls_server, stub_auth):
+    """Closing the client tears the tunnel down."""
+    client = _client(grpc_tls_server, skip_tls_verify=True)
+    tunnel = client._tunnel
+    assert tunnel is not None
+
+    client.close()
+
+    with pytest.raises(OSError):
+        round_trip(tunnel.target)
+
+
+def test_otlp_client_skip_tls_verify(grpc_tls_server):
+    """The OTLP client shares the same skip-verify channel."""
+    with DiodeOTLPClient(
+        target=f"grpcs://127.0.0.1:{grpc_tls_server}",
+        app_name="tls-test",
+        app_version="0.0.1",
+        skip_tls_verify=True,
+    ) as client:
+        assert not client.ingest(entities=[Entity(site=Site(name="tls-test"))]).errors
+
+
+def test_plaintext_target_ignores_skip_tls_verify(stub_auth):
+    """skip_tls_verify must not change a plaintext target, and needs no tunnel."""
+    client = DiodeClient(
+        target="grpc://127.0.0.1:1",
+        app_name="tls-test",
+        app_version="0.0.1",
+        client_id="id",
+        client_secret="secret",
+        skip_tls_verify=True,
+    )
+    try:
+        assert client._tunnel is None
+    finally:
+        client.close()
+
+
+def test_secure_target_with_skip_uses_tunnel_channel_not_proxy_option(stub_auth, monkeypatch):
+    """The tunnel owns the proxy hop. gRPC gets an insecure local channel with the real authority."""
+    monkeypatch.setenv("HTTPS_PROXY", "http://proxy.example.com:8080")
+    tunnel = mock.Mock(target="unix:/tmp/t.sock")
+    with (
+        mock.patch("netboxlabs.diode.sdk.client.SkipVerifyTunnel", return_value=tunnel) as tunnel_cls,
+        mock.patch("grpc.insecure_channel") as insecure_channel,
+        mock.patch("grpc.secure_channel") as secure_channel,
+    ):
+        DiodeClient(
+            target="grpcs://example.com:8443",
+            app_name="tls-test",
+            app_version="0.0.1",
+            client_id="id",
+            client_secret="secret",
+            skip_tls_verify=True,
+        )
+
+    tunnel_cls.assert_called_once_with("example.com:8443", proxy_url="http://proxy.example.com:8080")
+    secure_channel.assert_not_called()
+    args, kwargs = insecure_channel.call_args
+    assert args[0] == "unix:/tmp/t.sock"
+    options = dict(kwargs["options"])
+    assert options["grpc.default_authority"] == "example.com:8443"
+    assert options["grpc.enable_http_proxy"] == 0
+    assert "grpc.http_proxy" not in options
+    assert "grpc.ssl_target_name_override" not in options
+
+
+def test_secure_target_with_verification_still_uses_secure_channel(stub_auth):
+    """Default behaviour is untouched: verification on means a normal secure channel and no tunnel."""
+    with mock.patch("grpc.secure_channel") as secure_channel:
+        client = DiodeClient(
+            target="grpcs://example.com:8443",
+            app_name="tls-test",
+            app_version="0.0.1",
+            client_id="id",
+            client_secret="secret",
+        )
+
+    secure_channel.assert_called_once()
+    assert client._tunnel is None

@@ -2,25 +2,23 @@
 # Copyright 2026 NetBox Labs Inc
 """NetBox Labs, Diode - SDK - Client."""
 
-import base64
 import collections
 import json
 import logging
 import os
 import platform
 import random
-import socket
-import ssl
 import sys
 import tempfile
 import time
 import uuid
+import weakref
 from collections.abc import Callable, Iterable
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urlparse, urlunparse
+from urllib.parse import urlparse
 
 import certifi
 import grpc
@@ -34,6 +32,7 @@ from opentelemetry.proto.collector.logs.v1 import (
 from opentelemetry.proto.common.v1 import common_pb2
 from opentelemetry.proto.logs.v1 import logs_pb2
 
+from netboxlabs.diode.sdk._skip_verify_tunnel import SkipVerifyTunnel
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import (
     DiodeClientError,
@@ -89,13 +88,21 @@ def _load_certs(cert_file: str | None = None) -> bytes:
         return f.read()
 
 
-def _skip_tls_verify_from_env() -> bool:
+def _should_verify_tls(scheme: str) -> bool:
+    """Determine if TLS verification should be enabled based on scheme and environment variable."""
+    # Check if scheme is insecure
+    insecure_scheme = scheme in ["grpc", "http"]
+
+    # Check environment variable
     skip_tls_env = os.getenv(_DIODE_SKIP_TLS_VERIFY_ENVVAR_NAME, "").lower()
-    return skip_tls_env in ["true", "1", "yes", "on"]
+    skip_tls_from_env = skip_tls_env in ["true", "1", "yes", "on"]
+
+    # TLS verification is enabled by default, disabled only for insecure schemes or env var
+    return not (insecure_scheme or skip_tls_from_env)
 
 
-def parse_target(target: str) -> tuple[str, str, bool, bool]:
-    """Parse the target into authority, path, is_plaintext, and tls_verify."""
+def parse_target(target: str) -> tuple[str, str, bool]:
+    """Parse the target into authority, path and tls_verify."""
     parsed_target = urlparse(target)
 
     if parsed_target.scheme not in ["grpc", "grpcs", "http", "https"]:
@@ -103,260 +110,18 @@ def parse_target(target: str) -> tuple[str, str, bool, bool]:
             "target should start with grpc://, grpcs://, http:// or https://"
         )
 
-    is_plaintext = parsed_target.scheme in ("grpc", "http")
-    tls_verify = (not is_plaintext) and (not _skip_tls_verify_from_env())
+    # Determine if TLS verification should be enabled
+    tls_verify = _should_verify_tls(parsed_target.scheme)
 
     authority = parsed_target.netloc
 
-    has_explicit_port = (
-        authority.startswith("[") and "]:" in authority
-    ) or (":" in authority and not authority.startswith("["))
-
-    if not has_explicit_port:
+    if ":" not in authority:
         if parsed_target.scheme in ["grpc", "http"]:
             authority += ":80"
         elif parsed_target.scheme in ["grpcs", "https"]:
             authority += ":443"
 
-    return authority, parsed_target.path, is_plaintext, tls_verify
-
-
-_SKIP_VERIFY_PEER_PROBE_ATTEMPTS = 3
-
-
-def _authority_host_port(authority: str) -> tuple[str, int]:
-    if authority.startswith("[") and "]:" in authority:
-        host_part, port_str = authority.rsplit("]:", 1)
-        return host_part[1:], int(port_str)
-    host, port_str = authority.rsplit(":", 1)
-    return host, int(port_str)
-
-
-def _connect_host_port(host: str, port: int) -> str:
-    if ":" in host:
-        return f"[{host}]:{port}"
-    return f"{host}:{port}"
-
-
-def _dns_name_matches_dial_host(pattern: str, dial_host: str) -> bool:
-    if pattern.startswith("*."):
-        suffix = pattern[2:]
-        return dial_host.endswith(f".{suffix}")
-    return pattern == dial_host
-
-
-def _dial_host_matches_cert_sans(dial_host: str, dns_values: list[str], ip_values: list[str]) -> bool:
-    if dial_host in dns_values or dial_host in ip_values:
-        return True
-    return any(_dns_name_matches_dial_host(dns, dial_host) for dns in dns_values)
-
-
-def _tls_server_name_from_peercert(
-    peercert: dict[str, Any] | None, dial_host: str
-) -> str:
-    if not peercert:
-        raise DiodeConfigError(
-            "Could not decode peer certificate for TLS name override"
-        )
-
-    san = peercert.get("subjectAltName")
-    if san:
-        dns_values = [value for name_type, value in san if name_type == "DNS"]
-        ip_values = [value for name_type, value in san if name_type == "IP Address"]
-        if _dial_host_matches_cert_sans(dial_host, dns_values, ip_values):
-            return dial_host
-        if dns_values:
-            return dns_values[0]
-        if ip_values:
-            return ip_values[0]
-    else:
-        for rdn in peercert.get("subject", ()):
-            for key, value in rdn:
-                if key == "commonName":
-                    return value
-
-    raise DiodeConfigError(
-        "Peer certificate has no DNS SAN, IP SAN, or CN for TLS name override"
-    )
-
-
-def _x509_name_attr_to_ssl_key(oid: object) -> str:
-    from cryptography.x509.oid import NameOID
-
-    _OID_TO_SSL = {
-        NameOID.COMMON_NAME: "commonName",
-        NameOID.COUNTRY_NAME: "countryName",
-        NameOID.STATE_OR_PROVINCE_NAME: "stateOrProvinceName",
-        NameOID.LOCALITY_NAME: "localityName",
-        NameOID.ORGANIZATION_NAME: "organizationName",
-        NameOID.ORGANIZATIONAL_UNIT_NAME: "organizationalUnitName",
-    }
-    return _OID_TO_SSL.get(oid, getattr(oid, "dotted_string", str(oid)))
-
-
-def _peercert_dict_from_der(der_cert: bytes) -> dict[str, Any]:
-    from cryptography import x509
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.x509.general_name import DNSName, IPAddress
-
-    try:
-        cert = x509.load_der_x509_certificate(der_cert, default_backend())
-    except ValueError as exc:
-        raise DiodeConfigError("Could not decode peer certificate") from exc
-
-    subject_alt_name: list[tuple[str, str]] = []
-    try:
-        san_ext = cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
-        for name in san_ext.value:
-            if isinstance(name, DNSName):
-                subject_alt_name.append(("DNS", name.value))
-            elif isinstance(name, IPAddress):
-                subject_alt_name.append(("IP Address", str(name.value)))
-    except x509.ExtensionNotFound:
-        pass
-
-    subject = tuple(
-        tuple((_x509_name_attr_to_ssl_key(attr.oid), attr.value) for attr in rdn)
-        for rdn in cert.subject.rdns
-    )
-    peercert: dict[str, Any] = {"subject": subject}
-    if subject_alt_name:
-        peercert["subjectAltName"] = subject_alt_name
-    return peercert
-
-
-def _connect_socket(authority: str, proxy_url: str | None) -> socket.socket:
-    host, port = _authority_host_port(authority)
-
-    try:
-        if not proxy_url:
-            return socket.create_connection((host, port), timeout=10)
-
-        parsed_proxy = urlparse(proxy_url)
-        if not parsed_proxy.hostname:
-            raise DiodeConfigError(f"Invalid proxy URL: {proxy_url}")
-        proxy_port = parsed_proxy.port or 80
-        sock = socket.create_connection(
-            (parsed_proxy.hostname, proxy_port), timeout=10
-        )
-        connect_target = _connect_host_port(host, port)
-        connect_lines = [
-            f"CONNECT {connect_target} HTTP/1.1",
-            f"Host: {connect_target}",
-        ]
-        if parsed_proxy.username is not None:
-            user = unquote(parsed_proxy.username)
-            password = unquote(parsed_proxy.password or "")
-            token = base64.b64encode(f"{user}:{password}".encode()).decode("ascii")
-            connect_lines.append(f"Proxy-Authorization: Basic {token}")
-        connect_request = "\r\n".join(connect_lines) + "\r\n\r\n"
-        sock.sendall(connect_request.encode())
-        response = b""
-        while b"\r\n\r\n" not in response:
-            chunk = sock.recv(4096)
-            if not chunk:
-                break
-            response += chunk
-        status_line = response.split(b"\r\n", 1)[0]
-        if b" 200 " not in status_line:
-            sock.close()
-            raise DiodeConfigError(f"Proxy CONNECT failed for {authority}")
-        return sock
-    except DiodeConfigError:
-        raise
-    except OSError as exc:
-        raise DiodeConfigError(
-            f"Failed to connect to {authority}: {exc}"
-        ) from exc
-
-
-def _fetch_peer_leaf_certificate(
-    authority: str, proxy_url: str | None = None
-) -> tuple[bytes, str]:
-    host, _ = _authority_host_port(authority)
-    raw_sock = _connect_socket(authority, proxy_url)
-    tls_sock: ssl.SSLSocket | None = None
-    try:
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        context.minimum_version = ssl.TLSVersion.TLSv1_2
-        tls_sock = context.wrap_socket(raw_sock, server_hostname=host)
-        der_cert = tls_sock.getpeercert(binary_form=True)
-        if not der_cert:
-            raise DiodeConfigError(
-                f"No peer certificate returned from {authority}"
-            )
-        pem = ssl.DER_cert_to_PEM_cert(der_cert).encode()
-    except DiodeConfigError:
-        raise
-    except (ssl.SSLError, OSError) as exc:
-        raise DiodeConfigError(
-            f"TLS handshake failed for {authority}: {exc}"
-        ) from exc
-    finally:
-        if tls_sock is not None:
-            tls_sock.close()
-        else:
-            raw_sock.close()
-
-    peercert = _peercert_dict_from_der(der_cert)
-    server_name = _tls_server_name_from_peercert(peercert, host)
-    return pem, server_name
-
-
-def _skip_verify_channel_credentials(
-    authority: str, proxy_url: str | None
-) -> tuple[grpc.ChannelCredentials, tuple[tuple[str, str], ...]]:
-    errors: list[DiodeConfigError] = []
-
-    for _ in range(_SKIP_VERIFY_PEER_PROBE_ATTEMPTS):
-        try:
-            pem, server_name = _fetch_peer_leaf_certificate(authority, proxy_url)
-        except DiodeConfigError as exc:
-            errors.append(exc)
-            continue
-        credentials = grpc.ssl_channel_credentials(root_certificates=pem)
-        return credentials, (("grpc.ssl_target_name_override", server_name),)
-
-    raise errors[-1]
-
-
-def _open_grpc_channel(
-    target: str,
-    *,
-    is_plaintext: bool,
-    tls_verify: bool,
-    certificates: bytes | None,
-    channel_options: tuple,
-    proxy_url: str | None,
-    proxy_ssl_target_name_override: bool = False,
-) -> grpc.Channel:
-    opts = list(channel_options)
-    if is_plaintext:
-        _LOGGER.debug("Setting up gRPC insecure channel")
-        return grpc.insecure_channel(target=target, options=tuple(opts))
-
-    if tls_verify:
-        credentials = (
-            grpc.ssl_channel_credentials(root_certificates=certificates)
-            if certificates
-            else grpc.ssl_channel_credentials()
-        )
-        if proxy_url and proxy_ssl_target_name_override:
-            dial_host, _ = _authority_host_port(target)
-            opts.append(("grpc.ssl_target_name_override", dial_host))
-        _LOGGER.debug(
-            f"Setting up gRPC secure channel with "
-            f"{'custom certificates' if certificates else 'system certificates'}"
-            f"{' via proxy' if proxy_url else ''}"
-        )
-        return grpc.secure_channel(target, credentials, options=tuple(opts))
-
-    credentials, extra_opts = _skip_verify_channel_credentials(target, proxy_url)
-    opts.extend(extra_opts)
-    _LOGGER.debug("Setting up gRPC secure channel with TLS verification disabled")
-    return grpc.secure_channel(target, credentials, options=tuple(opts))
+    return authority, parsed_target.path, tls_verify
 
 
 def _get_sentry_dsn(sentry_dsn: str | None = None) -> str | None:
@@ -438,28 +203,6 @@ def _validate_proxy_url(url: str) -> bool:
         return parsed.scheme in ("http", "https") and bool(parsed.netloc)
     except Exception:
         return False
-
-
-def _proxy_url_for_grpc(url: str) -> str:
-    parsed = urlparse(url)
-    if parsed.scheme != "https":
-        return url
-    if parsed.port is not None:
-        return urlunparse(parsed._replace(scheme="http"))
-    hostname = parsed.hostname
-    if not hostname:
-        return urlunparse(parsed._replace(scheme="http"))
-    host_authority = _connect_host_port(hostname, 443)
-    if parsed.username is not None or parsed.password is not None:
-        userinfo = ""
-        if parsed.username is not None:
-            userinfo = unquote(parsed.username)
-            if parsed.password is not None:
-                userinfo = f"{userinfo}:{unquote(parsed.password)}"
-        netloc = f"{userinfo}@{host_authority}"
-    else:
-        netloc = host_authority
-    return urlunparse(parsed._replace(scheme="http", netloc=netloc))
 
 
 def _matches_no_proxy_entry(host: str, entry: str) -> bool:
@@ -566,10 +309,52 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
                 f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
             )
             return None
-        proxy_url = _proxy_url_for_grpc(proxy_url)
         _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")
 
     return proxy_url
+
+
+def _open_grpc_channel(
+    authority: str,
+    *,
+    secure: bool,
+    tls_verify: bool,
+    certificates: bytes | None,
+    channel_opts: list[tuple[str, Any]],
+    proxy_url: str | None,
+) -> tuple[grpc.Channel, SkipVerifyTunnel | None]:
+    """
+    Open the gRPC channel for a target and return it with the tunnel it depends on, if any.
+
+    A secure target with verification disabled gets a plaintext channel to a local
+    ``SkipVerifyTunnel`` that performs the TLS hop without verifying the certificate.
+    grpcio cannot skip verification on its own, see ``_skip_verify_tunnel``.
+    """
+    opts = list(channel_opts)
+
+    if secure and not tls_verify:
+        tunnel = SkipVerifyTunnel(authority, proxy_url=proxy_url)
+        opts += [("grpc.default_authority", authority), ("grpc.enable_http_proxy", 0)]
+        _LOGGER.debug(f"Setting up gRPC channel through skip-verify tunnel{' via proxy' if proxy_url else ''}")
+        return grpc.insecure_channel(tunnel.target, options=tuple(opts)), tunnel
+
+    if proxy_url:
+        opts.append(("grpc.http_proxy", proxy_url))
+        _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
+
+    if not secure:
+        _LOGGER.debug("Setting up gRPC insecure channel")
+        return grpc.insecure_channel(target=authority, options=tuple(opts)), None
+
+    credentials = (
+        grpc.ssl_channel_credentials(root_certificates=certificates) if certificates else grpc.ssl_channel_credentials()
+    )
+    _LOGGER.debug(
+        f"Setting up gRPC secure channel with "
+        f"{'custom certificates' if certificates else 'system certificates'}"
+        f"{' via proxy' if proxy_url else ''}"
+    )
+    return grpc.secure_channel(authority, credentials, options=tuple(opts)), None
 
 
 class DiodeClient(DiodeClientInterface):
@@ -581,6 +366,7 @@ class DiodeClient(DiodeClientInterface):
     _app_version = None
     _channel = None
     _stub = None
+    _tunnel = None
 
     def __init__(
         self,
@@ -607,9 +393,13 @@ class DiodeClient(DiodeClientInterface):
         self._cert_file = _get_optional_config_value(
             _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
         )
-        self._target, self._path, self._is_plaintext, self._tls_verify = parse_target(
-            target
-        )
+        self._target, self._path, self._tls_verify = parse_target(target)
+        # Whether the target scheme is secure (grpcs/https). Kept separately from
+        # tls_verify, which only controls certificate verification: tls_verify is
+        # False both for an insecure grpc:// target and for a grpcs:// target with
+        # verification disabled, so it cannot by itself tell the auth endpoint
+        # which scheme to use.
+        self._secure = urlparse(target).scheme in ("grpcs", "https")
         if skip_tls_verify:
             self._tls_verify = False
 
@@ -641,21 +431,17 @@ class DiodeClient(DiodeClientInterface):
             f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
         )
 
-        use_tls = not self._is_plaintext
-        proxy_url = _get_grpc_proxy_url(self._target, use_tls)
-        if proxy_url:
-            channel_opts.append(("grpc.http_proxy", proxy_url))
-            _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
-
-        self._channel = _open_grpc_channel(
+        proxy_url = _get_grpc_proxy_url(self._target, self._secure)
+        self._channel, self._tunnel = _open_grpc_channel(
             self._target,
-            is_plaintext=self._is_plaintext,
+            secure=self._secure,
             tls_verify=self._tls_verify,
             certificates=self._certificates,
-            channel_options=tuple(channel_opts),
+            channel_opts=channel_opts,
             proxy_url=proxy_url,
-            proxy_ssl_target_name_override=bool(proxy_url),
         )
+        if self._tunnel:
+            weakref.finalize(self, self._tunnel.close)
 
         channel = self._channel
 
@@ -729,6 +515,8 @@ class DiodeClient(DiodeClientInterface):
     def close(self):
         """Close the channel."""
         self._channel.close()
+        if self._tunnel:
+            self._tunnel.close()
 
     def ingest(
         self,
@@ -785,7 +573,6 @@ class DiodeClient(DiodeClientInterface):
         authentication_client = _DiodeAuthentication(
             self._target,
             self._path,
-            self._is_plaintext,
             self._tls_verify,
             self._client_id,
             self._client_secret,
@@ -797,6 +584,7 @@ class DiodeClient(DiodeClientInterface):
             self._certificates,
             self._cert_file,
             max_retries=self._max_auth_retries,
+            secure=self._secure,
         )
         access_token = authentication_client.authenticate()
         self._metadata = list(
@@ -907,9 +695,8 @@ class DiodeOTLPClient(DiodeClientInterface):
         self._python_version = platform.python_version()
         self._timeout = timeout
 
-        self._target, self._path, self._is_plaintext, self._tls_verify = parse_target(
-            target
-        )
+        self._target, self._path, self._tls_verify = parse_target(target)
+        self._secure = urlparse(target).scheme in ("grpcs", "https")
         if skip_tls_verify:
             self._tls_verify = False
         self._cert_file = _get_optional_config_value(
@@ -925,21 +712,23 @@ class DiodeOTLPClient(DiodeClientInterface):
             f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
         )
 
-        use_tls = not self._is_plaintext
-        proxy_url = _get_grpc_proxy_url(self._target, use_tls)
-        if proxy_url:
-            channel_opts.append(("grpc.http_proxy", proxy_url))
-            _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
+        proxy_url = _get_grpc_proxy_url(self._target, self._secure)
+        if proxy_url and self._secure and self._tls_verify:
+            # Extract hostname for SSL target name override
+            target_host = self._target.split(":")[0]
+            channel_opts.append(("grpc.ssl_target_name_override", target_host))
+            _LOGGER.debug(f"SSL target name override: {target_host}")
 
-        base_channel = _open_grpc_channel(
+        base_channel, self._tunnel = _open_grpc_channel(
             self._target,
-            is_plaintext=self._is_plaintext,
+            secure=self._secure,
             tls_verify=self._tls_verify,
             certificates=self._certificates,
-            channel_options=tuple(channel_opts),
+            channel_opts=channel_opts,
             proxy_url=proxy_url,
-            proxy_ssl_target_name_override=bool(proxy_url),
         )
+        if self._tunnel:
+            weakref.finalize(self, self._tunnel.close)
 
         self._base_channel = base_channel
         channel = base_channel
@@ -991,11 +780,6 @@ class DiodeOTLPClient(DiodeClientInterface):
         """Retrieve the export target."""
         return self._target
 
-    @property
-    def tls_verify(self) -> bool:
-        """Retrieve whether TLS certificate verification is enabled."""
-        return self._tls_verify
-
     def __enter__(self):
         """Enter the runtime context."""
         return self
@@ -1008,6 +792,8 @@ class DiodeOTLPClient(DiodeClientInterface):
         """Close the underlying channel."""
         if getattr(self, "_base_channel", None):
             self._base_channel.close()
+        if getattr(self, "_tunnel", None):
+            self._tunnel.close()
 
     def ingest(
         self,
@@ -1168,7 +954,6 @@ class _DiodeAuthentication:
         self,
         target: str,
         path: str,
-        is_plaintext: bool,
         tls_verify: bool,
         client_id: str,
         client_secret: str,
@@ -1183,10 +968,11 @@ class _DiodeAuthentication:
         initial_retry_delay: float | None = None,
         max_retry_delay: float | None = None,
         sleep: Callable[[float], None] | None = None,
+        secure: bool = True,
     ):
         self._target = target
-        self._is_plaintext = is_plaintext
         self._tls_verify = tls_verify
+        self._secure = secure
         self._client_id = client_id
         self._client_secret = client_secret
         self._path = path
@@ -1309,7 +1095,7 @@ class _DiodeAuthentication:
         via the session's verify setting. This keeps an insecure grpc:// target on
         HTTP even when DIODE_SKIP_TLS_VERIFY is set.
         """
-        scheme = "http" if self._is_plaintext else "https"
+        scheme = "https" if self._secure else "http"
         path = self._path.rstrip("/") if self._path else ""
         return f"{scheme}://{self._target}{path}/auth/token"
 
