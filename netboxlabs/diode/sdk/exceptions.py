@@ -27,10 +27,10 @@ class DiodeClientError(RpcError):
     _details = None
     _grpc_status = None
 
-    def __init__(self, err: RpcError):
-        """Initialize DiodeClientError."""
+    def __init__(self, err: RpcError, hint: str | None = None):
+        """Initialize DiodeClientError. ``hint`` adds the local cause that gRPC cannot see."""
         self._status_code = err.code()
-        self._details = err.details()
+        self._details = f"{err.details()} ({hint})" if hint else err.details()
 
     @property
     def status_code(self):

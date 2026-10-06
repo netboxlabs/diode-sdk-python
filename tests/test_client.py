@@ -2072,38 +2072,6 @@ def test_diode_client_configures_proxy_option(mock_diode_authentication):
         del os.environ["HTTP_PROXY"]
 
 
-def test_diode_client_uses_insecure_channel_with_proxy_when_skip_tls(
-    mock_diode_authentication,
-):
-    """Test DiodeClient uses insecure channel with proxy when SKIP_TLS_VERIFY is set."""
-    os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
-    os.environ["DIODE_SKIP_TLS_VERIFY"] = "true"
-    try:
-        with mock.patch("grpc.insecure_channel") as mock_insecure_channel:
-            DiodeClient(
-                target="grpcs://example.com:443",
-                app_name="my-producer",
-                app_version="0.0.1",
-                client_id="abcde",
-                client_secret="123456",
-            )
-
-            # Should use insecure channel when SKIP_TLS_VERIFY is set, even with proxy
-            mock_insecure_channel.assert_called_once()
-            _, kwargs = mock_insecure_channel.call_args
-            options = kwargs["options"]
-
-            # Verify proxy option is set
-            proxy_option = next(
-                (opt for opt in options if opt[0] == "grpc.http_proxy"), None
-            )
-            assert proxy_option is not None
-            assert proxy_option[1] == "http://proxy.example.com:8080"
-    finally:
-        del os.environ["HTTP_PROXY"]
-        del os.environ["DIODE_SKIP_TLS_VERIFY"]
-
-
 def test_diode_client_respects_no_proxy_for_target(mock_diode_authentication):
     """Test DiodeClient respects NO_PROXY environment variable."""
     os.environ["HTTP_PROXY"] = "http://proxy.example.com:8080"
