@@ -12,12 +12,13 @@ import sys
 import tempfile
 import time
 import uuid
+import weakref
 from collections.abc import Callable, Iterable
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 import certifi
 import grpc
@@ -31,6 +32,7 @@ from opentelemetry.proto.collector.logs.v1 import (
 from opentelemetry.proto.common.v1 import common_pb2
 from opentelemetry.proto.logs.v1 import logs_pb2
 
+from netboxlabs.diode.sdk._skip_verify_tunnel import SkipVerifyTunnel
 from netboxlabs.diode.sdk.diode.v1 import ingester_pb2, ingester_pb2_grpc
 from netboxlabs.diode.sdk.exceptions import (
     DiodeClientError,
@@ -183,6 +185,17 @@ def _get_proxy_env_var(var_name: str) -> str | None:
     return os.getenv(var_name.lower())
 
 
+def _redact_proxy_url(url: str) -> str:
+    """Hide credentials in a proxy URL before it is logged."""
+    try:
+        parsed = urlparse(url)
+        if parsed.username is None:
+            return url
+        return urlunparse(parsed._replace(netloc=f"***@{parsed.netloc.rpartition('@')[2]}"))
+    except ValueError:
+        return "<unparsable proxy URL>"
+
+
 def _validate_proxy_url(url: str) -> bool:
     """
     Validate proxy URL format.
@@ -303,13 +316,65 @@ def _get_grpc_proxy_url(target_host: str, use_tls: bool) -> str | None:
     if proxy_url:
         if not _validate_proxy_url(proxy_url):
             _LOGGER.warning(
-                f"Invalid proxy URL format: {proxy_url}. "
+                f"Invalid proxy URL format: {_redact_proxy_url(proxy_url)}. "
                 f"Proxy URL must be http:// or https:// with valid host. Ignoring proxy."
             )
             return None
-        _LOGGER.debug(f"Using proxy {proxy_url} for gRPC target {target_host}")
+        _LOGGER.debug(f"Using proxy {_redact_proxy_url(proxy_url)} for gRPC target {target_host}")
 
     return proxy_url
+
+
+def _tunnel_hint(tunnel: SkipVerifyTunnel | None, err: grpc.RpcError) -> str | None:
+    """Return why the skip-verify tunnel could not reach the server, when that explains an UNAVAILABLE error."""
+    if tunnel is None or not tunnel.last_error:
+        return None
+    if err.code() != grpc.StatusCode.UNAVAILABLE:
+        return None
+    return f"skip-verify tunnel: {tunnel.last_error}"
+
+
+def _open_grpc_channel(
+    authority: str,
+    *,
+    secure: bool,
+    tls_verify: bool,
+    certificates: bytes | None,
+    channel_opts: list[tuple[str, Any]],
+    proxy_url: str | None,
+) -> tuple[grpc.Channel, SkipVerifyTunnel | None]:
+    """
+    Open the gRPC channel for a target and return it with the tunnel it depends on, if any.
+
+    A secure target with verification disabled gets a plaintext channel to a local
+    ``SkipVerifyTunnel`` that performs the TLS hop without verifying the certificate.
+    grpcio cannot skip verification on its own, see ``_skip_verify_tunnel``.
+    """
+    opts = list(channel_opts)
+
+    if secure and not tls_verify:
+        tunnel = SkipVerifyTunnel(authority, proxy_url=proxy_url)
+        opts += [("grpc.default_authority", authority), ("grpc.enable_http_proxy", 0)]
+        _LOGGER.debug(f"Setting up gRPC channel through skip-verify tunnel{' via proxy' if proxy_url else ''}")
+        return grpc.insecure_channel(tunnel.target, options=tuple(opts)), tunnel
+
+    if proxy_url:
+        opts.append(("grpc.http_proxy", proxy_url))
+        _LOGGER.debug(f"Configured gRPC proxy: {_redact_proxy_url(proxy_url)}")
+
+    if not secure:
+        _LOGGER.debug("Setting up gRPC insecure channel")
+        return grpc.insecure_channel(target=authority, options=tuple(opts)), None
+
+    credentials = (
+        grpc.ssl_channel_credentials(root_certificates=certificates) if certificates else grpc.ssl_channel_credentials()
+    )
+    _LOGGER.debug(
+        f"Setting up gRPC secure channel with "
+        f"{'custom certificates' if certificates else 'system certificates'}"
+        f"{' via proxy' if proxy_url else ''}"
+    )
+    return grpc.secure_channel(authority, credentials, options=tuple(opts)), None
 
 
 class DiodeClient(DiodeClientInterface):
@@ -321,6 +386,7 @@ class DiodeClient(DiodeClientInterface):
     _app_version = None
     _channel = None
     _stub = None
+    _tunnel = None
 
     def __init__(
         self,
@@ -334,6 +400,7 @@ class DiodeClient(DiodeClientInterface):
         sentry_profiles_sample_rate: float = 1.0,
         max_auth_retries: int = 3,
         cert_file: str | None = None,
+        skip_tls_verify: bool = False,
     ):
         """Initiate a new client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
@@ -353,6 +420,8 @@ class DiodeClient(DiodeClientInterface):
         # verification disabled, so it cannot by itself tell the auth endpoint
         # which scheme to use.
         self._secure = urlparse(target).scheme in ("grpcs", "https")
+        if skip_tls_verify:
+            self._tls_verify = False
 
         # Load certificates once if needed
         self._certificates = (
@@ -382,37 +451,17 @@ class DiodeClient(DiodeClientInterface):
             f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
         )
 
-        proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
-        if proxy_url:
-            channel_opts.append(("grpc.http_proxy", proxy_url))
-            _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
-
-        channel_opts = tuple(channel_opts)
-
-        # Channel creation logic
-        if self._tls_verify:
-            credentials = (
-                grpc.ssl_channel_credentials(root_certificates=self._certificates)
-                if self._certificates
-                else grpc.ssl_channel_credentials()
-            )
-
-            _LOGGER.debug(
-                f"Setting up gRPC secure channel with "
-                f"{'custom certificates' if self._certificates else 'system certificates'}"
-                f"{' via proxy' if proxy_url else ''}"
-            )
-            self._channel = grpc.secure_channel(
-                self._target,
-                credentials,
-                options=channel_opts,
-            )
-        else:
-            _LOGGER.debug("Setting up gRPC insecure channel")
-            self._channel = grpc.insecure_channel(
-                target=self._target,
-                options=channel_opts,
-            )
+        proxy_url = _get_grpc_proxy_url(self._target, self._secure)
+        self._channel, self._tunnel = _open_grpc_channel(
+            self._target,
+            secure=self._secure,
+            tls_verify=self._tls_verify,
+            certificates=self._certificates,
+            channel_opts=channel_opts,
+            proxy_url=proxy_url,
+        )
+        if self._tunnel:
+            weakref.finalize(self._channel, self._tunnel.close)
 
         channel = self._channel
 
@@ -486,6 +535,8 @@ class DiodeClient(DiodeClientInterface):
     def close(self):
         """Close the channel."""
         self._channel.close()
+        if self._tunnel:
+            self._tunnel.close()
 
     def ingest(
         self,
@@ -518,7 +569,7 @@ class DiodeClient(DiodeClientInterface):
                         )
                         self._authenticate(_INGEST_SCOPE)
                         continue
-                raise DiodeClientError(err) from err
+                raise DiodeClientError(err, hint=_tunnel_hint(self._tunnel, err)) from err
         raise RuntimeError("Max retries exceeded")
 
     def _setup_sentry(
@@ -652,6 +703,7 @@ class DiodeOTLPClient(DiodeClientInterface):
         timeout: float = 10.0,
         metadata: dict[str, str] | Iterable[tuple[str, str]] | None = None,
         cert_file: str | None = None,
+        skip_tls_verify: bool = False,
     ):
         """Initiate a new Diode OTLP client."""
         log_level = os.getenv(_DIODE_SDK_LOG_LEVEL_ENVVAR_NAME, "INFO").upper()
@@ -664,6 +716,9 @@ class DiodeOTLPClient(DiodeClientInterface):
         self._timeout = timeout
 
         self._target, self._path, self._tls_verify = parse_target(target)
+        self._secure = urlparse(target).scheme in ("grpcs", "https")
+        if skip_tls_verify:
+            self._tls_verify = False
         self._cert_file = _get_optional_config_value(
             _DIODE_CERT_FILE_ENVVAR_NAME, cert_file
         )
@@ -677,41 +732,23 @@ class DiodeOTLPClient(DiodeClientInterface):
             f"{self._name}/{self._version} {self._app_name}/{self._app_version}"
         )
 
-        proxy_url = _get_grpc_proxy_url(self._target, self._tls_verify)
-        if proxy_url:
-            channel_opts.append(("grpc.http_proxy", proxy_url))
+        proxy_url = _get_grpc_proxy_url(self._target, self._secure)
+        if proxy_url and self._secure and self._tls_verify:
             # Extract hostname for SSL target name override
             target_host = self._target.split(":")[0]
             channel_opts.append(("grpc.ssl_target_name_override", target_host))
-            _LOGGER.debug(f"Configured gRPC proxy: {proxy_url}")
             _LOGGER.debug(f"SSL target name override: {target_host}")
 
-        channel_opts = tuple(channel_opts)
-
-        # Channel creation logic
-        if self._tls_verify:
-            credentials = (
-                grpc.ssl_channel_credentials(root_certificates=self._certificates)
-                if self._certificates
-                else grpc.ssl_channel_credentials()
-            )
-
-            _LOGGER.debug(
-                f"Setting up gRPC secure channel with "
-                f"{'custom certificates' if self._certificates else 'system certificates'}"
-                f"{' via proxy' if proxy_url else ''}"
-            )
-            base_channel = grpc.secure_channel(
-                self._target,
-                credentials,
-                options=channel_opts,
-            )
-        else:
-            _LOGGER.debug("Setting up gRPC insecure channel")
-            base_channel = grpc.insecure_channel(
-                target=self._target,
-                options=channel_opts,
-            )
+        base_channel, self._tunnel = _open_grpc_channel(
+            self._target,
+            secure=self._secure,
+            tls_verify=self._tls_verify,
+            certificates=self._certificates,
+            channel_opts=channel_opts,
+            proxy_url=proxy_url,
+        )
+        if self._tunnel:
+            weakref.finalize(base_channel, self._tunnel.close)
 
         self._base_channel = base_channel
         channel = base_channel
@@ -775,6 +812,8 @@ class DiodeOTLPClient(DiodeClientInterface):
         """Close the underlying channel."""
         if getattr(self, "_base_channel", None):
             self._base_channel.close()
+        if getattr(self, "_tunnel", None):
+            self._tunnel.close()
 
     def ingest(
         self,
@@ -802,7 +841,8 @@ class DiodeOTLPClient(DiodeClientInterface):
                 metadata=self._metadata,
             )
         except grpc.RpcError as err:
-            raise OTLPClientError(err) from err
+            hint = _tunnel_hint(self._tunnel, err)
+            raise OTLPClientError(err, message=f"OTLP export failed ({hint})" if hint else None) from err
 
         return ingester_pb2.IngestResponse()
 
