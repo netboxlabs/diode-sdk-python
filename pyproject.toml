@@ -24,7 +24,7 @@ classifiers = [  # Optional
 ]
 
 dependencies = [
-    "certifi>=2024.7.4",
+    "certifi>=2026.10.19",
     "grpcio>=1.68.1",
     "grpcio-status>=1.68.1",
     "requests>=2.33.0",
