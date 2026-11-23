@@ -3,7 +3,7 @@
 #
 # Generated code. DO NOT EDIT.
 # Source: NetBox v4.7.0
-# Timestamp: 2026-09-02 20:52:38Z
+# Timestamp: 2026-11-23 19:37:59Z
 #
 # ruff: noqa: C901
 
@@ -106,6 +106,7 @@ PRIMARY_VALUE_MAP = {
     "CoolingOutflow": "name",
     "CoolingSource": "name",
     "ModuleBayType": "name",
+    "ConfigContext": "name",
 }
 
 
@@ -300,6 +301,7 @@ class Entity:
         cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
         cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
         module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
+        config_context: str | ConfigContext | pb.ConfigContext | None = None,
     ) -> pb.Entity:
         """Create a new Entity."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -440,6 +442,7 @@ class Entity:
         cooling_outflow = convert_to_protobuf(cooling_outflow, pb.CoolingOutflow)
         cooling_source = convert_to_protobuf(cooling_source, pb.CoolingSource)
         module_bay_type = convert_to_protobuf(module_bay_type, pb.ModuleBayType)
+        config_context = convert_to_protobuf(config_context, pb.ConfigContext)
         if timestamp is None:
             ts = _timestamp_pb2.Timestamp()
             ts.GetCurrentTime()
@@ -552,6 +555,7 @@ class Entity:
             cooling_outflow=cooling_outflow,
             cooling_source=cooling_source,
             module_bay_type=module_bay_type,
+            config_context=config_context,
         )
         return result
 
@@ -1429,6 +1433,7 @@ class ContactAssignment:
         object_cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
         object_cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
         object_module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
+        object_config_context: str | ConfigContext | pb.ConfigContext | None = None,
         contact: str | Contact | pb.Contact | None = None,
         role: str | ContactRole | pb.ContactRole | None = None,
         priority: str | None = None,
@@ -1616,6 +1621,9 @@ class ContactAssignment:
         object_module_bay_type = convert_to_protobuf(
             object_module_bay_type, pb.ModuleBayType
         )
+        object_config_context = convert_to_protobuf(
+            object_config_context, pb.ConfigContext
+        )
         contact = convert_to_protobuf(contact, pb.Contact)
         role = convert_to_protobuf(role, pb.ContactRole)
         tags = convert_to_protobuf_list(tags, pb.Tag)
@@ -1727,6 +1735,7 @@ class ContactAssignment:
             object_cooling_outflow=object_cooling_outflow,
             object_cooling_source=object_cooling_source,
             object_module_bay_type=object_module_bay_type,
+            object_config_context=object_config_context,
             contact=contact,
             role=role,
             priority=priority,
@@ -1938,6 +1947,7 @@ class CustomFieldObjectReference:
         cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
         cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
         module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
+        config_context: str | ConfigContext | pb.ConfigContext | None = None,
     ) -> pb.CustomFieldObjectReference:
         """Create a new CustomFieldObjectReference."""
         asn = convert_to_protobuf(asn, pb.ASN)
@@ -2077,6 +2087,7 @@ class CustomFieldObjectReference:
         cooling_outflow = convert_to_protobuf(cooling_outflow, pb.CoolingOutflow)
         cooling_source = convert_to_protobuf(cooling_source, pb.CoolingSource)
         module_bay_type = convert_to_protobuf(module_bay_type, pb.ModuleBayType)
+        config_context = convert_to_protobuf(config_context, pb.ConfigContext)
         result = pb.CustomFieldObjectReference(
             asn=asn,
             asn_range=asn_range,
@@ -2183,6 +2194,7 @@ class CustomFieldObjectReference:
             cooling_outflow=cooling_outflow,
             cooling_source=cooling_source,
             module_bay_type=module_bay_type,
+            config_context=config_context,
         )
         return result
 
@@ -2668,6 +2680,7 @@ class FHRPGroupAssignment:
         ) = None,
         interface_cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
         interface_module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
+        interface_config_context: str | ConfigContext | pb.ConfigContext | None = None,
         priority: int | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> pb.FHRPGroupAssignment:
@@ -2900,6 +2913,9 @@ class FHRPGroupAssignment:
         interface_module_bay_type = convert_to_protobuf(
             interface_module_bay_type, pb.ModuleBayType
         )
+        interface_config_context = convert_to_protobuf(
+            interface_config_context, pb.ConfigContext
+        )
         metadata = convert_dict_to_struct(metadata)
         result = pb.FHRPGroupAssignment(
             group=group,
@@ -3008,6 +3024,7 @@ class FHRPGroupAssignment:
             interface_cooling_outflow=interface_cooling_outflow,
             interface_cooling_source=interface_cooling_source,
             interface_module_bay_type=interface_module_bay_type,
+            interface_config_context=interface_config_context,
             priority=priority,
             metadata=metadata,
         )
@@ -3209,6 +3226,7 @@ class GenericObject:
         object_cooling_outflow: str | CoolingOutflow | pb.CoolingOutflow | None = None,
         object_cooling_source: str | CoolingSource | pb.CoolingSource | None = None,
         object_module_bay_type: str | ModuleBayType | pb.ModuleBayType | None = None,
+        object_config_context: str | ConfigContext | pb.ConfigContext | None = None,
     ) -> pb.GenericObject:
         """Create a new GenericObject."""
         object_asn = convert_to_protobuf(object_asn, pb.ASN)
@@ -3390,6 +3408,9 @@ class GenericObject:
         object_module_bay_type = convert_to_protobuf(
             object_module_bay_type, pb.ModuleBayType
         )
+        object_config_context = convert_to_protobuf(
+            object_config_context, pb.ConfigContext
+        )
         result = pb.GenericObject(
             object_asn=object_asn,
             object_asn_range=object_asn_range,
@@ -3496,6 +3517,7 @@ class GenericObject:
             object_cooling_outflow=object_cooling_outflow,
             object_cooling_source=object_cooling_source,
             object_module_bay_type=object_module_bay_type,
+            object_config_context=object_config_context,
         )
         return result
 
@@ -4340,6 +4362,9 @@ class L2VPNTermination:
         assigned_object_module_bay_type: (
             str | ModuleBayType | pb.ModuleBayType | None
         ) = None,
+        assigned_object_config_context: (
+            str | ConfigContext | pb.ConfigContext | None
+        ) = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
         metadata: dict[str, Any] | None = None,
@@ -4625,6 +4650,9 @@ class L2VPNTermination:
         assigned_object_module_bay_type = convert_to_protobuf(
             assigned_object_module_bay_type, pb.ModuleBayType
         )
+        assigned_object_config_context = convert_to_protobuf(
+            assigned_object_config_context, pb.ConfigContext
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -4735,6 +4763,7 @@ class L2VPNTermination:
             assigned_object_cooling_outflow=assigned_object_cooling_outflow,
             assigned_object_cooling_source=assigned_object_cooling_source,
             assigned_object_module_bay_type=assigned_object_module_bay_type,
+            assigned_object_config_context=assigned_object_config_context,
             tags=tags,
             custom_fields=custom_fields,
             metadata=metadata,
@@ -6302,6 +6331,9 @@ class TunnelTermination:
         termination_module_bay_type: (
             str | ModuleBayType | pb.ModuleBayType | None
         ) = None,
+        termination_config_context: (
+            str | ConfigContext | pb.ConfigContext | None
+        ) = None,
         outside_ip: str | IPAddress | pb.IPAddress | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
         custom_fields: dict[str, CustomFieldValue | pb.CustomFieldValue] | None = None,
@@ -6560,6 +6592,9 @@ class TunnelTermination:
         termination_module_bay_type = convert_to_protobuf(
             termination_module_bay_type, pb.ModuleBayType
         )
+        termination_config_context = convert_to_protobuf(
+            termination_config_context, pb.ConfigContext
+        )
         outside_ip = convert_to_protobuf(outside_ip, pb.IPAddress)
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
@@ -6672,6 +6707,7 @@ class TunnelTermination:
             termination_cooling_outflow=termination_cooling_outflow,
             termination_cooling_source=termination_cooling_source,
             termination_module_bay_type=termination_module_bay_type,
+            termination_config_context=termination_config_context,
             outside_ip=outside_ip,
             tags=tags,
             custom_fields=custom_fields,
@@ -7681,6 +7717,9 @@ class JournalEntry:
         assigned_object_module_bay_type: (
             str | ModuleBayType | pb.ModuleBayType | None
         ) = None,
+        assigned_object_config_context: (
+            str | ConfigContext | pb.ConfigContext | None
+        ) = None,
         kind: str | None = None,
         comments: str | None = None,
         tags: list[str | Tag | pb.Tag] | None = None,
@@ -7968,6 +8007,9 @@ class JournalEntry:
         assigned_object_module_bay_type = convert_to_protobuf(
             assigned_object_module_bay_type, pb.ModuleBayType
         )
+        assigned_object_config_context = convert_to_protobuf(
+            assigned_object_config_context, pb.ConfigContext
+        )
         tags = convert_to_protobuf_list(tags, pb.Tag)
         custom_fields = convert_to_protobuf_dict(custom_fields, pb.CustomFieldValue)
         metadata = convert_dict_to_struct(metadata)
@@ -8078,6 +8120,7 @@ class JournalEntry:
             assigned_object_cooling_outflow=assigned_object_cooling_outflow,
             assigned_object_cooling_source=assigned_object_cooling_source,
             assigned_object_module_bay_type=assigned_object_module_bay_type,
+            assigned_object_config_context=assigned_object_config_context,
             kind=kind,
             comments=comments,
             tags=tags,
@@ -8573,6 +8616,73 @@ class ModuleBayType:
             comments=comments,
             tags=tags,
             custom_fields=custom_fields,
+            metadata=metadata,
+        )
+        return result
+
+
+class ConfigContext:
+    """wrapper for netboxlabs.diode.sdk.diode.v1.ingester_pb2.ConfigContext."""
+
+    def __new__(
+        cls,
+        name: str | None = None,
+        weight: int | None = None,
+        description: str | None = None,
+        is_active: bool | None = None,
+        regions: list[str | Region | pb.Region] | None = None,
+        site_groups: list[str | SiteGroup | pb.SiteGroup] | None = None,
+        sites: list[str | Site | pb.Site] | None = None,
+        locations: list[str | Location | pb.Location] | None = None,
+        device_types: list[str | DeviceType | pb.DeviceType] | None = None,
+        roles: list[str | DeviceRole | pb.DeviceRole] | None = None,
+        platforms: list[str | Platform | pb.Platform] | None = None,
+        cluster_types: list[str | ClusterType | pb.ClusterType] | None = None,
+        cluster_groups: list[str | ClusterGroup | pb.ClusterGroup] | None = None,
+        clusters: list[str | Cluster | pb.Cluster] | None = None,
+        tenant_groups: list[str | TenantGroup | pb.TenantGroup] | None = None,
+        tenants: list[str | Tenant | pb.Tenant] | None = None,
+        owner: str | Owner | pb.Owner | None = None,
+        tags: list[str | Tag | pb.Tag] | None = None,
+        data: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> pb.ConfigContext:
+        """Create a new ConfigContext."""
+        regions = convert_to_protobuf_list(regions, pb.Region)
+        site_groups = convert_to_protobuf_list(site_groups, pb.SiteGroup)
+        sites = convert_to_protobuf_list(sites, pb.Site)
+        locations = convert_to_protobuf_list(locations, pb.Location)
+        device_types = convert_to_protobuf_list(device_types, pb.DeviceType)
+        roles = convert_to_protobuf_list(roles, pb.DeviceRole)
+        platforms = convert_to_protobuf_list(platforms, pb.Platform)
+        cluster_types = convert_to_protobuf_list(cluster_types, pb.ClusterType)
+        cluster_groups = convert_to_protobuf_list(cluster_groups, pb.ClusterGroup)
+        clusters = convert_to_protobuf_list(clusters, pb.Cluster)
+        tenant_groups = convert_to_protobuf_list(tenant_groups, pb.TenantGroup)
+        tenants = convert_to_protobuf_list(tenants, pb.Tenant)
+        owner = convert_to_protobuf(owner, pb.Owner)
+        tags = convert_to_protobuf_list(tags, pb.Tag)
+        metadata = convert_dict_to_struct(metadata)
+        result = pb.ConfigContext(
+            name=name,
+            weight=weight,
+            description=description,
+            is_active=is_active,
+            regions=regions,
+            site_groups=site_groups,
+            sites=sites,
+            locations=locations,
+            device_types=device_types,
+            roles=roles,
+            platforms=platforms,
+            cluster_types=cluster_types,
+            cluster_groups=cluster_groups,
+            clusters=clusters,
+            tenant_groups=tenant_groups,
+            tenants=tenants,
+            owner=owner,
+            tags=tags,
+            data=data,
             metadata=metadata,
         )
         return result

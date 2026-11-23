@@ -521,6 +521,7 @@ These attributes are added alongside standard OTLP resource attributes (`service
 * Cluster
 * Cluster Group
 * Cluster Type
+* Config Context
 * Console Port
 * Console Server Port
 * Contact
