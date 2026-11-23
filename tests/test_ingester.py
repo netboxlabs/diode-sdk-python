@@ -8,6 +8,7 @@ from netboxlabs.diode.sdk.diode.v1.ingester_pb2 import (
     Cluster as ClusterPb,
     ClusterGroup as ClusterGroupPb,
     ClusterType as ClusterTypePb,
+    ConfigContext as ConfigContextPb,
     Device as DevicePb,
     DeviceRole as DeviceRolePb,
     DeviceType as DeviceTypePb,
@@ -30,6 +31,7 @@ from netboxlabs.diode.sdk.ingester import (
     Cluster,
     ClusterGroup,
     ClusterType,
+    ConfigContext,
     Device,
     DeviceRole,
     DeviceType,
@@ -1289,3 +1291,78 @@ def test_convert_to_protobuf_owner_group():
     result = convert_to_protobuf("Test Group", OwnerGroupPb)
     assert isinstance(result, OwnerGroupPb)
     assert result.name == "Test Group"
+
+
+def test_config_context_instantiation_with_all_fields():
+    """Check ConfigContext instantiation converts string assignments to references."""
+    config_context = ConfigContext(
+        name="mist-site-vars",
+        weight=1000,
+        description="Site variables from Mist",
+        is_active=True,
+        sites=["Site1", "Site2"],
+        roles=["switch"],
+        platforms=["junos"],
+        owner="Network Team",
+        tags=["mist"],
+        data='{"ntp_servers": ["10.0.0.1"]}',
+        metadata={"source": "mist"},
+    )
+    assert isinstance(config_context, ConfigContextPb)
+    assert config_context.name == "mist-site-vars"
+    assert config_context.weight == 1000
+    assert config_context.description == "Site variables from Mist"
+    assert config_context.is_active is True
+    assert config_context.data == '{"ntp_servers": ["10.0.0.1"]}'
+    assert [type(site) for site in config_context.sites] == [SitePb, SitePb]
+    assert [site.name for site in config_context.sites] == ["Site1", "Site2"]
+    assert [type(role) for role in config_context.roles] == [DeviceRolePb]
+    assert [role.name for role in config_context.roles] == ["switch"]
+    assert [type(platform) for platform in config_context.platforms] == [PlatformPb]
+    assert [platform.name for platform in config_context.platforms] == ["junos"]
+    assert [type(tag) for tag in config_context.tags] == [TagPb]
+    assert [tag.name for tag in config_context.tags] == ["mist"]
+    assert isinstance(config_context.owner, OwnerPb)
+    assert config_context.owner.name == "Network Team"
+    assert config_context.metadata["source"] == "mist"
+
+
+def test_config_context_instantiation_with_explicit_nested_object_types():
+    """Check ConfigContext instantiation keeps explicit nested objects."""
+    config_context = ConfigContext(
+        name="mist-site-vars",
+        data='{"a": 1}',
+        sites=[Site(name="Site1", slug="site1")],
+        roles=[DeviceRole(name="switch", slug="switch")],
+        tags=[Tag(name="mist", slug="mist")],
+    )
+    assert isinstance(config_context, ConfigContextPb)
+    assert config_context.sites[0].name == "Site1"
+    assert config_context.sites[0].slug == "site1"
+    assert config_context.roles[0].name == "switch"
+    assert config_context.roles[0].slug == "switch"
+    assert config_context.tags[0].name == "mist"
+    assert config_context.tags[0].slug == "mist"
+
+
+def test_entity_instantiation_with_config_context():
+    """Check Entity instantiation with config_context sets the oneof."""
+    entity = Entity(
+        config_context=ConfigContext(name="x", data='{"a": 1}', sites=["s1"], roles=["switch"], tags=["t"]),
+    )
+    assert isinstance(entity, EntityPb)
+    assert entity.WhichOneof("entity") == "config_context"
+    assert isinstance(entity.config_context, ConfigContextPb)
+    assert entity.config_context.name == "x"
+    assert entity.config_context.data == '{"a": 1}'
+    assert entity.config_context.sites[0].name == "s1"
+    assert entity.config_context.roles[0].name == "switch"
+    assert entity.config_context.tags[0].name == "t"
+
+
+def test_entity_instantiation_with_config_context_as_string():
+    """Check Entity instantiation with config_context given as a name string."""
+    entity = Entity(config_context="mist-site-vars")
+    assert entity.WhichOneof("entity") == "config_context"
+    assert isinstance(entity.config_context, ConfigContextPb)
+    assert entity.config_context.name == "mist-site-vars"
